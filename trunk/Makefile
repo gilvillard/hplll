@@ -54,9 +54,9 @@ subdir = .
 DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.h.in $(nobase_dist_doc_DATA) COPYING.LESSER \
-	TODO config.guess config.sub depcomp install-sh missing \
-	ltmain.sh
+	$(srcdir)/config.h.in $(nobase_dist_doc_DATA) COPYING \
+	COPYING.LESSER TODO config.guess config.sub depcomp install-sh \
+	missing ltmain.sh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -195,13 +195,13 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing aclocal-1.13
+ACLOCAL = ${SHELL} /Volumes/gvillard/Soft/svn-hplll/trunk/missing aclocal-1.13
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
-AUTOCONF = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing autoconf
-AUTOHEADER = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing autoheader
-AUTOMAKE = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing automake-1.13
+AUTOCONF = ${SHELL} /Volumes/gvillard/Soft/svn-hplll/trunk/missing autoconf
+AUTOHEADER = ${SHELL} /Volumes/gvillard/Soft/svn-hplll/trunk/missing autoheader
+AUTOMAKE = ${SHELL} /Volumes/gvillard/Soft/svn-hplll/trunk/missing automake-1.13
 AWK = awk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -239,7 +239,7 @@ LIPO = lipo
 LN_S = ln -s
 LTLIBOBJS = 
 MAINT = 
-MAKEINFO = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing makeinfo
+MAKEINFO = ${SHELL} /Volumes/gvillard/Soft/svn-hplll/trunk/missing makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /opt/local/bin/gmkdir -p
 NM = /usr/bin/nm
@@ -263,10 +263,10 @@ SET_MAKE =
 SHELL = /bin/sh
 STRIP = strip
 VERSION = 0.1.1
-abs_builddir = /Users/gvillard/Soft/hplll-0.1.1
-abs_srcdir = /Users/gvillard/Soft/hplll-0.1.1
-abs_top_builddir = /Users/gvillard/Soft/hplll-0.1.1
-abs_top_srcdir = /Users/gvillard/Soft/hplll-0.1.1
+abs_builddir = /Volumes/gvillard/Soft/svn-hplll/trunk
+abs_srcdir = /Volumes/gvillard/Soft/svn-hplll/trunk
+abs_top_builddir = /Volumes/gvillard/Soft/svn-hplll/trunk
+abs_top_srcdir = /Volumes/gvillard/Soft/svn-hplll/trunk
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -296,7 +296,7 @@ host_vendor = apple
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/install-sh
+install_sh = ${SHELL} /Volumes/gvillard/Soft/svn-hplll/trunk/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
