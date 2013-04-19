@@ -1,0 +1,26 @@
+
+
+class L1 ==> class Lattice 
+
+L1.cc ==> hlll.cc 
+L1.h ==> hlll.h
+
+template class parameters for Lattice (ex L1)
+
+
+Real matrix first:
+(change also in function eg isreduced that are not in matexp 
+  - interface matrix entries : get and set, (i,j) deprecated 
+  - interface vector_submul and vector_fmasub deprecated 
+  - get_nonnorm ==> get_non_normalized
+    (put dummy for Z_NR) 
+  - interface vector_div deprecated 
+
+add reduction_method in the constructor of Lattice  
+
+-------------------------
+
+normalize cote EXP ? 
+CHERCHER DPE côté exp 
+
+

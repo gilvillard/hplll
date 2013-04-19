@@ -1,0 +1,1512 @@
+/* Householer LLL 
+
+Created Mar 18 jan 2011 18:10:25 CET 
+Copyright (C) 2011, 2012, 2013      Gilles Villard 
+
+This file is part of the hplll Library 
+
+The hplll Library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 3 of the License, or (at your
+option) any later version.
+
+The hplll Library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the hplll Library; see the file COPYING.LESSER.  If not, see
+http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
+51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+
+
+#ifndef HLLL_CC
+#define HLLL_CC
+
+#include "mat.h"
+#include "hlll.h"
+
+
+// MPFR setprec : isreduced and cond are initializing the floating point matrices 
+
+template<class ZT,class FT>  int 
+Lattice<ZT,FT>::hlll(long double delta) { 
+
+  int kappa=1,i;
+  int prevkappa=-1; // For the looping test betwenn tow indices 
+  vector<FP_NR<FT> >  prevR(d);
+
+  FP_NR<FT> approx;
+  
+  approx=0.01;
+
+  FP_NR<FT> newt; //testaccu;
+
+  FP_NR<FT> diff1, diff2;
+
+  FP_NR<FT> deltab,lovtest;
+  deltab=delta;   // A VOIR
+
+  FP_NR<FT> tmpswap;
+
+  unsigned int start=0;
+
+  int flag_reduce=0; // No convergence in reduce 
+
+  for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
+
+  while (kappa < d) 
+  {
+
+    if (((nblov%800000)==0) && (nblov > 0)){
+
+      cout << nblov << " tests" << endl; 
+
+    }
+
+    nmaxkappa=structure[kappa]+1;    // Recomputing the structure, when ?  
+
+    if (kappa == 1) { 
+      for (i=0; i<d; i++) kappamin[i]=min(kappamin[i],0);
+      householder_r(0);  
+      householder_v(0);
+
+    } 
+    else for (i=kappa+1; i<d; i++) kappamin[i]=min(kappamin[i],kappa); // lowest visit after kappa 
+
+    
+    if (chrono)  start=utime();
+
+    //DBG 
+    flag_reduce=hsizereduce(kappa);
+    //flag_reduce=seysenreduce(kappa); 
+     
+    if (chrono) tps_reduce+=utime()-start;
+
+    if (flag_reduce==-1) return(-1);
+
+    if (chrono) start=utime();
+
+    newt=normB2[kappa];
+
+    for (i=0; i<=kappa-2; i++) newt.submul(R(i,kappa),R(i,kappa));
+
+    lovtest.mul(R(kappa-1,kappa-1),R(kappa-1,kappa-1));
+
+    lovtest.mul(deltab,lovtest);
+
+    if (chrono) tps_prepare+=utime()-start;
+
+    if (chrono) start=utime();
+   
+    nblov+=1;
+
+    /*FP_NR<FT> s,sn;
+    fp_norm(s,R.getcol(kappa,kappa),nmaxkappa-kappa);
+    s.mul(s,s);
+    sn.mul(R(kappa-1,kappa),R(kappa-1,kappa));
+    newt.add(s,sn);*/
+	 
+    // ****************
+    //   UP    UP    UP 
+    // ****************
+    if (lovtest <= newt) {
+     
+      householder_v(kappa);   // The first part of the orthogonalization is available 
+      if (chrono) tps_householder+=utime()-start;
+
+      if (prevkappa==kappa+1) {  // Heuristique precision check : when R(kappa-1,kappa-1) increases in a 2x2 up and down  
+	FP_NR<FT> t;
+	t.abs(R(kappa,kappa));
+       
+	if (t > prevR[kappa]) {
+	
+	  cout << " ******* " << nblov << " **********    Anomaly: the norm increases for kappa = " << kappa << endl;
+	 
+	  return -1;
+	}
+
+      };
+
+      descendu[kappa]=0;
+      if (kappa==1) descendu[0]=0;
+
+      prevkappa=kappa; 
+      prevR[kappa].abs(R(kappa,kappa)); 
+
+      kappa+=1; 
+    }
+
+    // ****************
+    //   DOWN   DOWN 
+    // ****************
+    else {
+
+      if (kappa==1) descendu[0]=0 ;
+      else descendu[kappa-1]=descendu[kappa]+1;
+      descendu[kappa]=0;
+
+      nbswaps+=1;
+      
+      B.colswap(kappa-1,kappa);
+ 
+      if (transf) U.colswap(kappa-1,kappa);
+      Bfp.colswap(kappa-1,kappa);
+
+      structure[kappa-1]=structure[kappa];
+
+      VR.colswap(kappa-1,kappa);
+ 
+      tmpswap=normB2[kappa];  normB2[kappa]=normB2[kappa-1]; normB2[kappa-1]=tmpswap;
+
+      prevkappa=kappa; 
+      kappa=max(kappa-1,1);  
+
+    }
+    if (chrono) tps_swap+=utime()-start;    
+
+  }
+
+  
+  return 0;
+
+}
+
+
+/* -------------------------------------------------
+   Seysen size reduction 
+   ------------------------------------------------- */
+
+// Retourne -1 pour arrêt si pas de convergence dans la boucle while : n'arrive pas à décroitre 
+
+// Householder fait jusqua kappa-1
+
+// Le but serait de pouvoir intervertir directement sans rien 
+// changer d'autre que hsizereduce par seysen 
+
+template<class ZT,class FT> inline int 
+Lattice<ZT,FT>::seysenreduce(int kappa) { 
+
+  FP_NR<FT> approx;
+  
+  approx=0.01;
+
+
+  FP_NR<FT> x,t,tmpfp;
+  Z_NR<ZT>  xz,tmpz;
+
+  vector<FP_NR<FT> > vectx(kappa);  
+  
+  vector<FP_NR<FT> > tmpcolR(kappa);  
+
+  int i,k,w=0;
+
+  bool nonstop=1;
+  bool somedone=0;
+
+  unsigned int start=0;
+ 
+  int restdim=0; // Dimension qui reste dans après le bloc courant
+
+  int nmax; // De la structure triangulaire 
+
+  //int whilemax=10000;  // pb de convergence si pas assez de précision : ex ne baisse pas assez vite 
+  //int nbwhile=0;
+
+  // DBG à voir / cf pb précision au début de Seysen 
+  col_kept[kappa]=0;
+
+  if (chrono)  start=utime();
+  householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
+  if (chrono) tps_householder+=utime()-start;
+
+  // DBG � voir / cf pb précision au d�but de Seysen 
+  col_kept[kappa]=0;
+
+  int bdim,ld,tdig,indexdec;
+
+ 
+  while (nonstop) {  // LOOP COLUMN CONVERGENCE
+
+    w++;
+
+    somedone = 0;
+
+    if (chrono) start=utime();
+    
+    // ----------  NOUVELLE BOUCLE, SUR LES BLOCS 
+    // Kappa est la dimension de ce qu'il y a avant 
+     
+    //DBG          cout << "********** kappa  : " << kappa << endl; 
+
+    ld=1; indexdec=0; // Décalage d'indice
+    while (ld <=kappa) {
+
+      tdig=(kappa/ld)%2;
+      if (tdig==0) bdim =0; else bdim = ld;
+
+      // -----------------------------------------------------
+      // Boucle sur la partie de la colonne correspond au bloc 
+      // -----------------------------------------------------
+
+      // vectxz rouding of vectx
+      //  column -  (prev col) * vectxz (xz ré-utilisé) 
+      // On peut travailler sur place en remontant dans la colonne kappa de R 
+
+      // On calcule vectx et on arrondit au fur et à mesure
+
+      restdim=kappa-indexdec-bdim;
+
+      //DBG 
+      //householder_r(kappa);
+
+      for (i=kappa-1-indexdec; i>=restdim; i--) 
+	tmpcolR[i]=R(i,kappa);
+
+      for (i=kappa-1-indexdec; i>=restdim; i--){
+	 
+	vectx[i].div(tmpcolR[i],R(i,i));
+	for (k=restdim; k<i; k++) tmpcolR[k].submul(R(k,i),vectx[i]);
+
+	vectx[i].rnd(vectx[i]);
+
+      } // end calcul de la transfo 
+
+      // Et on applique la transformation  
+      // --------------------------------
+      for (i=kappa-1-indexdec; i>= restdim; i--){
+    
+	x=vectx[i]; 
+
+	if (x.sgn() !=0) { 
+
+	  set_f(xz,x);
+	
+	  nmax=structure[i]+1;
+
+	  if (xz == -1){
+	    somedone=1;
+	  
+	    R.addcol(kappa,i,restdim);
+	  
+	    B.addcol(kappa,i,nmax);
+	    if (transf) U.addcol(kappa,i,min(d,nmax));
+	  
+	  }
+	  /* -----------------*/
+	  else if (xz == 1){
+	    somedone=1;
+
+	    R.subcol(kappa,i,restdim);
+
+	    B.subcol(kappa,i,nmax);
+	    if (transf) U.subcol(kappa,i,min(d,nmax));
+
+	  }
+	  /* --------------------*/
+	  else {   
+	    somedone=1;
+
+	    vector_submul(R.getcol(kappa),R.getcol(i),x,restdim);
+	
+	    if (chrono) start=utime();
+	    vector_submul(B.getcol(kappa),B.getcol(i),xz,nmax);    // à optimiser avec _ui comme dans exp 
+	    if (transf)  vector_submul(U.getcol(kappa),U.getcol(i),xz,min(d,nmax));
+	    if (chrono) tps_redB+=utime()-start;	 
+	  }
+	  /* ----------------*/
+	} // Non zero combination 
+
+
+      } // end application de la transformation 
+
+      indexdec+=bdim;     
+      ld=ld*2;
+    } // End loop on log blocks 
+
+    if (chrono)  tps_redB+=utime()-start;
+
+    if (somedone) {
+
+      col_kept[kappa]=0;
+
+      t.mul(approx,normB2[kappa]);
+
+      if (chrono) start=utime();
+      householder_r(kappa);  // Mise à jour implicite de normB2 
+      if (chrono) tps_householder+=utime()-start;
+
+      nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ? 
+
+    }
+    else {
+      nonstop=0;
+     }
+
+  } // end while 
+
+  compteur = max(compteur,w);
+ 
+  return somedone;
+
+};
+
+
+
+
+/* -------------------------------------------------
+   Size reduction 
+   ------------------------------------------------- */
+
+// Retourne -1 pour arrêt si pas de convergence dans la boucle while : n'arrive pas à décroitre 
+
+ // Householder fait jusqua kappa-1
+template<class ZT,class FT> inline int 
+Lattice<ZT,FT>::hsizereduce(int kappa) { 
+
+  FP_NR<FT> approx;
+  
+  approx=0.01;
+
+
+  FP_NR<FT> x,t,tmpfp;
+  Z_NR<ZT>  xz,tmpz;
+
+  int i,w=0;
+
+  bool nonstop=1;
+  bool somedone=0;
+
+  unsigned int start=0;
+
+  int nmax; // De la structure triangulaire 
+
+  //int whilemax=10000;  // pb de convergence si pas assez de précision : ex ne baisse pas assez vite 
+  //int nbwhile=0;
+
+
+  if (chrono) start=utime();
+  householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
+  if (chrono) tps_householder+=utime()-start;
+
+  while (nonstop) {
+
+    w++;
+
+    somedone = 0;
+
+    for (i=kappa-1; i>-1; i--){
+   
+      x.div(R(i,kappa),R(i,i)); 
+
+      x.rnd(x);
+
+      if (x.sgn() !=0) { 
+      
+	set_f(xz,x);
+
+	nmax=structure[i]+1;
+      
+	if (xz == -1){
+
+	  somedone=1;
+	  
+	  R.addcol(kappa,i,i);
+
+	  if (chrono) start=utime();
+	  B.addcol(kappa,i,nmax);
+	  if (transf) U.addcol(kappa,i,min(d,nmax));
+	  if (chrono) tps_redB+=utime()-start;
+
+	}
+      /* ----------------------------------------------- */
+	else if (xz == 1){
+	  somedone=1;
+
+	R.subcol(kappa,i,i);
+
+	if (chrono) start=utime();
+	B.subcol(kappa,i,nmax);
+	if (transf) U.subcol(kappa,i,min(d,nmax));
+	if (chrono) tps_redB+=utime()-start;
+	}
+	/* ----------------------------------------------- */
+	else {   
+	  somedone=1;
+       
+	  vector_submul(R.getcol(kappa),R.getcol(i),x,i);
+	
+	  if (chrono) start=utime();
+	  vector_submul(B.getcol(kappa),B.getcol(i),xz,nmax);    // à optimiser avec _ui comme dans exp 
+	  if (transf)  vector_submul(U.getcol(kappa),U.getcol(i),xz,min(d,nmax));
+	  if (chrono) tps_redB+=utime()-start;
+	}
+	/* ----------------------------------------------- */
+
+      } // Non zero combination 
+    } // Loop through the column
+    
+    if (somedone) {
+
+      col_kept[kappa]=0;
+
+      t.mul(approx,normB2[kappa]);
+
+      if (chrono) start=utime();
+      householder_r(kappa);
+      if (chrono) tps_householder+=utime()-start;
+
+      nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ? 
+      //if (w > 1) cout << "----------" << endl; 
+    }
+    else 
+      nonstop=0;
+
+  } // end while 
+
+  compteur = max(compteur,w);
+  
+  return somedone;
+
+}
+
+/* ------------- */
+/* Householder R */
+/* ------------- */
+
+// Rajouter nmax avec R et B au début 
+
+template<class ZT,class FT> inline int 
+Lattice<ZT,FT>::householder_r(int kappa)
+{
+  int i,k,length; 
+
+  // On peut arrêter R nmax elle est recalculée complètement 
+
+  // kappa == 0, on ne garde rien 
+  // ----------------------------
+  if (kappa==0) {
+
+     if (col_kept[kappa])    
+       for (i=0; i<nmaxkappa; i++) R(i,kappa)=Bfp(i,kappa);
+
+     else {
+       col_kept[kappa]=0; // ICI  
+
+       for (i=0; i<nmaxkappa; i++) {
+
+	 set_z(Bfp(i,kappa),B(i,kappa)); 
+	 R(i,kappa)=Bfp(i,kappa); 
+       }
+       fp_norm_sq(normB2[kappa], R.getcol(kappa), nmaxkappa);
+     }
+
+    kappamin[kappa]=kappa;
+  }
+  else {
+
+    // Longueur de tous les calculs 
+
+    length=nmaxkappa;
+
+  // ------------------------------------------------------------
+  // Ré-utilisation de données des précédentes orthogonalisations
+  // ------------------------------------------------------------
+
+    if (col_kept[kappa]) {
+     
+      // On garde la norme courante et la valeur flottante de B 
+      //  On garde tout si descente pas trop importante sinon juste une partie pour la montée aussi : 
+      if  (((descendu[kappa] < 1) || (kappa-descendu[kappa] <= 0))) {
+
+	// k=0
+	if (kappamin[kappa]==0) {
+
+
+	  k=0;
+	  scalarprod(VR(k,kappa), V.getcol(k,k), Bfp.getcol(kappa,k), length);
+
+	  vector_fmasub(Rkept.getcol(0,k), Bfp.getcol(kappa,k), V.getcol(k,k), VR(k,kappa), length);  // k=0
+
+	  for (k=1; k<kappa; k++) {
+	    length--;
+	    scalarprod(VR(k,kappa), V.getcol(k,k), Rkept.getcol(k-1,k), length);
+
+	    vector_fmasub(Rkept.getcol(k,k), Rkept.getcol(k-1,k), V.getcol(k,k), VR(k,kappa), length);  // de k-1 à k 
+	  }
+	}
+	else {
+
+	  k=0;
+	  vector_fmasub(Rkept.getcol(k,k), Bfp.getcol(kappa,k), V.getcol(k,k), VR(k,kappa), length);  // k=0
+
+	  for (k=1; k<kappamin[kappa]; k++)  {
+	    length--;
+	    vector_fmasub(Rkept.getcol(k,k), Rkept.getcol(k-1,k), V.getcol(k,k), VR(k,kappa), length);  // de k-1 à k
+	  }
+
+	  for (k=kappamin[kappa]; k<kappa; k++) {
+	    length--;
+	    scalarprod(VR(k,kappa), V.getcol(k,k), Rkept.getcol(k-1,k), length);
+	    vector_fmasub(Rkept.getcol(k,k), Rkept.getcol(k-1,k), V.getcol(k,k), VR(k,kappa), length);  // de k-1 à k 
+	  }
+	}
+     
+      } // if ne descend pas trop ou monte  
+
+  } // end colkept 
+  // -----------------------------------------------------------
+  // Re-calcul complet 
+  // -----------------------------------------------------------
+  else { 
+
+    col_kept[kappa]=0;   // ICI 
+
+    for (i=0; i<nmaxkappa; i++) set_z(Bfp(i,kappa),B(i,kappa)); 
+
+    fp_norm_sq(normB2[kappa], Bfp.getcol(kappa), nmaxkappa);
+
+      // k =0 
+      k=0;
+      scalarprod(VR(k,kappa), V.getcol(k,k), Bfp.getcol(kappa,k), length);
+      
+      vector_fmasub(Rkept.getcol(0,k), Bfp.getcol(kappa,k), V.getcol(k,k), VR(k,kappa), length); 
+
+
+      for (k=1; k<kappa; k++) {
+
+	length--;
+	scalarprod(VR(k,kappa), V.getcol(k,k), Rkept.getcol(k-1,k), length);
+	vector_fmasub(Rkept.getcol(k,k), Rkept.getcol(k-1,k), V.getcol(k,k), VR(k,kappa), length);  // de k-1 à k 
+	}
+
+  } // else recalcul 
+  // -----------------------------------------------------------
+
+    for (i=0; i<kappa; i++) {
+      R(i,kappa)=Rkept(i,i);
+    }
+
+    for (i=kappa; i<nmaxkappa; i++){
+      R(i,kappa)=Rkept(i,kappa-1);
+    }
+  kappamin[kappa]=kappa;
+  
+  } // else kappa !=0 
+
+ return 0;
+}
+
+/* ------------- */
+/* Householder V */
+/* ------------- */
+
+template<class ZT,class FT> inline int 
+Lattice<ZT,FT>::householder_v(int kappa) 
+{
+  int i;
+  FP_NR<FT> s,norm,w; 
+
+  w=R(kappa,kappa);
+
+
+  if (w >=0) {
+
+    fp_norm(s,R.getcol(kappa,kappa),nmaxkappa-kappa); 
+
+    R(kappa,kappa).neg(s);  // On ne met pas à zéro, inutile, sauf pour getR 
+    
+  }
+  else {
+
+    fp_norm(R(kappa,kappa),R.getcol(kappa,kappa),nmaxkappa-kappa); // de la colonne 
+
+    s.neg(R(kappa,kappa)); 
+  }
+
+  w.add(w,s);
+
+  s.mul(s,w);
+  s.sqrt(s);
+
+  vector_div(V.getcol(kappa,kappa+1), R.getcol(kappa,kappa+1), s, nmaxkappa-kappa-1); 
+
+  
+  for (i=nmaxkappa; i< n; i++) V(i,kappa)=0.0;  // V à zéro car ré-utilisé plus loin ensuite (pas R); 
+  V(kappa,kappa).div(w,s);
+
+
+  return 0; 
+}
+
+
+
+template<class ZT,class FT> inline unsigned int 
+Lattice<ZT,FT>::setprec(unsigned int prec) {
+
+  // ATTENTION MET A ZERO 
+
+  // Devrait être variables par variables et pas globalement 
+  // faire un push et pop ? 
+
+  int oldprec = R(0,0).getprec(); 
+
+  
+  // Changer cette destruction, et mettre par ex ds le resize ? 
+  
+  mpfr_set_default_prec(prec);
+
+  R.clear();
+  R.resize(n,d);
+
+  Rkept.clear();
+  Rkept.resize(n,d);
+
+  V.clear();
+  V.resize(n,d);
+
+  VR.clear();
+  VR.resize(d,d);
+
+  Bfp.clear();
+  Bfp.resize(n,d);
+
+  normB2.clear();
+  normB2.resize(d); 
+
+  return oldprec;
+}
+
+
+template<class ZT,class FT> inline unsigned int 
+Lattice<ZT,FT>::getprec() {
+
+  return R(0,0).getprec(); 
+
+}
+
+
+template<class ZT,class FT> inline ZZ_mat<ZT> Lattice<ZT,FT>::getbase()
+{
+  ZZ_mat<ZT> BB(n,d);
+  for (int i=0; i<n; i++) 
+    for (int j=0; j<d; j++) BB.Set(i,j,B(i,j)); // reprendre boucle sur les colonnes 
+
+  return BB;
+}
+
+template<class ZT,class FT> inline ZZ_mat<ZT> Lattice<ZT,FT>::getU()
+{
+  ZZ_mat<ZT> UU(d,d);
+  for (int i=0; i<d; i++) 
+    for (int j=0; j<d; j++) UU.Set(i,j,U(i,j)); // reprendre boucle sur les colonnes 
+
+  return UU;
+
+}
+
+
+/*template<class ZT,class FT> inline FP_mat<FT> Lattice<ZT,FT>::getR()
+{
+  FP_mat<FT> RR(d,d);
+  for (int i=0; i<d; i++) 
+    for (int j=i; j<d; j++) RR.Set(i,j,R(i,j)); // reprendre boucle sur les colonnes 
+
+  for (int i=0; i<d; i++) 
+    for (int j=0; j<i; j++) RR(i,j)=0.0; // car en interne pas forcément triangulaire 
+
+  return RR;
+  }*/
+
+
+template<class ZT,class FT> inline  matrix<FP_NR<FT> >  Lattice<ZT,FT>::getR()
+{
+  matrix<FP_NR<FT> >  RR(d,d);
+  for (int i=0; i<d; i++) 
+    for (int j=i; j<d; j++) RR(i,j)=R(i,j); // reprendre boucle sur les colonnes 
+
+  for (int i=0; i<d; i++) 
+    for (int j=0; j<i; j++) RR(i,j)=0.0; // car en interne pas forcément triangulaire 
+
+  return RR;
+}
+
+
+// Constructeur 
+// ------------
+
+
+template<class ZT,class FT> void 
+Lattice<ZT,FT>::init(int n, int d, bool forU=false, int gchrono=0) {
+
+  int i,j;
+
+  chrono=gchrono;
+  transf=forU;
+  compteur=0;
+
+  tps_reduce=0;
+  tps_householder=0;
+  tps_prepare=0;
+  tps_swap=0;
+  nblov=0;
+  nbswaps=0;
+  tps_redB=0;
+
+
+  R.resize(n,d);
+
+  Rkept.resize(n,d);
+
+
+  B.resize(n,d);
+  Bfp.resize(n,d);
+
+  normB2.resize(d);
+
+  if (transf) {
+
+    U.resize(d,d);
+    for (i=0; i<d; i++) U(i,i)=1; 
+
+  }
+
+  V.resize(n,d);
+
+  col_kept.resize(d);
+  descendu.resize(d);
+  for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
+
+  kappamin.resize(d); // Jusqu'où est redescendu kappa
+  for (j=0; j<d; j++) kappamin[j]=-1;
+
+  VR.resize(d,d);
+
+}
+
+
+template<class ZT,class FT>
+Lattice<ZT,FT>::Lattice(ZZ_mat<ZT> A, bool forU=false, int gchrono=0) {
+
+  n=A.getRows();
+  d=A.getCols();
+
+  init(n,d, forU, gchrono); 
+
+  int i,j;
+
+  for (i=0; i<n; i++) 
+    for (j=0; j<d; j++) 
+      B(i,j)=A.Get(i,j);
+
+
+  matrix_structure(structure, B, n,d);
+
+}
+
+template<class ZT,class FT>
+Lattice<ZT,FT>::Lattice(ZZ_mat<ZT> A, long t, long sigma, bool forU=false, int gchrono=0) {
+
+  n=A.getRows();
+  d=A.getCols();
+
+  init(n,d, forU, gchrono); 
+
+  trunc_sigma(B,A,n,d,t,sigma);
+
+  matrix_structure(structure, B, n,d);
+
+}
+
+// After initialization  
+
+template<class ZT,class FT>  void 
+Lattice<ZT,FT>::put(ZZ_mat<ZT> A, long t, long sigma) {
+
+  trunc_sigma(B,A,n,d,t,sigma);
+
+  if (transf) {
+
+    U.resize(d,d);
+    for (int i=0; i<d; i++) U(i,i)=1; 
+
+  }
+}
+
+// After initialization 
+// Multiply the first m rows by 2^sigma 
+
+template<class ZT,class FT>  void 
+Lattice<ZT,FT>::shift(ZZ_mat<ZT> A, long m, long sigma) {
+
+  int i,j;
+
+  for (i=0; i<m; i++)
+    for (j=0; j<d; j++)
+      B(i,j).mul_2exp(A(i,j), sigma); 
+
+  if (transf) {
+
+    U.resize(d,d);
+    for (int i=0; i<d; i++) U(i,i)=1; 
+
+  }
+}
+
+
+//***************************************************************************
+// Test de r�duction 
+
+// Avec mpfr si le chgt de précision doit avoir un effet 
+
+template<class ZT,class FT> inline void Lattice<ZT,FT>::isreduced(long double deltain) {
+
+  // On applique HLLL, réduit si il ne sa passe rien : aucun swap 
+  // Cf test de réduction 
+
+  int oldprec,k;
+  FP_NR<mpfr_t> s1,s2,s,delta;
+  Z_NR<ZT> nb1;
+
+  if (d<=20) oldprec=setprec(53);  
+  else oldprec=setprec(2*d);  // ******* A VOIR 
+
+  // Premier calcul avant test et further �ventuel 
+  // ---------------------------------------------
+
+  householder();
+
+  s1.mul(R(0,1),R(0,1));
+  s2.mul(R(1,1),R(1,1));
+  s.mul(R(0,0),R(0,0));
+
+  s1.add(s1,s2);
+  delta.div(s1,s);
+  if (delta >=1) delta=1.0; 
+
+  for (k=1; k<d-1; k++) {
+
+    s1.mul(R(k,k+1),R(k,k+1));
+    s2.mul(R(k+1,k+1),R(k+1,k+1));
+    s.mul(R(k,k),R(k,k));
+    s1.add(s1,s2);
+    s.div(s1,s);
+
+    if (s < delta) delta=s;
+  }
+  cout << endl;
+  cout << "(Householder) delta is about " << delta << endl; 
+
+  fp_norm_sq(nb1,B.getcol(0),n);
+  set_z(s,nb1);
+  s.sqrt(s);
+      
+  cout << "(Householder) ||b_1|| is " << s << endl; 
+
+  s=R(0,0);
+  for (k=1; k<d; k++) 
+    s.mul(s,R(k,k));
+
+  s.abs(s);
+  cout << "(Householder) Vol(L) is about " << s << endl ; 
+
+  FP_NR<mpfr_t> eta,theta,alpha;
+
+  theta=0.00001;
+
+  eta=0.0;
+
+  int i,j;
+
+  FP_NR<mpfr_t> v,w;
+
+  for (i=0; i<d-1; i++)
+    for (j=i+1; j<d; j++) {
+      v.abs(R(i,j));
+      w.mul(theta,R(j,j));
+      v.sub(v,w);
+      if (v >0) {
+	v.div(v,R(i,i));
+	if (v > eta) eta=v;
+      }
+    }
+
+  alpha.mul(theta,theta);
+  v=1.0;
+  alpha.add(alpha,v);
+
+  alpha.mul(alpha,delta);
+
+  v.mul(eta,eta);
+  alpha.sub(alpha,v);
+  alpha.sqrt(alpha);
+
+  v.mul(eta,theta);
+  alpha.add(v,alpha);
+
+  v.mul(eta,eta);
+  v.sub(delta,v);
+
+  alpha.div(alpha,v);
+
+
+  cout << " eta : " << eta << "    theta : " << theta << "    alpha : " << alpha << endl << endl; 
+
+  // Avec réduction 
+  // --------------
+
+  hlll(deltain);
+
+  if (nblov==d-1) cout << endl << " **** Ok is reduced " << endl;
+  if (nblov != d-1) {
+    cout << endl;
+    cout << " !!!! Does not seem to be reduced for #Lovasz tests " << endl;
+    cout << " nb test is " << nblov << " > " << d-1 << endl << endl; 
+  
+
+    s1.mul(R(0,1),R(0,1));
+    s2.mul(R(1,1),R(1,1));
+    s.mul(R(0,0),R(0,0));
+
+    s1.add(s1,s2);
+    delta.div(s1,s);
+    if (delta >=1) delta=1.0; 
+
+    for (k=1; k<d-1; k++) {
+
+      s1.mul(R(k,k+1),R(k,k+1));
+      s2.mul(R(k+1,k+1),R(k+1,k+1));
+      s.mul(R(k,k),R(k,k));
+
+      s1.add(s1,s2);
+      s.div(s1,s);
+    
+      if (s < delta) delta=s;
+  
+    }
+
+    cout << "(further with " << nblov-d+1 << " tests) " << "delta is about " << delta << endl; 
+
+    fp_norm_sq(nb1,B.getcol(0),n);
+    set_z(s,nb1);
+    s.sqrt(s);
+      
+    cout << "(further with " << nblov-d+1 << " tests) " << "||b_1|| is " << s << endl; 
+
+    s=R(0,0);
+    for (k=1; k<d; k++) 
+      s.mul(s,R(k,k));
+
+    s.abs(s);
+    cout << "(further with " << nblov-d+1 << " tests) " << "Vol(L) is about " << s << endl; 
+
+
+  theta=0.001;
+
+  eta=0.0;
+
+  for (i=0; i<d-1; i++)
+    for (j=i+1; j<d; j++) {
+      v.abs(R(i,j));
+      w.mul(theta,R(j,j));
+      v.sub(v,w);
+      v.div(v,R(i,i));
+      if (v > eta) eta=v;
+    }
+
+  alpha.mul(theta,theta);
+  v=1.0;
+  alpha.add(alpha,v);
+
+  alpha.mul(alpha,delta);
+
+  v.mul(eta,eta);
+  alpha.sub(alpha,v);
+  alpha.sqrt(alpha);
+
+  v.mul(eta,theta);
+  alpha.add(v,alpha);
+
+  v.mul(eta,eta);
+  v.sub(delta,v);
+
+  alpha.div(alpha,v);
+
+
+  cout << " eta : " << eta << "    theta : " << theta << "    alpha : " << alpha << endl << endl; 
+
+  } // Was not reduced 
+
+
+  setprec(oldprec);
+}
+
+
+//***************************************************************************
+// Condition number || |R| |R^-1| || _ F
+// Change the precision, hence initialize R (forget previous value)  
+
+// To be used with mpfr if the precision change must have some effect 
+//*************************************************************************** 
+
+template<class ZT,class FT> inline FP_NR<FT> Lattice<ZT,FT>::cond() {
+
+  // On applique HLLL, r�duit si il ne sa passe rien : aucun swap 
+  // Cf test de r�duction 
+
+  FP_NR<FT>  cc,c2;
+ 
+
+  int i,j,k;
+
+  int oldprec;
+
+  if (d<=20) oldprec=setprec(53);  
+  else oldprec=setprec(20*d);  // ******* A VOIR 
+
+  // Calcul direct sur R par householder 
+  // -----------------------------------
+
+  householder();
+
+  // Abs R --> ar 
+  matrix<FP_NR<FT> > aR;
+  aR.resize(d,d);
+
+  for (i=0; i<d; i++)
+    for (j=0; j<d; j++) 
+      aR(i,j).abs(R(i,j));
+
+  // Magnitude of the diagonal 
+  // -------------------------
+
+  FP_NR<FT>  mindiag,maxdiag;
+  mindiag=aR(0,0);
+  maxdiag=aR(0,0);
+
+  for (i=1; i<d; i++) {
+    if (mindiag > aR(i,i)) mindiag=aR(i,i);
+    if (maxdiag < aR(i,i)) maxdiag=aR(i,i);
+  }
+  
+  //cout << endl << "Diagonal max: " << maxdiag << "  min: " << mindiag << endl;
+  maxdiag.div(maxdiag,mindiag);
+  //cout << "Largest diagonal ratio: " << maxdiag << endl;
+
+  // Inversion 
+  // ---------
+
+
+  matrix<FP_NR<FT> > iR;
+  iR.resize(d,d);
+
+  for (i=0; i<d; i++) iR(i,i)=1.0; 
+
+  //  for (i=1; i<=n; i++) SET_D(II[i][i], 1.0);
+
+  // Higham p263 Method 1
+
+  FP_NR<FT> t,one;
+  one=1.0;
+
+  for (j=0; j<d; j++)
+    {
+
+      iR(j,j).div(one,aR(j,j));
+
+      for (k=j+1; k<d; k++) {
+	  t.mul(iR(j,j),R(j,k));
+	  iR(j,k).neg(t);
+        }
+
+      for (k=j+1; k<d; k++) {
+          for (i=j+1; i<k; i++) {
+	    t.mul(iR(j,i),R(i,k)); 
+	    iR(j,k).sub(iR(j,k),t); 
+            }
+	  iR(j,k).div(iR(j,k),R(k,k)); 
+        }
+
+    }
+
+  // Abs iR --> iR 
+
+  for (i=0; i<d; i++)
+    for (j=0; j<d; j++) 
+      iR(i,j).abs(iR(i,j));
+
+
+  // aR * iR 
+
+  matrix<FP_NR<FT> > prod;
+  prod.resize(d,d);
+
+  for (i=0; i<d; i++)
+    for (j=0; j<d; j++) {
+      prod(i,j).mul(aR(i,0),iR(0,j));
+      for (k=1; k<d ; k++) 
+	prod(i,j).addmul(aR(i,k),iR(k,j));
+    }
+
+  // Norm 
+
+
+  cc=0.0; 
+
+  for (i=0; i<d; i++)
+    for (j=0; j<d; j++) 
+      cc.addmul(prod(i,j),prod(i,j));
+
+  cc.sqrt(cc); 
+
+  cout << endl;
+  cout << "Conditioning is about " << cc << endl ; 
+  cc.log(cc);
+  c2=2.0;
+  c2.log(c2);
+  cc.div(cc,c2);
+  cout << "Digits - Log conditioning is about " << cc << endl << endl; 
+
+  setprec(oldprec);
+
+  return cc;
+}
+
+
+
+//***************************************************************************
+// Version simplifi�e de l'�nergie
+// Change la prec donc �crase R 
+
+// Avec mpfr si le chgt de pr�cision doit avoir un effet 
+
+template<class ZT,class FT> inline FP_NR<FT> Lattice<ZT,FT>::energy() {
+
+  
+
+  int oldprec;
+
+  if (d<=20) oldprec=setprec(53);  
+  else oldprec=setprec(20*d);  // ******* A VOIR 
+
+  // Calcul direct sur R par householder 
+  // -----------------------------------
+
+  int i,k;
+
+  
+  householder();
+
+  FP_NR<FT>  cc;
+
+  FP_NR<FT> tmp,nf;
+
+  cc=0.0;
+  
+  for (i=0; i<d; i++) {
+    tmp.abs(R(i,i)); 
+    //cout << R(i,i) << endl; 
+    tmp.log(tmp);
+    nf=0.0;
+    for (k=0; k<d-i; k++)  // multiplication par i ! 
+      nf.add(nf,tmp); 
+    cc.add(cc,nf);
+    }
+
+  cout << endl;
+  cout << "Energy is about " << cc << endl << endl; 
+
+  setprec(oldprec);
+
+  return cc;
+}
+
+
+
+
+/* --------------------------------------------- */
+/* Householder complet */
+/* --------------------------------------------- */
+
+template<class ZT,class FT> inline int 
+Lattice<ZT,FT>::householder()
+{
+
+  int i,k,kappa;
+  FP_NR<FT> nrtmp,s,w; 
+  
+
+    for (kappa=0; kappa<d; kappa++) {
+
+      for (i=0; i<n; i++) set_z(R(i,kappa),B(i,kappa));
+
+      for (k=0; k<kappa; k++) {
+	scalarprod(nrtmp, V.getcol(k,k), R.getcol(kappa,k), n-k);
+	vector_submul(R.getcol(kappa,k), V.getcol(k,k), nrtmp, n-k); 
+      }
+
+      w=R(kappa,kappa);
+
+      if (w >=0) {
+	fp_norm(s,R.getcol(kappa,kappa),n-kappa); 
+	R(kappa,kappa).neg(s);  
+      }
+      else {
+	fp_norm(R(kappa,kappa),R.getcol(kappa,kappa),n-kappa); // de la colonne 
+	s.neg(R(kappa,kappa)); 
+      }
+
+      w.add(w,s);
+      s.mul(s,w);
+      s.sqrt(s);
+
+      vector_div(V.getcol(kappa,kappa+1), R.getcol(kappa,kappa+1), s, n-kappa-1); 
+
+      V(kappa,kappa).div(w,s);
+
+     
+      for(i=kappa+1; i<d; i++) R(i,kappa)=0;
+       
+    }  // sur kappa 
+   
+    return 0; 
+}
+
+
+
+//***************************************************************************
+// Stats for the nullspace tests 
+
+// Avec mpfr si le chgt de precision doit avoir un effet 
+// Time in input for file printing 
+
+template<class ZT,class FT> inline FP_NR<FT> Lattice<ZT,FT>::tnull(int time) {
+
+  FP_NR<FT>  cc,c2;
+ 
+
+  int i,j,k;
+
+  int oldprec;
+
+  if (d<=20) oldprec=setprec(53);  
+  else oldprec=setprec(20*d);  // ******* A VOIR 
+
+
+  // Calcul direct sur R par householder 
+  // -----------------------------------
+
+  householder();
+
+  // Abs R --> ar 
+  matrix<FP_NR<FT> > aR;
+  aR.resize(d,d);
+
+  for (i=0; i<d; i++)
+    for (j=0; j<d; j++) 
+      aR(i,j).abs(R(i,j));
+
+  // Magnitude of the diagonal 
+  // -------------------------
+
+  FP_NR<FT>  mindiag,maxdiag;
+  mindiag=aR(0,0);
+  maxdiag=aR(0,0);
+
+  for (i=1; i<d; i++) {
+    if (mindiag > aR(i,i)) mindiag=aR(i,i);
+    if (maxdiag < aR(i,i)) maxdiag=aR(i,i);
+  }
+  
+  //  cout << endl << "Diagonal max: " << maxdiag << "  min: " << mindiag << endl;
+  maxdiag.div(maxdiag,mindiag);
+
+  c2=2.0;
+  c2.log(c2);
+  maxdiag.log(maxdiag); 
+  maxdiag.div(maxdiag,c2);
+  Z_NR<ZT> rdiag;
+  set_f(rdiag,maxdiag);
+
+  //cout << "Largest diagonal ratio: " << rdiag << endl;
+
+  // Inversion 
+  // ---------
+
+
+  matrix<FP_NR<FT> > iR;
+  iR.resize(d,d);
+
+  for (i=0; i<d; i++) iR(i,i)=1.0; 
+
+  //  for (i=1; i<=n; i++) SET_D(II[i][i], 1.0);
+
+  // Higham p263 Method 1
+
+  FP_NR<FT> t,one;
+  one=1.0;
+
+  for (j=0; j<d; j++)
+    {
+
+      iR(j,j).div(one,aR(j,j));
+
+      for (k=j+1; k<d; k++) {
+	  t.mul(iR(j,j),R(j,k));
+	  iR(j,k).neg(t);
+        }
+
+      for (k=j+1; k<d; k++) {
+          for (i=j+1; i<k; i++) {
+	    t.mul(iR(j,i),R(i,k)); 
+	    iR(j,k).sub(iR(j,k),t); 
+            }
+	  iR(j,k).div(iR(j,k),R(k,k)); 
+        }
+
+    }
+
+  // Abs iR --> iR 
+
+  for (i=0; i<d; i++)
+    for (j=0; j<d; j++) 
+      iR(i,j).abs(iR(i,j));
+
+
+  // aR * iR 
+
+  matrix<FP_NR<FT> > prod;
+  prod.resize(d,d);
+
+  for (i=0; i<d; i++)
+    for (j=0; j<d; j++) {
+      prod(i,j).mul(aR(i,0),iR(0,j));
+      for (k=1; k<d ; k++) 
+	prod(i,j).addmul(aR(i,k),iR(k,j));
+    }
+
+  // Norm 
+
+
+  cc=0.0; 
+
+  for (i=0; i<d; i++)
+    for (j=0; j<d; j++) 
+      cc.addmul(prod(i,j),prod(i,j));
+
+  cc.sqrt(cc); 
+
+  // Cond 
+  // ----
+
+  cout << endl;
+  cc.log(cc);
+  c2=2.0;
+  c2.log(c2);
+  cc.div(cc,c2);
+  cout << "**** Output file stats *****" << endl << endl;
+  //cout << "Digits - Log conditioning is about " << cc << endl << endl; 
+  Z_NR<ZT> rcond;
+  set_f(rcond,cc);
+  //cout << "Rounded log cond " << rcond << endl;
+
+  // Maxbitsize 
+  // ----------
+
+  int maxbit=0;
+
+  int nn=B.getRows();
+  int dd=B.getCols();
+
+  for (int ii=0; ii<nn ; ii++) 
+    for (int jj=0; jj<dd; jj++)
+      maxbit=max(maxbit, (int) mpz_sizeinbase(B(ii,jj).getData(),2)); 
+
+  //cout << "Max bit size " << maxbit << endl;
+
+  // b_1
+  // ---
+
+  int maxbit1=0;
+  for (int ii=0; ii<nn ; ii++) 
+    maxbit1=max(maxbit1, (int) mpz_sizeinbase(B(ii,0).getData(),2)); 
+
+  //cout << "b_1 bit size " << maxbit1 << endl;
+
+
+  // With Vol 
+
+  int kk;
+  kk=B.getCols();
+  
+  //cout << "k  " << kk << endl;
+
+  // vol 
+  FP_NR<mpfr_t> s;
+  s=R(0,0);
+  for (k=1; k<d; k++) 
+    s.mul(s,R(k,k));
+  s.abs(s);
+  //cout << " *********** " << "Vol(L) is about " << s << endl; 
+
+  cc.log(s);
+  c2=2.0;
+  c2.log(c2);
+  cc.div(cc,c2);
+
+  //cout << " *********** " << "log Vol(L) is about " << cc << endl; 
+
+  Z_NR<ZT> tmpk;
+  tmpk=kk;
+  FP_NR<mpfr_t> kkf;
+  set_z(kkf,tmpk);
+  FP_NR<mpfr_t> expected;
+  expected.div(cc,kkf);
+  //cout << " *********** " << "log Vol(L)1/k is about " << expected << endl; 
+
+  kkf.sqrt(kkf);
+  cc.log(kkf);
+  c2=2.0;
+  c2.log(c2);
+  cc.div(cc,c2);
+
+  expected.add(expected,cc);
+
+  //cout << " *********** " << "expected  " << expected << endl; 
+
+  Z_NR<ZT> rlambda;
+  set_f(rlambda,expected);
+  //cout << "Rounded expected bits  " << rlambda << endl;
+
+  Z_NR<ZT> delta;
+  delta=maxbit;
+  delta.sub(delta,rlambda);
+
+  // File editing: append to out.txt 
+  // -------------------------------
+
+  ofstream outfile; 
+
+  outfile.open ("out.txt",ios_base::app);
+  outfile << "---- " << B.getRows()-B.getCols() << " x " << B.getRows() << " / " <<
+    B.getRows()<< " x " << B.getCols() <<endl; 
+  outfile << "*l_max: " << maxbit << "    *l_b1: " << maxbit1 << "    *l_cond: " << rcond << "    *l_diag: " << rdiag << "    *l_Gauss: " << rlambda  
+	  << "    *mdelta bits: " << delta << "   Time: " << time << " sec." << endl << endl;    
+  outfile.close();
+
+  cout << "---- " << B.getRows()-B.getCols() << " x " << B.getRows() << " / " <<
+    B.getRows()<< " x " << B.getCols() <<endl; 
+  cout << "*l_max: " << maxbit << "    *l_b1: " << maxbit1 << "    *l_cond: " << rcond << "    *l_diag: " << rdiag << "    *l_Gauss: " << rlambda  
+       << "    *mdelta bits: " << delta <<  "   Time: " << time << " sec." << endl << endl;   
+
+  // Precision 
+  setprec(oldprec);
+
+  return cc;
+}
+
+
+
+#endif 
+
