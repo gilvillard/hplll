@@ -22,7 +22,7 @@ AC_PROG_INSTALL
 
 # Checks for programs.
 AC_LANG_CPLUSPLUS
-AC_PROG_CXX([g++-mp-4.7 gcc])
+AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_MAKE_SET
 
