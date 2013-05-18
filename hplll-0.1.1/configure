@@ -16714,36 +16714,18 @@ else
 fi
 
 
-ac_ext=cpp
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-
-SAVED_LDFLAGS=$LDFLAGS
+#AC_LANG(C++)
+#SAVED_LDFLAGS=$LDFLAGS
 #Put for the tests with gcc-mp-4.7 17/05/13 GV
-CXXFLAGS="$CXXFLAGS -I/usr/local/include"
-LDFLAGS="$LDFLAGS -lfplll"
-echo "checking for cputime in -lfplll..."
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <fplll.h>
-int
-main ()
-{
-cputime()
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  TEST_LIBS="$TEST_LIBS -lfplll" echo "yes"
-else
-  as_fn_error $? "FPLLL not found, see http://perso.ens-lyon.fr/damien.stehle/fplll" "$LINENO" 5
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LDFLAGS=$SAVED_LDFLAGS
+#CXXFLAGS="$CXXFLAGS -I/usr/local/include"
+#LDFLAGS="$LDFLAGS -lfplll"
+#echo "checking for cputime in -lfplll..."
+#AC_LINK_IFELSE(
+  #[AC_LANG_PROGRAM([#include <fplll.h>],
+    #[cputime()])],
+  #[TEST_LIBS="$TEST_LIBS -lfplll"] [[echo "yes"]],
+  #[AC_MSG_ERROR([FPLLL not found, see http://perso.ens-lyon.fr/damien.stehle/fplll])])
+#LDFLAGS=$SAVED_LDFLAGS
 
 ac_config_files="$ac_config_files Makefile src/Makefile tests/Makefile"
 
