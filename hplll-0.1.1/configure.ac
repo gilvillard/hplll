@@ -83,18 +83,15 @@ AC_CHECK_LIB(gmp, __gmp_get_memory_functions, , [AC_MSG_ERROR(
 AC_CHECK_LIB(mpfr, mpfr_fms, , [AC_MSG_ERROR(
 [MPFR version too old, need >= 2.3.0, see http://www.mpfr.org])])
 
-#AC_LANG(C++)
-#SAVED_LDFLAGS=$LDFLAGS
-#Put for the tests with gcc-mp-4.7 17/05/13 GV 
-#CXXFLAGS="$CXXFLAGS -I/usr/local/include"
-#LDFLAGS="$LDFLAGS -lfplll" 
-#echo "checking for cputime in -lfplll..."
-#AC_LINK_IFELSE(
-  #[AC_LANG_PROGRAM([#include <fplll.h>],
-    #[cputime()])],
-  #[TEST_LIBS="$TEST_LIBS -lfplll"] [[echo "yes"]],
-  #[AC_MSG_ERROR([FPLLL not found, see http://perso.ens-lyon.fr/damien.stehle/fplll])])
-#LDFLAGS=$SAVED_LDFLAGS
+SAVED_LDFLAGS=$LDFLAGS
+LDFLAGS="$LDFLAGS -lfplll" 
+echo "checking for cputime in -lfplll..."
+AC_LINK_IFELSE(
+ [AC_LANG_PROGRAM([#include <fplll.h>],
+   [cputime()])],
+ [TEST_LIBS="$TEST_LIBS -lfplll"] [[echo "yes"]],
+ [AC_MSG_ERROR([FPLLL not found, see http://perso.ens-lyon.fr/damien.stehle/fplll])])
+LDFLAGS=$SAVED_LDFLAGS
 
 AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile])
 AC_OUTPUT
