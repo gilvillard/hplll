@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
 
+ACLOCAL_AMFLAGS= -I m4
+
 SUBDIRS= src  tests 
 
 nobase_dist_doc_DATA = COPYING.LESSER 
