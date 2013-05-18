@@ -14,6 +14,7 @@ AC_CONFIG_HEADER(config.h)
 
 DEFAULT_CFLAGS="-O3 -Wall"
 
+CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
 CXXFLAGS=${CXXFLAGS:-$DEFAULT_CFLAGS}
 
 #AC_DISABLE_SHARED
@@ -39,7 +40,6 @@ AC_ARG_WITH(fplll,
      LDFLAGS="$LDFLAGS -L$withval/lib"
      fplll_lib_path="$withval/lib"
    ])
-
 
 AC_ARG_WITH(mpfr,
    [  --with-mpfr=DIR          MPFR install directory ], [
@@ -88,14 +88,13 @@ SAVED_LDFLAGS=$LDFLAGS
 #Put for the tests with gcc-mp-4.7 17/05/13 GV 
 CXXFLAGS="$CXXFLAGS -I/usr/local/include"
 LDFLAGS="$LDFLAGS -lfplll" 
-echo "checking for cputime in -lfplll... \c"
+echo "checking for cputime in -lfplll..."
 AC_LINK_IFELSE(
   [AC_LANG_PROGRAM([#include <fplll.h>],
     [cputime()])],
   [TEST_LIBS="$TEST_LIBS -lfplll"] [[echo "yes"]],
   [AC_MSG_ERROR([FPLLL not found, see http://perso.ens-lyon.fr/damien.stehle/fplll])])
 LDFLAGS=$SAVED_LDFLAGS
-
 
 AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile])
 AC_OUTPUT

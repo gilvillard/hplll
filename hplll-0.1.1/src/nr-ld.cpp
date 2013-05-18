@@ -698,8 +698,7 @@ template<> inline void FP_NR<ldpe_t>::abs(const FP_NR<ldpe_t>& a)
   ldpe_abs(data, ldpe_ncref(a.data));
 }
 
-template<>
-inline long FP_NR<ldpe_t>::exponent() const {
+template<> inline long FP_NR<ldpe_t>::exponent() const {
   return LDPE_EXP(data);
 }
 
