@@ -15,6 +15,6 @@ libhplll_la_SOURCES= hlll.cc decomp.cc decompz.cc relations.cc nullspace.cc
 
 libhplll_la_LIBADD= -lgmp -lmpfr -lfplll
 
-libhplll_la_LDFLAGS=-version-info 1:0:1
+libhplll_la_LDFLAGS=-no-undefined -version-info 1:0:1
 
 
