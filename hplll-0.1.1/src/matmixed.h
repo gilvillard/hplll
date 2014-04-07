@@ -29,6 +29,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mat.h"
 #include "mixed-col.h"
 
+namespace hplll { 
+
 template<template <class T> class MatrixT, class RT, class ZT>
   class MatrixRZ {
   
@@ -175,6 +177,69 @@ template<template <class T> class MatrixT, class RT, class ZT>
    else 
      A.submulcol(j,k,xz,l);
  }
+
+// GV Ven 11 oct 2013 15:48:27 CEST
+const inline void  addmulcol_si(const int j, const int k, const long a, const int l) {
+   
+   RT x;
+   Z_NR<long> xz;
+   xz=a;
+
+   set_z(x,xz);
+   
+   if (d>0) {
+     if (l <= d) {
+       F.addmulcol(j,k,x,l);
+     } 
+     else {
+       F.addmulcol(j,k,x,d);
+       A.addmulcol_si(j,k,a,l-d);
+     }
+   }
+   else 
+     A.addmulcol_si(j,k,a,l);
+ }
+
+
+//Ven 11 oct 2013 15:48:27 CEST
+const inline void  addmulcol_si_2exp(const int j, const int k, const long a,  const long expo, const int l) {
+   
+   RT x;
+   RT tmp;
+   Z_NR<long> xz;
+   xz=a;
+
+   set_z(x,xz);
+   
+   if (d>0) {
+     if (l <= d) {
+       // prod par a puis prod par mul_2si 
+       for (int i=0; i<l; i++) {
+	 tmp=F.get(i,k);
+	 tmp.mul(tmp,x);
+	 tmp.mul_2si(tmp,expo);
+	 tmp.add(F.get(i,j),tmp);
+	 F.set(i,j,tmp);
+       }
+     } 
+     else {
+       for (int i=0; i<d; i++) {
+	 tmp=F.get(i,k);
+	 tmp.mul(tmp,x);
+	 tmp.mul_2si(tmp,expo);
+	 tmp.add(F.get(i,j),tmp);
+	 F.set(i,j,tmp);
+       }
+      
+       A.addmulcol_si_2exp(j,k,a,expo,l-d);
+     }
+   }
+   else 
+     A.addmulcol_si_2exp(j,k,a,expo,l);
+ }
+
+
+
 
 
  const inline void  colswap(const int j, const int k) {
@@ -557,8 +622,7 @@ template<template <class T> class MatrixT, class RT, class ZT> inline
 
 }
  
-// ***********  PENSER CAS d=0 *********************
 
-
+} // end namespace hplll
 
 #endif

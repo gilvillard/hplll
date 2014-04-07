@@ -28,6 +28,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include  "defs.h"
 #include  "mat.h"
 #include  "matpe.h"
+#include "matmixed.h"
+
+namespace hplll { 
 
 // MatrixFT pour  matrix<FP_NR<FT> > 
 // MatrixZT pour  matrix<Z_NR<ZT> >
@@ -61,6 +64,9 @@ class Lattice
   matrix<FP_NR<FT> > VR; // Difference between MatrixFT and matrix<FP_NR<FT> >  in Exp 
   vector<FP_NR<FT> > normB2; // Square norm  
 
+  FP_NR<FT> x; // For size reduction 
+
+  vector<FP_NR<FT> > toR; // Some assignment in householder_r 
 
   vector<int> structure; 
 
@@ -90,10 +96,11 @@ public:
   int householder();
   
   int hsizereduce(int kappa);
+  int decrease(int kappa);
   int seysenreduce(int kappa);
   int seysen_flag;
 
-  int hlll(long double delta);
+  int hlll(double delta, bool verbose=false);
 
   unsigned int setprec(unsigned int prec);
   unsigned int getprec();
@@ -107,19 +114,22 @@ public:
   // Not MatrixFT for the exp case 
   matrix<FP_NR<FT> > getR(); 
 
-  Lattice(ZZ_mat<ZT> A, bool forU, int reduction_method, int gchrono); 
+  Lattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0, int gchrono=0); 
 
   Lattice(matrix<FP_NR<mpfr_t> > F, ZZ_mat<ZT> A, bool forU, int reduction_method, int gchrono);
 
-  Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU, int reduction_method, int gchrono);
+  Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU=false, int reduction_method=0, int gchrono=0);
 
   Lattice(ZZ_mat<ZT> A, long t, long sigma, bool forU, int reduction_method, int gchrono); 
 
-  void init(int n, int d, bool forU, int gchrono);
+  void init(int n, int d, bool forU=false, int gchrono=0);
 
-  void put(ZZ_mat<ZT> A, long upperdim, long t, long sigma); 
+  void assign(ZZ_mat<ZT> A); 
+  void shift_assign(ZZ_mat<ZT> A,  vector<int> shift);
 
-  void mixed_put(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, long t, long sigma); 
+  void put(ZZ_mat<ZT> A, long upperdim, long t, long sigma=0); 
+
+  void mixed_put(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, long t, long sigma=0); 
 
   void shift(ZZ_mat<ZT> A, long m, long sigma); 
 
@@ -128,12 +138,18 @@ public:
   // Only in the mpfr case (when possible to change the precision)
   // *************************************************************
 
-  void isreduced(long double delta);
+  void isreduced(double delta);
   FP_NR<FT> cond();
   FP_NR<FT> tnull(int time);  // Stats nullspace 
   FP_NR<FT> energy();
 
   //~Lattice();
 };
+
+} // end namespace hplll
+
+
+#include "hlll.cc"
+
 
 #endif

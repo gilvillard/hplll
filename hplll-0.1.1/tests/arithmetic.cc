@@ -25,7 +25,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 using namespace std;
 using namespace fplll;
 
-#include "hlll.cc"
+#include "hlll.h"
+
+using namespace hplll; 
 
 int main(int argc, char *argv[])  {
  
@@ -102,7 +104,7 @@ int main(int argc, char *argv[])  {
   Lattice<integer_t, double, MatrixZT, matrix<FP_NR<double> > > B2(A,NO_TRANSFORM,DEF_REDUCTION);
   B2.hlll(delta);
   transpose(AT,B2.getbase());
-
+ 
   TT.resize(d,d+1);
   fb.open ("2_in",ios::in);
   os >> TT ;
@@ -116,7 +118,7 @@ int main(int argc, char *argv[])  {
     succeed+=1;
 
   //  -------------------- TEST i --------------------------------
-
+#ifdef HPLLL_WITH_LONG_DOUBLE
   nbtest+=1;
   cout << "     long double test" << endl; 
 
@@ -131,7 +133,6 @@ int main(int argc, char *argv[])  {
   Lattice<integer_t, long double,  MatrixZT, matrix<FP_NR<long double> > > B3(A,NO_TRANSFORM,DEF_REDUCTION);
   B3.hlll(delta);
   transpose(AT,B3.getbase());
-
   TT.resize(d,d+1);
   fb.open ("3_in",ios::in);
   os >> TT ;
@@ -143,7 +144,7 @@ int main(int argc, char *argv[])  {
   }
   else 
     succeed+=1;
-
+#endif 
 
 
   //  *****************************************************  

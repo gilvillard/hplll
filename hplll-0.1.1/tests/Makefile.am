@@ -6,18 +6,18 @@ EXTRA_DIST= 416_in 2_in 3_in C1_out  C2_out C3_out  \
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
 
-#bin_PROGRAMS= main arithmetic hllltest relationstest nullspacetest 
 check_PROGRAMS = arithmetic  hllltest relationstest nullspacetest 
 
-noinst_PROGRAMS= main
+noinst_PROGRAMS= main  
 
 
 #INCLUDES = -I$(top_srcdir)/src 
 
 #Mis déjà dans le configure 
-LDADD =  -lfplll $(top_srcdir)/src/libhplll.la
+LDADD =  -lfplll -lntl #$(top_srcdir)/src/libhplll.la
 
 main_SOURCES=main.cc 
+
 
 arithmetic_SOURCES=arithmetic.cc  
 

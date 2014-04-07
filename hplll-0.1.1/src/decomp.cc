@@ -25,11 +25,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef HPLLL_DECOMP_CC
 #define HPLLL_DECOMP_CC
 
-#include "decomp.h"
+
+namespace hplll {
 
 // ********   ATTENTION   **********************
 //
-// Nullity test ? Especially with long double ? 
+// Nullity test ? Especially with longdouble ? 
 //
 // Should be full rank on the left 
 //
@@ -66,7 +67,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 // Difference with decompz.cc : computations ans tests on the residue Y 
 
 template<class RT, class ZT, class FT, class MatrixRT, class MatrixZT, class MatrixFT> int  
-Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::decomp(long double gamma, long int targetdim, long int targetsize=LONG_MAX) { 
+Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::decomp(double gamma, long int targetdim, long int targetsize) { 
 
   // Verbose 
   //cout << "Direct mpfr (floating point) FGAS decomposition ...."  << endl;
@@ -144,7 +145,7 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::decomp(long double gamma, long i
 	cout << " **** #tests = " << nblov << "  Anomaly: the RT precision seems exhausted" << endl; 
 	cout << "      Max residue component < "; 
 	r1.print(); cout << " for epsilon = "; epsilon.print(); cout << endl;
-
+	
 	return -1;
       }
     } // end heuristic on residue with dec 
@@ -162,6 +163,7 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::decomp(long double gamma, long i
 
   while (true) {
 
+
     nblov++;
      
     if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl;  
@@ -175,6 +177,12 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::decomp(long double gamma, long i
 	r1.abs(Y.get(d-ldim-1,j));
 	if (r1.cmp(maxY) > 0) maxY=r1;
       } 
+
+
+      //if (maxY.cmp(epsilon) < 0) r1=0.0; // Mer  9 oct 2013 09:35:24 CEST when all relations are found 
+                                     // at the same iteration 
+      //else r1.div(maxY,maxYold);
+
       r1.div(maxY,maxYold);
       tmp1=1.0;  // For the dummy test below 
       
@@ -189,16 +197,17 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::decomp(long double gamma, long i
     } 
     // tmp1 and r1 kept for the nextcoming test 
 
-
+   
     // New dimension test for the lattice component 
     // ******************************************** 
  
     // Heuristic test,  purely input data dependent (no link with the FT précision?)  
     // Anyway, problem here detected later: the "relation" will not be a relation 
     
-   
+
     if ( (r1.cmp(confidence_gap) < 0) || (tmp1.cmp(confidence_gap) < 0)) { 
    
+
       // We put the non-zero column at the end for respecting the decomp structure 
       if (maxh < n-ldim-1) {
     
@@ -215,9 +224,10 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::decomp(long double gamma, long i
 	// Note that the swap here is in the right rectangular part 
       }
 
-      ldim+=1;   
-           
+      ldim+=1;
+       
     }
+
 
     // Global termination test and stopping heuristics
     // ***********************************************
@@ -267,6 +277,7 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::decomp(long double gamma, long i
     if (relation_bound > targetsize) {
       cout << " **** No relation less than " 
            << targetsize << " bits found" << endl;
+
       return -1;
     }
 
@@ -281,6 +292,8 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::decomp(long double gamma, long i
 	  if (r2.cmp(r1) > 0) r1=r2;
 	} 
 
+     
+
       // keep r1 here 
       // Heuristic detection of exhaustion of precision 
       // ----------------------------------------------
@@ -288,7 +301,7 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::decomp(long double gamma, long i
      
       if (epsilon.cmp(r1) > 0) {
 
-	// ICI 
+	 
 	cout << " **** #tests = " << nblov << "  Anomaly: the RT precision seems exhausted" << endl; 
 	cout << "      Max residue component < "; 
 	r1.print(); cout << " for epsilon = "; epsilon.print(); cout << endl;
@@ -308,13 +321,13 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::decomp(long double gamma, long i
       
 	cout << " **** #tests = " << nblov << "  Anomaly: the RT precision may be exhausted" << endl; 
 	cout << "      Bit size of U > " << l << endl; 
+
 	return -1;
 
       }
 
     } // end heuristic check dec==0
     
-
     // Swap position search in the left square part 
     // ******************************************** 
 
@@ -339,6 +352,8 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::decomp(long double gamma, long i
 
     if (maxh<d-ldim-1) {
 
+      
+
       F.colswap(maxh,maxh+1);
       W.colswap(maxh,maxh+1);
       
@@ -349,6 +364,7 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::decomp(long double gamma, long i
       if (dec > 0) 
 	Y.rowswap(maxh-dec,maxh+1-dec);
 
+      
       // Restricted to the left part, right part below in the else   
       for (j=maxh; j<d-ldim; j++) hsizereduce(j);   // Householder implicitly computed 
 
@@ -921,7 +937,7 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::init(int d, int n, bool transfor
 
   shiftU = 0;
 
-  shiftepsilon=n+8;  // heuritic to check 
+  shiftepsilon=n+200;  // heuritic to check 
 
   mpfr_set_default_prec(100); // Temporary 
   FP_NR<mpfr_t> r1, r2, ee;
@@ -947,7 +963,7 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::init(int d, int n, bool transfor
 
 // Construction 
 template<class RT, class ZT, class FT, class MatrixRT, class MatrixZT, class MatrixFT>  
-Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::Fgas(MatrixRT Finput, bool transform, long setprec, long int inputdec=0) {
+Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::Fgas(MatrixRT Finput, bool transform, long setprec, long int inputdec) {
 
   d=Finput.getRows();
   n=Finput.getCols();
@@ -974,7 +990,7 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::Fgas(MatrixRT Finput, bool trans
 }
 
 template<class RT, class ZT, class FT, class MatrixRT, class MatrixZT, class MatrixFT>  
-Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::Fgas(MatrixRT Finput, MatrixRT res, bool transform, long setprec, long int inputdec=0) {
+Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::Fgas(MatrixRT Finput, MatrixRT res, bool transform, long setprec, long int inputdec) {
 
   d=Finput.getRows();
   n=Finput.getCols();
@@ -1053,6 +1069,7 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::set(MatrixRT Finput, MatrixRT re
 
 }
 
+} // end namespace hplll
 
 
 #endif

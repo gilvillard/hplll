@@ -24,6 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef HPLLL_MIXEDCOL_H
 #define HPLLL_MIXEDCOL_H
 
+namespace hplll {
 
 template<class RT, class ZT> struct mixed_col{
   int dimRT;
@@ -31,5 +32,7 @@ template<class RT, class ZT> struct mixed_col{
   RT* colRT; 
   ZT* colZT; 
   } ;
+
+} // end namespace hplll
 
 #endif 

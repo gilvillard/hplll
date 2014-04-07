@@ -25,7 +25,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define HPLLL_MATPE_H
 
 #include "defs.h"
-#include "matmixed.h" 
+#include "mixed-col.h" 
+
+//#include "matmixed.h" 
+
+namespace hplll {
 
 // ******************************************************************
 // Begin matrix exp class  
@@ -134,6 +138,7 @@ public:
     }
   };
 
+#ifdef HPLLL_WITH_LONG_DOUBLE
   inline void  set(int i, int j, long double x) { 
 
     int tmpexp,d; 
@@ -157,6 +162,7 @@ public:
 	M[j][i]=ldexpl(M[j][i],d);
     }
   };
+#endif 
 
   // Juste un élement ponctuellement, attention (coût) change aligne toute la colonne 
   // à éviter donc sans doute ? 
@@ -293,6 +299,7 @@ template<>  inline void MatrixPE<double,dpe_t>::subcol(const int j, const int k,
     }
   };
   
+#ifdef HPLLL_WITH_LONG_DOUBLE
 template<>  inline void MatrixPE<long double,ldpe_t>::subcol(const int j, const int k, const int l)  {    
 
     if (l != 0) {
@@ -313,6 +320,7 @@ template<>  inline void MatrixPE<long double,ldpe_t>::subcol(const int j, const 
       }
     }
   };
+#endif 
 
   // en place de la matrice elle-même addcol col j := colj + col k 
   // On ne tient pas compte de ce qu'il y a par ailleurs dans la colonne cible 
@@ -321,6 +329,7 @@ template<>  inline void MatrixPE<double,dpe_t>::addcol(const int j, const int k,
  
     if (l != 0) {
 
+
       double* v=&M[j][0];
       double* w=&M[k][0];
 
@@ -328,22 +337,27 @@ template<>  inline void MatrixPE<double,dpe_t>::addcol(const int j, const int k,
       d=exp[j]-exp[k];
 
       if (d==0) {
+
 	for (i=0; i< l; i++) 
 	  v[i]+=w[i];
+
       }
-      else if (d >=0) {
+      else if (d >0) {
 	for (i=0; i< l; i++) 
 	  v[i]+= ldexp(w[i],-d);
       }
       else {
+	
 	for (i=0; i< l; i++) 
 	  v[i] = ldexp(v[i],d) + w[i];
+ 
 	exp[j]=exp[k];
       }
     }
 
   };
 
+#ifdef HPLLL_WITH_LONG_DOUBLE
 template<>  inline void MatrixPE<long double,ldpe_t>::addcol(const int j, const int k, const int l)  {     // j < k 
  
     if (l != 0) {
@@ -370,7 +384,7 @@ template<>  inline void MatrixPE<long double,ldpe_t>::addcol(const int j, const 
     }
 
   };
-
+#endif 
 
 
   // Vector operation :  fma, this col j := w - z*a  à partir de la ligne k 
@@ -421,15 +435,16 @@ template<>  inline void MatrixPE<double,dpe_t>::fmasub(const int j, const int k,
 	else {
 	  double pp;     // double vs long double 
 	  pp=pow(2.0,d);
-	  for (i=0; i<nmax; i++)  
+
+	  for (i=0; i<nmax; i++)  {
 	    //v[i]=ldexp(w[i],d)-manta*z[i];
 	    v[i]=pp*w[i]-manta*z[i];
-
+	  }
           // Attention haut de la colonne aussi, cas général 
           double* v = &M[j][0];
 	  for (i=0; i<k; i++)   
 	    v[i]=pp*v[i];
-
+	  
 	  exp[j]=expprod; 
 	}
     
@@ -437,7 +452,7 @@ template<>  inline void MatrixPE<double,dpe_t>::fmasub(const int j, const int k,
     } // nmax != 0
   };
 
-
+#ifdef HPLLL_WITH_LONG_DOUBLE
 template<>  inline void MatrixPE<long double,ldpe_t>::fmasub(const int j, const int k,  
 		     const colexp<long double> wcol, const colexp<long double> zcol, const FP_NR<ldpe_t> a, const int nmax) {
 
@@ -494,7 +509,7 @@ template<>  inline void MatrixPE<long double,ldpe_t>::fmasub(const int j, const 
     } // nmax != 0
  
   };
-
+#endif 
 
 
 
@@ -530,6 +545,7 @@ template<>  inline void MatrixPE<double,dpe_t>::set(int i, int j, FP_NR<dpe_t> x
     }
   };
 
+#ifdef HPLLL_WITH_LONG_DOUBLE
 template<>  inline void MatrixPE<long double,ldpe_t>::set(int i, int j, FP_NR<ldpe_t> xdpe) { 
 
     int tmpexp,d; 
@@ -558,7 +574,7 @@ template<>  inline void MatrixPE<long double,ldpe_t>::set(int i, int j, FP_NR<ld
 	M[j][i]=ldexpl(M[j][i],d);
     }
   };
-
+#endif 
   // Accès aux éléments 
 
 template<>  inline  FP_NR<dpe_t>  MatrixPE<double,dpe_t>::get(int i, int j) { 
@@ -572,6 +588,7 @@ template<>  inline  FP_NR<dpe_t>  MatrixPE<double,dpe_t>::get(int i, int j) {
 
   }
 
+#ifdef HPLLL_WITH_LONG_DOUBLE
 template<>  inline  FP_NR<ldpe_t>  MatrixPE<long double, ldpe_t>::get(int i, int j) { 
 
     FP_NR<ldpe_t> x;
@@ -582,18 +599,19 @@ template<>  inline  FP_NR<ldpe_t>  MatrixPE<long double, ldpe_t>::get(int i, int
     return x;
 
   }
+#endif 
 
 template<>  inline FP_NR<dpe_t>   MatrixPE<double, dpe_t>::get_non_normalized(int i, int j) {
 
     FP_NR<dpe_t> x;
     DPE_MANT(x.getData()) = M[j][i];
     DPE_EXP(x.getData()) = exp[j];
-    //dpe_normalize (x.getData());
     
     return x;
 
   }
 
+#ifdef HPLLL_WITH_LONG_DOUBLE
 template<>  inline FP_NR<ldpe_t>   MatrixPE<long double, ldpe_t>::get_non_normalized(int i, int j) { // voir double ou long double 
 
     FP_NR<ldpe_t> x;
@@ -604,6 +622,7 @@ template<>  inline FP_NR<ldpe_t>   MatrixPE<long double, ldpe_t>::get_non_normal
     return x;
 
   }
+#endif 
 
   // subcol col j := colj - a* col k 
 
@@ -636,6 +655,7 @@ template<>  inline void MatrixPE<double,dpe_t>::submulcol(const int j, const int
     }
   };
 
+#ifdef HPLLL_WITH_LONG_DOUBLE
 template<>  inline void MatrixPE<long double,ldpe_t>::submulcol(const int j, const int k,  const  FP_NR<ldpe_t> a, const int l)  {     // j < k 
  
     if (l != 0) {
@@ -664,7 +684,7 @@ template<>  inline void MatrixPE<long double,ldpe_t>::submulcol(const int j, con
       }
     }
   };
-
+#endif 
 
 
 // Normalisation au sens dpe 
@@ -705,7 +725,7 @@ template<>  inline void MatrixPE<double,dpe_t>::normalize(int j, int nmax)  {
   
 };
 
-
+#ifdef HPLLL_WITH_LONG_DOUBLE
 template<>  inline void MatrixPE<long double,ldpe_t>::normalize(int j, int nmax)  {  
 
       vector<int> tmpexp(nmax);
@@ -741,6 +761,7 @@ template<>  inline void MatrixPE<long double,ldpe_t>::normalize(int j, int nmax)
     }
   
 };
+#endif 
 
 // Mise à jour de la colonne j à partir d'un vecteur de Z_NR<mpz_t>
 // On suppose qu'on remplace toute la colonne 
@@ -748,15 +769,14 @@ template<>  inline void MatrixPE<long double,ldpe_t>::normalize(int j, int nmax)
 template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, Z_NR<mpz_t>* b, int beg, int l) {  
 
   if (l !=0) {
-    int maxexp=INT_MIN;
+    long maxexp=INT_MIN;
     vector<long> tmpexp(beg+l);
 
     for (int i=beg; i<beg+l; i++) {
 
       M[j][i]=mpz_get_d_2exp (&tmpexp[i], b[i].getData());
-  
-      if (tmpexp[i] > maxexp) maxexp=tmpexp[i];
 
+      maxexp=max(maxexp,tmpexp[i]);
     }
 
     exp[j]=maxexp;
@@ -767,6 +787,7 @@ template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, Z_NR<mpz_t>* b, in
   }
 };
 
+#ifdef HPLLL_WITH_LONG_DOUBLE
 template<>  inline void MatrixPE<long double,ldpe_t>::setcol(int j, Z_NR<mpz_t>* b, int beg, int l) {  
 
   if (l !=0) {
@@ -794,6 +815,7 @@ template<>  inline void MatrixPE<long double,ldpe_t>::setcol(int j, Z_NR<mpz_t>*
     }
   }
 };
+#endif 
 
 // Mise à jour de la colonne j à partir d'un vecteur de FP_NR<mpfr_t>
 // On suppose qu'on remplace toute la colonne 
@@ -819,6 +841,7 @@ template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, FP_NR<mpfr_t>* b, 
   }
 };
 
+#ifdef HPLLL_WITH_LONG_DOUBLE
 template<>  inline void MatrixPE<long double, ldpe_t>::setcol(int j, FP_NR<mpfr_t>* b, int beg, int l) {  
 
   if (l !=0) {
@@ -839,7 +862,7 @@ template<>  inline void MatrixPE<long double, ldpe_t>::setcol(int j, FP_NR<mpfr_
     }
   }
 };
-
+#endif 
 
 
   // Mise à jour de la colonne j à partir d'un vecteur de FP_NR<dpe_t>
@@ -923,6 +946,7 @@ template<>  inline void MatrixPE<double, dpe_t>::setcol(int j, const mixed_col<F
 
 }; 
 
+#ifdef HPLLL_WITH_LONG_DOUBLE
 // From mixed matrices 
 template<>  inline void MatrixPE<long double, ldpe_t>::setcol(int j, const mixed_col<FP_NR<mpfr_t>, Z_NR<mpz_t> > c, int beg, int l) {
 
@@ -980,9 +1004,9 @@ template<>  inline void MatrixPE<long double, ldpe_t>::setcol(int j, const mixed
   } // non zero length 
 
 }; 
+#endif 
 
-
-
+#ifdef HPLLL_WITH_LONG_DOUBLE
 template<> inline void  MatrixPE<long double, ldpe_t>::setcol(int j, const FP_NR<ldpe_t>* vd, int nmax) {   
 
   long double* v = &M[j][0];
@@ -1008,7 +1032,7 @@ template<> inline void  MatrixPE<long double, ldpe_t>::setcol(int j, const FP_NR
   }  // Longueur !=0 
 
 };
-
+#endif 
 
   // Vector operation :  div, this col := w/a  à partir de la ligne k pour une loingueur nmax 
   // on écrase tout le reste ds la colonne destination
@@ -1032,6 +1056,7 @@ template<> inline void  MatrixPE<double,dpe_t>::div(const int j, const int k,
     }
   };
 
+#ifdef HPLLL_WITH_LONG_DOUBLE
 template<> inline void  MatrixPE<long double, ldpe_t>::div(const int j, const int k,  
 				    const colexp<long double> wcol, const FP_NR<ldpe_t> a, const int nmax)  {
 
@@ -1051,7 +1076,7 @@ template<> inline void  MatrixPE<long double, ldpe_t>::div(const int j, const in
     }
   };
 
-
+#endif 
 
 // ******************************************************************
 // matrix operations 
@@ -1084,7 +1109,7 @@ template<> inline void fp_norm(FP_NR<dpe_t>& nn, const colexp<double> vcol, cons
   }
 }; 
 
-
+#ifdef HPLLL_WITH_LONG_DOUBLE
 template<> inline void fp_norm(FP_NR<ldpe_t>& nn, const colexp<long double> vcol, const int nmax)
 {
 
@@ -1106,7 +1131,7 @@ template<> inline void fp_norm(FP_NR<ldpe_t>& nn, const colexp<long double> vcol
 
   }
 }; 
-
+#endif 
  // Norme_2 au carré
  // Sans doute comme implanté ici pas très précis ? 
 
@@ -1133,6 +1158,7 @@ template<> inline void fp_norm_sq(FP_NR<dpe_t>& nn, const colexp<double> vcol, c
     }
 }; 
 
+#ifdef HPLLL_WITH_LONG_DOUBLE
 template<> inline void fp_norm_sq(FP_NR<ldpe_t>& nn, const colexp<long double> vcol, const int nmax) 
 {
 
@@ -1150,6 +1176,7 @@ template<> inline void fp_norm_sq(FP_NR<ldpe_t>& nn, const colexp<long double> v
       ldpe_normalize (nn.getData());
     }
 }; 
+#endif 
 
 // Scalar product 
 template<class T, class DPET> inline void scalarprod(FP_NR<DPET>& nn, const colexp<T> vcol, const colexp<T> wcol, const int n);
@@ -1176,6 +1203,7 @@ template<> inline void scalarprod(FP_NR<dpe_t>& nn, const colexp<double> vcol, c
 };
 
 
+#ifdef HPLLL_WITH_LONG_DOUBLE
 template<> inline void scalarprod(FP_NR<ldpe_t>& nn, const colexp<long double> vcol, const colexp<long double> wcol, const int nmax) { 
 
     long double* v = vcol.col;
@@ -1195,7 +1223,7 @@ template<> inline void scalarprod(FP_NR<ldpe_t>& nn, const colexp<long double> v
       ldpe_normalize (nn.getData());
     }
 };
-
+#endif 
 // Print in maple format 
 
 template<class T, class DPET> void print2maple(MatrixPE<T,DPET> M, int n, int d) 
@@ -1234,5 +1262,9 @@ cout << "Matrix([";
   cout << "]);" << endl;
 
   };
+
+
+} // end namespace hplll
+
 
 #endif

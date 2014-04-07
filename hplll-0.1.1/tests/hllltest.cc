@@ -23,11 +23,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "fplll.h"
 
-
 using namespace std;
 using namespace fplll;
 
-#include "hlll.cc"  
+#include "hlll.h"  
+
+using namespace hplll; 
 
 int main(int argc, char *argv[])  {
  
@@ -63,7 +64,7 @@ int main(int argc, char *argv[])  {
 
   d=100;
   nbbits=80;
-  cout << "     hlll test, dim = " << d <<", " << nbbits << " bits, ldpe vs exp-dpe " << endl; 
+  cout << "     hlll test, dim = " << d <<", " << nbbits << " bits, dpe vs exp-dpe " << endl; 
 
   delta=0.99;
 
@@ -73,7 +74,7 @@ int main(int argc, char *argv[])  {
   transpose(A,AT);
 
   
-  Lattice<integer_t, ldpe_t, MatrixZT, matrix<FP_NR<ldpe_t> > > B1(A,NO_TRANSFORM,DEF_REDUCTION);
+  Lattice<integer_t, dpe_t, MatrixZT, matrix<FP_NR<dpe_t> > > B1(A,NO_TRANSFORM,DEF_REDUCTION);
   B1.hlll(delta);
   
   transpose(AT,B1.getbase());
@@ -102,6 +103,7 @@ int main(int argc, char *argv[])  {
   else 
     succeed+=1;
 
+#ifdef HPLLL_WITH_LONG_DOUBLE
   //  -------------------- TEST i --------------------------------
   nbtest+=1;
 
@@ -135,6 +137,7 @@ int main(int argc, char *argv[])  {
   }
   else 
     succeed+=1;
+#endif 
 
 //  -------------------- TEST i --------------------------------
   nbtest+=1;

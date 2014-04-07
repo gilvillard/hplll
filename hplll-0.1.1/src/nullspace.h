@@ -20,12 +20,17 @@ along with the hplll Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-
-#include "decompz.cc"
+#include "hlll.h" 
+#include "decomp.h"
+#include "decompz.h"
+#include "matmixed.h"
+#include "l1.h"
+#include "relations.h"
 
 #ifndef HPLLL_NULLSPACE_H
 #define HPLLL_NULLSPACE_H
 
+namespace hplll { 
 
 // Full rank is generally assumed 
 // ******************************
@@ -44,6 +49,11 @@ nullspace_direct_decomp(ZZ_mat<ZT>& C, ZZ_mat<ZT> A);
 // Not templated w.r.t. other matrices for the moment at this upper level 
 template<class RT, class FT, class MatrixFT> int  
 fgasgen(matrix<FP_NR<RT> >& F,  ZZ_mat<mpz_t> A, const long prec); 
+
+} // end namespace hplll
+
+
+#include "nullspace.cc"
 
 
 

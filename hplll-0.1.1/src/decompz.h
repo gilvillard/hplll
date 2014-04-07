@@ -28,6 +28,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include  "mat.h"
 #include  "matpe.h"
 
+namespace hplll { 
+
 // See links with decomp.h 
 
 // MatrixZT pour  matrix<Z_NR<ZT> >    F, W 
@@ -76,7 +78,7 @@ public:
   int hsizereduce(int kappa);
   
   // Main decomposition function 
-  int decomp(long double gamma, long int targetdim);
+  int decomp(double gamma, long int targetdim);
 
 
   // A VOIR POUR F ????????????????
@@ -95,7 +97,7 @@ public:
   // Attention !!! Put back the previous one if needed since 
   // this is done through  mpfr_set_default_prec(prec); 
 
-  ZFgas(ZZ_mat<ZT> Finput, int forUV, long int dec);  
+  ZFgas(ZZ_mat<ZT> Finput, int forUV, long int dec=0);  
 
   void init(int d, int n, int forUV, long int dec);
 
@@ -108,6 +110,12 @@ public:
 
   unsigned int setprec_internal(long prec);
 };
+
+
+} // end namespace hplll
+
+
+#include "decompz.cc"
 
 #endif
 

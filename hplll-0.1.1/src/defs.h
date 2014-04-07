@@ -32,9 +32,17 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <mpfr.h>
 #include <fplll.h>
 
-#include "ldpe.h"
-#include "nr-ld.cpp"
+#ifndef __CYGWIN__
+#define HPLLL_WITH_LONG_DOUBLE
+#endif
 
+#ifdef FPLLL_WITH_LONG_DOUBLE 
+#define HPLLL_WITH_LONG_DOUBLE  // Long double in hplll require long double in fplll
+#include "ldpe.h"
+#endif
+#include "nr-ld.cpp"  // Should be cleaned and in part in the test above 
+
+namespace hplll { 
 
 #define DEF_REDUCTION 0
 #define SEYSEN_REDUCTION 1 
@@ -43,19 +51,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define NO_TRANSFORM 0
 #define HLLL 1
 #define FPLLL 0 
+#define L1 2
 
 //#define HPLLL_VERBOSE(x) {if cout << x << endl;}
 
-/* #define FPLLL_BEGIN_NAMESPACE namespace fplll {
-#define FPLLL_END_NAMESPACE }
-
-FPLLL_BEGIN_NAMESPACE  */ 
 
 using namespace std;
 
 using namespace fplll;
 
+} // end namespace hplll
 
-//FPLLL_END_NAMESPACE
 
 #endif

@@ -22,17 +22,258 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 
-#include "hlll.cc" 
+#include "hlll.h" 
 
 
 #ifndef HPLLL_LEHMER_CC
 #define HPLLL_LEHMER_CC
 
+// METTRE DANS LE NAMESPACE 
+using namespace hplll; 
+
+/* ***********************************************
+
+   Generalized Lehmer LLL  
+
+   m x n  input matrix 
+
+   shift : #bits, elementary shift (step) size à la Lehmer 
+   unique shift if lsigma=0;
+
+    WITH TRUNCATION 
+
+   ********************************************** */
+
+template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
+Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) { 
+
+  // TO DO FPLLL 
+
+  if (shift == 0) { 
+    
+    Lattice<ZT, FT, MatrixZT, MatrixFT> B(A,NO_TRANSFORM,DEF_REDUCTION); 
+
+    B.hlll(delta);
+
+    C=B.getbase();
+
+  } 
+  else { 
+
+    int m,n;
+    int i,j,k;
+
+    m=A.getRows();
+    n=A.getCols();
+
+    //print2maple(A,m,n);
+
+    // Shifts to perform for every row 
+    vector<vector<int> > shifts;   
+    shifts.resize(m);
+
+    int rowbits;
+    vector<int> nbshifts; 
+    nbshifts.resize(m);
+    for (i=0; i<m; i++) nbshifts[i]=0;
+
+    int nb;
+
+    int maxnbshifts=0;
+
+    // Loop for the shifts computation 
+    for (i=0; i<m; i++) {
+
+      rowbits=size_in_bits(A(i,0));
+      for (j=1; j<n; j++) {
+	rowbits=max(rowbits,size_in_bits(A(i,j)))-1;  // -1 for invertibility at the beginning 
+      }
+
+      //cout << endl;
+
+      //cout << "row " << i << ": " << rowbits << endl; 
+
+      nbshifts[i]=rowbits/shift;
+
+      if((rowbits%shift) > 0) {
+	nbshifts[i]+=1;
+	nb=nbshifts[i];
+
+	shifts[i].resize(nb+1);
+
+	shifts[i][0]=-rowbits;
+	for (k=1; k<nb; k++)
+	  shifts[i][k]=shift;
+	shifts[i][nb]=rowbits%shift;
+	
+      }
+      else {
+	nb=nbshifts[i];
+	shifts[i].resize(nb+1);
+	
+	shifts[i][0]=-rowbits;
+	for (k=1; k<=nb; k++)
+	  shifts[i][k]=shift;
+      }
+
+      maxnbshifts=max(maxnbshifts,nbshifts[i]);
+
+      //cout << "nbshifts " << nbshifts[i] << endl;
+      //cout << "shifts " << shifts[i] << endl;
+
+    } // end shifts computation   
+
+    // Here for each row : nbshifts[i] (but the first negative one), and shifts 
+    // And maxnbshifts 
+
+    // Taille max du shift ou while 
+
+    // ----------------
+    // Main Lehmer loop 
+    // ----------------
+
+    Lattice<ZT, FT, MatrixZT, MatrixFT> Ct(A,TRANSFORM,DEF_REDUCTION);
+
+    int s; // max global nb current shift 
+
+    C.resize(m,n);
+    
+    for (i=0; i<m; i++)
+      for(j=0; j<n; j++) 
+	C(i,j)=A(i,j);
+
+    vector<int> current_shift;
+    current_shift.resize(m);
+    for (i=0; i<m; i++) current_shift[i]=shifts[i][0];
+
+    ZZ_mat<ZT> U;
+    U.resize(n,n);
+
+    ZZ_mat<ZT> T;
+    T.resize(m,n);
+
+    ZZ_mat<ZT> TT;
+    TT.resize(1,n);
+
+    for (int row = m-1; row >= 0; row--) {
+
+      for (s=1; s <= nbshifts[row]; s++) {
+	
+	//cout << " ---- " << row << endl; 
+	//cout << "current shift " << current_shift << endl; 
+ 
+	//cout << "-------------------- " <<  endl; 
+	
+	//cout << "row " << row << "   shift " << shifts[row][s] << endl; 
+	  
+	current_shift[row]+=shifts[row][s];
+	
+	//cout << "current shift " << current_shift << endl; 
+      
+	//print2maple(C,m,n);
+	   
+	// WITHOUT truncation test 
+	Ct.shift_assign(C, current_shift);
+	   
+	//print2maple(Ct.getbase(),m,n);
+	   
+	Ct.hlll(delta);
+	  
+	//	T = Ct.getbase();
+
+	// No recomputation of U 
+	//for (i=1; i<m; i++)
+	//for (j=0; j<n; j++) 
+	//  U(i-1,j)=T(i,j);
+
+	U = Ct.getU();
+
+	// Lower new C 
+	/*for (i=1; i<m; i++)
+	  for (j=0; j<n; j++) 
+	    C(i,j)=T(i,j);
+
+	// Upper new C 
+	for (j=0; j<n; j++) 
+	  TT(0,j)=C(0,j);
+
+	  matprod_in(TT,U);
+
+	for (j=0; j<n; j++) 
+	C(0,j)=TT(0,j);*/
+
+	matprod_in(C,U);
+
+
+	//print2maple(Ct.getbase(),m,n);
+
+	//print2maple(U,n,n);
+
+	//print2maple(C,m,n);
+
+
+	//atprod_in(C,Ct.getU()); // !!! Pas tout multiplier si on ne tronque pas !!! 
+	   
+	
+
+	//print2maple(Ct.getU(),m,n);
+
+    } // end on s - main Lehmer loop on the shifts 
+    
+ } // end loop on rows 
+
+    /*
+    for (s=1; s <= maxnbshifts; s++) {
+      //cout << " ----" << endl; 
+
+      //cout << "current shift " << current_shift << endl; 
+ 
+      for (int row = 0; row < m; row++) {
+
+	 if (nbshifts[row] >= s) { 
+
+	   // cout << "-------------------- " <<  endl; 
+	   //cout << "current shift " << current_shift << endl; 
+	   //cout << "row " << row << "   shift " << shifts[row][s] << endl; 
+	  
+
+	   current_shift[row]+=shifts[row][s];
+	   
+	   
+	   
+	   //print2maple(C,m,n);
+	   
+	   Ct.shift_assign(C, current_shift);
+	   
+	   
+
+	   //print2maple(Ct.getbase(),m,n);
+	   
+	   Ct.hlll(delta);
+	   
+	   matprod_in(C,Ct.getU());
+	   
+	   //print2maple(Ct.getU(),m,n);
+
+	} // end actual row shift 
+
+      } // end loop on rows 
+
+    } // end on s - main Lehmer loop on the shifts 
+    */
+
+  } // end case shift <> 0 
+
+
+  return 0;
+
+}
+
 
 
 /* ***********************************************
 
-   Lehmer like LLL nullspace 
+   Lehmer like LLL  
 
    (d+m) x n  input matrix 
 
@@ -60,6 +301,8 @@ lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int d, int lsigma=0) {
   else { 
     int n,m;
     int i=0,j=0;
+
+    
 
     m=A.getRows()-d;
     n=A.getCols();
@@ -117,7 +360,8 @@ lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int d, int lsigma=0) {
     // Main Lehmer loop 
     // ----------------
     
-    cout << "shifts " << shifts << endl; 
+    // ICI 
+    //cout << "shifts " << shifts << endl; 
 
     ZZ_mat<ZT> BL;
     BL.resize(d+m,n);
@@ -125,19 +369,20 @@ lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int d, int lsigma=0) {
 
     for (s=0; s<=nbshifts; s++)  {
       
-      cout << "---- " << s << endl; 
+      //cout << "-------------------- " << s << endl; 
 
       set(BL,B);
 
       current_shift+=shifts[s];
       //cout << "current shift " << current_shift << endl; 
 
+      //print2maple(BL,d+m,n);
+
       shift_in(BL, current_shift, d);
 
       //print2maple(BL,d+m,n);
 
-      Bt.put(BL, d, lsigma+n); // Heuristic 
-     
+      Bt.put(BL, d, lsigma+8); // Heuristic 
 
       //print2maple(Bt.getbase(),d+m,n);
       //print2maple(B,d+m,n);
@@ -146,6 +391,11 @@ lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int d, int lsigma=0) {
 
       // Required multiplication update when BL has been truncated 
       matprod_in(B,Bt.getU());
+
+      //ICI 
+      //cout << "-------- " << endl; 
+      //print2maple(Bt.getbase(), d+m,n);
+      //print2maple(B, d+m,n);
       // if not truncated on should not multiply evrything 
 
     } // End Lehmer loop 
@@ -161,5 +411,168 @@ lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int d, int lsigma=0) {
     
   return 0;
 }
+
+// No perturbation if lcond < 0 
+template<class ZT> int  
+additive_perturbation(ZZ_mat<ZT>& B, ZZ_mat<ZT> C, int lcond) { 
+
+
+  int m,n;
+  int i,j,lnorm;
+
+  Z_NR<ZT> norm;
+  Z_NR<ZT> r;
+  int rsize;
+
+  m=C.getRows();
+  n=C.getCols();
+ 
+  B.resize(m,n); // Output 
+  
+  if (lcond < 0) {
+
+    for(j=0; j<n; j++) 
+      for (i=0; i<m; i++) {
+	B(i,j)=C(i,j);
+
+      }
+  }
+  else {
+
+    for(j=0; j<n; j++)  {
+    
+      norm.mul(C(0,j),C(0,j));
+      for (i=1; i<m; i++)
+	norm.addmul(C(i,j),C(i,j));
+	
+      lnorm = size_in_bits(norm);
+	
+      rsize = lnorm/2-lcond+1; 
+
+      if (rsize <= 0) {
+	for (i=0; i<m; i++) 
+	  B(i,j)=C(i,j);
+	}
+      else {
+	for (i=0; i<m; i++) {
+	  r.randb(rsize);
+	  B(i,j).add(r,C(i,j));
+	}
+      }
+    }
+
+  } 
+
+  return 0;
+}
+
+template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
+newlehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift, double delta) { 
+
+
+  int m,n;
+  int i,j;
+
+  m=A.getRows();
+  n=A.getCols();
+ 
+  C.resize(m,n);    // Basis that is being reduced 
+  
+  for (i=0; i<m; i++)
+    for(j=0; j<n; j++) 
+      C(i,j)=A(i,j);
+  
+
+  Lattice<ZT, FT, MatrixZT, MatrixFT> Bt(A,TRANSFORM,DEF_REDUCTION);
+
+  ZZ_mat<ZT> B;   // Temporary basis that is perturb for local reduction 
+  B.resize(m,n);
+
+  Z_NR<ZT> r;
+
+
+  // Descending Lehmer loop 
+  // ----------------------
+
+  int bb;
+  int nblov_tot=0;
+
+  bb=maxbitsize(C);
+
+  for (int K=0; K < bb/shift+2; K++) {
+  
+
+    // ICI 
+    cout << "---------- " << endl; 
+ 
+    //additive_perturbation<ZT>(B,C,lcond);
+
+    /*for (i=0; i<m; i++) 
+      for (j=0; j<n; j++) {
+	r.randb(bb-K*shift);
+	B(i,j).add(r,C(i,j));
+	}*/
+
+    for (i=0; i<m; i++) 
+      for (j=0; j<n; j++) 
+	  B(i,j)=C(i,j);
+
+    if ((bb-K*shift) > 0) 
+      for (i=1; i<m; i++) {
+	r.randb(bb-K*shift);
+	B(i,i-1).add(r,B(i,i-1));
+      }
+
+    cout << "perturb bits: " <<  bb-K*shift << endl; 
+
+    //print2maple(C,10,10);
+
+    //print2maple(C,m,n);
+    //print2maple(B,m,n);
+
+    //ICI 
+    //Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest1(B,NO_TRANSFORM,DEF_REDUCTION);
+    //Btest1.cond();
+
+    Bt.assign(B);
+  
+    Bt.hlll(delta);
+    cout << "nblov " << Bt.nblov << endl;
+    nblov_tot+= Bt.nblov;
+    cout << "nblov_tot " << nblov_tot << endl;
+
+    matprod_in(C,Bt.getU());
+
+    int sc;
+    sc=maxbitsize(C);
+    cout << "size C " << sc  << endl;
+    
+    //print2maple(Bt.getU(),n,n);
+
+
+    //bb=maxbitsize(C) ;
+
+    //cout << "old bb -bb " << oldbb-bb << endl;
+    //cout << "bit size C " << bb << endl;
+
+  
+   
+    //ICI 
+    //Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest2(C,NO_TRANSFORM,DEF_REDUCTION);
+    //cc=Btest2.cond();
+
+    //cout << oldcc << "   " << cc << endl; 
+    
+    //if (Bt.nblov == n-1) K=KK; // Break  
+
+    //print2maple(C,m,n);
+
+  } // end Lehmer loop 
+
+
+  return 0;
+}
+
+
 
 #endif 

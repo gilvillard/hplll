@@ -20,10 +20,13 @@ along with the hplll Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#include "decomp.cc"
 
 #ifndef HPLLL_RELATIONS_H
 #define HPLLL_RELATIONS_H
+
+#include "decomp.h" 
+
+namespace hplll { 
 
 // ********   ATTENTION   ******************************
 //
@@ -50,10 +53,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 template<class RT,  class FT, class MatrixFT>  int relations_hjls(ZZ_mat<mpz_t>& C, const matrix<FP_NR<RT> >& A, long nbrel, long setprec); 
 
 
+} // end namespace hplll
 
 
-
-
+#include "relations.cc"
 
 
 #endif 

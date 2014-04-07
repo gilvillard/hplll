@@ -25,7 +25,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef HPLLL_DECOMPZ_CC
 #define HPLLL_DECOMPZ_CC
 
-#include "decompz.h"
+
+namespace hplll { 
 
 // ********   ATTENTION   **********************
 
@@ -64,7 +65,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 // ******     Computation of U instead of V for the indirect real case 
 
 template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
-ZFgas<ZT, FT, MatrixZT, MatrixFT>::decomp(long double gamma, long int targetdim) { 
+ZFgas<ZT, FT, MatrixZT, MatrixFT>::decomp(double gamma, long int targetdim) { 
 
   // Verbose 
   //cout << "Direct mpfr (floating point) FGAS decomposition ...."  << endl;
@@ -115,6 +116,10 @@ ZFgas<ZT, FT, MatrixZT, MatrixFT>::decomp(long double gamma, long int targetdim)
  
   while (true) {
 
+    // ICI 
+    //cout << "------------------" << endl; 
+    //print2maple(F,d,n);
+
     nblov++;
 
     if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl;  
@@ -150,7 +155,7 @@ ZFgas<ZT, FT, MatrixZT, MatrixFT>::decomp(long double gamma, long int targetdim)
       }
 
       ldim+=1;   
-           
+     
     }
 
     // Global termination test and stopping heuristics
@@ -219,7 +224,6 @@ ZFgas<ZT, FT, MatrixZT, MatrixFT>::decomp(long double gamma, long int targetdim)
 
     if (maxh<d-ldim-1) {
       
-      
       F.colswap(maxh,maxh+1);
 
       if (transf)      
@@ -241,6 +245,9 @@ ZFgas<ZT, FT, MatrixZT, MatrixFT>::decomp(long double gamma, long int targetdim)
       // rentre dans la zone de recherche 
 
       for (j=d-ldim; j<n-ldim; j++) hsizereduce(j);   // Householder implicitly computed 
+
+      // ICI 
+      //print2maple(F,d,n);
 
       maxh=d-ldim;
       tmp1.abs(R.get(d-ldim-1,d-ldim));
@@ -271,6 +278,7 @@ ZFgas<ZT, FT, MatrixZT, MatrixFT>::decomp(long double gamma, long int targetdim)
 
     }  // End else right part 
     
+
   } // End main iteration loop 
 
  return 0; 
@@ -723,7 +731,7 @@ ZFgas<ZT, FT, MatrixZT, MatrixFT>::init(int d, int n, int forUV, long int inputd
 
 // Construction 
 template<class ZT, class FT, class MatrixZT, class MatrixFT>  
-ZFgas<ZT, FT, MatrixZT, MatrixFT>::ZFgas(ZZ_mat<ZT> Finput, int forUV, long int inputdec=0) {
+ZFgas<ZT, FT, MatrixZT, MatrixFT>::ZFgas(ZZ_mat<ZT> Finput, int forUV, long int inputdec) {
 
   d=Finput.getRows();
   n=Finput.getCols();
@@ -740,6 +748,9 @@ ZFgas<ZT, FT, MatrixZT, MatrixFT>::ZFgas(ZZ_mat<ZT> Finput, int forUV, long int 
       } 
 
 }
+
+
+} // end namespace hplll
 
 
 #endif
