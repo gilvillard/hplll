@@ -1,9 +1,9 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.61)
+AC_PREREQ([2.69])
 AC_CONFIG_MACRO_DIR([m4])
-AC_INIT(hplll,0.1.1)
+AC_INIT([hplll],[0.1.1])
 AC_CONFIG_SRCDIR([src/hlll.cc])
 AM_INIT_AUTOMAKE
 
@@ -12,27 +12,21 @@ AM_MAINTAINER_MODE(enable)
 
 AC_CONFIG_HEADER(config.h)
 
-DEFAULT_CFLAGS="-O2 -Wall"
+DEFAULT_CFLAGS=" -O2 -Wall"
 
 CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
 CXXFLAGS=${CXXFLAGS:-$DEFAULT_CFLAGS}
 
 #AC_DISABLE_SHARED
-AC_PROG_LIBTOOL
+LT_INIT
 
 AC_PROG_INSTALL
 
 # Checks for programs.
-AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_MAKE_SET
-
-# Checks for libraries.
-AC_CHECK_LIB(gmp, __gmpz_init, , [AC_MSG_ERROR(
-[GNU MP not found, see http://gmplib.org])])
-AC_CHECK_LIB(mpfr, mpfr_add, , [AC_MSG_ERROR(
-[MPFR not found, see http://www.mpfr.org])])
 
 AC_ARG_WITH(fplll,
    [  --with-fplll=DIR          FPLLL install directory ], [
@@ -54,6 +48,14 @@ AC_ARG_WITH(gmp,
        LDFLAGS="$LDFLAGS -L$withval/lib"
        gmp_lib_path="$withval/lib"
    ])
+
+
+# Checks for libraries.
+AC_CHECK_LIB(gmp, __gmpz_init, , [AC_MSG_ERROR(
+[GNU MP not found, see http://gmplib.org])])
+AC_CHECK_LIB(mpfr, mpfr_add, , [AC_MSG_ERROR(
+[MPFR not found, see http://www.mpfr.org])])
+
 
 
 AC_ARG_ENABLE(omp, 
@@ -83,15 +85,25 @@ AC_CHECK_LIB(gmp, __gmp_get_memory_functions, , [AC_MSG_ERROR(
 AC_CHECK_LIB(mpfr, mpfr_fms, , [AC_MSG_ERROR(
 [MPFR version too old, need >= 2.3.0, see http://www.mpfr.org])])
 
+AC_LANG(C++)
 SAVED_LDFLAGS=$LDFLAGS
 LDFLAGS="$LDFLAGS -lfplll" 
-echo "checking for cputime in -lfplll..."
-AC_LINK_IFELSE(
- [AC_LANG_PROGRAM([#include <fplll.h>],
-   [cputime()])],
- [TEST_LIBS="$TEST_LIBS -lfplll"] [[echo "yes"]],
- [AC_MSG_ERROR([FPLLL not found, see http://perso.ens-lyon.fr/damien.stehle/fplll])])
+#echo "checking for cputime in -lfplll... "  # -n or \c 
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <fplll.h>]], [[cputime()]])],[AC_MSG_RESULT(checking for cputime in -lfplll... yes)],[AC_MSG_ERROR([FPLLL not found, see http://perso.ens-lyon.fr/damien.stehle/fplll])
+   ])
 LDFLAGS=$SAVED_LDFLAGS
+# Ne va pas car enlève le lfplll
+
+
+AC_LANG(C++)
+SAVED_LDFLAGS=$LDFLAGS
+LDFLAGS="$LDFLAGS -lntl" 
+#echo "checking for to_long in -lntl... "  # -n or \c 
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <NTL/tools.h>]], [[NTL::to_long(2)]])],[AC_MSG_RESULT(checking for to_long in -lntl... yes)],[AC_MSG_ERROR([NTL not found, see http://www.shoup.net/ntl])
+   ])
+LDFLAGS=$SAVED_LDFLAGS
+# Ne va pas car enlève le lntl
+
 
 AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile])
 AC_OUTPUT

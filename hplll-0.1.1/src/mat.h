@@ -27,6 +27,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "defs.h"
 #include "mixed-col.h"
 
+namespace hplll { 
+
 // ******************************************************************
 // Begin matrix class  
 // ******************************************************************
@@ -220,8 +222,10 @@ public:
     T* v=getcol(j);
     T* w=getcol(k);
 
-    for (int i=0; i< l; i++) 
-      v[i].add( v[i], w[i]);
+    for (int i=l-1; i>=0; i--) {
+      v[i].add(v[i], w[i]);
+    }
+
   }
 
   // subcol col j := colj - col k 
@@ -231,7 +235,10 @@ public:
     T* v=getcol(j);
     T* w=getcol(k);
 
-    for (int i=0; i< l; i++) v[i].sub( v[i], w[i]);
+    for (int i=0; i< l; i++) {
+      v[i].sub(v[i], w[i]);
+    }
+
 
   }
   
@@ -241,8 +248,40 @@ public:
     T* v=getcol(j);
     T* w=getcol(k);
 
-    for (int i=0; i< l; i++) v[i].submul(a,w[i]);
+    for (int i=0; i< l; i++) 
+      v[i].submul(a,w[i]);
 
+  }
+
+
+// subcol col j := colj - a* col k 
+  inline void addmulcol_si(const int j, const int k,  const long a, const int l)  {     // j < k 
+ 
+    T* v=getcol(j);
+    T* w=getcol(k);
+
+    for (int i=0; i< l; i++) 
+      v[i].addmul_si(w[i],a);
+
+  }
+
+// subcol col j := colj - a* col k 
+  inline void addmulcol_si_2exp(const int j, const int k,  const long a, const long expo, const int l)  {     // j < k 
+ 
+    T* v=getcol(j);
+    T* w=getcol(k);
+
+    T tmp;
+
+    
+    for (int i=0; i< l; i++) {
+      
+      tmp.mul_si(w[i],a);
+      tmp.mul_2si(tmp,expo);
+      
+      v[i].add(v[i],tmp);
+    }
+    
   }
   
 // addmulcol col j := colj + a* col k 
@@ -478,7 +517,7 @@ template<class T> void set(Matrix<T>& B, matrix<T> A)
 
 template<class T> void matprod(Matrix<T>& C,  Matrix<T> B, Matrix<T> U) 
 {
-
+  // ICI 
   int n,d,dres,i,j,k;
 
   n= B.GetNumRows();
@@ -496,6 +535,7 @@ template<class T> void matprod(Matrix<T>& C,  Matrix<T> B, Matrix<T> U)
       }
     }
   }
+
 
 };
 
@@ -787,7 +827,7 @@ cout << "Matrix([";
 
 // ********************************************************************
 // 
-//       TRUNCATION OF A BASIS for lift, lehmer, nullspace, recursive 
+//       TRUNCATION OF A BASIS for lift, lehmer, nullspace, L1
 //           n = m + d 
 //           Upper part specific for knapsack or nullspace   
 //           Lowerpart for the identity or the transformation matrix 
@@ -909,7 +949,7 @@ template<> void trunc_sigma(matrix<Z_NR<mpz_t> >& B, ZZ_mat<mpz_t> A, long n, lo
 
 // ********************************************************************
 // 
-//       TRUNCATION OF A BASIS for lift, lehmer, nullspace, recursive 
+//       TRUNCATION OF A BASIS for lift, lehmer, nullspace, L1
 //           Upper part d rows  n columns 
 //           Total number of rows m
 //             hence lower part m-d rows 
@@ -967,7 +1007,8 @@ template<class ZT, class MatrixZT> void trunc(MatrixZT& B, ZZ_mat<ZT> A, long d,
     for (i=0; i<d; i++)
       for (j=0; j<n; j++) {  
 	
-	B.set(i,j,A(i,j)); 
+	B(i,j)=A(i,j);
+	//B.set(i,j,A(i,j)); 
 	max2=max(max2,(long) mpz_sizeinbase(B(i,j).getData(),2));
       }
   }
@@ -1031,6 +1072,7 @@ template<class ZT, class MatrixZT> void trunc(MatrixZT& B, ZZ_mat<ZT> A, long d,
 template<class T> int maxbitsize(const ZZ_mat<T>& B);
 */
 
+// Whole matrix 
 inline  int maxbitsize(const ZZ_mat<mpz_t>& B) {
 
   int l=0;
@@ -1046,6 +1088,7 @@ inline  int maxbitsize(const ZZ_mat<mpz_t>& B) {
 
 }
 
+// Some rows 
 template<class T> 
 int maxbitsize(const ZZ_mat<T>& B, int d0, int d, int n) {
 
@@ -1095,6 +1138,6 @@ template<class T> inline void matrix_structure(vector<int>& structure, matrix<T>
 
 }
  
-
+} // end namespace hplll
 
 #endif

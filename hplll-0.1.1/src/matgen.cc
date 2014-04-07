@@ -25,6 +25,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef MATGEN_CC
 #define MATGEN_CC
 
+namespace hplll {
+
 
 /* ***********************************************
 
@@ -152,6 +154,6 @@ template<class RT> int gen3r2s7t5u(matrix<FP_NR<RT> >& B, int n, int r, int s, i
 }
 
 
-
+} // end namespace hplll
 
 #endif 

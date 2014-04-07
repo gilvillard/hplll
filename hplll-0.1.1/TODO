@@ -1,38 +1,3 @@
 
-- ldexp ou ldexpl ? 
 
-- enlever beg de setcol ?? 
-
-- matrixexp pour restarted hjls  
-
-- propre pour required fplll
-
-- vérifier deux prec différentes quand mpfr au dessus et au dessous 
-
-- mettre le check prevkappa de decompz dans decomp ? 
-
-- PGCD binaire 
-
-- test a la LLL pour arret et wrapper dans decomp entier 
-
-- affactation de matrices au lieu de transpose 
-
-- Une fonction "lattice component" ? 
-
-- comment résorber les deux householder identiques dans decomp et decompz 
-
-- Fgas could have been bothe integer and float but not so easy for 
-  implementing decomp 
-
-- gamma
-
-- mettre des Matrix<FP_NR> pour entrée de decomp ? 
-
-- pas include des cc ?? 
-
-- get R et getbase dans decomp 
-
-- à l'aide de Hermite 
-
-- wrapper pour decomp comme pour LLL ? 
 

@@ -21,13 +21,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
-#include "decomp.cc"
-#include "hlll.cc" 
-#include "nullspace.h"
 
 #ifndef HPLLL_NULLSPACE_CC
 #define HPLLL_NULLSPACE_CC
 
+namespace hplll { 
 
 // ********   ATTENTION   ****************************************
 //
@@ -50,12 +48,13 @@ nullspace_direct_decomp(ZZ_mat<ZT>& C, ZZ_mat<ZT> A) {
   long n=A.getCols();
 
   ZFgas<ZT, FT, MatrixZT, MatrixFT>F(A,TRANSFORM); 
- 
-  F.decomp(1.4142, d); 
+
+  F.decomp(1.1547005384, d); 
+  cout << "nbswaps: " << F.nblov<< endl; 
 
   // Check of nullity and location of the zero columns 
   // ------------------------------------------------- 
-
+  
   ZZ_mat<ZT> B;
   B.resize(n,d);
   transpose(B, F.getbase());
@@ -79,6 +78,8 @@ nullspace_direct_decomp(ZZ_mat<ZT>& C, ZZ_mat<ZT> A) {
       nullrows[i]=1; 
     } 
   }
+
+  //print2maple(B,n,d); 
 
   if (nullity != n-d) {
     cout << " *******  ERROR: Input matrix non-full row rank or problem with the decomposition" << endl; 
@@ -187,7 +188,9 @@ nullspace_indirect_decomp(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, long int setprec=53) {
   // Decomposition 
   // -------------
   int flag_decomp;
-  flag_decomp=F.decomp(1.4142, n-d);
+  flag_decomp=F.decomp(1.1547005384, n-d);
+  //flag_decomp=F.decomp(1.414213562, n-d);
+  cout << "Nb Lovasz tests " << F.nblov << endl; 
 
   if (flag_decomp < 0) return -1;
 
@@ -230,7 +233,7 @@ nullspace_indirect_decomp(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, long int setprec=53) {
       nullity+=1;   
   }
 
-  
+
   if (nullity != n-d) {
     cout << " *******  ERROR: Input matrix non-full row rank or problem with the decomposition/precision" << endl; 
     cout << " *******          nullity = " << nullity << " <> " << n-d << endl;  
@@ -266,12 +269,15 @@ nullspace_hjls(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, long int setprec=53) {
     B(i,d+i)=1;
   }
   
+
+
   ZFgas<ZT, FT, MatrixZT, MatrixFT>F(B,INV_T_TRANSFORM,d); 
   F.setprec(setprec);
 
   int flag_decomp;
-  flag_decomp=F.decomp(1.4142, n-d);
-  
+  flag_decomp=F.decomp(1.1414, n-d);
+  cout << "Nb tests " << F.nblov << endl; 
+
   if (flag_decomp < 0) return -1;
 
   // Check of nullity and location of the zero columns 
@@ -312,6 +318,7 @@ nullspace_hjls(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, long int setprec=53) {
     if (zeroedcol) 
       nullity+=1;   
   }
+
 
   if (nullity != n-d) {
     cout << " *******  ERROR: Input matrix non-full row rank or problem with the decomposition/precision" << endl; 
@@ -374,22 +381,38 @@ nullspace_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int lalpha, int lsigma=0, int lllmeth
    for (i=0; i<n; i++) 
        B(d+i,i)=1;  
 
- 
+
    // Unique shift 
    // ------------
    if (lsigma ==0) {  
 
+     if (lllmethod == L1) {
+
+       ZZ_mat<mpz_t> tmpmat;
+       tmpmat.resize(m,n);
+
+       l1(tmpmat, B, 800, FPLLL);
+      
+       for (i=0; i<m; i++)
+	 for (j=0; j<n; j++) 
+	   B(i,j)=tmpmat(i,j); 
+
+
+     } 
      if (lllmethod == HLLL) {
-	
+        
        Lattice<ZT, FT, MatrixZT, MatrixFT> D(B,NO_TRANSFORM,DEF_REDUCTION);
 	 
-       D.hlll(0.9);
+       D.hlll(0.999999999973046945,LLL_VERBOSE);
        
        // Bad hack since no assignment for matrices ... 
        ZZ_mat<mpz_t> tmpmat;
        tmpmat.resize(n,m);
        transpose(tmpmat,D.getbase());
        transpose(B,tmpmat);
+
+       //ICI 
+       cout << endl << "    Nb swaps: " << D.nblov << endl ;
 	 
      }
      if (lllmethod == FPLLL) {
@@ -399,10 +422,12 @@ nullspace_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int lalpha, int lsigma=0, int lllmeth
 
        transpose(AT,B);
 
-       lllReduction(AT, 0.9, 0.62, LM_HEURISTIC,FT_DPE,0);
+       //lllReduction(AT, 0.99, 0.62, LM_HEURISTIC,FT_DPE,0);
+       lllReduction(AT, 0.75, 0.5, LM_WRAPPER,FT_DEFAULT,0);
        transpose(B,AT);
 	
      }
+
 
      // Zero column test 
      // ----------------
@@ -420,6 +445,7 @@ nullspace_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int lalpha, int lsigma=0, int lllmeth
 	 nullcols[j]=1; 
        } 
      }
+
 
      // Shift too small for being a unique shift 
      // ----------------------------------------
@@ -461,13 +487,15 @@ nullspace_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int lalpha, int lsigma=0, int lllmeth
 
        current_shift+=lsigma;
        // ICI        
-       cout << "current shift " << current_shift << endl; 
-
+       //cout << "current shift " << current_shift << endl; 
+       
       shift_in(BL, current_shift, d);
 
+      
       Bt.put(BL, d, lsigma+n); // Heuristic 
       
-      Bt.hlll(0.99);
+
+      Bt.hlll(0.999999999);
       
       // Required multiplication update when BL has been truncated 
       matprod_in(B,Bt.getU());
@@ -491,13 +519,14 @@ nullspace_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int lalpha, int lsigma=0, int lllmeth
 	 } 
        }
 
-       cout << "Nullity " << nullity << endl; 
+       //cout << "Nullity " << nullity << endl; 
 
        if (nullity>=n-d) {
 	 notfound=0;
        } 
        
      } // End while loop on the Lehmer shifts 
+     cout << "Shift " << current_shift << endl; 
    } // End else Lehmer case 
 
 
@@ -515,6 +544,7 @@ nullspace_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int lalpha, int lsigma=0, int lllmeth
        decj++; 
      }
    }
+
 
    return nullity;
 };
@@ -562,8 +592,8 @@ relations_lll(ZZ_mat<ZT>& C, matrix<FP_NR<mpfr_t> > F, int prec, int lalpha, int
 
    // Copy in the temporary basis and initial shift 
    // ---------------------------------------------
-
-   print2maple(F,d,n);
+   // ICI 
+   //print2maple(F,d,n);
 
    MatrixRZ<matrix, FP_NR<mpfr_t>,Z_NR<ZT> > B;
 
@@ -587,24 +617,28 @@ relations_lll(ZZ_mat<ZT>& C, matrix<FP_NR<mpfr_t> > F, int prec, int lalpha, int
    FP_NR<mpfr_t> epsilon;
    epsilon=B.get_epsilon();
    cout << endl << "epsilon = " << epsilon << endl << endl; 
-   //epsilon=B.shift_epsilon(20);
-  
+
+   epsilon=B.shift_epsilon(20);
+   //epsilon=B.shift_epsilon(1000);  // Pour B4 
+
+   cout << endl << "shifted epsilon = " << epsilon << endl << endl;
+
    FP_NR<mpfr_t> tmpabs; 
 
    // Unique shift 
    // ------------
    
    if (lsigma ==0) {  
-
      
      Lattice<ZT, FT, MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> >, MatrixFT> D(B,NO_TRANSFORM,DEF_REDUCTION);
        
-       D.hlll(0.9);
+     D.hlll(0.999999);
        
        B=D.getmixedbase();
 
        B.shift(-lalpha);
 
+       
 
        // Zero column test 
        // ----------------
@@ -618,6 +652,8 @@ relations_lll(ZZ_mat<ZT>& C, matrix<FP_NR<mpfr_t> > F, int prec, int lalpha, int
 	 zeroedcol=true;
 	 for (i=0; i<d; i++) {
 	   tmpabs.abs(B.getRT(i,j));
+	   // ICI 
+	   cout << tmpabs << "   vs   " << epsilon << endl; 
 	   if (tmpabs.cmp(epsilon) >0 )  zeroedcol=false;  
 	 }
 	 if (zeroedcol) { 
@@ -626,7 +662,6 @@ relations_lll(ZZ_mat<ZT>& C, matrix<FP_NR<mpfr_t> > F, int prec, int lalpha, int
 	 } 
        }
      
-       print2maple(B,m,n);
 
      // Shift too small for being a unique shift 
      // ----------------------------------------
@@ -649,8 +684,9 @@ relations_lll(ZZ_mat<ZT>& C, matrix<FP_NR<mpfr_t> > F, int prec, int lalpha, int
        }
 
      } // Nullity ok 
-
-     print2maple(C,n,nullity);
+     
+     // ICI 
+     cout << "  ****  Nb swaps: " <<  D.nblov << endl;  
      return nullity; 
      
    } // End unique shift 
@@ -689,9 +725,9 @@ relations_lll(ZZ_mat<ZT>& C, matrix<FP_NR<mpfr_t> > F, int prec, int lalpha, int
        
        BL.shift(current_shift);
 
-       Bt.mixed_put(BL, lsigma+n); // Heuristic 
+       Bt.mixed_put(BL, lsigma+2*n); // Heuristic 
        
-       Bt.hlll(0.99);
+       Bt.hlll(0.9999);
        
        // Required multiplication update when BL has been truncated 
        matprod_in(B,Bt.getU());
@@ -702,12 +738,16 @@ relations_lll(ZZ_mat<ZT>& C, matrix<FP_NR<mpfr_t> > F, int prec, int lalpha, int
        
        nullity=0;
 
-       for (j=0; j<n; j++) {
+       // ICI 
+       //cout << endl << " ------------------------------- " << endl; 
 
+       for (j=0; j<n; j++) {
 	 nullcols[j]=0; 
 	 zeroedcol=true;
 	 for (i=0; i<d; i++) {
 	   tmpabs.abs(B.getRT(i,j));
+	   // ICI 
+	   //cout << tmpabs << "   vs   " << epsilon << endl; 
 	   if (tmpabs.cmp(epsilon) >0 )  zeroedcol=false;  
 	 }
 	 if (zeroedcol) { 
@@ -731,7 +771,8 @@ relations_lll(ZZ_mat<ZT>& C, matrix<FP_NR<mpfr_t> > F, int prec, int lalpha, int
 	   }
 	 }
 
-	 print2maple(C,n,nullity);
+	 // ICI 
+	 //print2maple(C,n,nullity);
 	 return nullity; 
        } 
        
@@ -742,6 +783,54 @@ relations_lll(ZZ_mat<ZT>& C, matrix<FP_NR<mpfr_t> > F, int prec, int lalpha, int
    
    return nullity;
 };
+
+
+template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
+nullspace_fp_hjls(ZZ_mat<ZT>& C, ZZ_mat<ZT> AZ, long int setprec) { 
+
+  long d=AZ.getRows();
+  long n=AZ.getCols();
+
+  int nbrel;
+
+  mpfr_set_default_prec(setprec);
+
+  matrix<FP_NR<mpfr_t> > A;   // Input matrix 
+  A.resize(d,n);
+ 
+  int i,j;
+
+  FP_NR<mpfr_t> tmp,maxa;
+
+  maxa=0.0;
+  for (i=0; i<d; i++) {
+    for (j=0; j<n; j++) {
+      set_z(tmp,AZ(i,j));
+      tmp.abs(tmp);
+      if (tmp.cmp(maxa) >0) maxa=tmp;
+    }
+  }
+
+
+  for (i=0; i<d; i++) {
+    for (j=0; j<n; j++) {
+      set_z(tmp,AZ(i,j));
+      tmp.div(tmp,maxa);
+      A.set(i,j,tmp);
+    }
+  }
+
+  //nbrel=relations_hjls<mpfr_t,dpe_t, MatrixPE<double, dpe_t> >(C,A,1,setprec);
+  //nbrel=relations_hjls<mpfr_t,mpfr_t, matrix<FP_NR<mpfr_t> > >(C,A,n-d,setprec);
+  nbrel=restarting_hjls<mpfr_t, double, matrix<FP_NR<double > > >(C,A,1,setprec);
+
+  cout << "nbrel " << nbrel << endl;
+
+  //print2maple(C,n,nbrel);
+  return 0;
+}	 
+
+} // end namespace hplll
 
 
 #endif 

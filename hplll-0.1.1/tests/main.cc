@@ -21,17 +21,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
-#include "matgen.cc"
-#include "relations.cc" 
+#include "hlll.h"
 
-#include "nullspace.cc" 
-
-
-#include "matmixed.h" 
-
-#include "matpeomp.h" 
-
-
+#include "ideal.h"
 
 
 /* ***********************************************
@@ -40,65 +32,96 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
    ********************************************** */
 
+using namespace hplll; 
 
-int main() {
 
-  int d=800;
-  int nbbits=200;
- 
-  ZZ_mat<mpz_t> A0; 
-  matrix<Z_NR<mpz_t> > A;
 
-  A0.resize(d,d); 
-  A.resize(d,d);  
-  A0.gen_uniform(nbbits);
+int main(int argc, char *argv[])  {
+  
+  mat_ZZ B;
+  int d,dbits; 
 
-  A.set(A0); 
- 
-  MatrixPE<double, dpe_t>  Af; 
-  Af.resize(d,d);
-
-  MatrixPE_omp<double, dpe_t>  Afomp; 
-  Afomp.resize(d,d);
-
-  int j;
-
-  for (j=0; j<d; j++) {
-    Af.setcol(j,A.getcol(j),0,d);
-    Afomp.setcol(j,A.getcol(j),0,d);
+  PARSE_MAIN_ARGS {
+    MATCH_MAIN_ARGID("--dim",d);
+    MATCH_MAIN_ARGID("--dbits",dbits);
+    SYNTAX();
   }
 
-  //print2maple(A,d,d);
+  d=generate_svp(B,d,dbits);
 
+  cout << "Dimension " << d << endl; 
 
-  int k;   
-
-  FP_NR<dpe_t> a;
-  a=10.0;
+  typedef FP_NR<mpfr_t>   RT;
+  typedef Z_NR<mpz_t>  ZT;
   
-  int K=1;
+  ZZ_mat<mpz_t> A; // For hpLLL 
+  ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
 
-  // Single 
-  int start=utime();
-  for (k=0; k<K; k++) 
+  filebuf fb;
+  fb.open ("ntl.txt",ios::out);
+  iostream os(&fb);
+  os << B ;
+  fb.close();
 
-    Af.submulcol(2,d-1,a,d);
 
-  start = utime()-start;
-  cout << endl << "   Time: " << start << " us" << endl;
+  fb.open ("ntl.txt",ios::in);
+  os >> AT ;
+  fb.close();
 
-  // OMP 
-  start=utime();
-  for (k=0; k<K; k++) 
 
-    Afomp.submulcol(2,d-1,a,d);
-
-  start = utime()-start;
-  cout << endl << "  OMP Time: " << start << " us" << endl;
-
-  //cout << endl << "   OMP Time: " << start/1000 << " ms" << endl;
-//printf("Hello from thread %d, nthreads %d\n", omp_get_thread_num(), omp_get_num_threads());
+  // ---------------------------------------------------------------------
  
+  { 
+  
+    cout << "************************************************************************** " << endl; 
+   
+    int start,startsec;
+
+    double delta=0.8;
+
+    A.resize(d,d); 
+    tmpmat.resize(d,d); 
+    
+    transpose(A,AT);
+
+    cout << "--------------  HLLL" << endl << endl; 
+    start=utime();
+    startsec=utimesec();
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
+    B.hlll(delta);
+    start=utime()-start;
+    startsec=utimesec()-startsec;
+  
+    cout << "   bits = " << d*dbits << endl;
+    cout << "   dimension = " << d  << endl;
+    cout << "   time A: " << start/1000 << " ms" << endl;
+    cout << "   time A: " << startsec << " s" << endl;
+
+    //Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+    //T1.isreduced(delta);
+
+    cout << endl; 
+
+    cout << "--------------  FPLLL" << endl << endl; 
+    transpose(AT,A);
+
+    start=utime();
+    startsec=utimesec();
+    lllReduction(AT, delta, 0.5, LM_WRAPPER,FT_DEFAULT,0);
+    start=utime()-start;
+    startsec=utimesec()-startsec;
+  
+    cout << "   bits = " << d*dbits << endl;
+    cout << "   dimension = " << d  << endl;
+    cout << "   time B: " << start/1000 << " ms" << endl;
+    cout << "   time B: " << startsec << " s" << endl;
+
+    //transpose(tmpmat,AT);
+    //Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(tmpmat,NO_TRANSFORM,DEF_REDUCTION);
+    //T2.isreduced(delta);
+
+  } 
+
+ 
+  return 0;
 }
-
-

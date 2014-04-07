@@ -21,10 +21,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
-#include "relations.h"
 
 #ifndef HPLLL_RELATIONS_CC
 #define HPLLL_RELATIONS_CC
+
+namespace hplll {
 
 
 // ********   ATTENTION   ******************************
@@ -82,10 +83,12 @@ template<class RT, class FT, class MatrixFT>  int relations_hjls(ZZ_mat<mpz_t>& 
 
 
   Fgas<RT, mpz_t, FT,  matrix<FP_NR<RT> >, matrix<Z_NR<mpz_t> >, MatrixFT > F(B, NO_TRANSFORM, setprec,d);
-   
+     
   int flag_decomp;
+
  
-  flag_decomp=F.decomp(1.1547, nbrel, LONG_MAX);
+  flag_decomp=F.decomp(1.1547005384, nbrel, LONG_MAX);
+  //flag_decomp=F.decomp(1.4142135624, nbrel, LONG_MAX);
 
   if (flag_decomp==-1) {
     return -1;
@@ -118,6 +121,8 @@ template<class RT, class FT, class MatrixFT>  int relations_hjls(ZZ_mat<mpz_t>& 
       set_z(Cfp(i,j),C(i,j));
 
   ZM.resize(d,nbrel);
+
+  
 
   matprod(ZM,A,Cfp); // Should be epsilon-zero 
   
@@ -181,6 +186,8 @@ template<class RT, class FT, class MatrixFT>  int relations_hjls(ZZ_mat<mpz_t>& 
 template<class RT, class FT, class MatrixFT>  int restarting_hjls(ZZ_mat<mpz_t>& C, const matrix<FP_NR<RT> >& A, long nbrel, long setprec) {
 
   int d,n;
+
+  int nblov=0;
 
   d=A.getRows();
   n=A.getCols();
@@ -266,6 +273,8 @@ template<class RT, class FT, class MatrixFT>  int restarting_hjls(ZZ_mat<mpz_t>&
 
   Fgas<RT, mpz_t, RT,  matrix<FP_NR<RT> >, matrix<Z_NR<mpz_t> >, matrix<FP_NR<RT> > > G(B,NO_TRANSFORM,setprec);
 
+  // ICI ce shift only for 1010 pb understanding 
+  //G.shift_epsilon(220);
   epsilon=G.epsilon; 
 
   for (j=0; j<N; j++) 
@@ -328,9 +337,13 @@ template<class RT, class FT, class MatrixFT>  int restarting_hjls(ZZ_mat<mpz_t>&
   // ------------------
 
   Fgas<FT, long, FT,  MatrixFT, matrix<Z_NR<long> >, MatrixFT > F(Bft, Resft, TRANSFORM, internal_prec, d);
-  
-  F.shift_epsilon(10);
+
+   
+  F.shift_epsilon(16);
   F.shift_testU(4);
+  // ICI que pour 1010 
+  //F.shift_epsilon(12);
+  //F.shift_testU(5);
 
   // ****************************************
   // Main loop on low precision decomposition
@@ -348,22 +361,32 @@ template<class RT, class FT, class MatrixFT>  int restarting_hjls(ZZ_mat<mpz_t>&
    
     start=utime();
  
-    // ICI 
-    flag_decomp=F.decomp(1.1547, nbrel, LONG_MAX);
+    // ICI   restarting 
+    flag_decomp=F.decomp(1.1547005384, nbrel, LONG_MAX);
+    //flag_decomp=F.decomp(1.4142135624, nbrel, LONG_MAX);
 
     mpfr_set_default_prec(setprec); // Should be only an internal change above (but changes everything) 
 
     start = utime()-start;
     tps+=start;
+    
+    nblov+=F.nblov;
 
-
-  
+    
+    
     // If relation found 
     // -----------------
     if (flag_decomp==0) {
     
       matprod_in_si(V,F.getV());
       notfound=0;
+
+      // ICI 
+      cout << endl << " WITH SMALL DECOMP ENDING " << endl << endl; 
+
+      // ICI 
+      print2maple(V,n+d,n+d);
+
     }
     else { // Relation not found, will continue 
            // ---------------------------------
@@ -432,6 +455,8 @@ template<class RT, class FT, class MatrixFT>  int restarting_hjls(ZZ_mat<mpz_t>&
       if (epsilon.cmp(r1) >0) {
        
 	notfound=0; 
+	// ICI 
+	cout << endl << " WITH RESIDUE ENDING " << endl << endl; 
       }
  
       // Residue normalization  
@@ -457,6 +482,7 @@ template<class RT, class FT, class MatrixFT>  int restarting_hjls(ZZ_mat<mpz_t>&
 
   // ICI 
   cout << endl << "   Part time: " << tps/1000 << " ms" << endl;
+  cout << endl << "   Nb iterations " << nblov << endl;
 
   // The nullspace C should be in the last n+d-rel columns of V=Transpose(U^(-1))
   // See analogous procedure in nullspace indirect (on other entry types) 
@@ -539,6 +565,7 @@ template<class RT, class FT, class MatrixFT>  int restarting_hjls(ZZ_mat<mpz_t>&
   
 } // End body of FP relations HJLS  
 
+} // end namespace hplll
 
 
 #endif 

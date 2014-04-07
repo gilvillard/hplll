@@ -3100,7 +3100,7 @@ fi
 ac_config_headers="$ac_config_headers config.h"
 
 
-DEFAULT_CFLAGS="-O2 -Wall"
+DEFAULT_CFLAGS=" -O2 -Wall"
 
 CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
 CXXFLAGS=${CXXFLAGS:-$DEFAULT_CFLAGS}
@@ -15961,6 +15961,40 @@ $as_echo "no" >&6; }
 fi
 
 
+
+# Check whether --with-fplll was given.
+if test "${with_fplll+set}" = set; then :
+  withval=$with_fplll;
+     CXXFLAGS="$CXXFLAGS -I$withval/include"
+     LDFLAGS="$LDFLAGS -L$withval/lib"
+     fplll_lib_path="$withval/lib"
+
+fi
+
+
+
+# Check whether --with-mpfr was given.
+if test "${with_mpfr+set}" = set; then :
+  withval=$with_mpfr;
+      CXXFLAGS="$CXXFLAGS -I$withval/include"
+       LDFLAGS="$LDFLAGS -L$withval/lib"
+       mpfr_lib_path="$withval/lib"
+
+fi
+
+
+
+# Check whether --with-gmp was given.
+if test "${with_gmp+set}" = set; then :
+  withval=$with_gmp;
+      CXXFLAGS="$CXXFLAGS -I$withval/include"
+       LDFLAGS="$LDFLAGS -L$withval/lib"
+       gmp_lib_path="$withval/lib"
+
+fi
+
+
+
 # Checks for libraries.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for __gmpz_init in -lgmp" >&5
 $as_echo_n "checking for __gmpz_init in -lgmp... " >&6; }
@@ -16056,38 +16090,6 @@ else
   as_fn_error $? "MPFR not found, see http://www.mpfr.org" "$LINENO" 5
 fi
 
-
-
-# Check whether --with-fplll was given.
-if test "${with_fplll+set}" = set; then :
-  withval=$with_fplll;
-     CXXFLAGS="$CXXFLAGS -I$withval/include"
-     LDFLAGS="$LDFLAGS -L$withval/lib"
-     fplll_lib_path="$withval/lib"
-
-fi
-
-
-
-# Check whether --with-mpfr was given.
-if test "${with_mpfr+set}" = set; then :
-  withval=$with_mpfr;
-      CXXFLAGS="$CXXFLAGS -I$withval/include"
-       LDFLAGS="$LDFLAGS -L$withval/lib"
-       mpfr_lib_path="$withval/lib"
-
-fi
-
-
-
-# Check whether --with-gmp was given.
-if test "${with_gmp+set}" = set; then :
-  withval=$with_gmp;
-      CXXFLAGS="$CXXFLAGS -I$withval/include"
-       LDFLAGS="$LDFLAGS -L$withval/lib"
-       gmp_lib_path="$withval/lib"
-
-fi
 
 
 
@@ -16714,9 +16716,15 @@ else
 fi
 
 
+ac_ext=cpp
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
 SAVED_LDFLAGS=$LDFLAGS
 LDFLAGS="$LDFLAGS -lfplll"
-echo "checking for cputime in -lfplll..."
+#echo "checking for cputime in -lfplll... "  # -n or \c
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <fplll.h>
@@ -16729,13 +16737,50 @@ cputime()
 }
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
-  TEST_LIBS="$TEST_LIBS -lfplll" echo "yes"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking for cputime in -lfplll... yes" >&5
+$as_echo "checking for cputime in -lfplll... yes" >&6; }
 else
   as_fn_error $? "FPLLL not found, see http://perso.ens-lyon.fr/damien.stehle/fplll" "$LINENO" 5
+
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LDFLAGS=$SAVED_LDFLAGS
+# Ne va pas car enlève le lfplll
+
+
+ac_ext=cpp
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
+SAVED_LDFLAGS=$LDFLAGS
+LDFLAGS="$LDFLAGS -lntl"
+#echo "checking for to_long in -lntl... "  # -n or \c
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <NTL/tools.h>
+int
+main ()
+{
+NTL::to_long(2)
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking for to_long in -lntl... yes" >&5
+$as_echo "checking for to_long in -lntl... yes" >&6; }
+else
+  as_fn_error $? "NTL not found, see http://www.shoup.net/ntl" "$LINENO" 5
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LDFLAGS=$SAVED_LDFLAGS
+# Ne va pas car enlève le lntl
+
 
 ac_config_files="$ac_config_files Makefile src/Makefile tests/Makefile"
 

@@ -29,6 +29,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include  "mat.h"
 #include  "matpe.h"
 
+namespace hplll {
+
 // MatrixRT pour  matrix<FP_NR<FT> >   F 
 // MatrixZT pour  matrix<Z_NR<ZT> >   W
 // MatrixFT pour  matrix<FP_NR<FT> >   R 
@@ -87,7 +89,7 @@ public:
 
   
   // Main decomposition function 
-  int decomp(long double gamma, long int targetdim, long int targetsize);
+  int decomp(double gamma, long int targetdim, long int targetsize=LONG_MAX);
 
 
   MatrixRT getfgas();
@@ -108,9 +110,9 @@ public:
   // Attention !!! Put back the previous one if needed since 
   // this is done through  mpfr_set_default_prec(prec); 
 
-  Fgas(MatrixRT Finput, bool transform, long prec, long int dec);  
+  Fgas(MatrixRT Finput, bool transform, long prec, long int dec=0);  
 
-  Fgas(MatrixRT Finput, MatrixRT res, bool transform, long prec, long int dec); 
+  Fgas(MatrixRT Finput, MatrixRT res, bool transform, long prec, long int dec=0); 
 
   void init(int d, int n, bool transform, long prec, long int dec);
 
@@ -133,6 +135,11 @@ public:
 
   unsigned int setprec_internal(long prec);
 };
+
+
+} // end namespace hplll
+
+#include "decomp.cc"
 
 #endif
 

@@ -21,8 +21,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
-#include "nullspace.cc" 
+#include "nullspace.h" 
 
+using namespace hplll;
 
 /* ***********************************************
 
@@ -68,20 +69,27 @@ int main(int argc, char *argv[])  {
   n=60;
   bitsize=20;
 
+  //d=4;
+  //n=8;
+  //bitsize=8;
+
   A.resize(d,n);
   A.gen_uniform(bitsize);
 
   cout << "     direct integer decomp, " << d <<" x " << n <<", " << bitsize << " bits, mpz exp-dpe " << endl; 
 
-  
   nullspace_direct_decomp <mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >(C,A);
  
   T.resize(n,n-d);
 
+  
   fb.open ("C4_out",ios::in);
   os >> T ;
   fb.close();
-  
+
+  //print2maple(A,d,n);  
+  //print2maple(C,n,n-d);
+
   difference = !matcmp(T, C, n-d, n);
   if (difference) {
     cerr << "*** Invalid matrix comparison in hlll test" << endl;
@@ -95,15 +103,16 @@ int main(int argc, char *argv[])  {
 
   d=4; 
   n=20;
-  bitsize=800;
+  bitsize=300;
 
   A.resize(d,n);
   A.gen_uniform(bitsize);
 
-  cout << "     direct integer decomp, " << d <<" x " << n <<", " << bitsize << " bits, mpz long double " << endl; 
+  cout << "     direct integer decomp, " << d <<" x " << n <<", " << bitsize << " bits, mpz double " << endl; 
 
 
-  nullspace_direct_decomp <mpz_t, long double , matrix<Z_NR<mpz_t> >, matrix<FP_NR<long double> > >(C,A);
+  nullspace_direct_decomp <mpz_t, double , matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > >(C,A);
+ 
  
   T.resize(n,n-d);
 
@@ -131,9 +140,9 @@ int main(int argc, char *argv[])  {
   A.resize(d,n);
   A.gen_uniform(bitsize);
 
-  cout << "     indirect integer decomp, " << d <<" x " << n <<", " << bitsize << " bits, mpz long double " << endl; 
+  cout << "     indirect integer decomp, " << d <<" x " << n <<", " << bitsize << " bits, mpz double " << endl; 
 
-  nullspace_indirect_decomp<mpz_t, long double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<long double > > > (C, A, prec); 
+  nullspace_indirect_decomp<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double > > > (C, A, prec); 
 
   T.resize(n,n-d);
 
@@ -146,7 +155,8 @@ int main(int argc, char *argv[])  {
     cerr << "*** Invalid matrix comparison in hlll test" << endl;
   }
   else 
-    succeed+=1;
+    succeed+=1; 
+
 
  //  -------------------- TEST i --------------------------------
   
@@ -155,6 +165,7 @@ int main(int argc, char *argv[])  {
   d=5; 
   n=20;
   bitsize=40;
+  
 
   prec=100;
 
@@ -165,9 +176,8 @@ int main(int argc, char *argv[])  {
 
   nullspace_hjls<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > (C, A, prec); 
   
-
   T.resize(n,n-d);
-  
+
   fb.open ("C7_out",ios::in);
   os >> T ;
   fb.close();

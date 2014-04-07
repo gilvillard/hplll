@@ -23,6 +23,7 @@ MA 02110-1301, USA. */
 
 /* WARNING: Patched version */
 
+
 using namespace std;
 
 #include <stdlib.h> /* For abort */
@@ -136,7 +137,9 @@ ldpe_abs (ldpe_t x, ldpe_t y)
 static void
 ldpe_normalize (ldpe_t x)
 {
- if (LDPE_UNLIKELY (LDPE_MANT(x) == 0.0 || finite (LDPE_MANT(x)) == 0))
+ // GV Ven 21 fév 2014 10:13:24 CET
+ //if (LDPE_UNLIKELY (LDPE_MANT(x) == 0.0 || finite (LDPE_MANT(x)) == 0))
+ if (LDPE_UNLIKELY (LDPE_MANT(x) == 0.0 || isfinite (LDPE_MANT(x)) == 0))
    {
      if (LDPE_MANT(x) == 0.0)
        LDPE_EXP(x) = LDPE_EXPMIN;
@@ -639,3 +642,5 @@ ldpe_swap (ldpe_t x, ldpe_t y)
 }
 
 #endif /* __LDPE */
+
+

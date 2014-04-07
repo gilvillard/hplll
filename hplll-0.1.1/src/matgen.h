@@ -27,6 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef MATGEN_H
 #define MATGEN_H
 
+namespace hplll { 
 
 /* ***********************************************
 
@@ -43,6 +44,9 @@ template<class RT> int gen3r2s(matrix<FP_NR<RT> >& B, int n, int r, int s);
 // Two real vector for a simultaneous relation 
 template<class RT> int gen3r2s7t5u(matrix<FP_NR<RT> >& B, int n, int r, int s, int t, int u);
 
+} // end namespace hplll
 
+
+#include "matgen.cc"
 
 #endif 

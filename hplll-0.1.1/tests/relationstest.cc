@@ -19,10 +19,10 @@ along with the hplll Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#include "matgen.cc"
-#include "relations.cc" 
+#include "matgen.h"
+#include "relations.h" 
 
-
+using namespace hplll;
 
 /* ***********************************************
 
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])  {
   long setprec;
 
   //  *****************************************************  
-  cout <<  "Testing relation disclosing" << endl; 
+  cout <<  "Testing relation finder" << endl; 
   //  *****************************************************  
 
   matrix<FP_NR<mpfr_t> > A;   // Input matrix 
@@ -93,6 +93,8 @@ int main(int argc, char *argv[])  {
     else 
       succeed+=1;
   }
+
+#ifdef HPLLL_WITH_LONG_DOUBLE
    //  -------------------- TEST i --------------------------------
   nbtest+=1;
 
@@ -127,6 +129,7 @@ int main(int argc, char *argv[])  {
     else 
       succeed+=1;
   }
+#endif 
   
   //  -------------------- TEST i --------------------------------
   nbtest+=1;
