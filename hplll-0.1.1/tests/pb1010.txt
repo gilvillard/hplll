@@ -1,0 +1,34 @@
+
+------------------------------------------------------------------------
+10 10 7000 
+
+ WITH SMALL DECOMP ENDING 
+
+
+   Part time: 89906 ms
+ ***  ERROR: Input matrix non-full row rank or problem with the decomposition/precision
+ ***          nullity = 0 <> 1
+ ***          max residue = 9.86931e-1409  >  epsilon = 8.00442e-2075
+
+   Relation bit size = 129
+   Info. theo bound nd = 13029
+   prec = 7000
+   dimension = 101
+   Time: 783035 ms
+
+------------------------------------------------------------------------
+WITH SMALL DECOMP ENDING 
+
+
+   Part time: 90953 ms
+ ***  ERROR: Input matrix non-full row rank or problem with the decomposition/precision
+ ***          nullity = 0 <> 1
+ ***          max residue = 9.86931e-1409  >  epsilon = 6.46592e-2102
+
+   Relation bit size = 129
+   Info. theo bound nd = 13029
+   prec = 7200
+   dimension = 101
+   Time: 813399 ms
+------------------------------------------------------------------------
+
