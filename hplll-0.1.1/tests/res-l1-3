@@ -1,0 +1,704 @@
+
+
+--- cputime l1 hlll is 135 ms
+--- cputime l1 hlll is 0 s
+
+
+--- cputime hlll is 162 ms
+--- cputime hlll is 0 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 1.390998334e10034
+(Householder) Vol(L) is about 7.946278659e30102
+eta : 0     theta : 1.000000000e-5    alpha : 1.000000000
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 100000
+Ratio 1.20428
+
+
+--- cputime l1 hlll is 101 ms
+--- cputime l1 hlll is 0 s
+
+
+--- cputime hlll is 170 ms
+--- cputime hlll is 0 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 1.390998334e10034
+(Householder) Vol(L) is about 7.946278659e30102
+eta : 0     theta : 1.000000000e-5    alpha : 1.000000000
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 100000
+Ratio 1.68395
+
+
+--- cputime l1 hlll is 83 ms
+--- cputime l1 hlll is 0 s
+
+
+--- cputime hlll is 165 ms
+--- cputime hlll is 0 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 1.390998334e10034
+(Householder) Vol(L) is about 7.946278659e30102
+eta : 0     theta : 1.000000000e-5    alpha : 1.000000000
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 100000
+Ratio 1.98967
+
+
+--- cputime l1 hlll is 73 ms
+--- cputime l1 hlll is 0 s
+
+
+--- cputime hlll is 172 ms
+--- cputime hlll is 0 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 1.390998334e10034
+(Householder) Vol(L) is about 7.946278659e30102
+eta : 0     theta : 1.000000000e-5    alpha : 1.000000000
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 100000
+Ratio 2.34801
+
+
+--- cputime l1 hlll is 431 ms
+--- cputime l1 hlll is 0 s
+
+
+--- cputime hlll is 1980 ms
+--- cputime hlll is 2 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 1.993608112e40137
+(Householder) Vol(L) is about 1.055949661e120412
+eta : 0     theta : 1.000000000e-5    alpha : 1.000000000
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 400000
+Ratio 4.58796
+
+
+--- cputime l1 hlll is 356 ms
+--- cputime l1 hlll is 0 s
+
+
+--- cputime hlll is 1984 ms
+--- cputime hlll is 2 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 1.993608112e40137
+(Householder) Vol(L) is about 1.055949661e120412
+eta : 0     theta : 1.000000000e-5    alpha : 1.000000000
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 400000
+Ratio 5.57139
+
+
+--- cputime l1 hlll is 323 ms
+--- cputime l1 hlll is 0 s
+
+
+--- cputime hlll is 1989 ms
+--- cputime hlll is 2 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 1.993608112e40137
+(Householder) Vol(L) is about 1.055949661e120412
+eta : 0     theta : 1.000000000e-5    alpha : 1.000000000
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 400000
+Ratio 6.15664
+
+
+--- cputime l1 hlll is 309 ms
+--- cputime l1 hlll is 0 s
+
+
+--- cputime hlll is 2001 ms
+--- cputime hlll is 2 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 1.993608112e40137
+(Householder) Vol(L) is about 1.055949661e120412
+eta : 0     theta : 1.000000000e-5    alpha : 1.000000000
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 400000
+Ratio 6.4647
+
+
+--- cputime l1 hlll is 316 ms
+--- cputime l1 hlll is 0 s
+
+
+--- cputime hlll is 2009 ms
+--- cputime hlll is 2 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 1.993608112e40137
+(Householder) Vol(L) is about 1.055949661e120412
+eta : 0     theta : 1.000000000e-5    alpha : 1.000000000
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 400000
+Ratio 6.33936
+
+
+--- cputime l1 hlll is 324 ms
+--- cputime l1 hlll is 0 s
+
+
+--- cputime hlll is 2008 ms
+--- cputime hlll is 2 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 1.993608112e40137
+(Householder) Vol(L) is about 1.055949661e120412
+eta : 0     theta : 1.000000000e-5    alpha : 1.000000000
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 400000
+Ratio 6.17973
+
+
+--- cputime l1 hlll is 919 ms
+--- cputime l1 hlll is 0 s
+
+
+--- cputime hlll is 7755 ms
+--- cputime hlll is 8 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 2.599488118e80274
+(Householder) Vol(L) is about 1.149446435e240824
+eta : 0     theta : 1.000000000e-5    alpha : 1.000000000
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 800000
+Ratio 8.43172
+
+
+--- cputime l1 hlll is 749 ms
+--- cputime l1 hlll is 0 s
+
+
+--- cputime hlll is 7713 ms
+--- cputime hlll is 8 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 2.599488118e80274
+(Householder) Vol(L) is about 1.149446435e240824
+eta : 0     theta : 1.000000000e-5    alpha : 1.000000000
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 800000
+Ratio 10.2933
+
+
+--- cputime l1 hlll is 692 ms
+--- cputime l1 hlll is 0 s
+
+
+--- cputime hlll is 7808 ms
+--- cputime hlll is 8 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 2.599488118e80274
+(Householder) Vol(L) is about 1.149446435e240824
+eta : 0     theta : 1.000000000e-5    alpha : 1.000000000
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 800000
+Ratio 11.2833
+
+
+--- cputime l1 hlll is 670 ms
+--- cputime l1 hlll is 0 s
+
+
+--- cputime hlll is 7846 ms
+--- cputime hlll is 8 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 2.599488118e80274
+(Householder) Vol(L) is about 1.149446435e240824
+eta : 0     theta : 1.000000000e-5    alpha : 1.000000000
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 800000
+Ratio 11.6953
+
+
+--- cputime l1 hlll is 659 ms
+--- cputime l1 hlll is 0 s
+
+
+--- cputime hlll is 7739 ms
+--- cputime hlll is 8 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 2.599488118e80274
+(Householder) Vol(L) is about 1.149446435e240824
+eta : 0     theta : 1.000000000e-5    alpha : 1.000000000
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 800000
+Ratio 11.7301
+
+
+--- cputime l1 hlll is 690 ms
+--- cputime l1 hlll is 0 s
+
+
+--- cputime hlll is 7828 ms
+--- cputime hlll is 8 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 2.599488118e80274
+(Householder) Vol(L) is about 1.149446435e240824
+eta : 0     theta : 1.000000000e-5    alpha : 1.000000000
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 800000
+Ratio 11.3401
+800000 tests
+
+
+--- cputime l1 hlll is 1758 ms
+--- cputime l1 hlll is 1 s
+800000 tests
+
+
+--- cputime hlll is 23728 ms
+--- cputime hlll is 24 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 2.270869172e140480
+(Householder) Vol(L) is about 1.077977004e421442
+eta : 2.740843774e-1     theta : 1.000000000e-5    alpha : 1.039822166
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 1400000
+Ratio 13.4941
+800000 tests
+
+
+--- cputime l1 hlll is 1497 ms
+--- cputime l1 hlll is 1 s
+800000 tests
+
+
+--- cputime hlll is 23763 ms
+--- cputime hlll is 24 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 2.270869172e140480
+(Householder) Vol(L) is about 1.077977004e421442
+eta : 2.740843774e-1     theta : 1.000000000e-5    alpha : 1.039822166
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 1400000
+Ratio 15.8687
+800000 tests
+
+
+--- cputime l1 hlll is 1307 ms
+--- cputime l1 hlll is 1 s
+800000 tests
+
+
+--- cputime hlll is 23849 ms
+--- cputime hlll is 24 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 2.270869172e140480
+(Householder) Vol(L) is about 1.077977004e421442
+eta : 2.740843774e-1     theta : 1.000000000e-5    alpha : 1.039822166
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 1400000
+Ratio 18.242
+800000 tests
+
+
+--- cputime l1 hlll is 1251 ms
+--- cputime l1 hlll is 1 s
+800000 tests
+
+
+--- cputime hlll is 23722 ms
+--- cputime hlll is 23 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 2.270869172e140480
+(Householder) Vol(L) is about 1.077977004e421442
+eta : 2.740843774e-1     theta : 1.000000000e-5    alpha : 1.039822166
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 1400000
+Ratio 18.9612
+800000 tests
+
+
+--- cputime l1 hlll is 1253 ms
+--- cputime l1 hlll is 1 s
+800000 tests
+
+
+--- cputime hlll is 23777 ms
+--- cputime hlll is 24 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 2.270869172e140480
+(Householder) Vol(L) is about 1.077977004e421442
+eta : 2.740843774e-1     theta : 1.000000000e-5    alpha : 1.039822166
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 1400000
+Ratio 18.9648
+800000 tests
+
+
+--- cputime l1 hlll is 1262 ms
+--- cputime l1 hlll is 1 s
+800000 tests
+
+
+--- cputime hlll is 23799 ms
+--- cputime hlll is 24 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 2.270869172e140480
+(Householder) Vol(L) is about 1.077977004e421442
+eta : 2.740843774e-1     theta : 1.000000000e-5    alpha : 1.039822166
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 1400000
+Ratio 18.8508
+800000 tests
+
+
+--- cputime l1 hlll is 1282 ms
+--- cputime l1 hlll is 1 s
+800000 tests
+
+
+--- cputime hlll is 23807 ms
+--- cputime hlll is 24 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 2.270869172e140480
+(Householder) Vol(L) is about 1.077977004e421442
+eta : 2.740843774e-1     theta : 1.000000000e-5    alpha : 1.039822166
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 1400000
+Ratio 18.5642
+800000 tests
+
+
+--- cputime l1 hlll is 1347 ms
+--- cputime l1 hlll is 1 s
+800000 tests
+
+
+--- cputime hlll is 23752 ms
+--- cputime hlll is 24 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 2.270869172e140480
+(Householder) Vol(L) is about 1.077977004e421442
+eta : 2.740843774e-1     theta : 1.000000000e-5    alpha : 1.039822166
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 1400000
+Ratio 17.6251
+800000 tests
+
+
+--- cputime l1 hlll is 2877 ms
+--- cputime l1 hlll is 2 s
+800000 tests
+
+
+--- cputime hlll is 48341 ms
+--- cputime hlll is 49 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 4.529652213e200686
+(Householder) Vol(L) is about 8.480493627e602059
+eta : 4.097188617e-1     theta : 1.000000000e-5    alpha : 1.096241509
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 2000000
+Ratio 16.8025
+800000 tests
+
+
+--- cputime l1 hlll is 2302 ms
+--- cputime l1 hlll is 2 s
+800000 tests
+
+
+--- cputime hlll is 48287 ms
+--- cputime hlll is 48 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 4.529652213e200686
+(Householder) Vol(L) is about 8.480493627e602059
+eta : 4.097188617e-1     theta : 1.000000000e-5    alpha : 1.096241509
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 2000000
+Ratio 20.9725
+800000 tests
+
+
+--- cputime l1 hlll is 2056 ms
+--- cputime l1 hlll is 2 s
+800000 tests
+
+
+--- cputime hlll is 48390 ms
+--- cputime hlll is 48 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 4.529652213e200686
+(Householder) Vol(L) is about 8.480493627e602059
+eta : 4.097188617e-1     theta : 1.000000000e-5    alpha : 1.096241509
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 2000000
+Ratio 23.5277
+800000 tests
+
+
+--- cputime l1 hlll is 1883 ms
+--- cputime l1 hlll is 1 s
+800000 tests
+
+
+--- cputime hlll is 48238 ms
+--- cputime hlll is 49 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 4.529652213e200686
+(Householder) Vol(L) is about 8.480493627e602059
+eta : 4.097188617e-1     theta : 1.000000000e-5    alpha : 1.096241509
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 2000000
+Ratio 25.6135
+800000 tests
+
+
+--- cputime l1 hlll is 1794 ms
+--- cputime l1 hlll is 1 s
+800000 tests
+
+
+--- cputime hlll is 48338 ms
+--- cputime hlll is 49 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 4.529652213e200686
+(Householder) Vol(L) is about 8.480493627e602059
+eta : 4.097188617e-1     theta : 1.000000000e-5    alpha : 1.096241509
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 2000000
+Ratio 26.9443
+800000 tests
+
+
+--- cputime l1 hlll is 1876 ms
+--- cputime l1 hlll is 1 s
+800000 tests
+
+
+--- cputime hlll is 48354 ms
+--- cputime hlll is 49 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 4.529652213e200686
+(Householder) Vol(L) is about 8.480493627e602059
+eta : 4.097188617e-1     theta : 1.000000000e-5    alpha : 1.096241509
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 2000000
+Ratio 25.7664
+800000 tests
+
+
+--- cputime l1 hlll is 1937 ms
+--- cputime l1 hlll is 1 s
+800000 tests
+
+
+--- cputime hlll is 48467 ms
+--- cputime hlll is 49 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 4.529652213e200686
+(Householder) Vol(L) is about 8.480493627e602059
+eta : 4.097188617e-1     theta : 1.000000000e-5    alpha : 1.096241509
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 2000000
+Ratio 25.0091
+800000 tests
+
+
+--- cputime l1 hlll is 1975 ms
+--- cputime l1 hlll is 1 s
+800000 tests
+
+
+--- cputime hlll is 48235 ms
+--- cputime hlll is 49 s
+Warning: in function setprec hlll, the change of precision has no effect
+Warning: in function isreduced, the change of precision has no effect
+
+(Householder) delta is about 1.000000000
+(Householder) ||b_1|| is 4.529652213e200686
+(Householder) Vol(L) is about 8.480493627e602059
+eta : 4.097188617e-1     theta : 1.000000000e-5    alpha : 1.096241509
+Seems to be reduced (up to size-reduction)
+
+Warning: in function setprec hlll, the change of precision has no effect
+
+Dim:3   Bit size: 2000000
+Ratio 24.4195

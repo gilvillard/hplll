@@ -1,0 +1,6 @@
+# add -m64 to flags for 64-bit Intel
+
+#CXXFLAGS=-g -DDEBUG -I../include -I. -c
+#LDFLAGS=-g
+CXXFLAGS=-O2 -I../../ntl-5.5.2/include -I. -DNO_DEBUG -DNO_TIMER
+LDFLAGS=-O2 -L../..//msys/1.0/local/lib/
