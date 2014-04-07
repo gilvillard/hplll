@@ -1,13 +1,37 @@
 AUTOMAKE_OPTIONS = gnu
 
-#ACLOCAL_AMFLAGS= -I m4
+EXTRA_DIST= 416_in 2_in 3_in C1_out  C2_out C3_out  \
+             C4_out C5_out C6_out C7_out 
 
-SUBDIRS= src  tests 
+AM_CPPFLAGS = -I$(top_srcdir)/src
 
-nobase_dist_doc_DATA = COPYING.LESSER 
 
-include_hpllldir=$(includedir)/hplll
+check_PROGRAMS = arithmetic  hllltest relationstest nullspacetest 
 
-AM_CXXFLAGS = -I $(srcdir)
+noinst_PROGRAMS= main  
 
-#EXTRA_DIST=README.html
+
+#INCLUDES = -I$(top_srcdir)/src 
+
+#Mis déjà dans le configure 
+LDADD =  -lfplll -lntl #$(top_srcdir)/src/libhplll.la
+
+main_SOURCES=main.cc 
+
+
+arithmetic_SOURCES=arithmetic.cc  
+
+hllltest_SOURCES=hllltest.cc  
+
+relationstest_SOURCES=relationstest.cc 
+
+nullspacetest_SOURCES=nullspacetest.cc 
+
+
+check : 
+	./arithmetic 
+	./hllltest
+	./relationstest
+	./nullspacetest 
+
+
