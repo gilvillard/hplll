@@ -14,7 +14,7 @@ noinst_PROGRAMS= main
 #INCLUDES = -I$(top_srcdir)/src 
 
 #Mis déjà dans le configure 
-LDADD =  -lfplll -lntl #$(top_srcdir)/src/libhplll.la
+LDADD =  -lfplll #-lntl #$(top_srcdir)/src/libhplll.la
 
 main_SOURCES=main.cc 
 
