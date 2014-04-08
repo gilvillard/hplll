@@ -109,10 +109,6 @@ ZFgas<ZT, FT, MatrixZT, MatrixFT>::decomp(double gamma, long int targetdim) {
   // The update of R is done at the end of the work in the loop
   // **********************************************************
   
-  int start;
-
-  start=utime();
-   
  
   while (true) {
 
