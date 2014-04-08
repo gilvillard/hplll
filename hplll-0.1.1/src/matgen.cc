@@ -78,8 +78,6 @@ template<class RT> int gen3r2s7t5u(matrix<FP_NR<RT> >& B, int n, int r, int s, i
 
   B.resize(2,n); 
 
-  int sign;
-
   FP_NR<RT> l2,l3; 
 
   FP_NR<RT> rr,ss,tt,uu;
@@ -103,10 +101,9 @@ template<class RT> int gen3r2s7t5u(matrix<FP_NR<RT> >& B, int n, int r, int s, i
 
   alpha.sub(l3,l2);
 
-  if (alpha  < 0) {
-    sign=-1;
+  if (alpha  < 0) 
     alpha.abs(alpha);
-  }
+  
 
   alpha.log(alpha);
 
@@ -135,10 +132,9 @@ template<class RT> int gen3r2s7t5u(matrix<FP_NR<RT> >& B, int n, int r, int s, i
 
   alpha.sub(l3,l2);
 
-  if (alpha  < 0) {
-    sign=-1;
+  if (alpha  < 0) 
     alpha.abs(alpha);
-  }
+  
 
   alpha.log(alpha);
 

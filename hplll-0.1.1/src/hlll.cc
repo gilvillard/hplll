@@ -55,15 +55,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
   for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
 
   // ICI 
-  int flagd;
   
-  flagd=0;
 
   while (kappa < d) 
     {
-      
-      //ICI 
-      if (descendu[kappa]>=1) flagd=1; else flagd=0;
 
       if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
       

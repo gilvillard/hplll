@@ -84,6 +84,7 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::decomp(double gamma, long int ta
   int maxh=dec;
 
   FP_NR<FT> diagold; // For the epsilon-test 
+  diagold=0.0;
   FP_NR<RT> maxYold; // For the confidence gap test  
   FP_NR<RT> maxY;
 
@@ -156,10 +157,6 @@ Fgas<RT, ZT, FT, MatrixRT, MatrixZT, MatrixFT>::decomp(double gamma, long int ta
   // The update of R is done at the end of the work in the loop
   // **********************************************************
   
-  int start;
-
-  start=utime();
-   
 
   while (true) {
 
