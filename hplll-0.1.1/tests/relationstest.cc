@@ -33,7 +33,7 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
  
-  int n,d;
+  int n;
   int r,s,t,u;
 
   int difference; 
@@ -66,7 +66,6 @@ int main(int argc, char *argv[])  {
   r=4; 
   s=4; 
   n=r*s+1;
-  d=1;
   
   
   setprec=320;
@@ -101,7 +100,6 @@ int main(int argc, char *argv[])  {
   r=5; 
   s=5; 
   n=r*s+1;
-  d=1;
   
   
   setprec=600;
