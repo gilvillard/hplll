@@ -3106,6 +3106,7 @@ CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
 CXXFLAGS=${CXXFLAGS:-$DEFAULT_CFLAGS}
 
 #AC_DISABLE_SHARED
+#LT_INIT
 case `pwd` in
   *\ * | *\	*)
     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Libtool does not cope well with whitespace in \`pwd\`" >&5
