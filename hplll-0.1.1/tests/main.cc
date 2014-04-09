@@ -22,6 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 #include "hlll.h"
+#include "plll.h"
 
 /* ***********************************************
 
@@ -37,81 +38,28 @@ int main(int argc, char *argv[])  {
   typedef Z_NR<mpz_t>  ZT;
   
   ZZ_mat<mpz_t> A; // For hpLLL 
-  ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
+  ZZ_mat<mpz_t> AT;  // fpLLL  
 
   // ---------------------------------------------------------------------
   { 
   
     cout << "************************************************************************** " << endl; 
-    int d=12;
-    int nbbits=8000;
-    int start,startsec;
-
-    double delta=0.8;
+    int d=8;
+    int nbbits=8;
+    
 
     A.resize(d+1,d); 
-    tmpmat.resize(d+1,d); 
     AT.resize(d,d+1);  
     AT.gen_intrel(nbbits);
     transpose(A,AT);
 
-    cout << "--------------  HLLL" << endl << endl; 
-    start=utime();
-    startsec=utimesec();
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
-    B.hlll(delta);
-    start=utime()-start;
-    startsec=utimesec()-startsec;
-  
-    cout << "   bits = " << nbbits << endl;
-    cout << "   dimension = " << d  << endl;
-    cout << "   time A: " << start/1000 << " ms" << endl;
-    cout << "   time A: " << startsec << " s" << endl;
 
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-    T1.isreduced(delta);
+    PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
 
-    cout << endl; 
+    B.householder();
 
-    cout << "--------------  FPLLL" << endl << endl; 
-    transpose(AT,A);
-
-    start=utime();
-    startsec=utimesec();
-    lllReduction(AT, delta, 0.5, LM_WRAPPER,FT_DEFAULT,0);
-    start=utime()-start;
-    startsec=utimesec()-startsec;
-  
-    cout << "   bits = " << nbbits << endl;
-    cout << "   dimension = " << d  << endl;
-    cout << "   time B: " << start/1000 << " ms" << endl;
-    cout << "   time B: " << startsec << " s" << endl;
-
-    transpose(tmpmat,AT);
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(tmpmat,NO_TRANSFORM,DEF_REDUCTION);
-    T2.isreduced(delta);
-
-
-    /*
-    cout << endl; 
-  
-    transpose(AT,A);
- 
-    start=utime();
-    startsec=utimesec();
-    lllReduction(AT, delta, 0.5, LM_FAST,FT_DEFAULT,0);
-    start=utime()-start;
-    startsec=utimesec()-startsec;
-  
-    cout << "   bits = " << nbbits << endl;
-    cout << "   dimension = " << d  << endl;
-    cout << "   time C: " << start/1000 << " ms" << endl;
-    cout << "   time C: " << startsec << " s" << endl;
-  
-    transpose(tmpmat,AT);
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T3(tmpmat,NO_TRANSFORM,DEF_REDUCTION);
-    T3.isreduced(delta);
-    */
+    print2maple(B.getbase(),d+1,d);
+    print2maple(B.getR(),d,d);
 
   } 
 
