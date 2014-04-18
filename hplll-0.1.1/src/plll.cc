@@ -24,6 +24,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef HPLLL_PLLL_CC
 #define HPLLL_PLLL_CC
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif 
+
 namespace hplll { 
 
 
@@ -35,7 +39,7 @@ namespace hplll {
     int K,bdim;   // Number of blocks and dimension of each block 
                   // Assume that d is a multiple of K >= 4 
                   // K/2 and bdim >= 2 for actual segment) 
-    K=4;
+    K=8;
     bdim = d/K;
     
     int S,sdim;   // Number of segments and dimension of each segment  
@@ -72,6 +76,7 @@ namespace hplll {
     // ****************
 
     for (iter=0; stop==0; iter++) {
+    //for (iter=0; iter < 4; iter++) {
 
       // Even block reduction  
       // --------------------
@@ -81,21 +86,30 @@ namespace hplll {
       //print2maple(B,n,d);
 
       condbits=approx_cond();
-      cout << endl << "************* Even approx cond " << condbits << endl; 
+      cout << endl << "************* Even approx cond " << condbits << "    " << "S = " << S << endl; 
 
       set_f(RZ,R,condbits);
 
-      for (k=0; k<S; k++) {   //cout << "+++++++++  Even ++++++++++++ " << endl; 
-	 
-	//print2maple(getblock(RZ,k,k,S,0),sdim,sdim);
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif 
 
+      for (k=0; k<S; k++) {   //cout << "+++++++++  Even ++++++++++++ " << endl; 
+	cout << "thread " << omp_get_thread_num() << endl; 
+
+	//print2maple(getblock(RZ,k,k,S,0),sdim,sdim);
+	
 	Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
+	 
 	BR.hlll(delta);
 	nblov+=BR.nblov;
-
 	putblock(U,BR.getU(),k,k,S,0);
 
       }
+
+#ifdef _OPENMP
+#pragma omp barrier
+#endif 
 
       stop=isId(U);
       //cout << "Stop: "  <<  stop << endl; 
@@ -126,6 +140,10 @@ namespace hplll {
  
       set_f(RZ,R,condbits);
 
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif 
+
       for (k=0; k<S-1; k++) {
 	//cout << "+++++++++++ Odd ++++++++++ " << endl; 
 	
@@ -137,6 +155,10 @@ namespace hplll {
 
 	putblock(U,BR.getU(),k,k,S,bdim);
       }
+
+#ifdef _OPENMP
+#pragma omp barrier
+#endif 
 
       stop=isId(U)*stop;
       //cout << "Stop: "  <<  stop << endl; 
@@ -159,44 +181,6 @@ namespace hplll {
 
     } // End main loop: global iterations iter 
 
-
-
-
-    /*
-
-    // Odd block loop 
-    // --------------
-
-    
-    setId(U);
-
-    for (k=0; k<S-1; k++) {
-      cout << "+++++++++++ Odd ++++++++++ " << endl; 
-      
-      print2maple(getblock(RZ,k,k,S,bdim),sdim,sdim);
-      
-      Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
-      BR.hlll(0.99);
-
-      putblock(U,BR.getU(),k,k,S,bdim);
-      }
-
-    print2maple(U,d,d);
-    
-   
-
-    print2maple(LB.getbase(),n,d);*/
-
-  /*start=utime();
-  BR.hlll(0.99);
-  start=utime()-start;
-  cout << "   PLLL " << start/1000 << " ms" << endl;
-  
-  print2maple(BR.getU(),n/K,n/K);*/
-
-  
-
-  
 
   return 0;
 
