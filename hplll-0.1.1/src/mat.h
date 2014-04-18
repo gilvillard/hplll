@@ -367,9 +367,66 @@ inline void set(Matrix<T>& A)
 }
 
 
-
 }; // End matrix class 
 
+
+// **************
+// Block accesses
+// **************
+
+// SQUARE HERE, bdim divise n 
+// Cas rectangle ???
+ 
+ template<class T> inline  ZZ_mat<T>  getblock(matrix<Z_NR<T> > A, const int ii, const int jj, const int nbb, const int diagdec)   {
+    
+   ZZ_mat<T> B;
+   
+   int n= A.getRows();
+
+   long bdim = n/nbb;
+
+   B.resize(bdim,bdim);
+
+   long  si;
+   long sj = jj*bdim;
+
+   for (int j=0; j<bdim; j++) {
+     si = ii*bdim; 
+     for (int i=0; i<bdim; i++) {
+       B(i,j).set(A(si+diagdec,sj+diagdec));
+       si +=1;
+     }
+     sj+=1;
+   }
+
+   return(B);
+ };
+
+
+// SQUARE HERE, bdim divise n 
+// Cas rectangle ???
+ 
+ template<class T> inline  int putblock(Matrix<T>& A, Matrix<T> B, const int ii, const int jj, const int nbb, const int diagdec)   {
+    
+   
+   int n= A.getRows();
+
+   long bdim = n/nbb;
+
+   long  si;
+   long sj = jj*bdim;
+
+   for (int j=0; j<bdim; j++) {
+     si = ii*bdim; 
+     for (int i=0; i<bdim; i++) {
+       A(si+diagdec,sj+diagdec) = B(i,j);
+       si +=1;
+     }
+     sj+=1;
+   }
+
+   return(0);
+ };
 
 
 // ******************************************************************
@@ -388,7 +445,7 @@ template<class T> inline void fp_norm(T&nn, const T* v, const int n)
 
 };
 
-// Norme_2 au carré , flottant cf srqt 
+// Squared Norm_2, flottant cf srqt 
 // avec calcul de norme partielle pour le test de Lovasz 
 template<class T> inline void fp_norm_sq(T&nn, const T* v, const int n) 
 {
@@ -493,6 +550,58 @@ cout << "Matrix([";
 
 // Matrix assignment 
 // -----------------
+
+// Identity partially on the rows when nbcol >= nbrows 
+
+template<class T> void setId(Matrix<T>& A) 
+{
+
+  int m,n,i,j;
+
+  m= A.getRows();
+  n= A.getCols();
+
+   for (i=0; i<m; i++) 
+    for (j=0; j<n; j++) 
+      A(i,j)=0; 
+
+   T one;
+   one = 1;
+
+   for (i=0; i<m; i++) 
+       A(i,i)=one; 
+ 
+};
+
+template<class T> bool isId(Matrix<T> A) 
+{
+
+  bool answer=1;
+
+  int m,n,i,j;
+
+  m= A.getRows();
+  n= A.getCols();
+
+  T one,zero;
+  one = 1;
+  zero=0;
+
+  for (i=0; i<m; i++) 
+    for (j=0; j<n; j++) {
+    
+      if (i==j) {
+	if (A(i,j).cmp(one) != 0) answer=0;
+      }
+      else {
+	if (A(i,j).cmp(zero) != 0) answer=0;
+      } 
+    }
+  
+  return answer;
+ 
+};
+
 
 template<class T> void set(Matrix<T>& B, matrix<T> A) 
 {
@@ -1062,6 +1171,42 @@ template<class ZT, class MatrixZT> void trunc(MatrixZT& B, ZZ_mat<ZT> A, long d,
   }
   
 };
+
+
+
+template<class ZT, class FT> void set_f(matrix<Z_NR<ZT> >& B, matrix<FP_NR<FT> > R, long condbits);
+
+template<> void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long condbits)
+{
+
+  int n,d;
+
+  n= B.getRows();
+  d= B.getCols();
+
+  FP_NR<mpfr_t> norm,minval;
+
+  int i,j;
+
+  fp_norm(minval,R.getcol(0),n);
+
+  for (j=1; j<d; j++) {
+    fp_norm(norm,R.getcol(j),n);
+    if (minval.cmp(norm)) minval=norm;
+  }
+
+  FP_NR<mpfr_t> bf;
+
+  for (i=0; i<n; i++) 
+    for (j=0; j<d; j++) {
+
+      bf.mul_2si(R(i,j),condbits);
+      bf.div(bf,minval);
+      B(i,j).set_f(bf);
+
+    }
+
+}
 
 
 /********************************************************/

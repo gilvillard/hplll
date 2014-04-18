@@ -44,22 +44,66 @@ int main(int argc, char *argv[])  {
   { 
   
     cout << "************************************************************************** " << endl; 
-    int d=8;
-    int nbbits=8;
+    int d=20;
+    int n;
+    int nbbits=1600;
     
+    int i,j;
 
-    A.resize(d+1,d); 
-    AT.resize(d,d+1);  
-    AT.gen_intrel(nbbits);
+    int start,startsec;
+
+
+    //n=d+1;  A.resize(n,d);  AT.resize(d,n); AT.gen_intrel(nbbits);
+    n=d; A.resize(n,d);  AT.resize(d,n);  AT.gen_uniform(nbbits);
     transpose(A,AT);
+    for (i=0; i<n/2; i++)
+      for (j=0; j<n; j++) 
+    	if (i==j) A(i,j)=1; else A(i,j)=0; 
 
+    mpfr_set_default_prec(max(nbbits,2*d)+max(10,nbbits/10));
 
     PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
 
-    B.householder();
+    //print2maple(B.getbase(),n,d);
 
-    print2maple(B.getbase(),d+1,d);
-    print2maple(B.getR(),d,d);
+    start=utime();
+    startsec=utimesec();
+
+    B.hlll(0.99);
+    
+    start=utime()-start;
+    startsec=utimesec()-startsec;
+
+    /*int start;
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,NO_TRANSFORM,DEF_REDUCTION);
+    start=utime();
+    C.hlll(0.99);
+    start=utime()-start;
+    cout << "   LLL " << start/1000 << " ms" << endl;*/
+ 
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+    T1.isreduced(0.9);
+
+    cout << "   bits = " << nbbits << endl;
+    cout << "   dimension = " << d  << endl;
+    cout << "   nblov plll " << B.nblov  << endl;
+    cout << "   time plll: " << start/1000 << " ms" << endl;
+    cout << "   time plll: " << startsec << " s" << endl;
+
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,NO_TRANSFORM,DEF_REDUCTION);
+
+    start=utime();
+    startsec=utimesec();
+
+    C.hlll(0.99);
+
+    start=utime()-start;
+    startsec=utimesec()-startsec;
+
+
+    cout << "   nblov hlll " << C.nblov  << endl;
+    cout << "   time hlll: " << start/1000 << " ms" << endl;
+    cout << "   time hlll: " << startsec << " s" << endl;
 
   } 
 
