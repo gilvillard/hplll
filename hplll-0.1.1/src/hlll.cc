@@ -62,8 +62,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
       if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
       
-      nmaxkappa=structure[kappa]+1;    // Recomputing the structure, when ?  
-      
       if (kappa == 1) { 
 	for (i=0; i<d; i++) kappamin[i]=min(kappamin[i],0);
 	householder_r(0);  
@@ -112,7 +110,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
    
       nblov+=1;
     
-      fp_norm(s,R.getcol(kappa,kappa),nmaxkappa-kappa);
+      fp_norm(s,R.getcol(kappa,kappa),structure[kappa]+1-kappa);
       s.mul(s,s);
       sn.mul(R.get(kappa-1,kappa),R.get(kappa-1,kappa));
       newt.add(s,sn);
@@ -204,13 +202,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
    Returns -1 if no convergence in the while loop:  no decrease of the norm
 
-   nmaxkappa must be initialized 
    ------------------------------------------------------------------------- */
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) { 
 
+  nmaxkappa=structure[kappa]+1;
 
   FP_NR<FT> approx;
   
@@ -416,12 +414,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
    Returns -1 if no convergence in the while loop:  no decrease of the norm
 
-   nmaxkappa must be initialized 
    ------------------------------------------------------------------------- */
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) { 
+
+  nmaxkappa=structure[kappa]+1;
 
   FP_NR<FT> approx;
   
@@ -441,11 +440,11 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
   unsigned int start=0;
 
   int nmax; // De la structure triangulaire 
-
+  
   if (chrono) start=utime();
   
   householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
-
+  
   if (chrono) tps_householder+=utime()-start;
 
 
@@ -586,11 +585,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 /* ------------- */
 /* Householder R */
 /* ------------- */
-// nmaxkappa must be initialized 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
 {
+
+  nmaxkappa=structure[kappa]+1;
+
   int i,k,length; 
 
   // kappa == 0
@@ -602,16 +603,15 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
        R.setcol(kappa,Bfp.getcol(kappa),nmaxkappa);
 
      else {
-        
+      
        col_kept[kappa]=1; 
 
        Bfp.setcol(kappa,B.getcol(kappa),0,nmaxkappa);
-
        R.setcol(kappa,Bfp.getcol(kappa),nmaxkappa);
-
        fp_norm_sq(normB2[kappa], R.getcol(kappa), nmaxkappa);
-     }
 
+     }
+ 
     kappamin[kappa]=kappa;
 
   }
@@ -725,7 +725,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
 /* ------------- */
 /* Householder V */
 /* ------------- */
-// nmaxkappa must be initialized 
+// nmaxkappa must be initialized e.g. through householder_r 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_v(int kappa) 
@@ -995,6 +995,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(ZZ_mat<ZT> A) {
       B(i,j)=A.Get(i,j);
   
   matrix_structure(structure, B, n,d);
+  for (int i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
+  for (int j=0; j<d; j++) kappamin[j]=-1;
 
   if (transf) {
     
@@ -1003,6 +1005,28 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(ZZ_mat<ZT> A) {
    
   }
 }
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(MatrixZT A) {
+
+  nblov = 0;
+
+  for (int i=0; i<n; i++) 
+    for (int j=0; j<d; j++) 
+      B(i,j)=A.get(i,j);
+  
+  matrix_structure(structure, B, n,d);
+  for (int i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
+  for (int j=0; j<d; j++) kappamin[j]=-1;
+
+  if (transf) {
+    
+    U.resize(d,d);
+    for (int i=0; i<d; i++) U(i,i)=1; 
+   
+  }
+}
+
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::shift_assign(ZZ_mat<ZT> A, vector<int> shift) {
@@ -1055,6 +1079,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::shift_assign(ZZ_mat<ZT> A, vector<int> shift
 
 
   matrix_structure(structure, B, n,d);
+  for (int i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
+  for (int j=0; j<d; j++) kappamin[j]=-1;
 
   if (transf) {
     
@@ -1078,6 +1104,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::shift_assign(ZZ_mat<ZT> A, vector<int> shift
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::put(ZZ_mat<ZT> A, long upperdim, long t, long tau) {
 
+  // Cf structure, colkept, kappamin 
 
   trunc<ZT, MatrixZT>(B, A, upperdim, d, n, t, tau);
 
@@ -1093,6 +1120,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::put(ZZ_mat<ZT> A, long upperdim, long t, lon
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::mixed_put(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, long t, long tau) {
 
+  // Cf structure, colkept, kappamin 
 
   mixed_trunc<matrix, FP_NR<mpfr_t>, Z_NR<ZT> >(B, A, t, tau);
 
@@ -1112,7 +1140,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::mixed_put(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::shift(ZZ_mat<ZT> A, long m, long lsigma) {
-
+  // Cf structure, colkept, kappamin 
   int i,j;
 
   for (i=0; i<m; i++)
@@ -1129,7 +1157,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::shift(ZZ_mat<ZT> A, long m, long lsigma) {
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::shiftRT(long lsigma) {
-
+  // Cf structure, colkept, kappamin 
   B.shift(lsigma); 
 
   if (transf) {

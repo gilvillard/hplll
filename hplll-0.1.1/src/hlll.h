@@ -124,7 +124,10 @@ public:
 
   void init(int n, int d, bool forU=false, int gchrono=0);
 
-  void assign(ZZ_mat<ZT> A); 
+  void assign(ZZ_mat<ZT> A);
+
+  void assign(MatrixZT A); 
+
   void shift_assign(ZZ_mat<ZT> A,  vector<int> shift);
 
   void put(ZZ_mat<ZT> A, long upperdim, long t, long sigma=0); 
