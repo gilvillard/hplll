@@ -44,9 +44,9 @@ int main(int argc, char *argv[])  {
   { 
   
     cout << "************************************************************************** " << endl; 
-    int d=20;
+    int d=48;
     int n;
-    int nbbits=1600;
+    int nbbits=800;
     
     int i,j;
 
