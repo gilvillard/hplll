@@ -44,9 +44,9 @@ int main(int argc, char *argv[])  {
   { 
   
     cout << "************************************************************************** " << endl; 
-    int d=48;
+    int d=40;
     int n;
-    int nbbits=800;
+    int nbbits=1600;
     
     int i,j;
 
@@ -56,13 +56,15 @@ int main(int argc, char *argv[])  {
     //n=d+1;  A.resize(n,d);  AT.resize(d,n); AT.gen_intrel(nbbits);
     n=d; A.resize(n,d);  AT.resize(d,n);  AT.gen_uniform(nbbits);
     transpose(A,AT);
-    for (i=0; i<n/2; i++)
-      for (j=0; j<n; j++) 
-    	if (i==j) A(i,j)=1; else A(i,j)=0; 
+    for (i=1; i<n; i++)
+      for (j=0; j<d; j++) 
+      if (i==j) A(i,j)=1; else A(i,j)=0; 
 
-    mpfr_set_default_prec(max(nbbits,2*d)+max(10,nbbits/10));
+    mpfr_set_default_prec(max(nbbits,2*d)+max(80,nbbits/10));
+    //mpfr_set_default_prec(d+max(10,nbbits/10));
 
     PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
+    //PLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A);
 
     //print2maple(B.getbase(),n,d);
 

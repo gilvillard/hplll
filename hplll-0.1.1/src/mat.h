@@ -618,6 +618,19 @@ template<class T> void set(Matrix<T>& B, matrix<T> A)
 };
 
 
+template<class T> void set(matrix<T>& B, Matrix<T> A) 
+{
+
+  int m,n,i,j;
+
+  m= B.getRows();
+  n= B.getCols();
+
+   for (i=0; i<m; i++) 
+    for (j=0; j<n; j++) 
+      B(i,j)=A(i,j); 
+ 
+};
 
 
 // ******************************************************************
