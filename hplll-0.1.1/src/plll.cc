@@ -39,7 +39,7 @@ namespace hplll {
     int K,bdim;   // Number of blocks and dimension of each block 
                   // Assume that d is a multiple of K >= 4 
                   // K/2 and bdim >= 2 for actual segment) 
-    K=8;
+    K=4;
     bdim = d/K;
     
     int S,sdim;   // Number of segments and dimension of each segment  
@@ -56,7 +56,7 @@ namespace hplll {
 
     ZZ_mat<ZT> tmpB;
     tmpB.resize(n,d);
-    Lattice<ZT, FT, MatrixZT, MatrixFT> LB(tmpB,TRANSFORM,DEF_REDUCTION);
+    Lattice<ZT, FT, MatrixZT, MatrixFT> LB(tmpB,NO_TRANSFORM,DEF_REDUCTION);
 
     int start;
     
@@ -76,7 +76,7 @@ namespace hplll {
     // ****************
 
     for (iter=0; stop==0; iter++) {
-    //for (iter=0; iter < 4; iter++) {
+    //for (iter=0; iter < 3; iter++) {
 
       // Even block reduction  
       // --------------------
@@ -95,13 +95,15 @@ namespace hplll {
 #endif 
 
       for (k=0; k<S; k++) {   //cout << "+++++++++  Even ++++++++++++ " << endl; 
+#ifdef _OPENMP	
 	cout << "thread " << omp_get_thread_num() << endl; 
-
+#endif
 	//print2maple(getblock(RZ,k,k,S,0),sdim,sdim);
 	
 	Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
 	 
 	BR.hlll(delta);
+	cout << endl << "even nblov " << BR.nblov << endl; 
 	nblov+=BR.nblov;
 	putblock(U,BR.getU(),k,k,S,0);
 
@@ -127,8 +129,8 @@ namespace hplll {
       // Householder have been implicitely computed
       R=LB.getR();
       
-      matprod_in(B,LB.getU());
-
+      //matprod_in(B,LB.getU());
+      set(B,LB.getbase());
 
       // Odd block loop 
       // --------------
@@ -136,8 +138,7 @@ namespace hplll {
       setId(U);
       
       condbits=approx_cond();
-      cout << endl << "************* Odd approx cond " << condbits << endl;
- 
+    
       set_f(RZ,R,condbits);
 
 #ifdef _OPENMP
@@ -151,6 +152,7 @@ namespace hplll {
 	
 	Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
 	BR.hlll(delta);
+	cout << endl << "odd nblov " << BR.nblov << endl;
 	nblov+=BR.nblov;
 
 	putblock(U,BR.getU(),k,k,S,bdim);
@@ -167,6 +169,8 @@ namespace hplll {
     
       LB.assign(B);
 
+      //print2maple(B,n,d);
+
       for (i=0; i<d; i++) {
 	
 	LB.hsizereduce(i);
@@ -175,8 +179,11 @@ namespace hplll {
       
       // Householder have been implicitely computed
       R=LB.getR();
-      matprod_in(B,LB.getU());
-     
+      //matprod_in(B,LB.getU());
+      set(B,LB.getbase());
+
+      //print2maple(B,n,d);
+
       //print2maple(B,n,d);
 
     } // End main loop: global iterations iter 
