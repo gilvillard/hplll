@@ -24,6 +24,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "hlll.h"
 #include "plll.h"
 
+#include "tools.h"
+
 /* ***********************************************
 
           MAIN   
@@ -40,31 +42,77 @@ int main(int argc, char *argv[])  {
 
   // --------------------------------------------------------------------- 
   
-  int transform=0;
+  int transform=1;
 
-  double llldelta=0.75;
+  double llldelta=0.4;
    
-  int n=12;
-  
+    int sN, sX, h, delta;
 
-  int i;
+    sN = 1024;
+    sX = 324;
+    h = 15;
+    delta = 3;
 
-  ZZ_mat<mpz_t> A; // For hpLLL 
-  ZZ_mat<mpz_t> AT;  // fpLLL  
-  
-  AT.resize(n,n);
-  A.resize(n,n);
+    PARSE_MAIN_ARGS {
+      MATCH_MAIN_ARGID("-sN",sN);
+      MATCH_MAIN_ARGID("-sX",sX);
+      MATCH_MAIN_ARGID("-h",h);
+      SYNTAX();
+    }
 
-  AT.gen_ajtai(3.2);
-  transpose(A,AT);
+    Z_NR<mpz_t> N,X,tz,one;
 
-   print2maple(A,n,n);
+    one = 1;
+
+    N.randb(sN);
+    X.randb(sX);
+
+    int n;
+
+    n =delta *h;
+
+    ZZ_mat<mpz_t> A; // For hpLLL 
+    ZZ_mat<mpz_t> AT;  // fpLLL  
+
+    AT.resize(n,n);
+    A.resize(n,n);
+
+    int i,j,k;
+
+    tz=one;
+    for (i=h-1; i>=0; i--) {
+ 
+     for (k=0; k<delta; k++) 
+	AT(i*delta+k,i*delta+k)=tz;
+     
+     tz.mul(tz,N);
+    }
+
+    tz=one;
+    for (i=0; i<n; i++) {
+ 
+      AT(i,i).mul(AT(i,i),tz);
+      tz.mul(tz,X);
+    }
+
+    int s;
+
+    for (i=0; i<n; i++) 
+      for (j=i+1; j<n; j++) {
+
+	s=size_in_bits(AT(i,i));
+	AT(j,i).randb(s);
+
+    }
+
+    transpose(A,AT);
+    //print2maple(A,n,n);
     
     // ---------------------------------------------------------
     // Nb bits to consider, mpfr lattice 
 
     int height;
-    height = size_in_bits(A(0,0))  +1;
+    height = size_in_bits(A(delta-1,delta-1)) - size_in_bits(A(n-delta,n-delta)) +1;
    
    
     int bits;
@@ -102,7 +150,7 @@ int main(int argc, char *argv[])  {
     // Approximate lattice 
     // -------------------
 
-    bits =  cond;
+    bits =  1 + height;
     //bits=1200;
     cout << " bits = " << bits << endl; 
 
@@ -164,12 +212,15 @@ int main(int argc, char *argv[])  {
       hllltime=utime()-start;
       hlllprod=utime()-startinter;
       
+      //ZZ_mat<mpz_t> TT;
+      //TT.resize(n,n);
+      //NTL_inv(TT,A);
       //print2maple(TT,n,n);
 
     }
       
       Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(res2,NO_TRANSFORM,DEF_REDUCTION);
-      T2.isreduced(0.7);
+      T2.isreduced(llldelta-0.1);
 
     // FPLLL trunc  
     // -----------
@@ -220,7 +271,7 @@ int main(int argc, char *argv[])  {
     }
 
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T3(res3,NO_TRANSFORM,DEF_REDUCTION);
-    T3.isreduced(0.7);
+    T3.isreduced(llldelta-0.1);
 
 
     // Direct reduction 
@@ -242,7 +293,7 @@ int main(int argc, char *argv[])  {
     cout << " truncated total size = " << maxbitsize(Rtrunc) << endl << endl;
     cout << " cond = " << cond << endl;
     cout << " bits = " << bits << endl; 
-    cout << " n = " << n  << endl; 
+    cout << " n = " << n << "    h = " << h << "    N = " << N << "    X = " << X  << "    height = " << height << endl; 
      
     cout << endl; 
 

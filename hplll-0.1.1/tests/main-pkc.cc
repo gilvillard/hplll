@@ -48,8 +48,8 @@ int main(int argc, char *argv[])  {
     int sN, sX, h, delta;
 
     sN = 1024;
-    sX = 324;
-    h = 15;
+    sX = 318;
+    h = 10;
     delta = 3;
 
     Z_NR<mpz_t> N,X,tz,one;
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])  {
     // Approximate lattice 
     // -------------------
 
-    bits =  n + height;
+    bits =  1 + height;
     //bits=1200;
     cout << " bits = " << bits << endl; 
 
