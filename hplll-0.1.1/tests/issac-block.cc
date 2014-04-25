@@ -44,67 +44,33 @@ int main(int argc, char *argv[])  {
 
   double llldelta=0.75;
    
+  int n=60;
+  
 
-    int sN, sX, h, delta;
+  int i,j,k;
 
-    sN = 1024;
-    sX = 324;
-    h = 15;
-    delta = 3;
+  ZZ_mat<mpz_t> A; // For hpLLL 
+  ZZ_mat<mpz_t> AT;  // fpLLL  
+  
+  AT.resize(n,n);
+  A.resize(n,n);
 
-    Z_NR<mpz_t> N,X,tz,one;
+  int nbbits = 400;
+  AT.gen_uniform(nbbits);
+  transpose(A,AT);
+  for (i=0; i<n/2; i++)
+    for (j=0; j<n; j++) 
+    if (i==j) A(i,j)=1; else A(i,j)=0; 
 
-    one = 1;
+  
 
-    N.randb(sN);
-    X.randb(sX);
-
-    int n;
-
-    n =delta *h;
-
-    ZZ_mat<mpz_t> A; // For hpLLL 
-    ZZ_mat<mpz_t> AT;  // fpLLL  
-
-    AT.resize(n,n);
-    A.resize(n,n);
-
-    int i,j,k;
-
-    tz=one;
-    for (i=h-1; i>=0; i--) {
- 
-     for (k=0; k<delta; k++) 
-	AT(i*delta+k,i*delta+k)=tz;
-     
-     tz.mul(tz,N);
-    }
-
-    tz=one;
-    for (i=0; i<n; i++) {
- 
-      AT(i,i).mul(AT(i,i),tz);
-      tz.mul(tz,X);
-    }
-
-    int s;
-
-    for (i=0; i<n; i++) 
-      for (j=i+1; j<n; j++) {
-
-	s=size_in_bits(AT(i,i));
-	AT(j,i).randb(s);
-
-    }
-
-    transpose(A,AT);
-    //print2maple(A,n,n);
+   print2maple(A,n,n);
     
     // ---------------------------------------------------------
     // Nb bits to consider, mpfr lattice 
 
     int height;
-    height = size_in_bits(A(delta-1,delta-1)) - size_in_bits(A(n-delta,n-delta)) +1;
+    height = size_in_bits(A(0,0))  +1;
    
    
     int bits;
@@ -142,7 +108,7 @@ int main(int argc, char *argv[])  {
     // Approximate lattice 
     // -------------------
 
-    bits =  n + height;
+    bits =  2*cond;
     //bits=1200;
     cout << " bits = " << bits << endl; 
 
@@ -278,11 +244,11 @@ int main(int argc, char *argv[])  {
     int dfpllltime=utime()-start;
 
 
-    cout << " initial  total  size = " << size_in_bits(AT(delta-1,delta-1)) << endl; 
+    cout << " initial  total  size = " << maxbitsize(A) << endl; 
     cout << " truncated total size = " << maxbitsize(Rtrunc) << endl << endl;
     cout << " cond = " << cond << endl;
     cout << " bits = " << bits << endl; 
-    cout << " n = " << n << "    h = " << h << "    N = " << N << "    X = " << X  << "    height = " << height << endl; 
+    cout << " n = " << n  << endl; 
      
     cout << endl; 
 
