@@ -24,6 +24,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "hlll.h"
 #include "plll.h"
 
+#include "tools.h"
+
 /* ***********************************************
 
           MAIN   
@@ -40,12 +42,22 @@ int main(int argc, char *argv[])  {
 
   // --------------------------------------------------------------------- 
   
-  int transform=0;
+  int transform=1;
 
   double llldelta=0.75;
    
-  int n=12;
-  
+  int n=4;
+ 
+  double alpha = 2.8; 
+  double rho=1.0;
+
+    PARSE_MAIN_ARGS {
+      MATCH_MAIN_ARGID("-n",n);
+      MATCH_MAIN_ARGID("-alpha",alpha);
+      MATCH_MAIN_ARGID("-r",rho);
+      MATCH_MAIN_ARGID("-delta",llldelta);
+      SYNTAX();
+    }
 
   int i;
 
@@ -55,10 +67,10 @@ int main(int argc, char *argv[])  {
   AT.resize(n,n);
   A.resize(n,n);
 
-  AT.gen_ajtai(3.2);
+  AT.gen_ajtai(alpha);
   transpose(A,AT);
 
-   print2maple(A,n,n);
+  //print2maple(A,n,n);
     
     // ---------------------------------------------------------
     // Nb bits to consider, mpfr lattice 
@@ -68,7 +80,7 @@ int main(int argc, char *argv[])  {
    
    
     int bits;
-    bits =   (3* (n + height) +n);
+    bits =   (4* (n + height) +n);
 
     mpfr_set_default_prec(bits);
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
@@ -102,9 +114,8 @@ int main(int argc, char *argv[])  {
     // Approximate lattice 
     // -------------------
 
-    bits =  cond;
-    //bits=1200;
-    cout << " bits = " << bits << endl; 
+    bits =  (long) (((double) cond +1) * rho);
+    cout << " ** New bits = " << bits << endl; 
 
     matrix<Z_NR<mpz_t> > RZ;
     RZ.resize(n,n);

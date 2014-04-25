@@ -24,6 +24,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "hlll.h"
 #include "plll.h"
 
+
+#include "tools.h"
+
 /* ***********************************************
 
           MAIN   
@@ -40,10 +43,11 @@ int main(int argc, char *argv[])  {
 
   // --------------------------------------------------------------------- 
   
-  int transform=0;
+  int transform=1;
 
   double llldelta=0.75;
    
+  double rho = 1.0;
 
     int sN, sX, h, delta;
 
@@ -51,6 +55,16 @@ int main(int argc, char *argv[])  {
     sX = 324;
     h = 15;
     delta = 3;
+
+    
+    PARSE_MAIN_ARGS {
+      MATCH_MAIN_ARGID("-sN",sN);
+      MATCH_MAIN_ARGID("-sX",sX);
+      MATCH_MAIN_ARGID("-h",h);
+      MATCH_MAIN_ARGID("-r",rho);
+      MATCH_MAIN_ARGID("-delta",llldelta);
+      SYNTAX();
+    }
 
     Z_NR<mpz_t> N,X,tz,one;
 
@@ -108,7 +122,7 @@ int main(int argc, char *argv[])  {
    
    
     int bits;
-    bits =   (3* (n + height) +n);
+    bits =   (4* (n + height) +n);
 
     mpfr_set_default_prec(bits);
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
@@ -142,9 +156,9 @@ int main(int argc, char *argv[])  {
     // Approximate lattice 
     // -------------------
 
-    bits =  n + height;
-    //bits=1200;
-    cout << " bits = " << bits << endl; 
+   
+    bits =  (long) (((double) cond +1) * rho);
+    cout << " ** New bits = " << bits << endl; 
 
     matrix<Z_NR<mpz_t> > RZ;
     RZ.resize(n,n);
@@ -204,12 +218,15 @@ int main(int argc, char *argv[])  {
       hllltime=utime()-start;
       hlllprod=utime()-startinter;
       
+      //ZZ_mat<mpz_t> TT;
+      //TT.resize(n,n);
+      //NTL_inv(TT,A);
       //print2maple(TT,n,n);
 
     }
       
       Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(res2,NO_TRANSFORM,DEF_REDUCTION);
-      T2.isreduced(0.7);
+      T2.isreduced(llldelta-0.1);
 
     // FPLLL trunc  
     // -----------
@@ -260,7 +277,7 @@ int main(int argc, char *argv[])  {
     }
 
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T3(res3,NO_TRANSFORM,DEF_REDUCTION);
-    T3.isreduced(0.7);
+    T3.isreduced(llldelta-0.1);
 
 
     // Direct reduction 
@@ -278,7 +295,7 @@ int main(int argc, char *argv[])  {
     int dfpllltime=utime()-start;
 
 
-    cout << " initial  total  size = " << size_in_bits(AT(delta-1,delta-1)) << endl; 
+    cout << " initial  total  size = " << maxbitsize(A) << endl; 
     cout << " truncated total size = " << maxbitsize(Rtrunc) << endl << endl;
     cout << " cond = " << cond << endl;
     cout << " bits = " << bits << endl; 

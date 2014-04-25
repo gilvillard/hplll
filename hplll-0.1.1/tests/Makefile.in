@@ -52,7 +52,8 @@ build_triplet = @build@
 host_triplet = @host@
 check_PROGRAMS = arithmetic$(EXEEXT) hllltest$(EXEEXT) \
 	relationstest$(EXEEXT) nullspacetest$(EXEEXT)
-noinst_PROGRAMS = main$(EXEEXT)
+noinst_PROGRAMS = main$(EXEEXT) pkc$(EXEEXT) ajtai$(EXEEXT) \
+	block$(EXEEXT) prelimin$(EXEEXT)
 subdir = tests
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -68,14 +69,22 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
-am_arithmetic_OBJECTS = arithmetic.$(OBJEXT)
-arithmetic_OBJECTS = $(am_arithmetic_OBJECTS)
-arithmetic_LDADD = $(LDADD)
-arithmetic_DEPENDENCIES =
+am_ajtai_OBJECTS = issac-ajtai.$(OBJEXT)
+ajtai_OBJECTS = $(am_ajtai_OBJECTS)
+ajtai_LDADD = $(LDADD)
+ajtai_DEPENDENCIES =
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+am_arithmetic_OBJECTS = arithmetic.$(OBJEXT)
+arithmetic_OBJECTS = $(am_arithmetic_OBJECTS)
+arithmetic_LDADD = $(LDADD)
+arithmetic_DEPENDENCIES =
+am_block_OBJECTS = issac-block.$(OBJEXT)
+block_OBJECTS = $(am_block_OBJECTS)
+block_LDADD = $(LDADD)
+block_DEPENDENCIES =
 am_hllltest_OBJECTS = hllltest.$(OBJEXT)
 hllltest_OBJECTS = $(am_hllltest_OBJECTS)
 hllltest_LDADD = $(LDADD)
@@ -88,6 +97,14 @@ am_nullspacetest_OBJECTS = nullspacetest.$(OBJEXT)
 nullspacetest_OBJECTS = $(am_nullspacetest_OBJECTS)
 nullspacetest_LDADD = $(LDADD)
 nullspacetest_DEPENDENCIES =
+am_pkc_OBJECTS = issac-pkc.$(OBJEXT)
+pkc_OBJECTS = $(am_pkc_OBJECTS)
+pkc_LDADD = $(LDADD)
+pkc_DEPENDENCIES =
+am_prelimin_OBJECTS = issac-prelimin.$(OBJEXT)
+prelimin_OBJECTS = $(am_prelimin_OBJECTS)
+prelimin_LDADD = $(LDADD)
+prelimin_DEPENDENCIES =
 am_relationstest_OBJECTS = relationstest.$(OBJEXT)
 relationstest_OBJECTS = $(am_relationstest_OBJECTS)
 relationstest_LDADD = $(LDADD)
@@ -126,11 +143,12 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(arithmetic_SOURCES) $(hllltest_SOURCES) $(main_SOURCES) \
-	$(nullspacetest_SOURCES) $(relationstest_SOURCES)
-DIST_SOURCES = $(arithmetic_SOURCES) $(hllltest_SOURCES) \
-	$(main_SOURCES) $(nullspacetest_SOURCES) \
-	$(relationstest_SOURCES)
+SOURCES = $(ajtai_SOURCES) $(arithmetic_SOURCES) $(block_SOURCES) \
+	$(hllltest_SOURCES) $(main_SOURCES) $(nullspacetest_SOURCES) \
+	$(pkc_SOURCES) $(prelimin_SOURCES) $(relationstest_SOURCES)
+DIST_SOURCES = $(ajtai_SOURCES) $(arithmetic_SOURCES) $(block_SOURCES) \
+	$(hllltest_SOURCES) $(main_SOURCES) $(nullspacetest_SOURCES) \
+	$(pkc_SOURCES) $(prelimin_SOURCES) $(relationstest_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -288,6 +306,10 @@ AM_CPPFLAGS = -I$(top_srcdir)/src
 #Mis déjà dans le configure 
 LDADD = -lfplll -lntl #$(top_srcdir)/src/libhplll.la
 main_SOURCES = main.cc 
+pkc_SOURCES = issac-pkc.cc 
+ajtai_SOURCES = issac-ajtai.cc 
+block_SOURCES = issac-block.cc 
+prelimin_SOURCES = issac-prelimin.cc 
 arithmetic_SOURCES = arithmetic.cc  
 hllltest_SOURCES = hllltest.cc  
 relationstest_SOURCES = relationstest.cc 
@@ -344,9 +366,15 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+ajtai$(EXEEXT): $(ajtai_OBJECTS) $(ajtai_DEPENDENCIES) $(EXTRA_ajtai_DEPENDENCIES) 
+	@rm -f ajtai$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(ajtai_OBJECTS) $(ajtai_LDADD) $(LIBS)
 arithmetic$(EXEEXT): $(arithmetic_OBJECTS) $(arithmetic_DEPENDENCIES) $(EXTRA_arithmetic_DEPENDENCIES) 
 	@rm -f arithmetic$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(arithmetic_OBJECTS) $(arithmetic_LDADD) $(LIBS)
+block$(EXEEXT): $(block_OBJECTS) $(block_DEPENDENCIES) $(EXTRA_block_DEPENDENCIES) 
+	@rm -f block$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(block_OBJECTS) $(block_LDADD) $(LIBS)
 hllltest$(EXEEXT): $(hllltest_OBJECTS) $(hllltest_DEPENDENCIES) $(EXTRA_hllltest_DEPENDENCIES) 
 	@rm -f hllltest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(hllltest_OBJECTS) $(hllltest_LDADD) $(LIBS)
@@ -356,6 +384,12 @@ main$(EXEEXT): $(main_OBJECTS) $(main_DEPENDENCIES) $(EXTRA_main_DEPENDENCIES)
 nullspacetest$(EXEEXT): $(nullspacetest_OBJECTS) $(nullspacetest_DEPENDENCIES) $(EXTRA_nullspacetest_DEPENDENCIES) 
 	@rm -f nullspacetest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(nullspacetest_OBJECTS) $(nullspacetest_LDADD) $(LIBS)
+pkc$(EXEEXT): $(pkc_OBJECTS) $(pkc_DEPENDENCIES) $(EXTRA_pkc_DEPENDENCIES) 
+	@rm -f pkc$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(pkc_OBJECTS) $(pkc_LDADD) $(LIBS)
+prelimin$(EXEEXT): $(prelimin_OBJECTS) $(prelimin_DEPENDENCIES) $(EXTRA_prelimin_DEPENDENCIES) 
+	@rm -f prelimin$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(prelimin_OBJECTS) $(prelimin_LDADD) $(LIBS)
 relationstest$(EXEEXT): $(relationstest_OBJECTS) $(relationstest_DEPENDENCIES) $(EXTRA_relationstest_DEPENDENCIES) 
 	@rm -f relationstest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(relationstest_OBJECTS) $(relationstest_LDADD) $(LIBS)
@@ -368,6 +402,10 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arithmetic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hllltest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/issac-ajtai.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/issac-block.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/issac-pkc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/issac-prelimin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nullspacetest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/relationstest.Po@am__quote@

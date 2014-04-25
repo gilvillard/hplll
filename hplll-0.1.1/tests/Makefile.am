@@ -8,7 +8,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/src
 
 check_PROGRAMS = arithmetic  hllltest relationstest nullspacetest 
 
-noinst_PROGRAMS= main  
+noinst_PROGRAMS= main pkc  ajtai block prelimin 
 
 
 #INCLUDES = -I$(top_srcdir)/src 
@@ -17,6 +17,10 @@ noinst_PROGRAMS= main
 LDADD =  -lfplll -lntl #$(top_srcdir)/src/libhplll.la
 
 main_SOURCES=main.cc 
+pkc_SOURCES=issac-pkc.cc 
+ajtai_SOURCES=issac-ajtai.cc 
+block_SOURCES=issac-block.cc 
+prelimin_SOURCES=issac-prelimin.cc 
 
 
 arithmetic_SOURCES=arithmetic.cc  

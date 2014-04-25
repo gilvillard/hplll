@@ -24,6 +24,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "hlll.h"
 #include "plll.h"
 
+#include "tools.h"
+
 /* ***********************************************
 
           MAIN   
@@ -40,14 +42,24 @@ int main(int argc, char *argv[])  {
 
   // --------------------------------------------------------------------- 
   
-  int transform=0;
+  int transform=1;
 
   double llldelta=0.75;
    
-  int n=60;
-  
+  int n=6;
+  int nbbits = 4;
+  double rho=1.0;
 
-  int i,j,k;
+   PARSE_MAIN_ARGS {
+     MATCH_MAIN_ARGID("-n",n);
+     MATCH_MAIN_ARGID("-bits",nbbits);
+     MATCH_MAIN_ARGID("-r",rho);
+     MATCH_MAIN_ARGID("-delta",llldelta);
+     
+     SYNTAX();
+    }
+
+  int i,j;
 
   ZZ_mat<mpz_t> A; // For hpLLL 
   ZZ_mat<mpz_t> AT;  // fpLLL  
@@ -55,7 +67,7 @@ int main(int argc, char *argv[])  {
   AT.resize(n,n);
   A.resize(n,n);
 
-  int nbbits = 400;
+ 
   AT.gen_uniform(nbbits);
   transpose(A,AT);
   for (i=0; i<n/2; i++)
@@ -64,17 +76,17 @@ int main(int argc, char *argv[])  {
 
   
 
-   print2maple(A,n,n);
+  //print2maple(A,n,n);
     
     // ---------------------------------------------------------
     // Nb bits to consider, mpfr lattice 
 
     int height;
-    height = size_in_bits(A(0,0))  +1;
+    height = nbbits   +1;
    
    
     int bits;
-    bits =   (3* (n + height) +n);
+    bits =   (4* (n + height) +n);
 
     mpfr_set_default_prec(bits);
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
@@ -108,21 +120,37 @@ int main(int argc, char *argv[])  {
     // Approximate lattice 
     // -------------------
 
-    bits =  2*cond;
-    //bits=1200;
-    cout << " bits = " << bits << endl; 
+    bits =  (long) (((double) 2*cond) * rho + n);
+    
+    cout << " ** New bits = " << bits << endl; 
 
     matrix<Z_NR<mpz_t> > RZ;
     RZ.resize(n,n);
     
-    set_f(RZ,B.getR(),bits);
-   
-    //print2maple(RZ,n,n);
+    set(RZ,A);
 
+    matrix<FP_NR<mpfr_t> > Afp;
+    Afp.resize(n,n);
+    for (i=0; i<n; i++)
+      Afp.setcol(i,RZ.getcol(i),0,n);
+
+    set_f(RZ,Afp,bits);
+   
+    
     ZZ_mat<mpz_t> Rtrunc;
     Rtrunc.resize(n,n);
 
     set(Rtrunc,RZ);
+
+    Z_NR<mpz_t> one;
+    one = 1;
+
+    for (i=0; i<n/2; i++)
+      for (j=0; j<n; j++)
+	Rtrunc(i,j)=A(i,j);
+
+    print2maple(A,n,n);
+
 
     // ----------------------------------------
     //  Reductions 
@@ -175,7 +203,7 @@ int main(int argc, char *argv[])  {
     }
       
       Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(res2,NO_TRANSFORM,DEF_REDUCTION);
-      T2.isreduced(0.7);
+      T2.isreduced(llldelta-0.1);
 
     // FPLLL trunc  
     // -----------
@@ -226,7 +254,7 @@ int main(int argc, char *argv[])  {
     }
 
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T3(res3,NO_TRANSFORM,DEF_REDUCTION);
-    T3.isreduced(0.7);
+    T3.isreduced(llldelta-0.1);
 
 
     // Direct reduction 
