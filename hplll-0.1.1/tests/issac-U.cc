@@ -45,48 +45,83 @@ int main(int argc, char *argv[])  {
   int transform=1;
 
   double llldelta=0.75;
-   
-  int n=6;
-  int nbbits = 4;
-  double rho=1.0;
-  int shift=0;
+ 
+  int n=20;
+  int ibits = 80;
+  int shift =0;
 
-   PARSE_MAIN_ARGS {
-     MATCH_MAIN_ARGID("-n",n);
-     MATCH_MAIN_ARGID("-bits",nbbits);
-     MATCH_MAIN_ARGID("-shift",shift);
-     MATCH_MAIN_ARGID("-r",rho);
-     MATCH_MAIN_ARGID("-delta",llldelta);
-     
-     SYNTAX();
+  double rho = 1.0;
+
+    PARSE_MAIN_ARGS {
+      MATCH_MAIN_ARGID("-n",n);
+      MATCH_MAIN_ARGID("-bits",ibits);
+      MATCH_MAIN_ARGID("-r",rho);
+      MATCH_MAIN_ARGID("-shift",shift);
+      MATCH_MAIN_ARGID("-delta",llldelta);
+      SYNTAX();
     }
 
-   int i,j;
 
-  ZZ_mat<mpz_t> A; // For hpLLL 
-  ZZ_mat<mpz_t> AT;  // fpLLL  
-  
-  AT.resize(n,n);
-  A.resize(n,n);
+    int i,j;
 
- 
-  AT.gen_uniform(nbbits);
-  for (i=0; i<n/4; i++)
-    for (j=0; j<n; j++)
-      AT(j,i).randb(nbbits+shift);
-  transpose(A,AT);
+    ZZ_mat<mpz_t> A; // For hpLLL 
+    ZZ_mat<mpz_t> AT;  // fpLLL  
 
-  //print2maple(A,n,n);
+    A.resize(n,n); 
+    AT.resize(n,n);  
+
+    for (i=0; i<n ; i++)
+      A(0,i).randb(ibits);
+
+    Z_NR<mpz_t> one; 
+    one =1;
+
+    for (i=1; i<n ; i++)
+      A(i,i)=one; 
+
+    transpose(AT,A);
+
+   
+
+   
+
+    int prelimin=utime();
+
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  P(A,TRANSFORM,DEF_REDUCTION);
     
+      
+    P.hlll(llldelta);
+     
+    prelimin=utime()-prelimin; 
+    A = P.getU();
+
+    int s;
+    s = maxbitsize(A);
+
+    Z_NR<mpz_t> tt;
+    
+
+    for (i=0; i<n; i++) 
+      for (j=0; j<n; j++) {
+	if ((s-shift) > 0) {
+	    tt.randb(shift);
+	    A(i,j).add(A(i,j),tt);
+	  }
+      }
+
+    transpose(AT,A);
+
+    //print2maple(A,n,n);
+
     // ---------------------------------------------------------
     // Nb bits to consider, mpfr lattice 
 
     int height;
-    height = nbbits   +1;
+    height = maxbitsize(A); 
    
    
     int bits;
-    bits =   (4* (n + height) +n);
+    bits =   8*n+height;
 
     mpfr_set_default_prec(bits);
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
@@ -120,11 +155,9 @@ int main(int argc, char *argv[])  {
     // Approximate lattice 
     // -------------------
 
-    //bits =  (long) (((double) 2*cond) * rho + n);
-   
+    
     bits =  (long) (((double) cond +1) * rho);
-
-    cout << " ** New bits = " << bits << endl; 
+    
 
     matrix<Z_NR<mpz_t> > RZ;
     RZ.resize(n,n);
@@ -137,7 +170,6 @@ int main(int argc, char *argv[])  {
     Rtrunc.resize(n,n);
 
     set(Rtrunc,RZ);
-
 
     // ----------------------------------------
     //  Reductions 
@@ -161,11 +193,11 @@ int main(int argc, char *argv[])  {
       start=utime();
       
       Btrunc.hlll(llldelta);
-    
-      startinter=utime();
- 
-      matprod(res2,A,Btrunc.getU());
    
+      startinter=utime();
+     
+      matprod(res2,A,Btrunc.getU());
+  
       hllltime=utime()-start;
       hlllprod=utime()-startinter;
       
@@ -210,6 +242,9 @@ int main(int argc, char *argv[])  {
 
     ZZ_mat<mpz_t> res3;
     res3.resize(n,n);
+    
+    ZZ_mat<mpz_t> res4;
+    res4.resize(n,n);
 
     if (transform ==1) {
       start=utime();
@@ -218,12 +253,12 @@ int main(int argc, char *argv[])  {
       
       startinter=utime();
       
-      matprod(res2,V,AT);
+      matprod(res3,V,AT);
       
       fpllltime=utime()-start;
       fplllprod=utime()-startinter;
 
-      transpose(res3,res2);
+      transpose(res4,res3);
     } 
     else {
       start=utime();
@@ -240,7 +275,7 @@ int main(int argc, char *argv[])  {
       transpose(res3,res2);
     }
 
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T3(res3,NO_TRANSFORM,DEF_REDUCTION);
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T3(res4,NO_TRANSFORM,DEF_REDUCTION);
     T3.isreduced(llldelta-0.1);
 
 
@@ -249,11 +284,11 @@ int main(int argc, char *argv[])  {
 
     Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > DA(A,NO_TRANSFORM,DEF_REDUCTION);
 
-
+   
     start=utime();
     DA.hlll(llldelta);
     int dhllltime=utime()-start;
-    
+     
     start=utime();
     lllReduction(AT, llldelta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
     int dfpllltime=utime()-start;
@@ -263,15 +298,19 @@ int main(int argc, char *argv[])  {
     cout << " truncated total size = " << maxbitsize(Rtrunc) << endl << endl;
     cout << " cond = " << cond << endl;
     cout << " bits = " << bits << endl; 
-    cout << " n = " << n  << endl; 
+    cout << " n = " << n << "    shift = " << shift << "    delta = " << llldelta << "  s = " << bits << endl; 
      
     cout << endl; 
 
+ cout << "   preliminary time: " << prelimin/1000 << " ms" << endl;
     cout << "   time hlll: " << hllltime/1000 << " ms" << endl;
     cout << "        prod: " << hlllprod/1000 << " ms" << endl;
     cout << "   time fplll: " << fpllltime/1000 << " ms" << endl;
     cout << "         prod: " << fplllprod/1000 << " ms" << endl;
     cout << "   time direct hlll: " << dhllltime/1000 << " ms" << endl;
     cout << "   time direct fplll: " << dfpllltime/1000 << " ms" << endl;
+   
+
+
   return 0;
 }
