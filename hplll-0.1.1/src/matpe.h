@@ -1188,7 +1188,7 @@ template<> inline void scalarprod(FP_NR<dpe_t>& nn, const colexp<double> vcol, c
     double* w = wcol.col;
 
     double tmpnn;
-
+    
     if (nmax !=0) {
 
       tmpnn=0.0;

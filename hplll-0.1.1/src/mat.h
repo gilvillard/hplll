@@ -639,7 +639,8 @@ template<class T> void set(matrix<T>& B, Matrix<T> A)
 
 template<class T> void matprod(Matrix<T>& C,  Matrix<T> B, Matrix<T> U) 
 {
-  // ICI 
+ 
+ 
   int n,d,dres,i,j,k;
 
   n= B.GetNumRows();
