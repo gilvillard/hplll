@@ -424,7 +424,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 
   FP_NR<FT> approx;
   
-  approx=0.01;
+  approx=0.1;
 
 
   FP_NR<FT> t,tmpfp;
@@ -483,7 +483,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 
 	    somedone = 1;
 
-	    R.subcol(kappa,i,i);
+	    R.subcol(kappa,i,i+1);
 	    
 	    B.subcol(kappa,i,nmax);
 		
@@ -495,7 +495,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 
 	    somedone = 1;
  
-	    R.addcol(kappa,i,i);
+	    R.addcol(kappa,i,i+1);
 	    
 	    B.addcol(kappa,i,nmax);
 		
@@ -507,7 +507,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
  
 	    somedone = 1;
 
-	    R.submulcol(kappa,i,x,i);
+	    R.submulcol(kappa,i,x,i+1);
 	   
 	    B.addmulcol_si(kappa,i,-lx,nmax);
 
@@ -523,7 +523,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 
 	  set_f(xz,x);
 	  
-	  R.submulcol(kappa,i,x,i);
+	  R.submulcol(kappa,i,x,i+1);
       
 
 	  //B.submulcol(kappa,i,xz,nmax);    
@@ -548,26 +548,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
       col_kept[kappa]=0;
 
       t.mul(approx,normB2[kappa]);
-
-      if (chrono) start=utime();
-      
       householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
-      
-      if (chrono) tps_householder+=utime()-start;
-
       nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ? 
-      //if (w > 1) cout << "----------" << endl; 
-
-      //if ((somedone) && (nonstop==0)) compteur+=1; // somedone mais ne baisse plus 
-      // la partie _r dont on a besoin pour _v a changée ? 2ème _r nécessaire 
-      // non 
-      // mettre à colkept = 0 (les VR ne sont plus disponibles) 
-      // heuristique pour ne pas tout refaire householder_r avec rafraichissement 
-      // puis pas réduction complète et nb op ok quand descente 
-
-  
-      //if ((somedone) && (nonstop==1)) tmpcompt+=1;
-        
+      
     }
     else {
       nonstop=0;
@@ -682,6 +665,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
       col_kept[kappa]=1;  
       
       Bfp.setcol(kappa,B.getcol(kappa),0,nmaxkappa);
+
 
       fp_norm_sq(normB2[kappa], Bfp.getcol(kappa), nmaxkappa);
 
@@ -1415,12 +1399,12 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline FP_NR<FT> Lat
   oldprec=getprec();
 
   // ICI 
-  if (d<=20) setprec(53);  
-  else setprec(2*d);  // ******* TO TUNE  
+  //if (d<=20) setprec(53);  
+  //else setprec(2*d);  // ******* TO TUNE  
 
   newprec=getprec();
 
-  if (newprec == oldprec) cout << "Warning: in function cond the change of precision has no effect" << endl; 
+  //if (newprec == oldprec) cout << "Warning: in function cond the change of precision has no effect" << endl; 
 
   // Calcul direct sur R par householder 
   // -----------------------------------
