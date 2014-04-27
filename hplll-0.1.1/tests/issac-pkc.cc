@@ -250,7 +250,7 @@ int main(int argc, char *argv[])  {
     if (transform ==1) {
       start=utime();
  
-      lllReduction(RtruncT, V, llldelta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
+      lllReduction(RtruncT, V, llldelta, 0.51, LM_FAST,FT_DEFAULT,0);
       
       startinter=utime();
       
@@ -266,7 +266,7 @@ int main(int argc, char *argv[])  {
  
       res2=RtruncT;
 
-      lllReduction(res2, llldelta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
+      lllReduction(res2, llldelta, 0.51, LM_FAST,FT_DEFAULT,0);
       
       startinter=utime();
       
@@ -291,9 +291,18 @@ int main(int argc, char *argv[])  {
     int dhllltime=utime()-start;
     
     start=utime();
-    lllReduction(AT, llldelta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
+    lllReduction(AT, llldelta, 0.51, LM_FAST,FT_DEFAULT,0);
     int dfpllltime=utime()-start;
+    
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T4(DA.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+    T4.isreduced(llldelta-0.1);
 
+    ZZ_mat<mpz_t> TT;
+    TT.resize(n,n);
+    transpose(TT,AT);
+
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T5(TT,NO_TRANSFORM,DEF_REDUCTION);
+    T5.isreduced(llldelta-0.1);
 
     cout << " initial  total  size = " << maxbitsize(A) << endl; 
     cout << " truncated total size = " << maxbitsize(Rtrunc) << endl << endl;
