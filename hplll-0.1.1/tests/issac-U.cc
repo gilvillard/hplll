@@ -51,13 +51,15 @@ int main(int argc, char *argv[])  {
   int shift =0;
 
   double rho = 1.0;
+  int K=8;
 
     PARSE_MAIN_ARGS {
       MATCH_MAIN_ARGID("-n",n);
       MATCH_MAIN_ARGID("-bits",ibits);
       MATCH_MAIN_ARGID("-r",rho);
-      MATCH_MAIN_ARGID("-shift",shift);
+      MATCH_MAIN_ARGID("-cond",shift);
       MATCH_MAIN_ARGID("-delta",llldelta);
+      MATCH_MAIN_ARGID("-K",K);
       SYNTAX();
     }
 
@@ -94,6 +96,8 @@ int main(int argc, char *argv[])  {
      
     prelimin=utime()-prelimin; 
     A = P.getU();
+    for (int k=0; k<K; k++)
+      matprod_in(A,A);
 
     int s;
     s = maxbitsize(A);
@@ -104,7 +108,7 @@ int main(int argc, char *argv[])  {
     for (i=0; i<n; i++) 
       for (j=0; j<n; j++) {
 	if ((s-shift) > 0) {
-	    tt.randb(shift);
+	    tt.randb(s-shift);
 	    A(i,j).add(A(i,j),tt);
 	  }
       }
@@ -162,10 +166,16 @@ int main(int argc, char *argv[])  {
     matrix<Z_NR<mpz_t> > RZ;
     RZ.resize(n,n);
     
-    set_f(RZ,B.getR(),bits);
+    matrix<FP_NR<mpfr_t> > Afp;
+    Afp.resize(n,n);
    
-    //print2maple(RZ,n,n);
+    set(RZ,A);
 
+    for (i=0; i<n; i++) 
+      Afp.setcol(i,RZ.getcol(i),0,n);
+
+    set_f(RZ,Afp,bits);
+   
     ZZ_mat<mpz_t> Rtrunc;
     Rtrunc.resize(n,n);
 
@@ -185,9 +195,15 @@ int main(int argc, char *argv[])  {
     
     int hllltime;
     int hlllprod; 
+    int hlllss;
 
     if (transform ==1) {
       
+      start = utime();
+      Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > Btruncss(Rtrunc,NO_TRANSFORM,DEF_REDUCTION);
+      Btruncss.hlll(llldelta);
+      hlllss=utime()-start;
+
       Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > Btrunc(Rtrunc,TRANSFORM,DEF_REDUCTION);
 
       start=utime();
@@ -237,6 +253,14 @@ int main(int argc, char *argv[])  {
     RtruncT.resize(n,n);
     transpose(RtruncT,Rtrunc);
 
+    int fplllss;
+    start = utime();
+    lllReduction(RtruncT, llldelta, 0.51, LM_FAST,FT_DEFAULT,0);
+    fplllss=utime()-start;
+
+    transpose(RtruncT,Rtrunc);
+
+
     int fpllltime;
     int fplllprod;
 
@@ -249,7 +273,7 @@ int main(int argc, char *argv[])  {
     if (transform ==1) {
       start=utime();
  
-      lllReduction(RtruncT, V, llldelta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
+      lllReduction(RtruncT, V, llldelta, 0.51, LM_FAST,FT_DEFAULT,0);
       
       startinter=utime();
       
@@ -265,7 +289,7 @@ int main(int argc, char *argv[])  {
  
       res2=RtruncT;
 
-      lllReduction(res2, llldelta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
+      lllReduction(res2, llldelta, 0.51, LM_FAST,FT_DEFAULT,0);
       
       startinter=utime();
       
@@ -282,17 +306,27 @@ int main(int argc, char *argv[])  {
     // Direct reduction 
     // ----------------
 
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > DA(A,NO_TRANSFORM,DEF_REDUCTION);
+    transpose(AT,A);
 
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > DA(A,NO_TRANSFORM,DEF_REDUCTION);
    
     start=utime();
     DA.hlll(llldelta);
     int dhllltime=utime()-start;
      
     start=utime();
-    lllReduction(AT, llldelta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
+    lllReduction(AT, llldelta, 0.51, LM_FAST,FT_DEFAULT,0);
     int dfpllltime=utime()-start;
 
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T4(DA.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+    T4.isreduced(llldelta-0.1);
+
+    ZZ_mat<mpz_t> TT;
+    TT.resize(n,n);
+    transpose(TT,AT);
+
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T5(TT,NO_TRANSFORM,DEF_REDUCTION);
+    T5.isreduced(llldelta-0.1);
 
     cout << " initial  total  size = " << maxbitsize(A) << endl; 
     cout << " truncated total size = " << maxbitsize(Rtrunc) << endl << endl;
@@ -302,15 +336,19 @@ int main(int argc, char *argv[])  {
      
     cout << endl; 
 
- cout << "   preliminary time: " << prelimin/1000 << " ms" << endl;
+    cout << "   preliminary time: " << prelimin/1000 << " ms" << endl << endl;
+ cout << "      hlllss: " << hlllss/1000 << " ms" << endl;
     cout << "   time hlll: " << hllltime/1000 << " ms" << endl;
     cout << "        prod: " << hlllprod/1000 << " ms" << endl;
+ cout << "      fplllss: " << fplllss/1000 << " ms" << endl;
     cout << "   time fplll: " << fpllltime/1000 << " ms" << endl;
     cout << "         prod: " << fplllprod/1000 << " ms" << endl;
     cout << "   time direct hlll: " << dhllltime/1000 << " ms" << endl;
     cout << "   time direct fplll: " << dfpllltime/1000 << " ms" << endl;
    
-
+cout << endl; 
+    cout << "Ratio fplll: " << ((double) dfpllltime)/((double) fpllltime) << endl;
+    cout << "Ratio  hlll: " << ((double) dhllltime)/((double) hllltime) << endl;
 
   return 0;
 }
