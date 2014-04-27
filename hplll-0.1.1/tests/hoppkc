@@ -6,3 +6,9 @@ pkc -sN 1024 -sX 328 -h 20
 pkc -sN 1024 -sX 331 -h 25
 pkc -sN 1024 -sX 332 -h 30
 
+pkc -sN 2048 -sX 318 -h 10
+pkc -sN 2048 -sX 324 -h 15
+pkc -sN 2048 -sX 328 -h 20
+pkc -sN 2048 -sX 331 -h 25
+pkc -sN 2048 -sX 332 -h 30
+
