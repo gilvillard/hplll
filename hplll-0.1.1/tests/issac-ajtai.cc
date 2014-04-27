@@ -143,9 +143,17 @@ int main(int argc, char *argv[])  {
     
     int hllltime;
     int hlllprod; 
+    int hlllss;
 
     if (transform ==1) {
       
+
+      start = utime();
+      Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > Btruncss(Rtrunc,NO_TRANSFORM,DEF_REDUCTION);
+      //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > Btruncss(Rtrunc,NO_TRANSFORM,DEF_REDUCTION);
+      //Btruncss.hlll(llldelta);
+      hlllss=utime()-start;
+
       Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > Btrunc(Rtrunc,TRANSFORM,DEF_REDUCTION);
 
       start=utime();
@@ -193,6 +201,13 @@ int main(int argc, char *argv[])  {
 
     ZZ_mat<mpz_t> RtruncT;
     RtruncT.resize(n,n);
+    transpose(RtruncT,Rtrunc);
+
+    int fplllss;
+    start = utime();
+    lllReduction(RtruncT, llldelta, 0.51, LM_FAST,FT_DEFAULT,0);
+    fplllss=utime()-start;
+
     transpose(RtruncT,Rtrunc);
 
     int fpllltime;
@@ -266,11 +281,21 @@ int main(int argc, char *argv[])  {
      
     cout << endl; 
 
+    cout << "      hlllss: " << hlllss/1000 << " ms" << endl;
     cout << "   time hlll: " << hllltime/1000 << " ms" << endl;
     cout << "        prod: " << hlllprod/1000 << " ms" << endl;
+    cout << "      fplllss: " << fplllss/1000 << " ms" << endl;
     cout << "   time fplll: " << fpllltime/1000 << " ms" << endl;
     cout << "         prod: " << fplllprod/1000 << " ms" << endl;
     cout << "   time direct hlll: " << dhllltime/1000 << " ms" << endl;
     cout << "   time direct fplll: " << dfpllltime/1000 << " ms" << endl;
+
+
+    cout << endl; 
+    cout << "Ratio fplll: " << ((double) dfpllltime)/((double) fpllltime) << endl;
+    cout << "Ratio  hlll: " << ((double) dhllltime)/((double) hllltime) << endl;
+cout << "Truncation ratio: " <<  ((double) maxbitsize(A))/((double) maxbitsize(Rtrunc)) << endl; 
+    cout << "Time trunc ratio: " << ((double) dfpllltime)/((double) fplllss) << endl; 
+
   return 0;
 }

@@ -1,0 +1,62 @@
+#!/bin/tcsh
+
+block -n 40 -bits 10000 -shift 200 
+block -n 40 -bits 10000 -shift 400
+block -n 40 -bits 10000 -shift 600
+block -n 40 -bits 10000 -shift 800
+block -n 40 -bits 10000 -shift 1200
+block -n 40 -bits 10000 -shift 1600
+block -n 40 -bits 10000 -shift 2000
+
+block -n 40 -bits 20000 -shift 200 
+block -n 40 -bits 20000 -shift 400
+block -n 40 -bits 20000 -shift 600
+block -n 40 -bits 20000 -shift 800
+block -n 40 -bits 20000 -shift 1200
+block -n 40 -bits 20000 -shift 1600
+block -n 40 -bits 20000 -shift 2000
+
+block -n 40 -bits 30000 -shift 200 
+block -n 40 -bits 30000 -shift 400
+block -n 40 -bits 30000 -shift 600
+block -n 40 -bits 30000 -shift 800
+block -n 40 -bits 30000 -shift 1200
+block -n 40 -bits 30000 -shift 1600
+block -n 40 -bits 30000 -shift 2000
+
+block -n 40 -bits 40000 -shift 200 
+block -n 40 -bits 40000 -shift 400
+block -n 40 -bits 40000 -shift 600
+block -n 40 -bits 40000 -shift 800
+block -n 40 -bits 40000 -shift 1200
+block -n 40 -bits 40000 -shift 1600
+block -n 40 -bits 40000 -shift 2000
+
+
+
+block -n 80 -bits 4000 -shift 200 
+block -n 80 -bits 4000 -shift 400
+block -n 80 -bits 4000 -shift 600
+block -n 80 -bits 4000 -shift 800
+block -n 80 -bits 4000 -shift 1200
+block -n 80 -bits 4000 -shift 1600
+block -n 80 -bits 4000 -shift 2000
+
+block -n 80 -bits 8000 -shift 200 
+block -n 80 -bits 8000 -shift 400
+block -n 80 -bits 8000 -shift 600
+block -n 80 -bits 8000 -shift 800
+block -n 80 -bits 8000 -shift 1200
+block -n 80 -bits 8000 -shift 1600
+block -n 80 -bits 8000 -shift 2000
+
+block -n 80 -bits 20000 -shift 200 
+block -n 80 -bits 20000 -shift 400
+block -n 80 -bits 20000 -shift 600
+block -n 80 -bits 20000 -shift 800
+block -n 80 -bits 20000 -shift 1200
+block -n 80 -bits 20000 -shift 1600
+block -n 80 -bits 20000 -shift 2000
+
+
+

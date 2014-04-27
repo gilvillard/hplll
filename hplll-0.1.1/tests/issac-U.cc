@@ -125,7 +125,7 @@ int main(int argc, char *argv[])  {
    
    
     int bits;
-    bits =   8*n+height;
+    bits =   2*(n+shift);
 
     mpfr_set_default_prec(bits);
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
@@ -349,6 +349,8 @@ int main(int argc, char *argv[])  {
 cout << endl; 
     cout << "Ratio fplll: " << ((double) dfpllltime)/((double) fpllltime) << endl;
     cout << "Ratio  hlll: " << ((double) dhllltime)/((double) hllltime) << endl;
+cout << "Truncation ratio: " <<  ((double) maxbitsize(A))/((double) maxbitsize(Rtrunc)) << endl; 
+    cout << "Time trunc ratio: " << ((double) dfpllltime)/((double) fplllss) << endl; 
 
   return 0;
 }

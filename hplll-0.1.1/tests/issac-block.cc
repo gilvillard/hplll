@@ -82,11 +82,11 @@ int main(int argc, char *argv[])  {
     // Nb bits to consider, mpfr lattice 
 
     int height;
-    height = nbbits   +1;
+    height = shift   +1;
    
    
     int bits;
-    bits =   (4* (n + height) +n);
+    bits =   (3* (n + height) +n);
 
     mpfr_set_default_prec(bits);
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])  {
 
     set(Rtrunc,RZ);
 
-
+   
     // ----------------------------------------
     //  Reductions 
 
@@ -164,14 +164,14 @@ int main(int argc, char *argv[])  {
     if (transform ==1) {
 
       start = utime();
-      //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > Btruncss(Rtrunc,NO_TRANSFORM,DEF_REDUCTION);
-      Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > Btruncss(Rtrunc,NO_TRANSFORM,DEF_REDUCTION);
+      Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > Btruncss(Rtrunc,NO_TRANSFORM,DEF_REDUCTION);
+      //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > Btruncss(Rtrunc,NO_TRANSFORM,DEF_REDUCTION);
       Btruncss.hlll(llldelta);
       hlllss=utime()-start;
 
-      //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > Btrunc(Rtrunc,TRANSFORM,DEF_REDUCTION);
+      Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > Btrunc(Rtrunc,TRANSFORM,DEF_REDUCTION);
 
-      Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > Btrunc(Rtrunc,TRANSFORM,DEF_REDUCTION);
+      //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > Btrunc(Rtrunc,TRANSFORM,DEF_REDUCTION);
 
       start=utime();
       
@@ -312,6 +312,7 @@ int main(int argc, char *argv[])  {
     cout << endl; 
     cout << "Ratio fplll: " << ((double) dfpllltime)/((double) fpllltime) << endl;
     cout << "Ratio  hlll: " << ((double) dhllltime)/((double) hllltime) << endl;
-
+    cout << "Truncation ratio: " <<  ((double) maxbitsize(A))/((double) maxbitsize(Rtrunc)) << endl; 
+    cout << "Time trunc ratio: " << ((double) dfpllltime)/((double) fplllss) << endl; 
   return 0;
 }
