@@ -39,7 +39,7 @@ namespace hplll {
     int K,bdim;   // Number of blocks and dimension of each block 
                   // Assume that d is a multiple of K >= 4 
                   // K/2 and bdim >= 2 for actual segment) 
-    K=4;
+    K=6;
     bdim = d/K;
     
     int S,sdim;   // Number of segments and dimension of each segment  

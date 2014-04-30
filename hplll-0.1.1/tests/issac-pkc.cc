@@ -319,9 +319,9 @@ int main(int argc, char *argv[])  {
 
     cout << " initial  total  size = " << maxbitsize(A) << endl; 
     cout << " truncated total size = " << maxbitsize(Rtrunc) << endl << endl;
-    cout << " cond = " << cond << endl;
+    cout << " cond = " << cond <<  "    height = " << height << endl;
     cout << " bits = " << bits << endl; 
-    cout << " n = " << n << "    h = " << h << "    N = " << N << "    X = " << X  << "    height = " << height << endl; 
+    cout << " n = " << n << "    h = " << h << "    N = " << N << "    X = " << X  << endl; 
      
     cout << endl; 
 

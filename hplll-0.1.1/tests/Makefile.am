@@ -8,7 +8,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/src
 
 check_PROGRAMS = arithmetic  hllltest relationstest nullspacetest 
 
-noinst_PROGRAMS= main pkc  ajtai block prelimin U 
+noinst_PROGRAMS= main pkc  ajtai block prelimin U  ord 
 
 
 #INCLUDES = -I$(top_srcdir)/src 
@@ -21,6 +21,7 @@ pkc_SOURCES=issac-pkc.cc
 ajtai_SOURCES=issac-ajtai.cc 
 block_SOURCES=issac-block.cc 
 prelimin_SOURCES=issac-prelimin.cc 
+ord_SOURCES=issac-ord.cc 
 U_SOURCES=issac-U.cc 
 
 
