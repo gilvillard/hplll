@@ -84,9 +84,6 @@ int main(int argc, char *argv[])  {
     transpose(AT,A);
 
    
-
-   
-
     int prelimin=utime();
 
     Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  P(A,TRANSFORM,DEF_REDUCTION);
@@ -102,14 +99,14 @@ int main(int argc, char *argv[])  {
     int s;
     s = maxbitsize(A);
 
-    Z_NR<mpz_t> tt;
+    Z_NR<mpz_t> ttt;
     
 
     for (i=0; i<n; i++) 
       for (j=0; j<n; j++) {
 	if ((s-shift) > 0) {
-	    tt.randb(s-shift);
-	    A(i,j).add(A(i,j),tt);
+	    ttt.randb(s-shift);
+	    A(i,j).add(A(i,j),ttt);
 	  }
       }
 
@@ -120,9 +117,6 @@ int main(int argc, char *argv[])  {
     // ---------------------------------------------------------
     // Nb bits to consider, mpfr lattice 
 
-    int height;
-    height = maxbitsize(A); 
-   
    
     int bits;
     bits =   2*(n+shift);
@@ -144,6 +138,43 @@ int main(int argc, char *argv[])  {
 
     long cond;
     cond = ccond.get_si();
+
+ B.assign(A);
+
+    // height 
+    // ------
+
+    for (i=0; i<n; i++) {
+	
+      
+      B.hsizereduce(i);
+      B.householder_v(i);
+    }
+
+    matrix<FP_NR<mpfr_t> > RR;
+    RR.resize(n,n);
+    RR=B.getR();
+    FP_NR<mpfr_t>  maxquo,tt;
+    maxquo=0.0;
+
+    for  (j=0; j<n; j++) 
+      for (i=0; i<n; i++) {
+	tt.div(RR(j,j),RR(i,i));
+	tt.abs(tt);
+	if (tt.cmp(maxquo) > 0) maxquo=tt;
+      }
+
+    maxquo.log(maxquo);
+    FP_NR<mpfr_t> c2;
+    c2=2.0;
+    c2.log(c2);
+    maxquo.div(maxquo,c2);
+
+
+    Z_NR<long> height;
+    height.set_f(maxquo);
+    // End height 
+    
 
     B.assign(A);
 
@@ -197,6 +228,8 @@ int main(int argc, char *argv[])  {
     int hlllprod; 
     int hlllss;
 
+    int sizeofU;
+
     if (transform ==1) {
       
       start = utime();
@@ -212,6 +245,8 @@ int main(int argc, char *argv[])  {
    
       startinter=utime();
      
+      sizeofU=maxbitsize(Btrunc.getU());
+
       matprod(res2,A,Btrunc.getU());
   
       hllltime=utime()-start;
@@ -329,8 +364,9 @@ int main(int argc, char *argv[])  {
     T5.isreduced(llldelta-0.1);
 
     cout << " initial  total  size = " << maxbitsize(A) << endl; 
-    cout << " truncated total size = " << maxbitsize(Rtrunc) << endl << endl;
-    cout << " cond = " << cond << endl;
+    cout << " truncated total size = " << maxbitsize(Rtrunc) << endl ;
+    cout << " size of U = " << sizeofU << endl << endl;
+    cout << " cond = " << cond <<   " height = " << height << endl;
     cout << " bits = " << bits << endl; 
     cout << " n = " << n << "    shift = " << shift << "    delta = " << llldelta << "  s = " << bits << endl; 
      

@@ -24,8 +24,17 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef HPLLL_MAT_H
 #define HPLLL_MAT_H
 
+#include <sstream>
+#include <iostream>
+
+
 #include "defs.h"
 #include "mixed-col.h"
+
+#include <NTL/mat_ZZ.h>
+
+using namespace NTL;
+
 
 namespace hplll { 
 
@@ -1202,23 +1211,38 @@ template<> void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long co
 
   int i,j;
 
-  fp_norm(minval,R.getcol(0),n);
+   fp_norm(minval,R.getcol(0),n);
 
+
+  // Avant Mar 29 avr 2014 10:42:12 CEST
   for (j=1; j<d; j++) {
     fp_norm(norm,R.getcol(j),n);
-    if (minval.cmp(norm)) minval=norm;
+    if (minval.cmp(norm) > 0) minval=norm;
   }
 
   FP_NR<mpfr_t> bf;
 
-  for (i=0; i<n; i++) 
-    for (j=0; j<d; j++) {
+  Z_NR<mpz_t> tt,z;
+  tt=0;
+  z=0;
+  FP_NR<mpfr_t> rt;
 
-      bf.mul_2si(R(i,j),condbits);
+
+  for (j=0; j<d; j++) {
+    fp_norm(norm,R.getcol(j),n);
+    for (i=0; i<n; i++) {
+
+      bf.mul_2si(R(i,j),condbits+1);  // +1
+     
+      tt.randb(2);
+      set_z(rt,tt);
+      rt.mul(rt,norm);
+      if (j>=i) bf.add(bf,rt);
       bf.div(bf,minval);
       B(i,j).set_f(bf);
 
-    }
+      }
+  }
 
 }
 
@@ -1261,7 +1285,6 @@ int maxbitsize(const ZZ_mat<T>& B, int d0, int d, int n) {
 
 }
 
-
 inline int
 utime ()
 {
@@ -1293,9 +1316,74 @@ template<class T> inline void matrix_structure(vector<int>& structure, matrix<T>
   }
   // Make it triangular for limiting changes during the computation 
   for (k=1; k<d; k++)   structure[k]=max(structure[k-1],structure[k]);
-
-
 }
+
+
+// Matrix inversion through NTL 
+// ----------------------------
+
+inline  void  NTL_inv(ZZ_mat<mpz_t>& V, const ZZ_mat<mpz_t> U) {
+
+  int n=U.getRows();
+
+  int i,j; 
+
+  mat_ZZ Untl; 
+
+  Untl.SetDims(n, n);
+
+  int size=0; 
+
+  for (i=0; i< n; i++)
+   for (j=0; j<n; j++)
+     size = max(size, size_in_bits(U(i,j))); 
+
+  char str[size+20];
+
+  for (i=0; i<n; i++)
+    for (j=0; j<n; j++) {
+
+      mpz_get_str (str, 10, U(i,j).getData());
+      Untl(i+1,j+1)=to_ZZ(str);
+
+    }
+
+  mat_ZZ Vntl; 
+  Vntl.SetDims(n, n);
+
+  ZZ det;
+
+  int start=utime();
+  inv(det,Vntl,Untl);
+  start = utime()-start;
+  cout << endl << "  Inv NTL time " << start/1000 << " ms" << endl;
+
+  size = 0;
+
+  for (i=0; i<n; i++)
+    for (j=0; j<n; j++) 
+      size = max(size, Vntl(i+1,j+1).size()); 
+      
+  ostringstream osmat;
+  std::string k;
+  char y[size*32+20]; 
+  
+  for (i=0; i<n; i++)
+    for (j=0; j<n; j++) {
+
+      osmat.str(""); 
+      osmat << Vntl(i+1,j+1); 
+      k= osmat.str(); 
+      strcpy(y, k.c_str()); 
+      
+      mpz_set_str((V(i,j).getData()),y,10); 
+    }
+
+
+  }
+
+
+//
  
 } // end namespace hplll
 

@@ -50,16 +50,37 @@ int main(int argc, char *argv[])  {
  
   double alpha = 2.8; 
   double rho=1.0;
+  int K=0;
+  int ibits=10;
+  int nblocks = 1;
+  int kf;
 
     PARSE_MAIN_ARGS {
       MATCH_MAIN_ARGID("-n",n);
       MATCH_MAIN_ARGID("-alpha",alpha);
       MATCH_MAIN_ARGID("-r",rho);
       MATCH_MAIN_ARGID("-delta",llldelta);
+      MATCH_MAIN_ARGID("-K",K);
+      MATCH_MAIN_ARGID("-bits",ibits);
+      MATCH_MAIN_ARGID("-nblocks",nblocks);
       SYNTAX();
     }
 
-  int i;
+    int i,j;
+
+int prelimin=utime();
+
+  ZZ_mat<mpz_t> A0; // For hpLLL 
+ 
+  A0.resize(n/nblocks,n/nblocks);
+
+  ZZ_mat<mpz_t> AT0; // For hpLLL 
+ 
+  AT0.resize(n/nblocks,n/nblocks);
+
+  AT0.gen_ajtai(alpha);
+
+  transpose(A0,AT0);
 
   ZZ_mat<mpz_t> A; // For hpLLL 
   ZZ_mat<mpz_t> AT;  // fpLLL  
@@ -67,20 +88,44 @@ int main(int argc, char *argv[])  {
   AT.resize(n,n);
   A.resize(n,n);
 
-  AT.gen_ajtai(alpha);
-  transpose(A,AT);
+  kf = 10;
+
+  Z_NR<mpz_t> pt,one;
+  one =1;
+  for (int kk=0; kk<nblocks; kk++)
+    for (i=0; i<n/nblocks; i++)
+      for (j=0; j<n/nblocks; j++)  {
+	A(i+kk*(n/nblocks),j+kk*(n/nblocks))=A0(i,j);
+	pt.randb(kf*kk);
+	pt.add(pt,one);
+	A(i+kk*(n/nblocks),j+kk*(n/nblocks)).mul(A(i+kk*(n/nblocks),j+kk*(n/nblocks)),pt);
+    }
+
+
+  
+
+  ZZ_mat<mpz_t> AA;
+  AA.resize(n,n);   
+  for (i=0; i<n ; i++) 
+    for (j=0; j<n ; j++)
+      AA(i,j).randb(ibits);
+  
+
+  if (K !=0) matprod_in(A,AA);
+
+ 
+  prelimin=utime()-prelimin; 
+
+  transpose(AT,A);
+
 
   //print2maple(A,n,n);
     
     // ---------------------------------------------------------
     // Nb bits to consider, mpfr lattice 
 
-    int height;
-    height = size_in_bits(A(0,0))  +1;
-   
-   
     int bits;
-    bits =   (4* (n + height) +n);
+    bits =   (4* (n + size_in_bits(A(0,0))) +n);
 
     mpfr_set_default_prec(bits);
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
@@ -100,6 +145,45 @@ int main(int argc, char *argv[])  {
     long cond;
     cond = ccond.get_si();
 
+
+B.assign(A);
+
+    // height 
+    // ------
+
+    for (i=0; i<n; i++) {
+	
+      
+      B.hsizereduce(i);
+      B.householder_v(i);
+    }
+
+    matrix<FP_NR<mpfr_t> > RR;
+    RR.resize(n,n);
+    RR=B.getR();
+    FP_NR<mpfr_t>  maxquo,tt;
+    maxquo=0.0;
+
+    for  (j=0; j<n; j++) 
+      for (i=0; i<n; i++) {
+	tt.div(RR(j,j),RR(i,i));
+	tt.abs(tt);
+	if (tt.cmp(maxquo) > 0) maxquo=tt;
+      }
+
+    maxquo.log(maxquo);
+    FP_NR<mpfr_t> c2;
+    c2=2.0;
+    c2.log(c2);
+    maxquo.div(maxquo,c2);
+  
+    Z_NR<long> height;
+    height.set_f(maxquo);
+    // End height 
+    
+
+
+
     B.assign(A);
 
     for (i=0; i<n; i++) {
@@ -110,6 +194,8 @@ int main(int argc, char *argv[])  {
 
     A = B.getbase();
 
+    //    print2maple(A,n,n);
+
     // ---------------------------------------
     // Approximate lattice 
     // -------------------
@@ -119,6 +205,7 @@ int main(int argc, char *argv[])  {
 
     matrix<Z_NR<mpz_t> > RZ;
     RZ.resize(n,n);
+   
     
     set_f(RZ,B.getR(),bits);
    
@@ -128,6 +215,8 @@ int main(int argc, char *argv[])  {
     Rtrunc.resize(n,n);
 
     set(Rtrunc,RZ);
+
+   
 
     // ----------------------------------------
     //  Reductions 
@@ -275,12 +364,13 @@ int main(int argc, char *argv[])  {
 
     cout << " initial  total  size = " << maxbitsize(A) << endl; 
     cout << " truncated total size = " << maxbitsize(Rtrunc) << endl << endl;
-    cout << " cond = " << cond << endl;
+    cout << " cond = " << cond <<  ", height = " << height << ",     kappa = " << cond+ kf*(nblocks-1) << endl;
     cout << " bits = " << bits << endl; 
     cout << " n = " << n  << endl; 
      
     cout << endl; 
 
+cout << "   preliminary time: " << prelimin/1000 << " ms" << endl << endl;
     cout << "      hlllss: " << hlllss/1000 << " ms" << endl;
     cout << "   time hlll: " << hllltime/1000 << " ms" << endl;
     cout << "        prod: " << hlllprod/1000 << " ms" << endl;
