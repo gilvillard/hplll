@@ -172,6 +172,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	B.colswap(kappa-1,kappa);
 	
 	if (transf) U.colswap(kappa-1,kappa);
+	if (lsize > 0) L.colswap(kappa-1,kappa);
+
 	Bfp.colswap(kappa-1,kappa);
 
 	structure[kappa-1]=structure[kappa];
@@ -324,6 +326,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	      
 	      if (transf) 
 		U.subcol(kappa,i,min(d,nmax));
+
+	      if (lsize > 0) 
+		L.subcol(kappa,i,lsize);
 	      
 	    } 
 	    else if (lx == -1) {
@@ -337,6 +342,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	      if (transf) 
 		U.addcol(kappa,i,min(d,nmax));
 
+	      if (lsize > 0) 
+		L.addcol(kappa,i,lsize);
+
 	    } 
 	    else { 
  
@@ -348,6 +356,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	      
 	      if (transf) 
 		U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+
+	      if (lsize > 0) 
+		L.addmulcol_si(kappa,i,-lx,lsize);
 	    } 
 	    
 	  } // end expo == 0 
@@ -365,6 +376,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 	    if (transf)  
 	      U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+
+	    if (lsize >0)  
+	      L.addmulcol_si_2exp(kappa,i,-lx,expo,lsize);
 
 	    if (chrono) tps_redB+=utime()-start;	 
 	  } // end expo <> 0 
@@ -489,6 +503,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 		
 	    if (transf) 
 	      U.subcol(kappa,i,min(d,nmax));
+
+	    if (lsize > 0) 
+	      L.subcol(kappa,i,lsize);
 	
 	  } 
 	  else if (lx == -1) {
@@ -502,6 +519,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 	    if (transf) 
 	      U.addcol(kappa,i,min(d,nmax));
 
+	    if (lsize > 0) 
+	      L.addcol(kappa,i,lsize);
+
 	  } 
 	  else { 
  
@@ -514,6 +534,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 
 	    if (transf) 
 	      U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+
+	    if (lsize >0) 
+	      L.addmulcol_si(kappa,i,-lx,lsize);
+
 	  } 
   
 	} // end expo == 0 
@@ -532,6 +556,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 	  if (transf)  
 	    //U.submulcol(kappa,i,xz,min(d,nmax));
 	    U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+
+	  if (lsize > 0)  
+	    L.addmulcol_si_2exp(kappa,i,-lx,expo,lsize);
 
 	} // end expo <> 0 
 
@@ -832,6 +859,22 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> La
   }
 }
 
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> Lattice<ZT,FT, MatrixZT, MatrixFT>::getL()
+{
+ 
+  if (lsize > 0) { 
+    ZZ_mat<ZT> LL(lsize,d); 
+    for (int i=0; i<lsize; i++) 
+      for (int j=0; j<d; j++) LL.Set(i,j,L.get(i,j)); // reprendre boucle sur les colonnes 
+    return LL;
+  }
+  else {
+    cout << "*** Error, HLLL, the Lehmer companion matrix has not been computed" << endl;
+    ZZ_mat<ZT> LL(0,0);
+    return LL;
+  }
+}
+
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline  matrix<FP_NR<FT> > Lattice<ZT,FT, MatrixZT, MatrixFT>::getR()
 {
@@ -856,11 +899,10 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline  matrix<FP_NR
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> void 
-Lattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU, int gchrono) {
+Lattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
 
   int i,j;
 
-  chrono=gchrono;
   transf=forU;
   compteur=0;
   tmpcompt=0;
@@ -898,13 +940,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU, int gchrono) {
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>
-Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reduction_method, int gchrono) {
+Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reduction_method, int lehmer_size) {
 
   
   n=A.getRows();
   d=A.getCols();
 
-  init(n,d, forU, gchrono); 
+  init(n,d, forU); 
 
   int i,j;
 
@@ -914,15 +956,30 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reducti
     for (j=0; j<d; j++) 
       B(i,j)=A.Get(i,j);
 
+
   if (transf) {    // Not in init for the mixed matrix case also 
     
     U.resize(d,d);
     for (i=0; i<d; i++) U(i,i)=1;     
   }
 
+  lsize = 0; // For other cases 
+
+  if (lehmer_size >0) {
+
+    lsize = lehmer_size;
+    L.resize(lsize,d);
+
+    for (i=0; i<lsize; i++) 
+      for (j=0; j<d; j++) 
+	L(i,j)=B(i,j);
+
+  }
+
   seysen_flag=reduction_method;
 
   matrix_structure(structure, B, n,d);
+
 
  }
 
@@ -931,12 +988,12 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reducti
 // -----------------------------------
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>
-Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU, int reduction_method, int gchrono) {
+Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU, int reduction_method) {
 
     n=A.getRowsRT()+A.getRowsZT();
     d=A.getCols();
 
-    init(n,d, forU, gchrono); 
+    init(n,d, forU); 
     
     int i,j;
 
@@ -956,6 +1013,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR
       U.resize(0,d,d);
       for (i=0; i<d; i++) U.set(i,i,one); 
     }
+
+    lsize = 0; // For other cases 
 
     seysen_flag=reduction_method;
   
@@ -1017,10 +1076,22 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::shift_assign(ZZ_mat<ZT> A, vector<int> shift
 
   nblov = 0;
 
-  for (int i=0; i<n; i++) 
-    for (int j=0; j<d; j++) 
-      B(i,j).mul_2si(A(i,j),shift[i]);
-    
+  if (lsize > 0) {
+
+    for (int i=0; i<lsize; i++) 
+      for (int j=0; j<d; j++) 
+	B(i,j).mul_2si(L(i,j),shift[i]);
+
+    for (int i=lsize; i<n; i++) 
+      for (int j=0; j<d; j++) 
+	B(i,j).mul_2si(A(i,j),shift[i]);
+
+  }
+  else {
+    for (int i=0; i<n; i++) 
+      for (int j=0; j<d; j++) 
+	B(i,j).mul_2si(A(i,j),shift[i]);
+  }
   
   // ICI TMP 
   /*
@@ -1646,7 +1717,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
 
 // Avec mpfr si le chgt de precision doit avoir un effet 
 // Time in input for file printing 
-
+/*
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline FP_NR<FT> Lattice<ZT,FT, MatrixZT, MatrixFT>::tnull(int time) {
 
   FP_NR<FT>  cc,c2;
@@ -1871,7 +1942,7 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline FP_NR<FT> Lat
 
   return cc;
 }
-
+*/
 } // end namespace hplll
 
 #endif 

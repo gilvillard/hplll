@@ -169,6 +169,7 @@ fgasgen(matrix<FP_NR<RT> >& F,  ZZ_mat<mpz_t> A, const long setprec) {
 }
 
 
+
 template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
 nullspace_indirect_decomp(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, long int setprec=53) { 
 
@@ -249,7 +250,6 @@ nullspace_indirect_decomp(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, long int setprec=53) {
 
 // Direct integer FGAS decomposition + HJLS dec 
 // ********************************************
-
 
 template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
 nullspace_hjls(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, long int setprec=53) { 

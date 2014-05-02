@@ -21,13 +21,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
-#include "matgen.cc"
-#include "relations.cc" 
+#include "relations.h" 
+#include "nullspace.h" 
 
-#include "nullspace.cc" 
-#include "mat-exp-omp.h" 
+using namespace hplll;
 
-#include "matmixed.h" 
 
 /* ***********************************************
 
@@ -89,8 +87,8 @@ int main(int argc, char *argv[])  {
 
  
   relations_lll<mpz_t, dpe_t, MatrixPE<double, dpe_t> > (C, F, setprec, setprec, 0);
-  //relations_hjls<mpfr_t, double, matrix<FP_NR<double > > >(C,B,1,setprec);
-  //  restarting_hjls<mpfr_t, double, matrix<FP_NR<double > > >(C,B,1,setprec);
+  //relations_hjls<mpfr_t, double, matrix<FP_NR<double > > >(C,F,1,setprec);
+  //restarting_hjls<mpfr_t, double, matrix<FP_NR<double > > >(C,F,1,setprec);
 
   start = utime()-start;
   cout << endl << "   Time: " << start/1000 << " ms" << endl;
