@@ -38,6 +38,49 @@ using namespace NTL;
 
 namespace hplll { 
 
+
+
+// Jeu  1 mai 2014 16:06:02 CEST for conversions between mpz_t and NTL
+// From : Verifiable Delegation of Computation verifiable-delegation / gmp-utils
+
+
+
+void bytes_from_mpz(unsigned char*& outBuf, size_t* l, const mpz_t n)
+{
+  outBuf = (unsigned char*)mpz_export(outBuf,l,-1,1,0,0,n);
+}
+
+void mpz_from_bytes(mpz_t r, const unsigned char* inBuf, size_t l)
+{
+	mpz_import(r,l,-1,1,0,0,inBuf);
+}
+
+
+void mpztozz(ZZ& r, const mpz_t n)
+{
+	size_t nBytes;
+	/* for this direction, we'll let the bytes_from_mpz function
+	 * allocate memory for us. */
+	unsigned char* bytes = 0;
+	bytes_from_mpz(bytes,&nBytes,n);
+	ZZFromBytes(r,bytes,nBytes);
+	/* the bytes_from_mpz function above allocated memory, so we have
+	 * to free it here. */
+	free(bytes);
+}
+
+
+void zztompz(mpz_t r, const ZZ& n)
+{
+	size_t nBytes = NumBytes(n);
+	unsigned char bytes[nBytes];
+	BytesFromZZ(bytes,n,nBytes);
+	mpz_from_bytes(r, bytes, nBytes);
+	
+}
+
+
+
 // ******************************************************************
 // Begin matrix class  
 // ******************************************************************
@@ -1317,6 +1360,104 @@ template<class T> inline void matrix_structure(vector<int>& structure, matrix<T>
   // Make it triangular for limiting changes during the computation 
   for (k=1; k<d; k++)   structure[k]=max(structure[k-1],structure[k]);
 }
+
+// p two times greater than 2^bits
+
+inline void next2prime(Z_NR<mpz_t>& p, long bits) {
+
+  mpz_t mpzp;
+  mpz_init(mpzp);
+  mpz_set_si(mpzp,1);
+  mpz_mul_2exp(mpzp, mpzp, bits+1);
+  mpz_nextprime(p.getData(),mpzp);
+
+}
+
+// ZZ_mat to NTL Mat<zz_p>
+// -----------------------
+
+
+inline  void  zzmat_to_ntlp(mat_ZZ_p& Ap, const ZZ_mat<mpz_t> A, Z_NR<mpz_t> p) {
+
+  mpz_t zp;
+  mpz_init(zp);
+  mpz_set(zp,p.getData());
+
+  // Mod p reduction and to NTL
+  // --------------------------
+
+  int n,m;
+  n=A.getRows();
+  m=A.getCols();
+
+  int i,j;
+
+  ZZ x;  
+  ZZ_p y;
+
+  ZZ_p zero;
+  zero =0;
+
+  mpz_t zx;
+  mpz_init(zx);
+
+  for (i=0; i<n; i++)
+    for (j=0; j<m;j++) {
+      if (A(i,j).sgn()==0)
+	Ap(i+1,j+1) = zero;
+      else { 
+	mpz_mod(zx,A(i,j).getData(),zp);
+	if (mpz_sgn(zx) ==0) 
+	  Ap(i+1,j+1) = zero;
+	else { 
+	  mpztozz(x,zx);
+	  conv(y,x);
+	  Ap(i+1,j+1)=y;
+	}
+      }
+    }
+}
+
+
+// NTL Mat<zz_p> to ZZ_mat
+// -----------------------
+
+
+inline  void  ntlp_to_zzmat(ZZ_mat<mpz_t>& A, mat_ZZ_p Ap, Z_NR<mpz_t> p, long bits) {
+
+  int n,m;
+  n=A.getRows();
+  m=A.getCols();
+
+  
+  int i,j;
+
+  ZZ x;  
+  ZZ_p y;
+
+  for (i=0; i<n; i++)
+    for (j=0; j<m;j++) {
+      x = rep(Ap(i+1,j+1));
+      if (IsZero(x)) 
+	A(i,j)=0;
+      else 
+	zztompz(A(i,j).getData(),x);
+    }
+
+  
+
+  Z_NR<mpz_t> max; 
+  max = 1;
+  max.mul_2si(max,bits);
+
+  for (i=0; i<n; i++)
+    for (j=0; j<m;j++) {
+      if (A(i,j).cmp(max) >=0) A(i,j).sub(A(i,j),p);
+
+    }
+
+}
+
 
 
 // Matrix inversion through NTL 

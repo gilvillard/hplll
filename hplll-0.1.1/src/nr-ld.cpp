@@ -30,6 +30,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include"defs.h"
 
+
 FPLLL_BEGIN_NAMESPACE
 
 // Rajouter si nul ou pas 
