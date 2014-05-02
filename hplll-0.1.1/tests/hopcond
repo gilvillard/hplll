@@ -1,27 +1,22 @@
 #!/bin/tcsh
 
 
-U -n 120 -bits 400 -K 10 -cond 100 -delta 0.99 -r 0.95
 U -n 120 -bits 400 -K 10 -cond 100 -delta 0.99 -r 1
 U -n 120 -bits 400 -K 10 -cond 100 -delta 0.99 -r 1.1
 U -n 120 -bits 400 -K 10 -cond 100 -delta 0.99 -r 1.2
 
-U -n 120 -bits 400 -K 10 -cond 200 -delta 0.99 -r 0.95
 U -n 120 -bits 400 -K 10 -cond 200 -delta 0.99 -r 1
 U -n 120 -bits 400 -K 10 -cond 200 -delta 0.99 -r 1.1
 U -n 120 -bits 400 -K 10 -cond 200 -delta 0.99 -r 1.2
 
-U -n 120 -bits 400 -K 10 -cond 400 -delta 0.99 -r 0.95
 U -n 120 -bits 400 -K 10 -cond 400 -delta 0.99 -r 1
 U -n 120 -bits 400 -K 10 -cond 400 -delta 0.99 -r 1.1
 U -n 120 -bits 400 -K 10 -cond 400 -delta 0.99 -r 1.2
 
-U -n 120 -bits 400 -K 10 -cond 800 -delta 0.99 -r 0.95
 U -n 120 -bits 400 -K 10 -cond 800 -delta 0.99 -r 1
 U -n 120 -bits 400 -K 10 -cond 800 -delta 0.99 -r 1.1
 U -n 120 -bits 400 -K 10 -cond 800 -delta 0.99 -r 1.2
 
-U -n 120 -bits 400 -K 10 -cond 2000 -delta 0.99 -r 0.95
 U -n 120 -bits 400 -K 10 -cond 2000 -delta 0.99 -r 1
 U -n 120 -bits 400 -K 10 -cond 2000 -delta 0.99 -r 1.1
 U -n 120 -bits 400 -K 10 -cond 2000 -delta 0.99 -r 1.2
@@ -29,27 +24,22 @@ U -n 120 -bits 400 -K 10 -cond 2000 -delta 0.99 -r 1.2
 
 
 
-U -n 160 -bits 400 -K 11 -cond 100 -delta 0.99 -r 0.95
 U -n 160 -bits 400 -K 11 -cond 100 -delta 0.99 -r 1
 U -n 160 -bits 400 -K 11 -cond 100 -delta 0.99 -r 1.1
 U -n 160 -bits 400 -K 11 -cond 100 -delta 0.99 -r 1.2
 
-U -n 160 -bits 400 -K 11 -cond 200 -delta 0.99 -r 0.95
 U -n 160 -bits 400 -K 11 -cond 200 -delta 0.99 -r 1
 U -n 160 -bits 400 -K 11 -cond 200 -delta 0.99 -r 1.1
 U -n 160 -bits 400 -K 11 -cond 200 -delta 0.99 -r 1.2
 
-U -n 160 -bits 400 -K 11 -cond 400 -delta 0.99 -r 0.95
 U -n 160 -bits 400 -K 11 -cond 400 -delta 0.99 -r 1
 U -n 160 -bits 400 -K 11 -cond 400 -delta 0.99 -r 1.1
 U -n 160 -bits 400 -K 11 -cond 400 -delta 0.99 -r 1.2
 
-U -n 160 -bits 400 -K 11 -cond 800 -delta 0.99 -r 0.95
 U -n 160 -bits 400 -K 11 -cond 800 -delta 0.99 -r 1
 U -n 160 -bits 400 -K 11 -cond 800 -delta 0.99 -r 1.1
 U -n 160 -bits 400 -K 11 -cond 800 -delta 0.99 -r 1.2
 
-U -n 160 -bits 400 -K 11 -cond 2000 -delta 0.99 -r 0.95
 U -n 160 -bits 400 -K 11 -cond 2000 -delta 0.99 -r 1
 U -n 160 -bits 400 -K 11 -cond 2000 -delta 0.99 -r 1.1
 U -n 160 -bits 400 -K 11 -cond 2000 -delta 0.99 -r 1.2

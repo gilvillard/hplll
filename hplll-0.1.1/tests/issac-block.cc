@@ -71,7 +71,7 @@ int main(int argc, char *argv[])  {
 
  
   AT.gen_uniform(nbbits);
-  for (i=0; i<n/2; i++)
+  for (i=0; i<1; i++)
     for (j=0; j<n; j++)
       AT(j,i).randb(nbbits+shift);
   transpose(A,AT);
@@ -150,7 +150,7 @@ B.assign(A);
 
     A = B.getbase();
 
-    print2maple(A,n,n);
+    //print2maple(A,n,n);
 
     // ---------------------------------------
     // Approximate lattice 
