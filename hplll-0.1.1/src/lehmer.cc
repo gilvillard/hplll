@@ -51,6 +51,7 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
 
   if (shift == 0) { 
     
+   
     Lattice<ZT, FT, MatrixZT, MatrixFT> B(A,NO_TRANSFORM,DEF_REDUCTION); 
 
     B.hlll(delta);
@@ -123,16 +124,11 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
 
     } // end shifts computation   
 
-    // Here for each row : nbshifts[i] (but the first negative one), and shifts 
-    // And maxnbshifts 
-
-    // Taille max du shift ou while 
-
     // ----------------
     // Main Lehmer loop 
     // ----------------
 
-    Lattice<ZT, FT, MatrixZT, MatrixFT> Ct(A,TRANSFORM,DEF_REDUCTION);
+    Lattice<ZT, FT, MatrixZT, MatrixFT> Ct(A,TRANSFORM,DEF_REDUCTION,1);
 
     int s; // max global nb current shift 
 
@@ -157,114 +153,33 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
 
     for (int row = m-1; row >= 0; row--) {
 
+     
       for (s=1; s <= nbshifts[row]; s++) {
-	
-	//cout << " ---- " << row << endl; 
-	//cout << "current shift " << current_shift << endl; 
+
  
-	//cout << "-------------------- " <<  endl; 
 	
-	//cout << "row " << row << "   shift " << shifts[row][s] << endl; 
-	  
 	current_shift[row]+=shifts[row][s];
+
+cout << current_shift << endl; 
 	
-	//cout << "current shift " << current_shift << endl; 
-      
-	//print2maple(C,m,n);
-	   
 	// WITHOUT truncation test 
 	Ct.shift_assign(C, current_shift);
 	   
-	//print2maple(Ct.getbase(),m,n);
-	   
 	Ct.hlll(delta);
 	  
-	//	T = Ct.getbase();
-
-	// No recomputation of U 
-	//for (i=1; i<m; i++)
-	//for (j=0; j<n; j++) 
-	//  U(i-1,j)=T(i,j);
-
 	U = Ct.getU();
 
-	// Lower new C 
-	/*for (i=1; i<m; i++)
-	  for (j=0; j<n; j++) 
-	    C(i,j)=T(i,j);
+	//matprod_in(C,U);
 
-	// Upper new C 
-	for (j=0; j<n; j++) 
-	  TT(0,j)=C(0,j);
-
-	  matprod_in(TT,U);
-
-	for (j=0; j<n; j++) 
-	C(0,j)=TT(0,j);*/
-
-	matprod_in(C,U);
-
-
-	//print2maple(Ct.getbase(),m,n);
-
-	//print2maple(U,n,n);
-
-	//print2maple(C,m,n);
-
-
-	//atprod_in(C,Ct.getU()); // !!! Pas tout multiplier si on ne tronque pas !!! 
-	   
-	
-
-	//print2maple(Ct.getU(),m,n);
-
-    } // end on s - main Lehmer loop on the shifts 
+      } // end on s - main Lehmer loop on the shifts 
     
- } // end loop on rows 
+    } // end loop on rows 
 
-    /*
-    for (s=1; s <= maxnbshifts; s++) {
-      //cout << " ----" << endl; 
+    C=Ct.getbase();   
+  }
 
-      //cout << "current shift " << current_shift << endl; 
  
-      for (int row = 0; row < m; row++) {
-
-	 if (nbshifts[row] >= s) { 
-
-	   // cout << "-------------------- " <<  endl; 
-	   //cout << "current shift " << current_shift << endl; 
-	   //cout << "row " << row << "   shift " << shifts[row][s] << endl; 
-	  
-
-	   current_shift[row]+=shifts[row][s];
-	   
-	   
-	   
-	   //print2maple(C,m,n);
-	   
-	   Ct.shift_assign(C, current_shift);
-	   
-	   
-
-	   //print2maple(Ct.getbase(),m,n);
-	   
-	   Ct.hlll(delta);
-	   
-	   matprod_in(C,Ct.getU());
-	   
-	   //print2maple(Ct.getU(),m,n);
-
-	} // end actual row shift 
-
-      } // end loop on rows 
-
-    } // end on s - main Lehmer loop on the shifts 
-    */
-
-  } // end case shift <> 0 
-
-
+ 
   return 0;
 
 }
@@ -373,6 +288,10 @@ lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int d, int lsigma=0) {
 
       set(BL,B);
 
+      // ICI 
+      cout << "------------- " << endl; 
+      cout << "Size of B " << maxbitsize(BL) << endl;
+
       current_shift+=shifts[s];
       //cout << "current shift " << current_shift << endl; 
 
@@ -391,6 +310,10 @@ lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int d, int lsigma=0) {
 
       // Required multiplication update when BL has been truncated 
       matprod_in(B,Bt.getU());
+      
+      // ICI 
+      cout << "Size of U " << maxbitsize(Bt.getU()) << endl;
+
 
       //ICI 
       //cout << "-------- " << endl; 

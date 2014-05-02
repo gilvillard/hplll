@@ -44,10 +44,15 @@ class Lattice
 
   MatrixZT U;
 
+  MatrixZT L;
+
   int n,d; 
 
   int chrono;
   bool transf;
+
+ 
+  int lsize;
 
   int nmaxkappa;
 
@@ -111,18 +116,20 @@ public:
 
   ZZ_mat<ZT> getU();
 
+  ZZ_mat<ZT> getL();
+
   // Not MatrixFT for the exp case 
   matrix<FP_NR<FT> > getR(); 
 
-  Lattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0, int gchrono=0); 
+  Lattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0, int lehmer_size=0); 
 
-  Lattice(matrix<FP_NR<mpfr_t> > F, ZZ_mat<ZT> A, bool forU, int reduction_method, int gchrono);
+  Lattice(matrix<FP_NR<mpfr_t> > F, ZZ_mat<ZT> A, bool forU, int reduction_method);
 
-  Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU=false, int reduction_method=0, int gchrono=0);
+  Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU=false, int reduction_method=0);
 
-  Lattice(ZZ_mat<ZT> A, long t, long sigma, bool forU, int reduction_method, int gchrono); 
+  Lattice(ZZ_mat<ZT> A, long t, long sigma, bool forU, int reduction_method); 
 
-  void init(int n, int d, bool forU=false, int gchrono=0);
+  void init(int n, int d, bool forU=false);
 
   void assign(ZZ_mat<ZT> A);
 

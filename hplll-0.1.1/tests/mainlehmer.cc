@@ -24,6 +24,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "hlll.h"
 #include "lehmer.cc"
 
+#include "tools.h"
+
 /* ***********************************************
 
           MAIN   
@@ -44,18 +46,32 @@ int main(int argc, char *argv[])  {
   // ---------------------------------------------------------------------
   { 
   
-  int d=6;
-  int nbbits=8000;
+  int d=8;
+  int nbbits=100;
+  int shift = 0;
+  double delta = 0.75;
+
+
+    PARSE_MAIN_ARGS {
+      MATCH_MAIN_ARGID("-d",d);
+      MATCH_MAIN_ARGID("-bits",nbbits);
+      MATCH_MAIN_ARGID("-shift",shift);
+      MATCH_MAIN_ARGID("-delta",delta);
+      SYNTAX();
+    }
+
+
+
   int start;
 
-  double delta=0.9;
+ 
 
   A.resize(d+1,d); 
   AT.resize(d,d+1);  
   AT.gen_intrel(nbbits);
   transpose(A,AT);
 
-  print2maple(A,d+1,d);
+  //print2maple(A,d+1,d);
 
 
   //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
@@ -72,8 +88,10 @@ int main(int argc, char *argv[])  {
   cout << "   nblov: " << B.nblov << endl; 
   
   start=utime();
-  lehmer_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, 1, 400);
+  //lehmer_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, 1, 800);
   //lehmer_lll<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > (C, A, 1, 400);
+  Lehmer_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, shift, delta);
+ 
   start=utime()-start;
 
   cout << endl; 
@@ -82,7 +100,7 @@ int main(int argc, char *argv[])  {
 
   
   Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
-  Btest.isreduced(0.9);
+  Btest.isreduced(delta-0.1);
 
   /*
   start=utime();
