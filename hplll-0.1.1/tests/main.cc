@@ -36,9 +36,6 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
-  typedef FP_NR<mpfr_t>   RT;
-  typedef Z_NR<mpz_t>  ZT;
-  
   ZZ_mat<mpz_t> A; // For hpLLL 
   ZZ_mat<mpz_t> AT;  // fpLLL  
 
@@ -71,26 +68,26 @@ int main(int argc, char *argv[])  {
     //n=d+1;  A.resize(n,d);  AT.resize(d,n); AT.gen_intrel(nbbits);
     /*n=d; 
     A.resize(n,d);  AT.resize(d,n);  
-    for (i=0; i<1; i++)
+    for (i=0; i<n/2; i++)
       for (j=0; j<d; j++) 
     	A(i,j).randb(nbbits); 
 
-    for (i=1; i<n; i++)
+    for (i=n/2; i<n; i++)
       for (j=0; j<d; j++) 
     	if (i==j) A(i,j)=1; else A(i,j)=0; 
     
-	transpose(AT,A);*/
-    n=d;
+	transpose(AT,A);
+	n=d;*/
 
     //print2maple(A,n,d);
 
     A.resize(d,d);
     AT.resize(d,d);
-    AT.gen_ajtai(3.6);
+    AT.gen_ajtai(3);
     transpose(A,AT);
     //print2maple(A,d,d);
 
-    mpfr_set_default_prec(18000+2*d+nbbits+max(50,nbbits/10));
+    mpfr_set_default_prec(28000+2*d+nbbits+max(50,nbbits/10));
     //mpfr_set_default_prec(d+max(10,nbbits/10));
 
     PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
