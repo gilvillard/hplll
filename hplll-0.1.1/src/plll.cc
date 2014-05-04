@@ -34,12 +34,12 @@ namespace hplll {
   // cas rectangles ? 
 
   template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
-  PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta) { 
+  PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int K, unsigned int lovmax) { 
 
-    int K,bdim;   // Number of blocks and dimension of each block 
+    int bdim;     // Number of blocks and dimension of each block 
                   // Assume that d is a multiple of K >= 4 
                   // K/2 and bdim >= 2 for actual segment) 
-    K=6;
+    
     bdim = d/K;
     
     int S,sdim;   // Number of segments and dimension of each segment  
@@ -76,7 +76,7 @@ namespace hplll {
     // ****************
 
     for (iter=0; stop==0; iter++) {
-    //for (iter=0; iter < 3; iter++) {
+    //for (iter=0; iter < 4; iter++) {
 
       // Even block reduction  
       // --------------------
@@ -87,6 +87,8 @@ namespace hplll {
 
       condbits=approx_cond();
       cout << endl << "************* Even approx cond " << condbits << "    " << "S = " << S << endl; 
+
+      LB.setprec(condbits);
 
       set_f(RZ,R,condbits);
 
@@ -101,7 +103,7 @@ namespace hplll {
 	//print2maple(getblock(RZ,k,k,S,0),sdim,sdim);
 	
 	Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
-	 
+	BR.set_nblov_max(lovmax);
 	BR.hlll(delta);
 	cout << endl << "even nblov " << BR.nblov << endl; 
 	nblov+=BR.nblov;
@@ -151,6 +153,7 @@ namespace hplll {
 	//print2maple(getblock(RZ,k,k,S,bdim),sdim,sdim);
 	
 	Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
+	BR.set_nblov_max(lovmax);
 	BR.hlll(delta);
 	cout << endl << "odd nblov " << BR.nblov << endl;
 	nblov+=BR.nblov;
@@ -177,12 +180,14 @@ namespace hplll {
 	LB.householder_v(i);
       }
       
+      
+
       // Householder have been implicitely computed
       R=LB.getR();
       //matprod_in(B,LB.getU());
       set(B,LB.getbase());
 
-      //print2maple(B,n,d);
+      //print2maple(R,n,d);
 
       //print2maple(B,n,d);
 

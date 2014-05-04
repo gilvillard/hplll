@@ -51,7 +51,7 @@ class PLattice
 
   int nblov;
 
-  int hlll(double delta);
+  int hlll(double delta, int K, unsigned int lovmax=4294967295);
  
   long  approx_cond();
   int householder();

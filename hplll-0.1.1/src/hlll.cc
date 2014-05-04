@@ -57,7 +57,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
   // ICI 
   
 
-  while (kappa < d) 
+  while ((kappa < d) && (nblov < nblov_max)) 
     {
 
       if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
@@ -550,12 +550,12 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 	  R.submulcol(kappa,i,x,i+1);
       
 
-	  //B.submulcol(kappa,i,xz,nmax);    
-	  B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+	  B.submulcol(kappa,i,xz,nmax);    
+	  //B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
 	 
 	  if (transf)  
-	    //U.submulcol(kappa,i,xz,min(d,nmax));
-	    U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    U.submulcol(kappa,i,xz,min(d,nmax));
+	  //U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
 
 	  if (lsize > 0)  
 	    L.addmulcol_si_2exp(kappa,i,-lx,expo,lsize);
@@ -779,6 +779,14 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_v(int kappa)
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline unsigned int 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::set_nblov_max(unsigned int nb) {
+
+  nblov_max = nb;
+  return nblov_max;
+
+} 
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline unsigned int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::setprec(unsigned int prec) {
 
   // Re-initializations
@@ -963,6 +971,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reducti
     for (i=0; i<d; i++) U(i,i)=1;     
   }
 
+  nblov_max = 4294967295;
   lsize = 0; // For other cases 
 
   if (lehmer_size >0) {
@@ -1014,6 +1023,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR
       for (i=0; i<d; i++) U.set(i,i,one); 
     }
 
+    nblov_max = 4294967295;
     lsize = 0; // For other cases 
 
     seysen_flag=reduction_method;
@@ -1082,9 +1092,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::shift_assign(ZZ_mat<ZT> A, vector<int> shift
       for (int j=0; j<d; j++) 
 	B(i,j).mul_2si(L(i,j),shift[i]);
 
-    for (int i=lsize; i<n; i++) 
-      for (int j=0; j<d; j++) 
-	B(i,j).mul_2si(A(i,j),shift[i]);
 
   }
   else {
