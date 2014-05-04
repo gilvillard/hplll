@@ -24,8 +24,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "hlll.h"
 #include "plll.h"
 
-#include "tools.h"
-
 /* ***********************************************
 
           MAIN   
@@ -46,51 +44,29 @@ int main(int argc, char *argv[])  {
   { 
   
     cout << "************************************************************************** " << endl; 
-
-    int d=8;
+    int d=100;
     int n;
-    int nbbits=100;
-    double delta = 0.75;
-    int K=4;
-    unsigned int lovmax = 4294967295;
-
-    PARSE_MAIN_ARGS {
-      MATCH_MAIN_ARGID("-d",d);
-      MATCH_MAIN_ARGID("-bits",nbbits);
-      MATCH_MAIN_ARGID("-K",K);
-      MATCH_MAIN_ARGID("-delta",delta);
-      MATCH_MAIN_ARGID("-lovmax",lovmax);
-      SYNTAX();
-    }
-
+    int nbbits=400;
+    
     int i,j;
 
     int start,startsec;
 
 
     //n=d+1;  A.resize(n,d);  AT.resize(d,n); AT.gen_intrel(nbbits);
-    /*n=d; 
-    A.resize(n,d);  AT.resize(d,n);  
-    for (i=0; i<1; i++)
-      for (j=0; j<d; j++) 
-    	A(i,j).randb(nbbits); 
-
+    n=d; A.resize(n,d);  AT.resize(d,n);  AT.gen_uniform(nbbits);
+    transpose(A,AT);
     for (i=1; i<n; i++)
       for (j=0; j<d; j++) 
-    	if (i==j) A(i,j)=1; else A(i,j)=0; 
-    
-	transpose(AT,A);*/
-    n=d;
+	if (i==j) A(i,j)=1; else A(i,j)=0; 
 
-    //print2maple(A,n,d);
-
-    A.resize(d,d);
+    /*A.resize(d,d);
     AT.resize(d,d);
-    AT.gen_ajtai(3.6);
+    AT.gen_ajtai(2.2);
     transpose(A,AT);
-    //print2maple(A,d,d);
+    print2maple(A,d,d);*/
 
-    mpfr_set_default_prec(18000+2*d+nbbits+max(50,nbbits/10));
+    mpfr_set_default_prec(max(nbbits,2*d)+max(20,nbbits/10));
     //mpfr_set_default_prec(d+max(10,nbbits/10));
 
     PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
@@ -101,7 +77,7 @@ int main(int argc, char *argv[])  {
     start=utime();
     startsec=utimesec();
 
-    B.hlll(delta,K,lovmax);
+    B.hlll(0.99);
     
     start=utime()-start;
     startsec=utimesec()-startsec;
@@ -114,7 +90,7 @@ int main(int argc, char *argv[])  {
     cout << "   LLL " << start/1000 << " ms" << endl;*/
  
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-    T1.isreduced(delta-0.1);
+    T1.isreduced(0.9);
 
     cout << "   bits = " << nbbits << endl;
     cout << "   dimension = " << d  << endl;
@@ -127,7 +103,7 @@ int main(int argc, char *argv[])  {
     start=utime();
     startsec=utimesec();
 
-    C.hlll(delta);
+    C.hlll(0.99);
 
     start=utime()-start;
     startsec=utimesec()-startsec;

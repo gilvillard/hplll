@@ -38,6 +38,7 @@ namespace hplll {
 template<class ZT, class FT, class MatrixZT, class MatrixFT>
 class Lattice
 {
+
  protected:
 
   MatrixZT B;
@@ -51,6 +52,7 @@ class Lattice
   int chrono;
   bool transf;
 
+  unsigned int nblov_max;
  
   int lsize;
 
@@ -89,8 +91,9 @@ public:
   unsigned int tps_householder;
   unsigned int tps_prepare;
   unsigned int tps_swap;
-  int nblov,nbswaps;
+  unsigned int nblov,nbswaps;
   unsigned int tps_redB;
+  
 
   int compteur;   // while counting 
   int tmpcompt;   // Debug or test counting 
@@ -109,6 +112,8 @@ public:
 
   unsigned int setprec(unsigned int prec);
   unsigned int getprec();
+
+  unsigned int set_nblov_max(unsigned int nb); 
 
   ZZ_mat<ZT> getbase();
 

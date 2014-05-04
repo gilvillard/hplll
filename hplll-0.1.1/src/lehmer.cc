@@ -128,8 +128,8 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
     // Main Lehmer loop 
     // ----------------
 
-    Lattice<ZT, FT, MatrixZT, MatrixFT> Ct(A,TRANSFORM,DEF_REDUCTION,1);
-
+    Lattice<ZT, FT, MatrixZT, MatrixFT> Ct(A,NO_TRANSFORM,DEF_REDUCTION,1);
+    
     int s; // max global nb current shift 
 
     C.resize(m,n);
@@ -156,18 +156,15 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
      
       for (s=1; s <= nbshifts[row]; s++) {
 
- 
-	
 	current_shift[row]+=shifts[row][s];
 
-cout << current_shift << endl; 
-	
 	// WITHOUT truncation test 
 	Ct.shift_assign(C, current_shift);
 	   
 	Ct.hlll(delta);
 	  
-	U = Ct.getU();
+	cout << "Size of C " << maxbitsize(Ct.getbase()) << endl; 
+	//U = Ct.getU();
 
 	//matprod_in(C,U);
 
