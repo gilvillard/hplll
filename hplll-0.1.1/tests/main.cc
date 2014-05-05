@@ -22,9 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 #include "hlll.h"
-#include "plll.h"
-
-#include "tools.h"
+#include "tools.h" 
 
 /* ***********************************************
 
@@ -36,103 +34,130 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
+  
   ZZ_mat<mpz_t> A; // For hpLLL 
-  ZZ_mat<mpz_t> AT;  // fpLLL  
+  ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
 
   // ---------------------------------------------------------------------
   { 
   
-    cout << "************************************************************************** " << endl; 
+    char ltype[1];
+    char knapsack[]="r";
+    char ajtai[]="a";
+    char ntru[]="n";
 
     int d=8;
     int n;
-    int nbbits=100;
     double delta = 0.75;
-    int K=4;
-    unsigned int lovmax = 4294967295;
+    int nbbits=10;
+    double alpha=1.4;
+    int q;
 
     PARSE_MAIN_ARGS {
+      MATCH_MAIN_ARGID("-ltype",ltype);
       MATCH_MAIN_ARGID("-d",d);
-      MATCH_MAIN_ARGID("-bits",nbbits);
-      MATCH_MAIN_ARGID("-K",K);
       MATCH_MAIN_ARGID("-delta",delta);
-      MATCH_MAIN_ARGID("-lovmax",lovmax);
+      MATCH_MAIN_ARGID("-bits",nbbits);
+      MATCH_MAIN_ARGID("-alpha",alpha);
+      MATCH_MAIN_ARGID("-q",q);
       SYNTAX();
     }
 
-    int i,j;
+    // Knapsack 
+    // --------
+    if (strcmp(ltype,knapsack) ==0) {
+      n=d+1;
+      A.resize(d+1,d); 
+      AT.resize(d,d+1);  
+      AT.gen_intrel(nbbits);
+      transpose(A,AT);
+    } 
+
+    // Ajtai 
+    // -----
+    if (strcmp(ltype,ajtai) ==0) {
+      n=d;
+      A.resize(d,d); 
+      AT.resize(d,d);  
+      AT.gen_ajtai(alpha);
+      transpose(A,AT);
+    } 
+
+    // NTRU like 
+    // ---------
+    if (strcmp(ltype,ntru) ==0) {
+      d=2*d;
+      n=d;
+      A.resize(d,d); 
+      AT.resize(d,d);  
+      AT.gen_ntrulike(nbbits,q);
+      transpose(A,AT);
+    } 
+
+
+
+    print2maple(A,n,d);
 
     int start,startsec;
 
-
-    //n=d+1;  A.resize(n,d);  AT.resize(d,n); AT.gen_intrel(nbbits);
-    /*n=d; 
-    A.resize(n,d);  AT.resize(d,n);  
-    for (i=0; i<n/2; i++)
-      for (j=0; j<d; j++) 
-    	A(i,j).randb(nbbits); 
-
-    for (i=n/2; i<n; i++)
-      for (j=0; j<d; j++) 
-    	if (i==j) A(i,j)=1; else A(i,j)=0; 
-    
-	transpose(AT,A);
-	n=d;*/
-
-    //print2maple(A,n,d);
-
-    A.resize(d,d);
-    AT.resize(d,d);
-    AT.gen_ajtai(3);
-    transpose(A,AT);
-    //print2maple(A,d,d);
-
-    mpfr_set_default_prec(28000+2*d+nbbits+max(50,nbbits/10));
-    //mpfr_set_default_prec(d+max(10,nbbits/10));
-
-    PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
-    //PLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A);
-
-    //print2maple(B.getbase(),n,d);
-
+    cout << "--------------  HLLL" << endl << endl; 
     start=utime();
     startsec=utimesec();
-
-    B.hlll(delta,K,lovmax);
-    
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
+    B.hlll(delta);
     start=utime()-start;
     startsec=utimesec()-startsec;
-
-    /*int start;
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,NO_TRANSFORM,DEF_REDUCTION);
-    start=utime();
-    C.hlll(0.99);
-    start=utime()-start;
-    cout << "   LLL " << start/1000 << " ms" << endl;*/
- 
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-    T1.isreduced(delta-0.1);
-
+  
     cout << "   bits = " << nbbits << endl;
     cout << "   dimension = " << d  << endl;
-    cout << "   nblov plll " << B.nblov  << endl;
-    cout << "   time plll: " << start/1000 << " ms" << endl;
-    cout << "   time plll: " << startsec << " s" << endl;
+    cout << "   time A: " << start/1000 << " ms" << endl;
+    cout << "   time A: " << startsec << " s" << endl;
 
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,NO_TRANSFORM,DEF_REDUCTION);
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+    T1.isreduced(delta);
+
+    cout << endl; 
+
+    cout << "--------------  FPLLL" << endl << endl; 
+    transpose(AT,A);
 
     start=utime();
     startsec=utimesec();
-
-    C.hlll(delta);
-
+    lllReduction(AT, delta, 0.5, LM_WRAPPER,FT_DEFAULT,0);
     start=utime()-start;
     startsec=utimesec()-startsec;
+  
+    cout << "   bits = " << nbbits << endl;
+    cout << "   dimension = " << d  << endl;
+    cout << "   time B: " << start/1000 << " ms" << endl;
+    cout << "   time B: " << startsec << " s" << endl;
 
+    transpose(A,AT);
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
+    T2.isreduced(delta);
 
-    cout << "   nblov hlll " << C.nblov  << endl;
-    cout << "   time hlll: " << start/1000 << " ms" << endl;
-    cout << "   time hlll: " << startsec << " s" << endl;
+    //print2maple(T1.getbase(),n,n);
+
+    /*
+    cout << endl; 
+  
+    transpose(AT,A);
+ 
+    start=utime();
+    startsec=utimesec();
+    lllReduction(AT, delta, 0.5, LM_FAST,FT_DEFAULT,0);
+    start=utime()-start;
+    startsec=utimesec()-startsec;
+  
+    cout << "   bits = " << nbbits << endl;
+    cout << "   dimension = " << d  << endl;
+    cout << "   time C: " << start/1000 << " ms" << endl;
+    cout << "   time C: " << startsec << " s" << endl;
+  
+    transpose(tmpmat,AT);
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T3(tmpmat,NO_TRANSFORM,DEF_REDUCTION);
+    T3.isreduced(delta);
+    */
 
   } 
 
