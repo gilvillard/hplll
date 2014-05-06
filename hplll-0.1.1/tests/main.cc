@@ -41,10 +41,11 @@ int main(int argc, char *argv[])  {
   // ---------------------------------------------------------------------
   { 
   
-    char ltype[1];
+    char ltype[]="r";
     char knapsack[]="r";
     char ajtai[]="a";
     char ntru[]="n";
+    char blrs[]="blrs";
 
     int d=8;
     int n;
@@ -52,6 +53,10 @@ int main(int argc, char *argv[])  {
     int nbbits=10;
     double alpha=1.4;
     int q;
+
+    int output = 0;
+
+   
 
     PARSE_MAIN_ARGS {
       MATCH_MAIN_ARGID("-ltype",ltype);
@@ -95,6 +100,21 @@ int main(int argc, char *argv[])  {
     } 
 
 
+    // http://www.latticechallenge.org
+    // -------------------------------
+    if (strcmp(ltype,blrs) ==0) {
+      n=d;
+      A.resize(d,d); 
+      AT.resize(d,d); 
+
+      filebuf fb;
+      fb.open ("bases/challenge-blrs/challenge-"+to_string(200),ios::in);
+      iostream os(&fb);
+      os >> AT ;
+      fb.close();
+      transpose(A,AT);
+    }
+    
 
     print2maple(A,n,d);
 
@@ -114,7 +134,7 @@ int main(int argc, char *argv[])  {
     cout << "   time A: " << startsec << " s" << endl;
 
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-    T1.isreduced(delta);
+    T1.isreduced(delta-0.1);
 
     cout << endl; 
 
@@ -123,7 +143,7 @@ int main(int argc, char *argv[])  {
 
     start=utime();
     startsec=utimesec();
-    lllReduction(AT, delta, 0.5, LM_WRAPPER,FT_DEFAULT,0);
+    lllReduction(AT, delta, 0.501, LM_FAST,FT_DEFAULT,0);
     start=utime()-start;
     startsec=utimesec()-startsec;
   
@@ -134,7 +154,7 @@ int main(int argc, char *argv[])  {
 
     transpose(A,AT);
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
-    T2.isreduced(delta);
+    T2.isreduced(delta-0.1);
 
     //print2maple(T1.getbase(),n,n);
 
