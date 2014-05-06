@@ -550,12 +550,12 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 	  R.submulcol(kappa,i,x,i+1);
       
 
-	  //B.submulcol(kappa,i,xz,nmax);    
-	  B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+	  B.submulcol(kappa,i,xz,nmax);    
+	  //B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
 	 
 	  if (transf)  
-	    //U.submulcol(kappa,i,xz,min(d,nmax));
-	  U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    U.submulcol(kappa,i,xz,min(d,nmax));
+	  //U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
 
 	  if (lsize > 0)  
 	    L.addmulcol_si_2exp(kappa,i,-lx,expo,lsize);

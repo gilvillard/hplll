@@ -21,6 +21,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #include  "defs.h"
+#include  "tools.h"
 #include  "mat.h"
 #include  "matpe.h"
 
@@ -43,6 +44,8 @@ template<class RT> int gen3r2s(matrix<FP_NR<RT> >& B, int n, int r, int s);
 
 // Two real vector for a simultaneous relation 
 template<class RT> int gen3r2s7t5u(matrix<FP_NR<RT> >& B, int n, int r, int s, int t, int u);
+
+ basis_from_main(ZZ_mat<mpz_t> A);
 
 } // end namespace hplll
 
