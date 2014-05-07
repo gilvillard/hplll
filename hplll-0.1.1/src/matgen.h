@@ -45,7 +45,8 @@ template<class RT> int gen3r2s(matrix<FP_NR<RT> >& B, int n, int r, int s);
 // Two real vector for a simultaneous relation 
 template<class RT> int gen3r2s7t5u(matrix<FP_NR<RT> >& B, int n, int r, int s, int t, int u);
 
- basis_from_main(ZZ_mat<mpz_t> A);
+
+ void command_line_basis(ZZ_mat<mpz_t>& A, int& n, int& d, double &delta, int argc, char *argv[]);
 
 } // end namespace hplll
 

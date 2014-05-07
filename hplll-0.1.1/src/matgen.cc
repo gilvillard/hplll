@@ -27,6 +27,121 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 namespace hplll {
 
+/* ***********************************************
+
+          BASIS GENERATION FROM THE COMMAND LINE    
+
+   ********************************************** */
+
+  void command_line_basis(ZZ_mat<mpz_t>& A, int& n, int& d, double &delta, int argc, char *argv[]) {
+
+    ZZ_mat<mpz_t> AT;
+
+    char type[]="r";
+    char knapsack[]="r";
+    char block[]="rb";
+    char ajtai[]="a";
+    char ntru[]="n";
+    char line[]="cin";
+    
+    
+    int nbbits=10;
+    double alpha=1.4;
+    int q;
+
+    int m = 1;
+
+    delta =0.75;
+
+    int output = 0;
+
+    PARSE_MAIN_ARGS {
+      MATCH_MAIN_ARGID("-type",type);
+      MATCH_MAIN_ARGID("-d",d);
+      MATCH_MAIN_ARGID("-m",m);
+      MATCH_MAIN_ARGID("-delta",delta);
+      MATCH_MAIN_ARGID("-bits",nbbits);
+      MATCH_MAIN_ARGID("-alpha",alpha);
+      MATCH_MAIN_ARGID("-output",output);
+      MATCH_MAIN_ARGID("-q",q);
+      SYNTAX();
+    }
+
+    // Knapsack 
+    // --------
+    if (strcmp(type,knapsack) ==0) {
+     
+      n=d+1;
+      A.resize(d+1,d); 
+      AT.resize(d,d+1);  
+      AT.gen_intrel(nbbits);
+      transpose(A,AT);
+    } 
+
+    // Block knapsack 
+    // --------------
+    else if (strcmp(type,block) ==0) {
+      n=d;
+      
+      A.resize(d,d); 
+
+      for (int i=0; i<m; i++)
+	for (int j=0; j<d ; j++) {
+	  A(i,j).randb(nbbits);
+
+	}  
+    
+      Z_NR<mpz_t> one; 
+      one = 1;
+      for (int i=m; i<d; i++)
+	A(i,i)=one;
+    } 
+
+    // Ajtai 
+    // -----
+    else if (strcmp(type,ajtai) ==0) {
+      n=d;
+      A.resize(d,d); 
+      AT.resize(d,d);  
+      AT.gen_ajtai(alpha);
+      transpose(A,AT);
+    } 
+
+    // NTRU like 
+    // ---------
+    else if (strcmp(type,ntru) ==0) {
+      d=2*d;
+      n=d;
+      A.resize(d,d); 
+      AT.resize(d,d);  
+      AT.gen_ntrulike(nbbits,q);
+      transpose(A,AT);
+    } 
+
+    // http://www.latticechallenge.org
+    // -------------------------------
+    else if (strcmp(type,line) ==0) {
+      
+      n=d;
+      A.resize(d,d); 
+      AT.resize(d,d); 
+
+      cin >> AT ;
+      
+      transpose(A,AT);
+    }
+
+    else
+      cout << "Warning: in function command_line_basis, no basis created" << endl; 
+
+    
+    if (output ==1) 
+      print2maple(A,n,d);
+
+   
+  }
+
+
 
 /* ***********************************************
 
