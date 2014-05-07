@@ -48,7 +48,7 @@ namespace hplll {
     int nbbits=10;
     double alpha=1.4;
     int q;
-
+    d=8;
     int m = 1;
 
     delta =0.75;
@@ -64,7 +64,6 @@ namespace hplll {
       MATCH_MAIN_ARGID("-alpha",alpha);
       MATCH_MAIN_ARGID("-output",output);
       MATCH_MAIN_ARGID("-q",q);
-      SYNTAX();
     }
 
     // Knapsack 

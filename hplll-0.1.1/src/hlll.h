@@ -154,7 +154,7 @@ public:
   // *************************************************************
 
   void isreduced(double delta);
-  FP_NR<FT> cond();
+  FP_NR<FT> cond(int flagprec, int structure, int proper);
   FP_NR<FT> tnull(int time);  // Stats nullspace 
   FP_NR<FT> energy();
 
