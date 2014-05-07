@@ -31,19 +31,20 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "defs.h"
 #include "mixed-col.h"
 
+#ifdef NTL_GMP_LIP
 #include <NTL/mat_ZZ.h>
-
+ 
 using namespace NTL;
-
+#endif
 
 namespace hplll { 
 
 
 
+#ifdef NTL_GMP_LIP
+
 // Jeu  1 mai 2014 16:06:02 CEST for conversions between mpz_t and NTL
 // From : Verifiable Delegation of Computation verifiable-delegation / gmp-utils
-
-
 
 void bytes_from_mpz(unsigned char*& outBuf, size_t* l, const mpz_t n)
 {
@@ -78,6 +79,8 @@ void zztompz(mpz_t r, const ZZ& n)
 	mpz_from_bytes(r, bytes, nBytes);
 	
 }
+
+#endif 
 
 
 
@@ -1373,6 +1376,8 @@ inline void next2prime(Z_NR<mpz_t>& p, long bits) {
 
 }
 
+#ifdef NTL_GMP_LIP
+
 // ZZ_mat to NTL Mat<zz_p>
 // -----------------------
 
@@ -1523,6 +1528,7 @@ inline  void  NTL_inv(ZZ_mat<mpz_t>& V, const ZZ_mat<mpz_t> U) {
 
   }
 
+#endif // NTL
 
 //
  

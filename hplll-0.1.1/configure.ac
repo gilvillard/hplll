@@ -101,11 +101,19 @@ AC_LANG(C++)
 SAVED_LDFLAGS=$LDFLAGS
 LDFLAGS="$LDFLAGS -lntl" 
 #echo "checking for to_long in -lntl... "  # -n or \c 
-#AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <NTL/tools.h>]], [[NTL::to_long(2)]])],[AC_MSG_RESULT(checking for to_long in -lntl... yes)],[AC_MSG_ERROR([NTL not found, see http://www.shoup.net/ntl])
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <NTL/tools.h>]], [[NTL::to_long(2)]])],[AC_MSG_RESULT(checking for to_long in -lntl... yes)],[AC_MSG_WARN([NTL not found, see http://www.shoup.net/ntl])
-   ])
-LDFLAGS=$SAVED_LDFLAGS
-# Ne va pas car enlève le lntl
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <NTL/tools.h>]], [[NTL::to_long(2)]])],[ntlok=yes],[ntlok=no])
+#AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <NTL/tools.h>]], [[NTL::to_long(2)]])],[AC_MSG_RESULT(checking for to_long in -lntl... yes)],[AC_MSG_WARN([NTL not found, see http://www.shoup.net/ntl]) ])
+
+if test "$ntlok" = "yes"; then
+    AC_MSG_RESULT(checking for to_long in -lntl... yes)
+else 
+    AC_MSG_WARN([NTL not found, see http://www.shoup.net/ntl])
+fi
+
+if test "$ntlok" = "no"; then
+    LDFLAGS=$SAVED_LDFLAGS
+fi
+
 
 
 AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile])
