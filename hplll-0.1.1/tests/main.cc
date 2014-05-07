@@ -73,7 +73,7 @@ int main(int argc, char *argv[])  {
 
     start=utime();
     startsec=utimesec();
-    lllReduction(AT, delta, 0.501, LM_FAST,FT_DEFAULT,0);
+    lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0);
     start=utime()-start;
     startsec=utimesec()-startsec;
   
