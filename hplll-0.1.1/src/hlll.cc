@@ -550,12 +550,12 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 	  R.submulcol(kappa,i,x,i+1);
       
 
-	  //B.submulcol(kappa,i,xz,nmax);    
-	  B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+	  B.submulcol(kappa,i,xz,nmax);    
+	  //B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
 	 
 	  if (transf)  
-	    //U.submulcol(kappa,i,xz,min(d,nmax));
-	  U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    U.submulcol(kappa,i,xz,min(d,nmax));
+	  //U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
 
 	  if (lsize > 0)  
 	    L.addmulcol_si_2exp(kappa,i,-lx,expo,lsize);
@@ -1361,9 +1361,9 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
 
   hlll(deltain);
 
-  if (nblov==d-1) cout << "Seems to be reduced (up to size-reduction)" << endl << endl;
+  if (nblov== ((unsigned int) d-1)) cout << "Seems to be reduced (up to size-reduction)" << endl << endl;
 
-  if (nblov != d-1) {
+  if (nblov != ((unsigned int) d-1)) {
     cout << endl;
     cout << "!! Does not seem to be reduced" << endl;
     cout << "     #non-trivial swaps is " << nblov-d+1 << " > " << 0 << endl << endl; 
@@ -1456,7 +1456,7 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
 
 
 //***************************************************************************
-// Condition number || |R| |R^-1| || _ F
+// Upper bound on log[2] Condition number || |R| |R^-1| || _ F
 // Change the precision, hence initialize R (forget previous value)  
 
 // To be used with mpfr if the precision change must have some effect 
@@ -1464,7 +1464,8 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
 // Matrix interface () deprecated, will note work with -exp 
 //
 
-template<class ZT,class FT, class MatrixZT, class MatrixFT> inline FP_NR<FT> Lattice<ZT,FT, MatrixZT, MatrixFT>::cond() {
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline FP_NR<FT> 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::lcond(int flagprec, int structure, int proper) {
 
 
   FP_NR<FT>  cc,c2;

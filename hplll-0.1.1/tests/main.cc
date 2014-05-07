@@ -23,6 +23,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "hlll.h"
 #include "matgen.h"
+#include "plll.h"
+
+
 
 /* ***********************************************
 
@@ -34,60 +37,78 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
-  
   ZZ_mat<mpz_t> A; // For hpLLL 
-  ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
+  ZZ_mat<mpz_t> AT;  // fpLLL  
 
   // ---------------------------------------------------------------------
+  
+    cout << "************************************************************************** " << endl; 
 
-  int n,d;
-  double delta;
+    int n,d;
+    double delta;
+    
+    int K=4; 
 
-  command_line_basis(A, n, d, delta, argc, argv); 
+    command_line_basis(A, n, d, delta, argc, argv); 
 
-  AT.resize(d,n);
-  transpose(AT,A);
+    
+    unsigned int lovmax = 4294967295;
 
+    PARSE_MAIN_ARGS {
+      MATCH_MAIN_ARGID("-K",K);
+      MATCH_MAIN_ARGID("-lovmax",lovmax);
+      }
+
+
+    AT.resize(d,n);
+    transpose(AT,A);
+
+   
+
+    mpfr_set_default_prec(12000);
+
+    //mpfr_set_default_prec(d+max(10,nbbits/10));
+
+
+    /*
     int start,startsec;
+    
+    PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
 
-    cout << "--------------  HLLL" << endl << endl; 
     start=utime();
     startsec=utimesec();
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
-    B.hlll(delta);
+
+    B.hlll(delta,K,lovmax);
+    
     start=utime()-start;
     startsec=utimesec()-startsec;
-  
-    
-    cout << "   dimension = " << d  << endl;
-    cout << "   time A: " << start/1000 << " ms" << endl;
-    cout << "   time A: " << startsec << " s" << endl;
 
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
     T1.isreduced(delta-0.1);
 
-    cout << endl; 
+    
+    cout << "   dimension = " << d  << endl;
+    cout << "   nblov plll " << B.nblov  << endl;
+    cout << "   time plll: " << start/1000 << " ms" << endl;
+    cout << "   time plll: " << startsec << " s" << endl;
 
-    cout << "--------------  FPLLL" << endl << endl; 
-    transpose(AT,A);
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,NO_TRANSFORM,DEF_REDUCTION);
 
     start=utime();
     startsec=utimesec();
-    lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0);
+
+    C.hlll(delta);
+
     start=utime()-start;
     startsec=utimesec()-startsec;
-  
-    
-    cout << "   dimension = " << d  << endl;
-    cout << "   time B: " << start/1000 << " ms" << endl;
-    cout << "   time B: " << startsec << " s" << endl;
-
-    transpose(A,AT);
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
-    T2.isreduced(delta-0.1);
 
 
+    cout << "   nblov hlll " << C.nblov  << endl;
+    cout << "   time hlll: " << start/1000 << " ms" << endl;
+    cout << "   time hlll: " << startsec << " s" << endl;
 
- 
+    cout << "K " << K << endl; 
+    */
+
   return 0;
 }
