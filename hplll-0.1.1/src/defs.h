@@ -27,6 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include <cmath>
 #include <sstream>
+#include <iostream>
 
 #include <gmp.h>
 #include <mpfr.h>

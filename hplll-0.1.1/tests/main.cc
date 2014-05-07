@@ -22,7 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 #include "hlll.h"
-#include "tools.h" 
+#include "matgen.h"
 
 /* ***********************************************
 
@@ -39,84 +39,14 @@ int main(int argc, char *argv[])  {
   ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
 
   // ---------------------------------------------------------------------
-  { 
-  
-    char ltype[]="r";
-    char knapsack[]="r";
-    char ajtai[]="a";
-    char ntru[]="n";
-    char blrs[]="blrs";
 
-    int d=8;
-    int n;
-    double delta = 0.75;
-    int nbbits=10;
-    double alpha=1.4;
-    int q;
+  int n,d;
+  double delta;
 
-    int output = 0;
+  command_line_basis(A, n, d, delta, argc, argv); 
 
-   
-
-    PARSE_MAIN_ARGS {
-      MATCH_MAIN_ARGID("-ltype",ltype);
-      MATCH_MAIN_ARGID("-d",d);
-      MATCH_MAIN_ARGID("-delta",delta);
-      MATCH_MAIN_ARGID("-bits",nbbits);
-      MATCH_MAIN_ARGID("-alpha",alpha);
-      MATCH_MAIN_ARGID("-q",q);
-      SYNTAX();
-    }
-
-    // Knapsack 
-    // --------
-    if (strcmp(ltype,knapsack) ==0) {
-      n=d+1;
-      A.resize(d+1,d); 
-      AT.resize(d,d+1);  
-      AT.gen_intrel(nbbits);
-      transpose(A,AT);
-    } 
-
-    // Ajtai 
-    // -----
-    if (strcmp(ltype,ajtai) ==0) {
-      n=d;
-      A.resize(d,d); 
-      AT.resize(d,d);  
-      AT.gen_ajtai(alpha);
-      transpose(A,AT);
-    } 
-
-    // NTRU like 
-    // ---------
-    if (strcmp(ltype,ntru) ==0) {
-      d=2*d;
-      n=d;
-      A.resize(d,d); 
-      AT.resize(d,d);  
-      AT.gen_ntrulike(nbbits,q);
-      transpose(A,AT);
-    } 
-
-
-    // http://www.latticechallenge.org
-    // -------------------------------
-    if (strcmp(ltype,blrs) ==0) {
-      n=d;
-      A.resize(d,d); 
-      AT.resize(d,d); 
-
-      filebuf fb;
-      fb.open ("bases/challenge-blrs/challenge-"+to_string(200),ios::in);
-      iostream os(&fb);
-      os >> AT ;
-      fb.close();
-      transpose(A,AT);
-    }
-    
-
-    print2maple(A,n,d);
+  AT.resize(d,n);
+  transpose(AT,A);
 
     int start,startsec;
 
@@ -128,7 +58,7 @@ int main(int argc, char *argv[])  {
     start=utime()-start;
     startsec=utimesec()-startsec;
   
-    cout << "   bits = " << nbbits << endl;
+    
     cout << "   dimension = " << d  << endl;
     cout << "   time A: " << start/1000 << " ms" << endl;
     cout << "   time A: " << startsec << " s" << endl;
@@ -147,7 +77,7 @@ int main(int argc, char *argv[])  {
     start=utime()-start;
     startsec=utimesec()-startsec;
   
-    cout << "   bits = " << nbbits << endl;
+    
     cout << "   dimension = " << d  << endl;
     cout << "   time B: " << start/1000 << " ms" << endl;
     cout << "   time B: " << startsec << " s" << endl;
@@ -156,30 +86,7 @@ int main(int argc, char *argv[])  {
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
     T2.isreduced(delta-0.1);
 
-    //print2maple(T1.getbase(),n,n);
 
-    /*
-    cout << endl; 
-  
-    transpose(AT,A);
- 
-    start=utime();
-    startsec=utimesec();
-    lllReduction(AT, delta, 0.5, LM_FAST,FT_DEFAULT,0);
-    start=utime()-start;
-    startsec=utimesec()-startsec;
-  
-    cout << "   bits = " << nbbits << endl;
-    cout << "   dimension = " << d  << endl;
-    cout << "   time C: " << start/1000 << " ms" << endl;
-    cout << "   time C: " << startsec << " s" << endl;
-  
-    transpose(tmpmat,AT);
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T3(tmpmat,NO_TRANSFORM,DEF_REDUCTION);
-    T3.isreduced(delta);
-    */
-
-  } 
 
  
   return 0;
