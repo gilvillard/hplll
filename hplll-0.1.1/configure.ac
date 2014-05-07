@@ -94,7 +94,7 @@ LDFLAGS="$LDFLAGS -lfplll"
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <fplll.h>]], [[cputime()]])],[AC_MSG_RESULT(checking for cputime in -lfplll... yes)],[AC_MSG_ERROR([FPLLL not found, see http://perso.ens-lyon.fr/damien.stehle/fplll])
    ])
 LDFLAGS=$SAVED_LDFLAGS
-# Ne va pas car enlève le lfplll
+# Ne va pas car enlève le lfplll, faire comme ci-dessous 
 
 
 AC_LANG(C++)
