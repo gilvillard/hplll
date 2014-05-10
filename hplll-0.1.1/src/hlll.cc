@@ -1457,211 +1457,242 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
 
 //***************************************************************************
 // Upper bound on log[2] Condition number || |R| |R^-1| || _ F
-// Change the precision, hence initialize R (forget previous value)  
-
-// To be used with mpfr if the precision change must have some effect 
+// 
+// R is not assumed to be known 
+//
 //*************************************************************************** 
 // Matrix interface () deprecated, will note work with -exp 
 //
 
-template<class ZT,class FT, class MatrixZT, class MatrixFT> inline FP_NR<FT> 
-Lattice<ZT,FT, MatrixZT, MatrixFT>::lcond(int flagprec, int structure, int proper) {
+//#define DEFAULT_PREC 0 
+//#define UNKNOWN_PREC 1
+//#define CHECK 1
+// PREC IF >=2 
+
+//#define TRIANGULAR_PROPER 1   
+//#define ANY 0 
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline long  
+Lattice<ZT,FT, MatrixZT, MatrixFT>::lcond(int tproper, int flagprec,  int flagheur) {
 
 
-  FP_NR<FT>  cc,c2;
+  if (flagprec == DEFAULT_PREC) {
+
+    // Default prec and triangular 
+    // ***************************
+
+    if (tproper == TRIANGULAR_PROPER) {
+
+      int i,j;
+      
+      for (j=0; j<d; j++)
+	R.setcol(j,B.getcol(j),0,j+1); 
+
+      FP_NR<FT>  tmp,ttmp;
+
+      // Size-reducedness 
+  
+      FP_NR<FT>  eta;
+      eta=0.0;
+
+      for  (j=1; j<d; j++) 
+
+	for (i=0; i<j; i++) {
+	  tmp.div(R(i,j),R(i,i));
+	  tmp.abs(tmp);
+	  if (tmp.cmp(eta) > 0) eta=tmp;
+	}
+
+      // diag quo
+        
+      FP_NR<FT>  maxquo;
+      maxquo=0.0;
+
+      for  (j=0; j<d; j++) 
+	for (i=0; i<d; i++) {
+	  tmp.div(R(j,j),R(i,i));
+	  tmp.abs(tmp);
+	  if (tmp.cmp(maxquo) > 0) maxquo=tmp;
+	}
+  
+      // Approx cond all together 
+     
+      long condb; 
  
+      condb=maxquo.exponent();
+      tmp=1.0;
+      eta.add(tmp,eta);
+      condb += (d-1) + eta.exponent();
 
-  int i,j,k;
+      Z_NR<long> dd;
+      dd=d;
+      condb += 1 + dd.exponent();
 
-  unsigned int oldprec,newprec;
-
-  oldprec=getprec();
-
-  // ICI 
-  //if (d<=20) setprec(53);  
-  //else setprec(2*d);  // ******* TO TUNE  
-
-  newprec=getprec();
-
-  //if (newprec == oldprec) cout << "Warning: in function cond the change of precision has no effect" << endl; 
-
-  // Calcul direct sur R par householder 
-  // -----------------------------------
-
-  householder();
-
-  // Abs R --> ar 
-  // Do not change for the template class MatrixZT, class MatrixFT that is different e.g. double and mpfr 
-  MatrixFT aR;
-  aR.resize(d,d);
-
-  for (i=0; i<d; i++)
-    for (j=0; j<d; j++) 
-      aR(i,j).abs(R(i,j));
-
-  // Magnitude of the diagonal 
-  // -------------------------
-
-  FP_NR<FT>  mindiag,maxdiag;
-  mindiag=aR(0,0);
-  maxdiag=aR(0,0);
-
-  for (i=1; i<d; i++) {
-    if (mindiag > aR(i,i)) mindiag=aR(i,i);
-    if (maxdiag < aR(i,i)) maxdiag=aR(i,i);
-  }
-  
-  //cout << endl << "Diagonal max: " << maxdiag << "  min: " << mindiag << endl;
-  maxdiag.div(maxdiag,mindiag);
-  //cout << "Largest diagonal ratio: " << maxdiag << endl;
-
-  // Inversion 
-  // ---------
+      return condb;
 
 
-  MatrixFT iR;
-  iR.resize(d,d);
+    } // end if triangular and viewed as proper 
 
-  for (i=0; i<d; i++) iR(i,i)=1.0; 
+    // Defaut prec with no structure 
+    // *****************************
 
-  //  for (i=1; i<=n; i++) SET_D(II[i][i], 1.0);
+    else { // No structure but default prec  
 
-  // Higham p263 Method 1
+      int i,j,k;
 
-  FP_NR<FT> t,one;
-  one=1.0;
+      // Direct computation for R with householder 
+      householder();
 
-  for (j=0; j<d; j++)
-    {
+      // Do not change for the template class MatrixZT, class MatrixFT that is different e.g. double and mpfr 
+      MatrixFT aR;
+      aR.resize(d,d);
+      
+      for (i=0; i<d; i++)
+	for (j=0; j<d; j++) 
+	  aR(i,j).abs(R(i,j));
 
-      iR(j,j).div(one,aR(j,j));
+      // Inversion 
+      // ---------
 
-      for (k=j+1; k<d; k++) {
-	  t.mul(iR(j,j),R(j,k));
-	  iR(j,k).neg(t);
-        }
+      MatrixFT iR;
+      iR.resize(d,d);
 
-      for (k=j+1; k<d; k++) {
-          for (i=j+1; i<k; i++) {
-	    t.mul(iR(j,i),R(i,k)); 
-	    iR(j,k).sub(iR(j,k),t); 
+      for (i=0; i<d; i++) iR(i,i)=1.0; 
+
+      // Higham p263 Method 1
+
+      FP_NR<FT> t,one;
+      one=1.0;
+
+      for (j=0; j<d; j++) {
+	  iR(j,j).div(one,aR(j,j));
+	  for (k=j+1; k<d; k++) {
+	    t.mul(iR(j,j),R(j,k));
+	    iR(j,k).neg(t);
+	  }
+	  
+	  for (k=j+1; k<d; k++) {
+	    for (i=j+1; i<k; i++) {
+	      t.mul(iR(j,i),R(i,k)); 
+	      iR(j,k).sub(iR(j,k),t); 
             }
-	  iR(j,k).div(iR(j,k),R(k,k)); 
-        }
+	    iR(j,k).div(iR(j,k),R(k,k)); 
+	  }
+      }
 
-    }
+      // Abs iR --> iR 
+      for (i=0; i<d; i++)
+	for (j=0; j<d; j++) 
+	  iR(i,j).abs(iR(i,j));
 
-  // Abs iR --> iR 
+      // aR * iR 
+      
+      MatrixFT prod;
+      prod.resize(d,d);
+      
+      for (i=0; i<d; i++)
+	for (j=0; j<d; j++) {
+	  prod(i,j).mul(aR(i,0),iR(0,j));
+	  for (k=1; k<d ; k++) 
+	    prod(i,j).addmul(aR(i,k),iR(k,j));
+	}
 
-  for (i=0; i<d; i++)
-    for (j=0; j<d; j++) 
-      iR(i,j).abs(iR(i,j));
+      // Norm 
 
+      FP_NR<FT>  cc,c2;
+      cc=0.0; 
+      
+      for (i=0; i<d; i++)
+	for (j=0; j<d; j++) 
+	  cc.addmul(prod(i,j),prod(i,j));
 
-  // aR * iR 
+      cc.sqrt(cc); 
 
-  MatrixFT prod;
-  prod.resize(d,d);
-
-  for (i=0; i<d; i++)
-    for (j=0; j<d; j++) {
-      prod(i,j).mul(aR(i,0),iR(0,j));
-      for (k=1; k<d ; k++) 
-	prod(i,j).addmul(aR(i,k),iR(k,j));
-    }
-
-  // Norm 
-
-
-  cc=0.0; 
-
-  for (i=0; i<d; i++)
-    for (j=0; j<d; j++) 
-      cc.addmul(prod(i,j),prod(i,j));
-
-  cc.sqrt(cc); 
-
-  cout << endl;
-  cout << "Conditioning is about ";
-  cc.print();
-  cout  << endl; 
-
-  cc.log(cc);
-  c2=2.0;
-  c2.log(c2);
-  cc.div(cc,c2);
-  cout << "Digits - Log conditioning is about ";
-  cc.print();
-
-  Z_NR<long> tt;
-  tt.set_f(cc);
-  cout << " = " << tt << endl; 
-  cout  << endl; 
-
-
-  setprec(oldprec);
-
-  return cc;
-}
-
-
-
-//***************************************************************************
-// Version simplifiée de l'énergie
-// Change la prec donc écrase R 
-
-// Avec mpfr si le chgt de précision doit avoir un effet 
-// Matrix interface () deprecated, will note work with -exp 
-//
-
-template<class ZT,class FT, class MatrixZT, class MatrixFT> inline FP_NR<FT> Lattice<ZT,FT, MatrixZT, MatrixFT>::energy() {
-
+      return(cc.exponent());
+    } 
+    
+  } // end if default_prec 
   
-  unsigned int oldprec,newprec;
+  // Using a user defined prec, no structure 
+  // ***************************************
+  // Only through mpfr here 
 
-  oldprec=getprec();
+  else if ((flagprec >=2) && (flagheur ==0)) {
+    
+    unsigned oldprec;
+    oldprec=getprec();
 
-  if (d<=20) setprec(53);  
-  else setprec(2*d);  // ******* TO TUNE  
+    mpfr_set_default_prec(flagprec);
 
-  newprec=getprec();
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(getbase());
 
-  if (newprec == oldprec) cout << "Warning: in function energy, the change of precision has no effect" << endl; 
+    return(L.lcond(ANY, DEFAULT_PREC));
 
+    mpfr_set_default_prec(oldprec);
 
-  // Calcul direct sur R par householder 
-  // -----------------------------------
-
-  int i,k;
-
+  } // and else using the user prec, no check 
   
-  householder();
+  // Heuristic check by increasing the precision  
+  // *******************************************
+  // To tune the speed of precision increase 
 
-  FP_NR<FT>  cc;
+  else if ((flagprec >= 2) && (flagheur == CHECK)) {
 
-  FP_NR<FT> tmp,nf;
+    unsigned oldprec,prec=0;
 
-  cc=0.0;
-  
-  for (i=0; i<d; i++) {
-    tmp.abs(R(i,i)); 
-    //cout << R(i,i) << endl; 
-    tmp.log(tmp);
-    nf=0.0;
-    for (k=0; k<d-i; k++)  // multiplication par i ! 
-      nf.add(nf,tmp); 
-    cc.add(cc,nf);
+    oldprec=getprec();
+
+    bool found = false;
+
+    int cond,oldcond=0;
+
+   
+
+    while (found == false) {
+      
+      prec += flagprec;
+
+ cout << "prec = " << prec << endl;
+      mpfr_set_default_prec(prec);
+
+      Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(getbase());
+      
+      cond = L.lcond(ANY, DEFAULT_PREC);
+
+      if (cond == oldcond) 
+	found = true;
+      else 
+	oldcond = cond;
     }
+    
+    mpfr_set_default_prec(oldprec);
 
-  cout << endl;
-  cout << "Energy is about ";
-  cc.print();
-  cout  << endl; 
+    return cond; 
+
+  }  // and else using the user prec, with check
+
+  // Unknown prec 
+  // ************
+  // To tune  
+  else if (flagprec == UNKNOWN_PREC) {
+
+    long bits = maxbitsize(getbase());
+
+    unsigned oldprec;
+    oldprec=getprec();
+    
+    mpfr_set_default_prec(2*d*bits);
+    
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(getbase());
+    
+    return(L.lcond(ANY, DEFAULT_PREC));
+    
+    mpfr_set_default_prec(oldprec);
 
 
-  setprec(oldprec);
+  } // and unknown 
 
-  return cc;
+  return 0; //cc
 }
 
 
@@ -1719,238 +1750,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
 }
 
 
-
-//***************************************************************************
-// Stats for the nullspace tests 
-
-// Avec mpfr si le chgt de precision doit avoir un effet 
-// Time in input for file printing 
-/*
-template<class ZT,class FT, class MatrixZT, class MatrixFT> inline FP_NR<FT> Lattice<ZT,FT, MatrixZT, MatrixFT>::tnull(int time) {
-
-  FP_NR<FT>  cc,c2;
- 
-
-  int i,j,k;
-
-  int oldprec;
-
-  if (d<=20) oldprec=setprec(53);  
-  else oldprec=setprec(20*d);  // ******* A VOIR 
-
-
-  // Calcul direct sur R par householder 
-  // -----------------------------------
-
-  householder();
-
-  // Abs R --> ar 
-  MatrixFT aR;
-  aR.resize(d,d);
-
-  for (i=0; i<d; i++)
-    for (j=0; j<d; j++) 
-      aR(i,j).abs(R(i,j));
-
-  // Magnitude of the diagonal 
-  // -------------------------
-
-  FP_NR<FT>  mindiag,maxdiag;
-  mindiag=aR(0,0);
-  maxdiag=aR(0,0);
-
-  for (i=1; i<d; i++) {
-    if (mindiag > aR(i,i)) mindiag=aR(i,i);
-    if (maxdiag < aR(i,i)) maxdiag=aR(i,i);
-  }
-  
-  //  cout << endl << "Diagonal max: " << maxdiag << "  min: " << mindiag << endl;
-  maxdiag.div(maxdiag,mindiag);
-
-  c2=2.0;
-  c2.log(c2);
-  maxdiag.log(maxdiag); 
-  maxdiag.div(maxdiag,c2);
-  Z_NR<ZT> rdiag;
-  set_f(rdiag,maxdiag);
-
-  //cout << "Largest diagonal ratio: " << rdiag << endl;
-
-  // Inversion 
-  // ---------
-
-
-  MatrixFT iR;
-  iR.resize(d,d);
-
-  for (i=0; i<d; i++) iR(i,i)=1.0; 
-
-  //  for (i=1; i<=n; i++) SET_D(II[i][i], 1.0);
-
-  // Higham p263 Method 1
-
-  FP_NR<FT> t,one;
-  one=1.0;
-
-  for (j=0; j<d; j++)
-    {
-
-      iR(j,j).div(one,aR(j,j));
-
-      for (k=j+1; k<d; k++) {
-	  t.mul(iR(j,j),R(j,k));
-	  iR(j,k).neg(t);
-        }
-
-      for (k=j+1; k<d; k++) {
-          for (i=j+1; i<k; i++) {
-	    t.mul(iR(j,i),R(i,k)); 
-	    iR(j,k).sub(iR(j,k),t); 
-            }
-	  iR(j,k).div(iR(j,k),R(k,k)); 
-        }
-
-    }
-
-  // Abs iR --> iR 
-
-  for (i=0; i<d; i++)
-    for (j=0; j<d; j++) 
-      iR(i,j).abs(iR(i,j));
-
-
-  // aR * iR 
-
-  MatrixFT prod;
-  prod.resize(d,d);
-
-  for (i=0; i<d; i++)
-    for (j=0; j<d; j++) {
-      prod(i,j).mul(aR(i,0),iR(0,j));
-      for (k=1; k<d ; k++) 
-	prod(i,j).addmul(aR(i,k),iR(k,j));
-    }
-
-  // Norm 
-
-
-  cc=0.0; 
-
-  for (i=0; i<d; i++)
-    for (j=0; j<d; j++) 
-      cc.addmul(prod(i,j),prod(i,j));
-
-  cc.sqrt(cc); 
-
-  // Cond 
-  // ----
-
-  cout << endl;
-  cc.log(cc);
-  c2=2.0;
-  c2.log(c2);
-  cc.div(cc,c2);
-  cout << "**** Output file stats *****" << endl << endl;
-  //cout << "Digits - Log conditioning is about " << cc << endl << endl; 
-  Z_NR<ZT> rcond;
-  set_f(rcond,cc);
-  //cout << "Rounded log cond " << rcond << endl;
-
-  // Maxbitsize 
-  // ----------
-
-  int maxbit=0;
-
-  int nn=B.getRows();
-  int dd=B.getCols();
-
-  for (int ii=0; ii<nn ; ii++) 
-    for (int jj=0; jj<dd; jj++)
-      maxbit=max(maxbit, (int) mpz_sizeinbase(B(ii,jj).getData(),2)); 
-
-  //cout << "Max bit size " << maxbit << endl;
-
-  // b_1
-  // ---
-
-  int maxbit1=0;
-  for (int ii=0; ii<nn ; ii++) 
-    maxbit1=max(maxbit1, (int) mpz_sizeinbase(B(ii,0).getData(),2)); 
-
-  //cout << "b_1 bit size " << maxbit1 << endl;
-
-
-  // With Vol 
-
-  int kk;
-  kk=B.getCols();
-  
-  //cout << "k  " << kk << endl;
-
-  // vol 
-  FP_NR<mpfr_t> s;
-  s=R(0,0);
-  for (k=1; k<d; k++) 
-    s.mul(s,R(k,k));
-  s.abs(s);
-  //cout << " *********** " << "Vol(L) is about " << s << endl; 
-
-  cc.log(s);
-  c2=2.0;
-  c2.log(c2);
-  cc.div(cc,c2);
-
-  //cout << " *********** " << "log Vol(L) is about " << cc << endl; 
-
-  Z_NR<ZT> tmpk;
-  tmpk=kk;
-  FP_NR<mpfr_t> kkf;
-  set_z(kkf,tmpk);
-  FP_NR<mpfr_t> expected;
-  expected.div(cc,kkf);
-  //cout << " *********** " << "log Vol(L)1/k is about " << expected << endl; 
-
-  kkf.sqrt(kkf);
-  cc.log(kkf);
-  c2=2.0;
-  c2.log(c2);
-  cc.div(cc,c2);
-
-  expected.add(expected,cc);
-
-  //cout << " *********** " << "expected  " << expected << endl; 
-
-  Z_NR<ZT> rlambda;
-  set_f(rlambda,expected);
-  //cout << "Rounded expected bits  " << rlambda << endl;
-
-  Z_NR<ZT> delta;
-  delta=maxbit;
-  delta.sub(delta,rlambda);
-
-  // File editing: append to out.txt 
-  // -------------------------------
-
-  ofstream outfile; 
-
-  outfile.open ("out.txt",ios_base::app);
-  outfile << "---- " << B.getRows()-B.getCols() << " x " << B.getRows() << " / " <<
-    B.getRows()<< " x " << B.getCols() <<endl; 
-  outfile << "*l_max: " << maxbit << "    *l_b1: " << maxbit1 << "    *l_cond: " << rcond << "    *l_diag: " << rdiag << "    *l_Gauss: " << rlambda  
-	  << "    *mdelta bits: " << delta << "   Time: " << time << " sec." << endl << endl;    
-  outfile.close();
-
-  cout << "---- " << B.getRows()-B.getCols() << " x " << B.getRows() << " / " <<
-    B.getRows()<< " x " << B.getCols() <<endl; 
-  cout << "*l_max: " << maxbit << "    *l_b1: " << maxbit1 << "    *l_cond: " << rcond << "    *l_diag: " << rdiag << "    *l_Gauss: " << rlambda  
-       << "    *mdelta bits: " << delta <<  "   Time: " << time << " sec." << endl << endl;   
-
-  // Precision 
-  setprec(oldprec);
-
-  return cc;
-}
-*/
 } // end namespace hplll
 
 #endif 

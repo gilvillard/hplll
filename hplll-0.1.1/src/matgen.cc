@@ -117,7 +117,6 @@ namespace hplll {
       transpose(A,AT);
     } 
 
-    // http://www.latticechallenge.org
     // -------------------------------
     else if (strcmp(type,line) ==0) {
       

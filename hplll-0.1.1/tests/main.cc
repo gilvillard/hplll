@@ -63,14 +63,22 @@ int main(int argc, char *argv[])  {
     AT.resize(d,n);
     transpose(AT,A);
 
+
+    int cond; 
+  
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(A);
+
+    cond = L.lcond(TRIANGULAR_PROPER);
+
+    //cout << " cond = " << B.lcond(TRIANGULAR_PROPER) << endl; 
+    //cout << " cond = " << B.lcond(ANY, DEFAULT_PREC) << endl;
+    //cout << " cond = " << B.lcond(ANY, 10, CHECK) << endl; 
    
 
-    mpfr_set_default_prec(12000);
-
-    //mpfr_set_default_prec(d+max(10,nbbits/10));
+    mpfr_set_default_prec(cond);
 
 
-    /*
+    
     int start,startsec;
     
     PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
@@ -108,7 +116,7 @@ int main(int argc, char *argv[])  {
     cout << "   time hlll: " << startsec << " s" << endl;
 
     cout << "K " << K << endl; 
-    */
+    
 
   return 0;
 }
