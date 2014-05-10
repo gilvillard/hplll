@@ -154,9 +154,18 @@ public:
   // *************************************************************
 
   void isreduced(double delta);
-  FP_NR<FT> cond(int flagprec, int structure, int proper);
-  FP_NR<FT> tnull(int time);  // Stats nullspace 
-  FP_NR<FT> energy();
+
+#define ANY 0
+#define TRIANGULAR_PROPER 1   
+
+#define DEFAULT_PREC 0 
+#define UNKNOWN_PREC 1
+#define CHECK  1
+
+// PREC IF >=2
+
+  long lcond(int tproper =0, int flagprec=0, int flagheur=0);
+
 
   //~Lattice();
 };
