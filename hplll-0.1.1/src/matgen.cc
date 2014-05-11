@@ -43,6 +43,7 @@ namespace hplll {
     char ajtai[]="a";
     char ntru[]="n";
     char line[]="cin";
+    char copp[]="c";
     
     
     int nbbits=10;
@@ -50,6 +51,7 @@ namespace hplll {
     int q;
     d=8;
     int m = 1;
+    int sN,sX,h; 
 
     delta =0.75;
 
@@ -64,6 +66,9 @@ namespace hplll {
       MATCH_MAIN_ARGID("-alpha",alpha);
       MATCH_MAIN_ARGID("-output",output);
       MATCH_MAIN_ARGID("-q",q);
+      MATCH_MAIN_ARGID("-N",sN);
+      MATCH_MAIN_ARGID("-X",sX);
+      MATCH_MAIN_ARGID("-h",h);
     }
 
     // Knapsack 
@@ -104,6 +109,56 @@ namespace hplll {
       AT.resize(d,d);  
       AT.gen_ajtai(alpha);
       transpose(A,AT);
+    } 
+
+    // Coppersmith PKC 14 BCFPNRZ 
+    // -----
+    else if (strcmp(type,copp) ==0) {
+
+      int ddelta=3;
+ 
+      n=ddelta*h;
+      d=n;
+
+      Z_NR<mpz_t> N,X,tz,one;
+      one = 1;
+
+      N.randb(sN);
+      X.randb(sX);
+
+      AT.resize(n,n);
+      A.resize(n,n);
+
+      int i,j,k;
+
+      tz=one;
+      for (i=h-1; i>=0; i--) {
+	
+	for (k=0; k<ddelta; k++) 
+	  AT(i*ddelta+k,i*ddelta+k)=tz;
+	
+	tz.mul(tz,N);
+      }
+
+      tz=one;
+      for (i=0; i<n; i++) {
+	
+	AT(i,i).mul(AT(i,i),tz);
+	tz.mul(tz,X);
+      }
+
+      int s;
+      
+      for (i=0; i<n; i++) 
+	for (j=i+1; j<n; j++) {
+	  
+	  s=size_in_bits(AT(i,i));
+	  AT(j,i).randb(s);
+	  
+	}
+
+      transpose(A,AT);
+
     } 
 
     // NTRU like 

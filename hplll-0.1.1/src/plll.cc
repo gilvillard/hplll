@@ -42,11 +42,10 @@ namespace hplll {
     
     bdim = d/K;
     
-    int S,sdim;   // Number of segments and dimension of each segment  
+    int S;   // Number of segments and dimension of each segment  
                   // Assume that d is a multiple of K >= 4 
                   // K/2 and bdim >= 2 for actual segment) 
     S=K/2;
-    sdim = d/S;
 
     int k;    // block or segment loop 
     int i;
@@ -62,28 +61,28 @@ namespace hplll {
     
     start=utime();
     householder();
-    start=utime()-start;
-    cout << "   QR " << start/1000 << " ms" << endl;
-    
+    int qrtime=utime()-start;
+   
+    int redtime=0;
+    int prodtime=0;
+    int sizetime=0;
+
     long condbits;
     
-
     int iter;
 
     bool stop=0;
 
-    // Main loop on ...
-    // ****************
+    // ************************
+    // Main loop on block swaps 
+    // ************************
 
     for (iter=0; stop==0; iter++) {
-    //for (iter=0; iter < 4; iter++) {
 
       // Even block reduction  
       // --------------------
 
       setId(U);
-
-      //print2maple(B,n,d);
 
       condbits=approx_cond();
       cout << endl << "************* Even approx cond " << condbits << "    " << "S = " << S << endl; 
@@ -92,15 +91,16 @@ namespace hplll {
 
       set_f(RZ,R,condbits);
 
+      start=utime();
+
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif 
 
-      for (k=0; k<S; k++) {   //cout << "+++++++++  Even ++++++++++++ " << endl; 
+      for (k=0; k<S; k++) {   
 #ifdef _OPENMP	
 	cout << "thread " << omp_get_thread_num() << endl; 
 #endif
-	//print2maple(getblock(RZ,k,k,S,0),sdim,sdim);
 	
 	Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
 	BR.set_nblov_max(lovmax);
@@ -110,6 +110,7 @@ namespace hplll {
 	putblock(U,BR.getU(),k,k,S,0);
 
       }
+      redtime+=utime()-start;
 
 #ifdef _OPENMP
 #pragma omp barrier
@@ -118,15 +119,23 @@ namespace hplll {
       stop=isId(U);
       //cout << "Stop: "  <<  stop << endl; 
 
+      start = utime();
+
       matprod_in(B,U);
     
+      prodtime+=utime()-start;
+
       LB.assign(B);
+
+      start=utime();
 
       for (i=0; i<d; i++) {
 	
 	LB.hsizereduce(i);
 	LB.householder_v(i);
       }
+
+      sizetime+=utime()-start;
 
       // Householder have been implicitely computed
       R=LB.getR();
@@ -143,14 +152,13 @@ namespace hplll {
     
       set_f(RZ,R,condbits);
 
+      start=utime();
+ 
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif 
-
       for (k=0; k<S-1; k++) {
 	//cout << "+++++++++++ Odd ++++++++++ " << endl; 
-	
-	//print2maple(getblock(RZ,k,k,S,bdim),sdim,sdim);
 	
 	Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
 	BR.set_nblov_max(lovmax);
@@ -160,6 +168,7 @@ namespace hplll {
 
 	putblock(U,BR.getU(),k,k,S,bdim);
       }
+      redtime+=utime()-start;
 
 #ifdef _OPENMP
 #pragma omp barrier
@@ -168,11 +177,21 @@ namespace hplll {
       stop=isId(U)*stop;
       //cout << "Stop: "  <<  stop << endl; 
      
+      start = utime();
+
       matprod_in(B,U);
-    
+
+      prodtime+=utime()-start;
+
+
       LB.assign(B);
 
       //print2maple(B,n,d);
+
+      // ICI 
+      cout << "avant " << maxbitsize(LB.getbase()) << endl; 
+
+      start=utime();
 
       for (i=0; i<d; i++) {
 	
@@ -180,7 +199,10 @@ namespace hplll {
 	LB.householder_v(i);
       }
       
-      
+      sizetime+=utime()-start;
+
+      // ICI 
+      cout << "apres " << maxbitsize(LB.getbase()) << endl; 
 
       // Householder have been implicitely computed
       R=LB.getR();
@@ -194,6 +216,10 @@ namespace hplll {
     } // End main loop: global iterations iter 
 
 
+    cout << " Initial QR  " << qrtime/1000 << " ms" << endl;
+    cout << " Reductions: " << redtime/1000 << " ms" << endl;
+    cout << " Products:   " << prodtime/1000 << " ms" << endl;
+    cout << " Size reds:  " << sizetime/1000 << " ms" << endl;
   return 0;
 
 }
@@ -225,7 +251,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::approx_cond()
       if (tmp.cmp(eta) > 0) eta=tmp;
     }
   
-  //cout << "**  eta  **  " << eta << endl; 
+  // cout << "**  eta  **  " << eta << endl; 
 
   // diag quo
   // --------

@@ -77,8 +77,7 @@ int main(int argc, char *argv[])  {
 
     mpfr_set_default_prec(cond);
 
-
-    
+       
     int start,startsec;
     
     PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
