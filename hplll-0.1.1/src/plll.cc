@@ -86,6 +86,9 @@ namespace hplll {
 
       condbits=approx_cond();
       cout << endl << "************* Even approx cond " << condbits << "    " << "S = " << S << endl; 
+      cout << " Reductions: " << redtime/1000 << " ms" << endl;
+      cout << " Products:   " << prodtime/1000 << " ms" << endl;
+      cout << " Size reds:  " << sizetime/1000 << " ms" << endl;
 
       LB.setprec(condbits);
 
