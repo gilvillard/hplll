@@ -78,7 +78,7 @@ namespace hplll {
     // ************************
 
     for (iter=0; stop==0; iter++) {
-
+    //for (iter=0; iter < 3 ; iter ++){
       // Even block reduction  
       // --------------------
 
@@ -130,6 +130,10 @@ namespace hplll {
 
       LB.assign(B);
 
+ // ICI 
+      //cout << "avant pair " << maxbitsize(LB.getbase()) << endl; 
+      //print2maple(LB.getbase(),n,d);
+
       start=utime();
 
       for (i=0; i<d; i++) {
@@ -139,7 +143,9 @@ namespace hplll {
       }
 
       sizetime+=utime()-start;
-
+ // ICI 
+      //cout << "apres pair " << maxbitsize(LB.getbase()) << endl; 
+      //print2maple(LB.getbase(),n,d);
       // Householder have been implicitely computed
       R=LB.getR();
       
@@ -191,8 +197,10 @@ namespace hplll {
 
       //print2maple(B,n,d);
 
-      // ICI 
-      cout << "avant " << maxbitsize(LB.getbase()) << endl; 
+     
+     // ICI 
+      //cout << "avant impair " << maxbitsize(LB.getbase()) << endl; 
+      //print2maple(LB.getbase(),n,d);
 
       start=utime();
 
@@ -205,7 +213,8 @@ namespace hplll {
       sizetime+=utime()-start;
 
       // ICI 
-      cout << "apres " << maxbitsize(LB.getbase()) << endl; 
+      //cout << "apres impair " << maxbitsize(LB.getbase()) << endl; 
+      //print2maple(LB.getbase(),n,d);
 
       // Householder have been implicitely computed
       R=LB.getR();

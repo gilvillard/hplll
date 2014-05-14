@@ -12,7 +12,7 @@ AM_MAINTAINER_MODE(enable)
 
 AC_CONFIG_HEADER(config.h)
 
-DEFAULT_CFLAGS=" -O3 -Wall"
+DEFAULT_CFLAGS=" -O3 -Wall -march=native"
 
 
 CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
