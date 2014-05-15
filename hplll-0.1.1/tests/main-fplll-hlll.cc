@@ -68,13 +68,8 @@ int main(int argc, char *argv[])  {
     
     cout << "   dimension = " << d  << endl;
     cout << "   time A: " << start/1000 << " ms" << endl;
-    cout << "   time A: " << startsec << " s" << endl;
     cout << "   time : " << time  << endl;
-    cout << "   time : " << time.systime() << endl;
-    cout << "   time : " << time.realtime() << endl;
-    cout << "   time : " << time.userElapsedTime() << endl;
-    cout << "   time : " << time.sysElapsedTime() << endl;
-    cout << "   time : " << time.realElapsedTime() << endl;
+    
 
 
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
@@ -87,14 +82,16 @@ int main(int argc, char *argv[])  {
 
     start=utime();
     startsec=utimesec();
+    time.start();
     lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0);
+    time.stop();
     start=utime()-start;
     startsec=utimesec()-startsec;
   
     
     cout << "   dimension = " << d  << endl;
     cout << "   time B: " << start/1000 << " ms" << endl;
-    cout << "   time B: " << startsec << " s" << endl;
+    cout << "   time B: " << time << endl;
 
     transpose(A,AT);
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);

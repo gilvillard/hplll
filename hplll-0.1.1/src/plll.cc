@@ -63,8 +63,8 @@ namespace hplll {
     householder();
     int qrtime=utime()-start;
    
-    Timer time,redtime;
-    int rredtime=0;
+    Timer time,redtime,eventime;
+   
     int prodtime=0;
     int sizetime=0;
 
@@ -80,6 +80,7 @@ namespace hplll {
 
     time.clear();
     redtime.clear();
+    eventime.clear();
 
     for (iter=0; stop==0; iter++) {
     //for (iter=0; iter < 3 ; iter ++){
@@ -91,7 +92,7 @@ namespace hplll {
       condbits=approx_cond();
       cout << endl << "************* Even approx cond " << condbits << "    " << "S = " << S << endl; 
       cout << " Reductions: " << redtime << endl;
-      cout << " Reductions:   " << rredtime/1000 << " ms" << endl;
+      cout << " Even reductions:   " << eventime << endl;
       cout << " Products:   " << prodtime/1000 << " ms" << endl;
       cout << " Size reds:  " << sizetime/1000 << " ms" << endl;
 
@@ -126,8 +127,7 @@ namespace hplll {
 
       time.stop();
       redtime+=time; 
-
-      rredtime+=utime()-start;
+      eventime+=time; 
 
       stop=isId(U);
       //cout << "Stop: "  <<  stop << endl; 
@@ -197,8 +197,6 @@ namespace hplll {
       time.stop();
       redtime += time;
 
-      rredtime+=utime()-start;
-
       stop=isId(U)*stop;
       //cout << "Stop: "  <<  stop << endl; 
      
@@ -246,7 +244,7 @@ namespace hplll {
 
     cout << " Initial QR  " << qrtime/1000 << " ms" << endl;
     cout << " Reductions: " << redtime << endl;
-    cout << " Reductions:   " << rredtime/1000 << " ms" << endl;
+    cout << " Even reductions:   " << eventime << endl;
     cout << " Products:   " << prodtime/1000 << " ms" << endl;
     cout << " Size reds:  " << sizetime/1000 << " ms" << endl;
   return 0;
