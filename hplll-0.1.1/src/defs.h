@@ -33,6 +33,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <mpfr.h>
 #include <fplll.h>
 
+#include "givtimer.C"
+
 #ifndef __CYGWIN__
 #define HPLLL_WITH_LONG_DOUBLE
 #endif
@@ -60,6 +62,8 @@ namespace hplll {
 using namespace std;
 
 using namespace fplll;
+
+using namespace Givaro;
 
 } // end namespace hplll
 

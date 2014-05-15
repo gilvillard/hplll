@@ -12,7 +12,8 @@ AM_MAINTAINER_MODE(enable)
 
 AC_CONFIG_HEADER(config.h)
 
-DEFAULT_CFLAGS=" -O3 -Wall -march=native"
+#DEFAULT_CFLAGS=" -O3 -Wall -march=native"
+DEFAULT_CFLAGS=" -O3 -Wall"
 
 
 CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
@@ -49,6 +50,13 @@ AC_ARG_WITH(gmp,
       CXXFLAGS="$CXXFLAGS -I$withval/include"
        LDFLAGS="$LDFLAGS -L$withval/lib"
        gmp_lib_path="$withval/lib"
+   ])
+
+AC_ARG_WITH(ntl,
+   [  --with-ntl=DIR          NTL install directory ], [
+     CXXFLAGS="$CXXFLAGS -I$withval/include"
+     LDFLAGS="$LDFLAGS -L$withval/lib"
+     ntl_lib_path="$withval/lib"
    ])
 
 
