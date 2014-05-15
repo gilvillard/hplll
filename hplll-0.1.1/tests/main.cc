@@ -72,6 +72,9 @@ int main(int argc, char *argv[])  {
 #endif 
       for (int k=0; k<4; k++) {
 
+#ifdef _OPENMP	
+	cout << "thread " << omp_get_thread_num() << endl; 
+#endif
 	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A);
 	B.hlll(delta);
 
