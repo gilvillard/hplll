@@ -85,21 +85,13 @@ int main(int argc, char *argv[])  {
     Timer tinit;
     tinit.start();
     
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B0(A);
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B1(A);
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B2(A);
-
-    //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >* B[4];
     
-    //B[0]= new Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (A);
-    //B[1]= new Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (A);
+    
 
     tinit.stop();
     cout << "tinit: " << tinit << endl; 
 
     
-    
-
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif 
@@ -110,16 +102,12 @@ int main(int argc, char *argv[])  {
 	#endif
 
 	if (k==0) {
-	  B0.assign(A);
+	  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B0(tabA[0]);
 	  B0.hlll(delta);
 	}
 	if (k==1) {
-	  B1.assign(A);
+	  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B1(tabA[1]);
 	  B1.hlll(delta);
-	}
-	if (k==2) {
-	  B2.assign(A);
-	  B2.hlll(delta);
 	}
 	//lllReduction(tabAT[k], delta, 0.501, LM_WRAPPER,FT_DEFAULT,0);
 
