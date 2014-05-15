@@ -63,7 +63,8 @@ namespace hplll {
     householder();
     int qrtime=utime()-start;
    
-    int redtime=0;
+    Timer time,redtime;
+    int rredtime=0;
     int prodtime=0;
     int sizetime=0;
 
@@ -77,6 +78,9 @@ namespace hplll {
     // Main loop on block swaps 
     // ************************
 
+    time.clear();
+    redtime.clear();
+
     for (iter=0; stop==0; iter++) {
     //for (iter=0; iter < 3 ; iter ++){
       // Even block reduction  
@@ -86,7 +90,8 @@ namespace hplll {
 
       condbits=approx_cond();
       cout << endl << "************* Even approx cond " << condbits << "    " << "S = " << S << endl; 
-      cout << " Reductions: " << redtime/1000 << " ms" << endl;
+      cout << " Reductions: " << redtime << endl;
+      cout << " Reductions:   " << rredtime/1000 << " ms" << endl;
       cout << " Products:   " << prodtime/1000 << " ms" << endl;
       cout << " Size reds:  " << sizetime/1000 << " ms" << endl;
 
@@ -96,6 +101,7 @@ namespace hplll {
 
       start=utime();
 
+      time.start();
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif 
@@ -113,11 +119,15 @@ namespace hplll {
 	putblock(U,BR.getU(),k,k,S,0);
 
       }
-      redtime+=utime()-start;
-
+      
 #ifdef _OPENMP
 #pragma omp barrier
 #endif 
+
+      time.stop();
+      redtime+=time; 
+
+      rredtime+=utime()-start;
 
       stop=isId(U);
       //cout << "Stop: "  <<  stop << endl; 
@@ -162,7 +172,8 @@ namespace hplll {
       set_f(RZ,R,condbits);
 
       start=utime();
- 
+      time.start();
+
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif 
@@ -177,11 +188,16 @@ namespace hplll {
 
 	putblock(U,BR.getU(),k,k,S,bdim);
       }
-      redtime+=utime()-start;
 
+      
 #ifdef _OPENMP
 #pragma omp barrier
 #endif 
+
+      time.stop();
+      redtime += time;
+
+      rredtime+=utime()-start;
 
       stop=isId(U)*stop;
       //cout << "Stop: "  <<  stop << endl; 
@@ -229,7 +245,8 @@ namespace hplll {
 
 
     cout << " Initial QR  " << qrtime/1000 << " ms" << endl;
-    cout << " Reductions: " << redtime/1000 << " ms" << endl;
+    cout << " Reductions: " << redtime << endl;
+    cout << " Reductions:   " << rredtime/1000 << " ms" << endl;
     cout << " Products:   " << prodtime/1000 << " ms" << endl;
     cout << " Size reds:  " << sizetime/1000 << " ms" << endl;
   return 0;

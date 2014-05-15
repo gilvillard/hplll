@@ -77,6 +77,7 @@ int main(int argc, char *argv[])  {
 
     mpfr_set_default_prec(cond);
 
+    Timer time;
        
     int start,startsec;
     
@@ -85,7 +86,11 @@ int main(int argc, char *argv[])  {
     start=utime();
     startsec=utimesec();
 
+    time.start();
+
     B.hlll(delta,K,lovmax);
+
+    time.stop();
     
     start=utime()-start;
     startsec=utimesec()-startsec;
@@ -98,6 +103,12 @@ int main(int argc, char *argv[])  {
     cout << "   nblov plll " << B.nblov  << endl;
     cout << "   time plll: " << start/1000 << " ms" << endl;
     cout << "   time plll: " << startsec << " s" << endl;
+    cout << "   time plll: " << time  << endl;
+    cout << "   time plll: " << time.systime() << endl;
+    cout << "   time plll: " << time.realtime() << endl;
+    cout << "   time plll: " << time.userElapsedTime() << endl;
+    cout << "   time plll: " << time.sysElapsedTime() << endl;
+    cout << "   time plll: " << time.realElapsedTime() << endl;
 
     Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,NO_TRANSFORM,DEF_REDUCTION);
 

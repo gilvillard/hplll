@@ -772,6 +772,7 @@ enable_libtool_lock
 with_fplll
 with_mpfr
 with_gmp
+with_ntl
 enable_omp
 '
       ac_precious_vars='build_alias
@@ -1432,6 +1433,7 @@ Optional Packages:
   --with-fplll=DIR          FPLLL install directory
   --with-mpfr=DIR          MPFR install directory
   --with-gmp=DIR          GMP install directory
+  --with-ntl=DIR          NTL install directory
 
 Some influential environment variables:
   CC          C compiler command
@@ -3100,7 +3102,8 @@ fi
 ac_config_headers="$ac_config_headers config.h"
 
 
-DEFAULT_CFLAGS=" -O3 -Wall -march=native"
+#DEFAULT_CFLAGS=" -O3 -Wall -march=native"
+DEFAULT_CFLAGS=" -O3 -Wall"
 
 
 CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
@@ -15992,6 +15995,17 @@ if test "${with_gmp+set}" = set; then :
       CXXFLAGS="$CXXFLAGS -I$withval/include"
        LDFLAGS="$LDFLAGS -L$withval/lib"
        gmp_lib_path="$withval/lib"
+
+fi
+
+
+
+# Check whether --with-ntl was given.
+if test "${with_ntl+set}" = set; then :
+  withval=$with_ntl;
+     CXXFLAGS="$CXXFLAGS -I$withval/include"
+     LDFLAGS="$LDFLAGS -L$withval/lib"
+     ntl_lib_path="$withval/lib"
 
 fi
 

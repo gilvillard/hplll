@@ -50,18 +50,27 @@ int main(int argc, char *argv[])  {
 
     int start,startsec;
 
+    Timer time;
+
     cout << "--------------  HLLL" << endl << endl; 
     start=utime();
     startsec=utimesec();
+   
     Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
+
+    time.start();
     B.hlll(delta);
+    time.stop();
+
     start=utime()-start;
     startsec=utimesec()-startsec;
   
     
     cout << "   dimension = " << d  << endl;
     cout << "   time A: " << start/1000 << " ms" << endl;
-    cout << "   time A: " << startsec << " s" << endl;
+    cout << "   time : " << time  << endl;
+    
+
 
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
     T1.isreduced(delta-0.1);
@@ -73,14 +82,16 @@ int main(int argc, char *argv[])  {
 
     start=utime();
     startsec=utimesec();
+    time.start();
     lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0);
+    time.stop();
     start=utime()-start;
     startsec=utimesec()-startsec;
   
     
     cout << "   dimension = " << d  << endl;
     cout << "   time B: " << start/1000 << " ms" << endl;
-    cout << "   time B: " << startsec << " s" << endl;
+    cout << "   time B: " << time << endl;
 
     transpose(A,AT);
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);

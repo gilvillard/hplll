@@ -50,11 +50,18 @@ int main(int argc, char *argv[])  {
 
     int start,startsec;
 
+    Timer time;
+
     cout << "--------------  HLLL" << endl << endl; 
     start=utime();
     startsec=utimesec();
+   
     Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
+
+    time.start();
     B.hlll(delta);
+    time.stop();
+
     start=utime()-start;
     startsec=utimesec()-startsec;
   
@@ -62,6 +69,13 @@ int main(int argc, char *argv[])  {
     cout << "   dimension = " << d  << endl;
     cout << "   time A: " << start/1000 << " ms" << endl;
     cout << "   time A: " << startsec << " s" << endl;
+    cout << "   time : " << time  << endl;
+    cout << "   time : " << time.systime() << endl;
+    cout << "   time : " << time.realtime() << endl;
+    cout << "   time : " << time.userElapsedTime() << endl;
+    cout << "   time : " << time.sysElapsedTime() << endl;
+    cout << "   time : " << time.realElapsedTime() << endl;
+
 
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
     T1.isreduced(delta-0.1);
