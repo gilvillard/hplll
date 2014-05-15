@@ -63,6 +63,21 @@ int main(int argc, char *argv[])  {
     AT.resize(d,n);
     transpose(AT,A);
 
+
+    ZZ_mat<mpz_t> tabA[4];
+
+    for (int k=0; k<4; k++) {
+      tabA[k].resize(n,d);
+      transpose(tabA[k],AT);
+    } 
+
+    ZZ_mat<mpz_t> tabAT[4];
+    
+    for (int k=0; k<4; k++) {
+      tabAT[k].resize(d,n);
+      transpose(tabAT[k],A);
+    } 
+    
     Timer time;
 
     time.start();
@@ -72,11 +87,13 @@ int main(int argc, char *argv[])  {
 #endif 
       for (int k=0; k<4; k++) {
 
-#ifdef _OPENMP	
+	#ifdef _OPENMP	
 	cout << "thread " << omp_get_thread_num() << endl; 
-#endif
-	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A);
-	B.hlll(delta);
+	#endif
+	//Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(tabA[k]);
+	//B.hlll(delta);
+
+	lllReduction(tabAT[k], delta, 0.501, LM_WRAPPER,FT_DEFAULT,0);
 
       }
 
