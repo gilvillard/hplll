@@ -85,7 +85,7 @@ int main(int argc, char *argv[])  {
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif 
-      for (int k=0; k<4; k++) {
+      for (int k=0; k<2; k++) {
 
 	#ifdef _OPENMP	
 	cout << "thread " << omp_get_thread_num() << endl; 
