@@ -32,6 +32,7 @@ namespace hplll {
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) { 
 
+  
   int kappa=1,i;
   int prevkappa=-1; // For the looping test betwenn tow indices 
   vector<FP_NR<FT> >  prevR(d);
@@ -56,7 +57,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
   // ICI 
   
-
+ 
+ 
   while ((kappa < d) && (nblov < nblov_max)) 
     {
 
@@ -191,6 +193,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
    
 
     } // End main LLL loop 
+  
   
   return 0;
   
@@ -923,7 +926,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
   nbswaps=0;
   tps_redB=0;
 
-
+ 
   R.resize(n,d);
 
   Rkept.resize(n,d);
@@ -934,7 +937,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
   toR.resize(n);
   
   V.resize(n,d);
-
+  
   col_kept.resize(d+1); // +1 for the discovery test 
   descendu.resize(d);
   for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
