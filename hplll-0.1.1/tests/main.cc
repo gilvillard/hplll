@@ -85,12 +85,15 @@ int main(int argc, char *argv[])  {
     Timer tinit;
     tinit.start();
     
+
    
-    
+  
 
     tinit.stop();
     cout << "tinit: " << tinit << endl; 
     
+omp_set_num_threads(4);
+
 #ifdef _OPENMP
     #pragma omp parallel for shared(delta)
 #endif 
