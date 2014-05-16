@@ -33,8 +33,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
    ********************************************** */
 
-
-
 using namespace hplll; 
 
 int main(int argc, char *argv[])  {
@@ -66,16 +64,16 @@ int main(int argc, char *argv[])  {
     transpose(AT,A);
 
 
-    ZZ_mat<mpz_t> tabA[4];
+    ZZ_mat<mpz_t> tabA[K];
 
-    for (int k=0; k<4; k++) {
+    for (int k=0; k<K; k++) {
       tabA[k].resize(n,d);
       transpose(tabA[k],AT);
     } 
 
-    ZZ_mat<mpz_t> tabAT[4];
+    ZZ_mat<mpz_t> tabAT[K];
     
-    for (int k=0; k<4; k++) {
+    for (int k=0; k<K; k++) {
       tabAT[k].resize(d,n);
       transpose(tabAT[k],A);
     } 
@@ -89,40 +87,54 @@ int main(int argc, char *argv[])  {
     
    
     
+
     tinit.stop();
     cout << "tinit: " << tinit << endl; 
     
-    //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B0(tabA[0]);
-    //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B1(tabA[1]);
+#ifdef _OPENMP
+    #pragma omp parallel for shared(delta)
+#endif 
+      for (int k=0; k<K; k++) {
 
-
-
-      for (int k=0; k<K; k++) 
-
-#pragma omp task shared(tabAT,delta)
-	{
-    
-    /*
 	#ifdef _OPENMP	
 	cout << "thread " << omp_get_thread_num() << endl; 
 	#endif
 
-	if (k==0) 
+	if (k==0) {
+	  OMPTimer tt;
+	  tt.start();
+	  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B0(tabA[0]);
+	  tt.stop();
+	  cout << " A " << tt << endl; 
+	  tt.start();
 	  B0.hlll(delta);
-	else if (k==1)
-	B1.hlll(delta);*/
-	  
-	  lllReduction(tabAT[k], delta, 0.501, LM_WRAPPER,FT_DEFAULT,0);
-	  cout << " *** " << k << endl; 
-	}
-      
+	  tt.stop();
+	  cout << " B " << tt << endl; 
 
-#ifdef _OPENMP
-#pragma omp taskwait 
-#endif 
+	}
+ 
+	if (k==1) {
+	  OMPTimer tt;
+	  tt.start();
+	  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B1(tabA[1]);
+	  tt.stop();
+	  cout << " C " << tt << endl; 
+	  tt.start();
+	  B1.hlll(delta);
+	  tt.stop();
+	  cout << " D " << tt << endl; 
+
+	  }
+	
+	//lllReduction(tabAT[k], delta, 0.501, LM_WRAPPER,FT_DEFAULT,0);
+
+      }
 
       time.stop();
       cout << " Time: " << time << endl; 
+
+      
+
 
     /* -----------
     int cond; 
