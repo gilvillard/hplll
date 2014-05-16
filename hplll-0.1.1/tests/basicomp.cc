@@ -78,22 +78,31 @@ int main(int argc, char *argv[])  {
       transpose(tabAT[k],A);
     } 
     
-    Timer time;
+    OMPTimer time;
 
     time.start();
 
     Timer tinit;
     tinit.start();
     
+   
     
-    
+
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >* B[4];
+
+    //B[0]= new Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (A);
+    //B[1]= new Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (A);
+    //construvuetr vide    
+    //vectror<Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >> B0(K);
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B0(A);
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B1(A);
 
     tinit.stop();
     cout << "tinit: " << tinit << endl; 
-
     
+    double deltab=0.75;
 #ifdef _OPENMP
-#pragma omp parallel for 
+#pragma omp parallel for shared(delta)
 #endif 
       for (int k=0; k<K; k++) {
 
@@ -102,13 +111,19 @@ int main(int argc, char *argv[])  {
 	#endif
 
 	if (k==0) {
-	  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B0(tabA[0]);
+	  //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B0(tabA[0]);
+	  cout << "  0 " << endl;
 	  B0.hlll(delta);
+cout << "  ****** " << endl;
 	}
+ 
 	if (k==1) {
-	  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B1(tabA[1]);
-	  B1.hlll(delta);
-	}
+	  //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B1(tabA[1]);
+	  cout << "  1 " << endl;
+	  B1.hlll(deltab);    B[1]->hlll   B[1].hlll
+cout << "  *** 2 *** " << endl;
+	  }
+	
 	//lllReduction(tabAT[k], delta, 0.501, LM_WRAPPER,FT_DEFAULT,0);
 
       }
