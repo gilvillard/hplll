@@ -84,18 +84,26 @@ int main(int argc, char *argv[])  {
 
     Timer tinit;
     tinit.start();
-    
-
    
-  
 
     tinit.stop();
     cout << "tinit: " << tinit << endl; 
     
-omp_set_num_threads(4);
+    ZZ_mat<mpz_t> U0,U1,U2;
+    U0.resize(n,d);
+    U1.resize(n,d);
+    U2.resize(n,d);
+
+    omp_set_num_threads(4);
+
+ Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B0(tabA[0]);
+ Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B1(tabA[0]);
+ Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B2(tabA[0]);
+
+// Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B0(tabA[0]);
 
 #ifdef _OPENMP
-    #pragma omp parallel for shared(delta)
+#pragma omp parallel for shared(delta)
 #endif 
       for (int k=0; k<K; k++) {
 
@@ -106,28 +114,44 @@ omp_set_num_threads(4);
 	if (k==0) {
 	  OMPTimer tt;
 	  tt.start();
-	  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B0(tabA[0]);
+	  //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B0(tabA[0]);
 	  tt.stop();
 	  cout << " A " << tt << endl; 
 	  tt.start();
 	  B0.hlll(delta);
 	  tt.stop();
-	  cout << " B " << tt << endl; 
-
+	  cout << " B " << tt << "    "  << B0.nblov << endl; 
+	  U0=B0.getbase();
 	}
  
 	if (k==1) {
 	  OMPTimer tt;
 	  tt.start();
-	  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B1(tabA[1]);
+	  //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B1(tabA[1]);
 	  tt.stop();
-	  cout << " C " << tt << endl; 
+	  cout << " A " << tt << endl; 
 	  tt.start();
 	  B1.hlll(delta);
 	  tt.stop();
-	  cout << " D " << tt << endl; 
+	  cout << " B " << tt << "    "  << B1.nblov << endl; 
+	  U1=B1.getbase();
+	}
+ 
 
+	
+	if (k==2) {
+	  OMPTimer tt;
+	  tt.start();
+	  //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B2(tabA[2]);
+	  tt.stop();
+	  cout << " A " << tt << endl; 
+	  tt.start();
+	  B2.hlll(delta);
+	  tt.stop();
+	  cout << " B " << tt << "    "  << B2.nblov << endl; 
+	  U2=B2.getbase();
 	  }
+
 	
 	//lllReduction(tabAT[k], delta, 0.501, LM_WRAPPER,FT_DEFAULT,0);
 
@@ -136,8 +160,7 @@ omp_set_num_threads(4);
       time.stop();
       cout << " Time: " << time << endl; 
 
-      
-
+      cout << maxbitsize(U0) << "  " << maxbitsize(U1) << "  " << maxbitsize(U1) << endl; 
 
     /* -----------
     int cond; 
