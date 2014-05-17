@@ -482,6 +482,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 
     for (i=kappa-1; i>-1; i--){  
 
+     
       x.div(R.get(i,kappa),R.get(i,i)); 
       x.rnd(x);
 
