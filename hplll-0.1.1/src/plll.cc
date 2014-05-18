@@ -57,16 +57,32 @@ namespace hplll {
     tmpB.resize(n,d);
     Lattice<ZT, FT, MatrixZT, MatrixFT> LB(tmpB,NO_TRANSFORM,DEF_REDUCTION);
 
-    int start;
+#ifdef _OPENMP
+    OMPTimer time;
+    OMPTimer redtime,eventime,qrtime,prodtime,sizetime;
+
+    omp_set_num_threads(2);
+#else 
+    Timer time;
+    Timer redtime,eventime,qrtime,prodtime,sizetime;
+#endif 
     
-    start=utime();
+    time.clear();
+    redtime.clear();
+    eventime.clear();
+    qrtime.clear();
+    prodtime.clear();
+    sizetime.clear();
+
+
+    time.start();
+
     householder();
-    int qrtime=utime()-start;
-   
-    Timer time,redtime,eventime;
-   
-    int prodtime=0;
-    int sizetime=0;
+
+    time.stop();
+    qrtime+=time; 
+
+
 
     long condbits;
     
@@ -74,16 +90,17 @@ namespace hplll {
 
     bool stop=0;
 
+
+
     // ************************
     // Main loop on block swaps 
     // ************************
-
-    time.clear();
-    redtime.clear();
-    eventime.clear();
+    // Size reduced in input 
+    
 
     for (iter=0; stop==0; iter++) {
     //for (iter=0; iter < 3 ; iter ++){
+
       // Even block reduction  
       // --------------------
 
@@ -93,20 +110,20 @@ namespace hplll {
       cout << endl << "************* Even approx cond " << condbits << "    " << "S = " << S << endl; 
       cout << " Reductions: " << redtime << endl;
       cout << " Even reductions:   " << eventime << endl;
-      cout << " Products:   " << prodtime/1000 << " ms" << endl;
-      cout << " Size reds:  " << sizetime/1000 << " ms" << endl;
+      cout << " Products:   " << prodtime << endl;
+      cout << " Size reds:  " << sizetime << endl;
 
       LB.setprec(condbits);
 
       set_f(RZ,R,condbits);
 
-      start=utime();
 
       time.start();
+
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif 
-
+      
       for (k=0; k<S; k++) {   
 #ifdef _OPENMP	
 	cout << "thread " << omp_get_thread_num() << endl; 
@@ -132,11 +149,12 @@ namespace hplll {
       stop=isId(U);
       //cout << "Stop: "  <<  stop << endl; 
 
-      start = utime();
+      time.start();
 
       matprod_in(B,U);
-    
-      prodtime+=utime()-start;
+
+      time.stop();    
+      prodtime+=time; 
 
       LB.assign(B);
 
@@ -144,7 +162,7 @@ namespace hplll {
       //cout << "avant pair " << maxbitsize(LB.getbase()) << endl; 
       //print2maple(LB.getbase(),n,d);
 
-      start=utime();
+      time.start();
 
       for (i=0; i<d; i++) {
 	
@@ -152,11 +170,14 @@ namespace hplll {
 	LB.householder_v(i);
       }
 
-      sizetime+=utime()-start;
+      time.stop();
+      sizetime+=time;
+
  // ICI 
       //cout << "apres pair " << maxbitsize(LB.getbase()) << endl; 
       //print2maple(LB.getbase(),n,d);
       // Householder have been implicitely computed
+
       R=LB.getR();
       
       //matprod_in(B,LB.getU());
@@ -171,7 +192,6 @@ namespace hplll {
     
       set_f(RZ,R,condbits);
 
-      start=utime();
       time.start();
 
 #ifdef _OPENMP
@@ -198,13 +218,13 @@ namespace hplll {
       redtime += time;
 
       stop=isId(U)*stop;
-      //cout << "Stop: "  <<  stop << endl; 
-     
-      start = utime();
+           
+      time.start();
 
       matprod_in(B,U);
 
-      prodtime+=utime()-start;
+      time.stop();
+      prodtime+=time;
 
 
       LB.assign(B);
@@ -216,7 +236,7 @@ namespace hplll {
       //cout << "avant impair " << maxbitsize(LB.getbase()) << endl; 
       //print2maple(LB.getbase(),n,d);
 
-      start=utime();
+      time.start();
 
       for (i=0; i<d; i++) {
 	
@@ -224,7 +244,8 @@ namespace hplll {
 	LB.householder_v(i);
       }
       
-      sizetime+=utime()-start;
+      time.stop();
+      sizetime+=time;
 
       // ICI 
       //cout << "apres impair " << maxbitsize(LB.getbase()) << endl; 
@@ -241,12 +262,12 @@ namespace hplll {
 
     } // End main loop: global iterations iter 
 
-
-    cout << " Initial QR  " << qrtime/1000 << " ms" << endl;
+    cout << endl;
+    cout << " Initial QR  " << qrtime << endl;
     cout << " Reductions: " << redtime << endl;
     cout << " Even reductions:   " << eventime << endl;
-    cout << " Products:   " << prodtime/1000 << " ms" << endl;
-    cout << " Size reds:  " << sizetime/1000 << " ms" << endl;
+    cout << " Products:   " << prodtime << endl;
+    cout << " Size reds:  " << sizetime  << endl;
   return 0;
 
 }
