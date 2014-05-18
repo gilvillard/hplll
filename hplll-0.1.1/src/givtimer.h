@@ -234,6 +234,8 @@ inline std::ostream &operator << (std::ostream &o, const Timer &T)
 }
 
 //#ifdef GIVARO_USES_OMP
+#ifdef _OPENMP
+
 #include <omp.h>
 
 namespace Givaro {
@@ -264,7 +266,7 @@ struct OMPTimer {
 	OMPTimer  operator -() { OMPTimer r; r._c = - _c; return r; }
 };
 } // namespace Givaro
-//#endif // OMP
+#endif // OMP
 
 
 #endif // __GIVARO_timer_H

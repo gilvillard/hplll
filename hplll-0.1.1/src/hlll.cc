@@ -47,9 +47,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
   FP_NR<FT> s,sn; // newt test 
 
-  unsigned int start=0,starttot;
-  starttot=utimesec();
-
   int flag_reduce=0; // No convergence in reduce 
 
 
@@ -73,10 +70,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       else for (i=kappa+1; i<d; i++) kappamin[i]=min(kappamin[i],kappa); // lowest visit after kappa 
 
       
-      if (chrono)  start=utime();
-      
-     
-      // ICI modif descendu 
       if (descendu[kappa]>=1) {
 	
 	if (seysen_flag == 0)
@@ -94,11 +87,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	
       }
       
-      if (chrono) tps_reduce+=utime()-start;
-      
       if (flag_reduce==-1) return(-1);
       
-      if (chrono) start=utime();
 
       //newt=normB2[kappa];  // The newt test was like that in old non exp 
       //for (i=0; i<=kappa-2; i++) newt.submul(R.get(i,kappa),R.get(i,kappa));
@@ -106,10 +96,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       lovtest.mul(R.get(kappa-1,kappa-1),R.get(kappa-1,kappa-1));
       lovtest.mul(deltab,lovtest);
 
-      if (chrono) tps_prepare+=utime()-start;
-
-      if (chrono) start=utime();
-   
       nblov+=1;
     
       fp_norm(s,R.getcol(kappa,kappa),structure[kappa]+1-kappa);
@@ -123,17 +109,15 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       // ****************
     
       if (lovtest <= newt) {
-	
-	if (verbose) {
+
+	/*if (verbose) {
 	  if (((kappa) < d) && (col_kept[kappa+1] == 0)) cout << "Discovering vector " 
 							      << kappa +1 << "/" << d 
 							      << " cputime=" << utimesec() -starttot << "sec" << endl; 
-	}
-
-	householder_v(kappa);   // The first part of the orthogonalization is available 
-	if (chrono) tps_householder+=utime()-start;
+							      }*/
 
 	
+	householder_v(kappa);   // The first part of the orthogonalization is available 
 
 	// Heuristique precision check : when R(kappa-1,kappa-1) increases in a 2x2 up and down  
 	// ------------------------------------------------------------------------------------
@@ -150,6 +134,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
 	}
 
+	
+
 	descendu[kappa]=0;
 	if (kappa==1) descendu[0]=0;
 	
@@ -157,6 +143,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	prevR[kappa].abs(R.get(kappa,kappa)); 
 	
 	kappa+=1; 
+
+
+
       } // End up 
 
       // ****************
@@ -189,12 +178,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
       }
 
-    if (chrono) tps_swap+=utime()-start;    
-   
-
     } // End main LLL loop 
   
-  
+
   return 0;
   
 };
@@ -234,8 +220,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
   bool nonstop=1;
   bool somedone=0;
 
-  unsigned int start=0;
- 
   int restdim=0; // Remaining dimension after the current block 
 
   int nmax; // De la structure triangulaire 
@@ -245,13 +229,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
   // To see / prec problem 
   //col_kept[kappa]=0;
 
-  if (chrono)  start=utime();
   householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
-
-  if (chrono) tps_householder+=utime()-start;
-
-  // DBG to SEE 
-  //col_kept[kappa]=0;
 
   int bdim,ld,tdig,indexdec;
 
@@ -262,8 +240,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
     w++;
 
     somedone = 0;
-
-    if (chrono) start=utime();
     
     // ----------  NOUVELLE BOUCLE, SUR LES BLOCS 
     // Kappa est la dimension de ce qu'il y a avant 
@@ -372,8 +348,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	    set_f(xz,x);
 	    
 	    R.submulcol(kappa,i,x,restdim);
-
-	    if (chrono) start=utime();
 	     
 	    B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
 
@@ -383,7 +357,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	    if (lsize >0)  
 	      L.addmulcol_si_2exp(kappa,i,-lx,expo,lsize);
 
-	    if (chrono) tps_redB+=utime()-start;	 
 	  } // end expo <> 0 
 	} // Non zero combination 
 
@@ -394,9 +367,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
     } // End loop on log blocks 
 
-    if (chrono)  tps_redB+=utime()-start;
-
-    
 
     if (somedone) {
      
@@ -404,9 +374,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
       t.mul(approx,normB2[kappa]);
 
-      if (chrono) start=utime();
       householder_r(kappa);  
-      if (chrono) tps_householder+=utime()-start;
 
       nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ? 
 
@@ -454,16 +422,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
   bool nonstop=1;
   bool somedone=0;
 
-  unsigned int start=0;
-
   int nmax; // De la structure triangulaire 
   
-  if (chrono) start=utime();
-  
   householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
-  
-  if (chrono) tps_householder+=utime()-start;
-
 
   // While loop for the norm decrease
   // --------------------------------
@@ -475,7 +436,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 
     somedone = 0;
 
-    if (chrono) start=utime();
 
     // Loop through the column 
     // -----------------------
@@ -553,8 +513,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 	  
 	  R.submulcol(kappa,i,x,i+1);
       
-
-	  B.submulcol(kappa,i,xz,nmax);    
+	
+	  B.submulcol(kappa,i,xz,nmax);
+	
+    
 	  //B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
 	 
 	  if (transf)  
@@ -570,9 +532,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 
     } // Loop through the column
     
-    if (chrono)  tps_redB+=utime()-start;
-
-  
 
     if (somedone) {
  
@@ -745,9 +704,11 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_v(int kappa) 
 {
-  int i;
+
+ int i;
   FP_NR<FT> s,norm,w,tmpdpe; 
 
+ 
   //R.normalize(kappa,nmaxkappa);  // voir si nécessaire ? Rajouter en dummy si besoin aussi mpfr 
 
   w=R.get(kappa,kappa);
@@ -778,6 +739,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_v(int kappa)
   tmpdpe.div(w,s);
   V.set(kappa,kappa,tmpdpe); 
 
+ 
   return 0; 
 }
 
@@ -953,7 +915,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>
 Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reduction_method, int lehmer_size) {
-
+ 
   
   n=A.getRows();
   d=A.getCols();

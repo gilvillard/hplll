@@ -49,7 +49,6 @@ class Lattice
 
   int n,d; 
 
-  int chrono;
   bool transf;
 
   unsigned int nblov_max;
@@ -84,6 +83,7 @@ class Lattice
   vector<int> descendu;
 
 public:
+
 
   // Timings 
   // ******* 
