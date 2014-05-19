@@ -59,17 +59,18 @@ namespace hplll {
 
 #ifdef _OPENMP
     OMPTimer time;
-    OMPTimer redtime,eventime,qrtime,prodtime,sizetime;
+    OMPTimer redtime,eventime,oddtime,qrtime,prodtime,sizetime;
 
-    omp_set_num_threads(2);
+    omp_set_num_threads(4);
 #else 
     Timer time;
-    Timer redtime,eventime,qrtime,prodtime,sizetime;
+    Timer redtime,eventime,oddtime,qrtime,prodtime,sizetime;
 #endif 
     
     time.clear();
     redtime.clear();
     eventime.clear();
+    oddtime.clear();
     qrtime.clear();
     prodtime.clear();
     sizetime.clear();
@@ -110,6 +111,7 @@ namespace hplll {
       cout << endl << "************* Even approx cond " << condbits << "    " << "S = " << S << endl; 
       cout << " Reductions: " << redtime << endl;
       cout << " Even reductions:   " << eventime << endl;
+      cout << " Odd reductions:   " << oddtime << endl;
       cout << " Products:   " << prodtime << endl;
       cout << " Size reds:  " << sizetime << endl;
 
@@ -158,8 +160,9 @@ namespace hplll {
 
       LB.assign(B);
 
- // ICI 
-      //cout << "avant pair " << maxbitsize(LB.getbase()) << endl; 
+      // ICI 
+      cout << "avant pair, bitsize :  " << maxbitsize(LB.getbase()) << endl; 
+      cout << "condbits :  " << condbits << "     approx cond : " << LB.lcond(ANY,condbits, CHECK) << endl; 
       //print2maple(LB.getbase(),n,d);
 
       time.start();
@@ -167,6 +170,7 @@ namespace hplll {
       for (i=0; i<d; i++) {
 	
 	LB.hsizereduce(i);
+	//LB.householder_r(i);
 	LB.householder_v(i);
       }
 
@@ -174,8 +178,9 @@ namespace hplll {
       sizetime+=time;
 
  // ICI 
-      //cout << "apres pair " << maxbitsize(LB.getbase()) << endl; 
-      //print2maple(LB.getbase(),n,d);
+      cout << "après pair, bitsize :  " << maxbitsize(LB.getbase()) << endl; 
+      cout << "condbits :  " << condbits << "     approx cond : " << LB.lcond(ANY,condbits, CHECK) << endl; 
+
       // Householder have been implicitely computed
 
       R=LB.getR();
@@ -216,6 +221,7 @@ namespace hplll {
 
       time.stop();
       redtime += time;
+      oddtime += time;
 
       stop=isId(U)*stop;
            
@@ -266,6 +272,7 @@ namespace hplll {
     cout << " Initial QR  " << qrtime << endl;
     cout << " Reductions: " << redtime << endl;
     cout << " Even reductions:   " << eventime << endl;
+    cout << " Odd reductions:   " << oddtime << endl;
     cout << " Products:   " << prodtime << endl;
     cout << " Size reds:  " << sizetime  << endl;
   return 0;
