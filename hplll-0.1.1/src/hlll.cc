@@ -1449,6 +1449,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::lcond(int tproper, int flagprec,  int flaghe
 
     if (tproper == TRIANGULAR_PROPER) {
 
+      cout << " ************** ICI " << endl; 
+
       int i,j;
       
       for (j=0; j<d; j++)
