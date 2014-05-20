@@ -161,9 +161,14 @@ namespace hplll {
       LB.assign(B);
 
       // ICI 
-      cout << "avant pair, bitsize :  " << maxbitsize(LB.getbase()) << endl; 
-      cout << "condbits :  " << condbits << "     approx cond : " << LB.lcond(ANY,condbits, CHECK) << endl; 
+      //cout << "avant pair, bitsize :  " << maxbitsize(LB.getbase()) << endl; 
+      //cout << "condbits :  " << condbits << "     approx cond : " << LB.lcond(ANY,condbits, CHECK) << endl; 
       //print2maple(LB.getbase(),n,d);
+
+      time.start();
+      LB.householder();
+      time.stop();
+      cout << "------------------ " << time << endl; 
 
       time.start();
 
@@ -178,8 +183,8 @@ namespace hplll {
       sizetime+=time;
 
  // ICI 
-      cout << "après pair, bitsize :  " << maxbitsize(LB.getbase()) << endl; 
-      cout << "condbits :  " << condbits << "     approx cond : " << LB.lcond(ANY,condbits, CHECK) << endl; 
+      //cout << "après pair, bitsize :  " << maxbitsize(LB.getbase()) << endl; 
+      //cout << "condbits :  " << condbits << "     approx cond : " << LB.lcond(ANY,condbits, CHECK) << endl; 
 
       // Householder have been implicitely computed
 
