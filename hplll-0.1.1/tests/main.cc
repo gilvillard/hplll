@@ -47,72 +47,28 @@ int main(int argc, char *argv[])  {
     int n,d;
     double delta;
     
-    int K=4; 
-
+    
     command_line_basis(A, n, d, delta, argc, argv); 
 
-    
-    unsigned int lovmax = 4294967295;
+      
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,TRANSFORM,DEF_REDUCTION);
 
-    PARSE_MAIN_ARGS {
-      MATCH_MAIN_ARGID("-K",K);
-      MATCH_MAIN_ARGID("-lovmax",lovmax);
+    int i;
+
+    for (i=0; i<n; i++) {
+      B.householder_r(i);
+      B.householder_v(i);
+    }
+
+    for (i=n; i<d; i++) {
+      B.householder_r(i);
+      B.hsizereduce(i,n-1);
+     
       }
-
-
-    AT.resize(d,n);
-    transpose(AT,A);
-
-
-    int cond; 
-  
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(A);
-
-    cond = L.lcond(TRIANGULAR_PROPER);
-
-    //cout << " cond = " << B.lcond(TRIANGULAR_PROPER) << endl; 
-    //cout << " cond = " << B.lcond(ANY, DEFAULT_PREC) << endl;
-    //cout << " cond = " << B.lcond(ANY, 10, CHECK) << endl; 
    
-
-    mpfr_set_default_prec(cond);
-
-    Timer time;
-
-#ifdef _OPENMP
-    OMPTimer ptime;  
-#else 
-    Timer ptime;
-#endif 
-
-    PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
-
-    ptime.start();
-
-    B.hlll(delta,K,lovmax);
-
-    ptime.stop();
-    
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-    T1.isreduced(delta-0.1);
-
-    
-    cout << "   dimension = " << d  << endl;
-    cout << "   nblov plll " << B.nblov  << endl;
-    cout << "   time plll: " << ptime << endl;
-
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,NO_TRANSFORM,DEF_REDUCTION);
-
-
-    time.start();
-
-    //C.hlll(delta);
-
-    time.stop();
-
-    cout << endl; 
-    cout << "   nblov hlll " << C.nblov  << endl;
-    cout << "   time hlll: " << time << endl;
+ 
+    print2maple(B.getR(),n,d);
+    print2maple(B.getU(),d,d);
 
   return 0;
 }
