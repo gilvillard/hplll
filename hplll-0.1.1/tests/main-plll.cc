@@ -78,55 +78,41 @@ int main(int argc, char *argv[])  {
     mpfr_set_default_prec(cond);
 
     Timer time;
-       
-    int start,startsec;
-    
+
+#ifdef _OPENMP
+    OMPTimer ptime;  
+#else 
+    Timer ptime;
+#endif 
+
     PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
 
-    start=utime();
-    startsec=utimesec();
-
-    time.start();
+    ptime.start();
 
     B.hlll(delta,K,lovmax);
 
-    time.stop();
+    ptime.stop();
     
-    start=utime()-start;
-    startsec=utimesec()-startsec;
-
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
     T1.isreduced(delta-0.1);
 
     
     cout << "   dimension = " << d  << endl;
     cout << "   nblov plll " << B.nblov  << endl;
-    cout << "   time plll: " << start/1000 << " ms" << endl;
-    cout << "   time plll: " << startsec << " s" << endl;
-    cout << "   time plll: " << time  << endl;
-    cout << "   time plll: " << time.systime() << endl;
-    cout << "   time plll: " << time.realtime() << endl;
-    cout << "   time plll: " << time.userElapsedTime() << endl;
-    cout << "   time plll: " << time.sysElapsedTime() << endl;
-    cout << "   time plll: " << time.realElapsedTime() << endl;
+    cout << "   time plll: " << ptime << endl;
 
     Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,NO_TRANSFORM,DEF_REDUCTION);
 
-    start=utime();
-    startsec=utimesec();
 
-    C.hlll(delta);
+    time.start();
 
-    start=utime()-start;
-    startsec=utimesec()-startsec;
+    //C.hlll(delta);
 
+    time.stop();
 
+    cout << endl; 
     cout << "   nblov hlll " << C.nblov  << endl;
-    cout << "   time hlll: " << start/1000 << " ms" << endl;
-    cout << "   time hlll: " << startsec << " s" << endl;
-
-    cout << "K " << K << endl; 
-    
+    cout << "   time hlll: " << time << endl;
 
   return 0;
 }
