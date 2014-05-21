@@ -117,9 +117,8 @@ namespace hplll {
 
       LB.setprec(condbits);
 
-      set_f(RZ,R,condbits);
-
-
+      set_f(RZ,R,condbits);  // Le limiter aux blocs 
+      
       time.start();
 
 #ifdef _OPENMP
@@ -144,12 +143,16 @@ namespace hplll {
 #pragma omp barrier
 #endif 
 
+      
       time.stop();
       redtime+=time; 
       eventime+=time; 
 
       stop=isId(U);
-      //cout << "Stop: "  <<  stop << endl; 
+
+      // Size reduction via size reduction of RZ by blocks 
+      // -------------------------------------------------
+      //matprod_in(RZ,U);
 
       time.start();
 
@@ -160,37 +163,26 @@ namespace hplll {
 
       LB.assign(B);
 
-      // ICI 
-      //cout << "avant pair, bitsize :  " << maxbitsize(LB.getbase()) << endl; 
+      
       //cout << "condbits :  " << condbits << "     approx cond : " << LB.lcond(ANY,condbits, CHECK) << endl; 
-      //print2maple(LB.getbase(),n,d);
-
-      time.start();
-      LB.householder();
-      time.stop();
-      cout << "------------------ " << time << endl; 
-
+      
       time.start();
 
       for (i=0; i<d; i++) {
 	
 	LB.hsizereduce(i);
-	//LB.householder_r(i);
 	LB.householder_v(i);
       }
 
       time.stop();
       sizetime+=time;
 
- // ICI 
-      //cout << "après pair, bitsize :  " << maxbitsize(LB.getbase()) << endl; 
       //cout << "condbits :  " << condbits << "     approx cond : " << LB.lcond(ANY,condbits, CHECK) << endl; 
 
       // Householder have been implicitely computed
 
       R=LB.getR();
       
-      //matprod_in(B,LB.getU());
       set(B,LB.getbase());
 
       // Odd block loop 
@@ -240,12 +232,6 @@ namespace hplll {
 
       LB.assign(B);
 
-      //print2maple(B,n,d);
-
-     
-     // ICI 
-      //cout << "avant impair " << maxbitsize(LB.getbase()) << endl; 
-      //print2maple(LB.getbase(),n,d);
 
       time.start();
 
@@ -258,18 +244,12 @@ namespace hplll {
       time.stop();
       sizetime+=time;
 
-      // ICI 
-      //cout << "apres impair " << maxbitsize(LB.getbase()) << endl; 
-      //print2maple(LB.getbase(),n,d);
 
       // Householder have been implicitely computed
-      R=LB.getR();
-      //matprod_in(B,LB.getU());
+
+      R=LB.getR();  
       set(B,LB.getbase());
 
-      //print2maple(R,n,d);
-
-      //print2maple(B,n,d);
 
     } // End main loop: global iterations iter 
 

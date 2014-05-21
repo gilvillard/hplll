@@ -44,7 +44,7 @@ namespace hplll {
     char ntru[]="n";
     char line[]="cin";
     char copp[]="c";
-    
+    char unif[]="u";
     
     int nbbits=10;
     double alpha=1.4;
@@ -99,6 +99,20 @@ namespace hplll {
       one = 1;
       for (int i=m; i<d; i++)
 	A(i,i)=one;
+    } 
+
+    // Rectabgular uniform
+    // -------------------
+    else if (strcmp(type,unif) ==0) {
+      n=m;
+      
+      A.resize(n,d); 
+
+      for (int i=0; i<n; i++)
+	for (int j=0; j<d ; j++) {
+	  A(i,j).randb(nbbits);
+
+	}  
     } 
 
     // Ajtai 
