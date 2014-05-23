@@ -403,7 +403,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
-Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) { 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) { 
 
   nmaxkappa=structure[kappa]+1;
 
@@ -440,7 +440,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
     // Loop through the column 
     // -----------------------
 
-    for (i=kappa-1; i>-1; i--){  
+    int startposition;
+    if (fromk > 0) 
+      startposition = min(kappa-1,fromk);
+    else 
+      startposition = kappa-1;
+
+    for (i=startposition; i>-1; i--){  
 
      
       x.div(R.get(i,kappa),R.get(i,i)); 
@@ -652,6 +658,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
     // -----------------------------------------------------------
     else { 
 
+      
       col_kept[kappa]=1;  
       
       Bfp.setcol(kappa,B.getcol(kappa),0,nmaxkappa);
@@ -682,8 +689,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
      
     // Dummy in the standard case, made special for the MatrixPE case 
    
-    for (i=0; i<kappa; i++) toR[i]=Rkept.get_non_normalized(i,i);
-    
+    //for (i=0; i<kappa; i++) toR[i]=Rkept.get_non_normalized(i,i);
+    // GV Mer 21 mai 2014 17:11:32 CEST for the rectangular case 
+    for (i=0; (i<kappa) && (i< nmaxkappa); i++) toR[i]=Rkept.get_non_normalized(i,i);
+
     for (i=kappa; i<nmaxkappa; i++) toR[i]=Rkept.get_non_normalized(i,kappa-1);
     
     R.setcol(kappa,&toR[0],nmaxkappa);
@@ -707,7 +716,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_v(int kappa)
 
  int i;
   FP_NR<FT> s,norm,w,tmpdpe; 
-
+  s=0;
+  tmpdpe=0;
  
   //R.normalize(kappa,nmaxkappa);  // voir si nécessaire ? Rajouter en dummy si besoin aussi mpfr 
 
@@ -1676,6 +1686,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
 
   int i,k,kappa;
   FP_NR<FT> nrtmp,s,w; 
+  
+  nrtmp=0;
+  s=0;
+
   
 
     for (kappa=0; kappa<d; kappa++) {
