@@ -103,7 +103,7 @@ public:
 
   int householder();
   
-  int hsizereduce(int kappa);
+  int hsizereduce(int kappa, int fromk=0);
   int decrease(int kappa);
   int seysenreduce(int kappa);
   int seysen_flag;
