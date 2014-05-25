@@ -38,6 +38,8 @@ class PLattice
 
   MatrixZT RZ;
 
+  ZZ_mat<ZT> U;
+
   int n,d; 
 
   // Floating point objects concerned a possible precision change 
@@ -53,6 +55,9 @@ class PLattice
 
   int hlll(double delta, int K, unsigned int lovmax=4294967295);
  
+  void even_hsizereduce(int S);
+  void odd_hsizereduce(int S);
+
   long  approx_cond();
   int householder();
 

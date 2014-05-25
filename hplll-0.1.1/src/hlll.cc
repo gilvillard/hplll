@@ -448,7 +448,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
     for (i=startposition; i>-1; i--){  
 
-     
+         
       x.div(R.get(i,kappa),R.get(i,i)); 
       x.rnd(x);
 
@@ -458,7 +458,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	lx = x.get_si_exp(expo);
 
 	nmax=structure[i]+1;
-
+	
 	// Cf fplll 
 	// Long case 
 	if (expo == 0) {
@@ -675,6 +675,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
       for (k=1; k<kappa; k++) {
 	
 	length--;
+	
 	scalarprod(VR(k,kappa), V.getcol(k,k), Rkept.getcol(k-1,k), length);
 	
 	Rkept.fmasub(k,k, Rkept.getcol(k-1,k), V.getcol(k,k), VR(k,kappa), length);  // de k-1 à k 
@@ -1024,6 +1025,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(ZZ_mat<ZT> A) {
       B(i,j)=A.Get(i,j);
   
   matrix_structure(structure, B, n,d);
+  
   for (int i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
   for (int j=0; j<d; j++) kappamin[j]=-1;
 
@@ -1033,6 +1035,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(ZZ_mat<ZT> A) {
     for (int i=0; i<d; i++) U(i,i)=1; 
    
   }
+  
 }
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 

@@ -50,8 +50,6 @@ namespace hplll {
     int k;    // block or segment loop 
     int i;
 
-    ZZ_mat<ZT> U;
-    U.resize(d,d);
 
     ZZ_mat<ZT> tmpB;
     tmpB.resize(n,d);
@@ -99,8 +97,8 @@ namespace hplll {
     // Size reduced in input 
     
 
-    for (iter=0; stop==0; iter++) {
-    //for (iter=0; iter < 3 ; iter ++){
+    //for (iter=0; stop==0; iter++) {
+    for (iter=0; iter < 3 ; iter ++){
 
       // Even block reduction  
       // --------------------
@@ -152,7 +150,7 @@ namespace hplll {
 
       // Size reduction via size reduction of RZ by blocks 
       // -------------------------------------------------
-      //matprod_in(RZ,U);
+      matprod_in(RZ,U);  // *** A rajouter 
 
       time.start();
 
@@ -163,6 +161,13 @@ namespace hplll {
 
       LB.assign(B);
 
+      // RZ and LB/B same state 
+      // -------------------
+
+      even_hsizereduce(S);
+
+
+      // ********* AVANT ************//
       
       //cout << "condbits :  " << condbits << "     approx cond : " << LB.lcond(ANY,condbits, CHECK) << endl; 
       
@@ -179,6 +184,7 @@ namespace hplll {
 
       //cout << "condbits :  " << condbits << "     approx cond : " << LB.lcond(ANY,condbits, CHECK) << endl; 
 
+      // Onr must then have R and B updated 
       // Householder have been implicitely computed
 
       R=LB.getR();
@@ -264,6 +270,98 @@ namespace hplll {
 
 }
 
+/* -------------------------------------------------------- */
+/* Even phase size reduction                                */
+/* -------------------------------------------------------- */
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void 
+PLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S)
+{
+
+  print2maple(RZ,d,d);
+
+  print2maple(B,n,d);
+
+  int k;
+
+  int Sdim = d/S;
+
+  // Loop on the block columns 
+  // -------------------------
+
+  // parallel for 
+  for (k=1; k<S ; k++) {
+
+    int i,j;
+
+    // lattice for size reduction 
+    ZZ_mat<ZT> tmpM;
+    tmpM.resize(Sdim,2*Sdim);
+    Lattice<ZT, FT, MatrixZT, MatrixFT> RZloc(tmpM,TRANSFORM,DEF_REDUCTION);
+
+
+    // The local slice of RZ and update 
+    MatrixZT newRZ;
+    newRZ.resize(d,Sdim);
+
+    for (i=0; i<d; i++) 
+      for (j=0; j< Sdim; j++) 
+	newRZ(i,j)=RZ(i,k*Sdim+j);
+
+
+    // Loop in the block column 
+    // ------------------------
+
+    int l;
+
+    for (l=k-1; l>-1; l--) {
+
+      cout << "*****" << k << "  " << l << endl; 
+      print2maple(RZloc.getR(),Sdim,Sdim);
+      
+      // Block extraction for size reduction
+      // from RZ and the update in newR 
+
+      for (i=0; i<Sdim; i++)
+	for (j=0; j<Sdim; j++) 
+	  tmpM(i,j)=RZ(l*Sdim+i,l*Sdim+j);
+
+      for (i=0; i<Sdim; i++)
+	for (j=0; j<Sdim; j++) 
+	  tmpM(i,Sdim+j)=newRZ(l*Sdim+i,j);
+
+      RZloc.assign(tmpM);
+
+      print2maple(RZloc.getbase(),Sdim,2*Sdim);
+      print2maple(RZloc.getU(),2*Sdim,2*Sdim);
+      // Local size reduction 
+
+     
+ cout << "**** " << endl; 
+      for (i=0; i<Sdim; i++) {
+	RZloc.householder_r(i);
+	RZloc.householder_v(i);
+      }
+
+      for (i=Sdim; i<2*Sdim; i++) {
+ 	
+	RZloc.householder_r(i);	
+	RZloc.hsizereduce(i,Sdim-1);
+	
+      }
+
+      print2maple(RZloc.getU(),2*Sdim,2*Sdim);
+
+
+    } // loop in the block column 
+
+
+  } // parallel loop on the blocks 
+
+
+  // Mise a jour de RZ avec newRZ, B et de R à la fin pour le nouveau RZ 
+
+}
 
 /* -------------------------------------------------------- */
 /* Approximate log_2 of condition number of R, size-reduced */
@@ -425,6 +523,8 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d) {
   V.resize(n,d);
 
   RZ.resize(d,d);
+
+  U.resize(d,d);
 
 }
 
