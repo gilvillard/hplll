@@ -52,9 +52,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
   for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
 
-  // ICI 
-  
- 
  
   while ((kappa < d) && (nblov < nblov_max)) 
     {
@@ -430,6 +427,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
   // --------------------------------
   
 
+  int startposition;
+  if (fromk > 0) 
+    startposition = min(kappa-1,fromk);
+  else 
+    startposition = kappa-1;
+
+
   while (nonstop) {
 
     w++;
@@ -440,12 +444,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
     // Loop through the column 
     // -----------------------
 
-    int startposition;
-    if (fromk > 0) 
-      startposition = min(kappa-1,fromk);
-    else 
-      startposition = kappa-1;
-
+   
     for (i=startposition; i>-1; i--){  
 
          
@@ -518,7 +517,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	  set_f(xz,x);
 	  
 	  R.submulcol(kappa,i,x,i+1);
-      
 	
 	  B.submulcol(kappa,i,xz,nmax);
 	
@@ -538,11 +536,12 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
     } // Loop through the column
     
+    
 
     if (somedone) {
  
       col_kept[kappa]=0;
-
+      
       t.mul(approx,normB2[kappa]);
       householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
       nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ? 
@@ -552,9 +551,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
       nonstop=0;
       
     }
+
   } // end while 
    
- 
 
   return somedone;
 
@@ -626,24 +625,25 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
 	  scalarprod(VR(k,kappa), V.getcol(k,k), Bfp.getcol(kappa,k), length);
 	  Rkept.fmasub(0,k,Bfp.getcol(kappa,k), V.getcol(k,k), VR(k,kappa), length); // k=0
 	  
-	  for (k=1; k<kappa; k++) {
+	  for (k=1; (k<kappa) && (k<nmaxkappa) ; k++) {
 	    length--;
 	    scalarprod(VR(k,kappa), V.getcol(k,k), Rkept.getcol(k-1,k), length);
 	    Rkept.fmasub(k,k, Rkept.getcol(k-1,k), V.getcol(k,k), VR(k,kappa), length);  //  k-1 to k 
 	  }
 	}
 	else {
-	  
+
 	  k=0;
 	  
 	  Rkept.fmasub(k,k, Bfp.getcol(kappa,k), V.getcol(k,k), VR(k,kappa), length);  // k=0
 	  
-	  for (k=1; k<kappamin[kappa]; k++)  {
+	  // (k < nmax kappa) added Mer 28 mai 2014 11:15:45 CEST for the rectangular case 
+	  for (k=1; (k<kappamin[kappa]) && (k < nmaxkappa); k++)  { 
 	    length--;
 	    Rkept.fmasub(k,k, Rkept.getcol(k-1,k), V.getcol(k,k), VR(k,kappa), length);  // k-1 to k
 	  } 
 	  
-	  for (k=kappamin[kappa]; k<kappa; k++) {
+	  for (k=kappamin[kappa]; (k<kappa)  && (k < nmaxkappa); k++) {
 	    length--;
 	    scalarprod(VR(k,kappa), V.getcol(k,k), Rkept.getcol(k-1,k), length);
 	    Rkept.fmasub(k,k, Rkept.getcol(k-1,k), V.getcol(k,k), VR(k,kappa), length);  // k-1 to k 
@@ -658,7 +658,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
     // -----------------------------------------------------------
     else { 
 
-      
+     
       col_kept[kappa]=1;  
       
       Bfp.setcol(kappa,B.getcol(kappa),0,nmaxkappa);
@@ -666,13 +666,15 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
 
       fp_norm_sq(normB2[kappa], Bfp.getcol(kappa), nmaxkappa);
 
+ 
       // k =0 
       k=0;
       scalarprod(VR(k,kappa), V.getcol(k,k), Bfp.getcol(kappa,k), length);
       
       Rkept.fmasub(0,k, Bfp.getcol(kappa,k), V.getcol(k,k), VR(k,kappa), length); 
-      
-      for (k=1; k<kappa; k++) {
+ 
+      // (k < nmax kappa) added Mer 28 mai 2014 11:15:45 CEST for the rectangular case
+      for (k=1; (k<kappa) && (k < nmaxkappa); k++) {
 	
 	length--;
 	
@@ -681,7 +683,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
 	Rkept.fmasub(k,k, Rkept.getcol(k-1,k), V.getcol(k,k), VR(k,kappa), length);  // de k-1 à k 
       }
       
-
       length = nmaxkappa; 
 
     } // endelse recomputation 
@@ -1461,8 +1462,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::lcond(int tproper, int flagprec,  int flaghe
     // ***************************
 
     if (tproper == TRIANGULAR_PROPER) {
-
-      cout << " ************** ICI " << endl; 
 
       int i,j;
       

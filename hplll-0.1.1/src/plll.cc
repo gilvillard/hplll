@@ -57,12 +57,12 @@ namespace hplll {
 
 #ifdef _OPENMP
     OMPTimer time;
-    OMPTimer redtime,eventime,oddtime,qrtime,prodtime,sizetime;
+    OMPTimer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,restsizetime;
 
     omp_set_num_threads(4);
 #else 
     Timer time;
-    Timer redtime,eventime,oddtime,qrtime,prodtime,sizetime;
+    Timer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,restsizetime;
 #endif 
     
     time.clear();
@@ -71,8 +71,9 @@ namespace hplll {
     oddtime.clear();
     qrtime.clear();
     prodtime.clear();
-    sizetime.clear();
-
+    esizetime.clear();
+    restsizetime.clear();
+    osizetime.clear();
 
     time.start();
 
@@ -97,8 +98,8 @@ namespace hplll {
     // Size reduced in input 
     
 
-    //for (iter=0; stop==0; iter++) {
-    for (iter=0; iter < 3 ; iter ++){
+    for (iter=0; stop==0; iter++) {
+      //for (iter=0; iter < 1 ; iter ++){
 
       // Even block reduction  
       // --------------------
@@ -111,7 +112,8 @@ namespace hplll {
       cout << " Even reductions:   " << eventime << endl;
       cout << " Odd reductions:   " << oddtime << endl;
       cout << " Products:   " << prodtime << endl;
-      cout << " Size reds:  " << sizetime << endl;
+      cout << " Calls even size reds:  " << esizetime << endl;
+      cout << " Rest even size reds:  " << restsizetime << endl;
 
       LB.setprec(condbits);
 
@@ -127,7 +129,7 @@ namespace hplll {
 #ifdef _OPENMP	
 	cout << "thread " << omp_get_thread_num() << endl; 
 #endif
-	
+	// Double hence no global prec problem 
 	Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
 	BR.set_nblov_max(lovmax);
 	BR.hlll(delta);
@@ -148,48 +150,91 @@ namespace hplll {
 
       stop=isId(U);
 
-      // Size reduction via size reduction of RZ by blocks 
-      // -------------------------------------------------
-      matprod_in(RZ,U);  // *** A rajouter 
+      int method=0;
 
-      time.start();
+      if (method == 1) {
 
-      matprod_in(B,U);
-
-      time.stop();    
-      prodtime+=time; 
-
-      LB.assign(B);
-
-      // RZ and LB/B same state 
-      // -------------------
-
-      even_hsizereduce(S);
-
-
-      // ********* AVANT ************//
-      
-      //cout << "condbits :  " << condbits << "     approx cond : " << LB.lcond(ANY,condbits, CHECK) << endl; 
-      
-      time.start();
-
-      for (i=0; i<d; i++) {
+	// Initial even size reduction method via a lattice with via size reduction of RZ by blocks 
+	// -------------------------------------------------
 	
-	LB.hsizereduce(i);
-	LB.householder_v(i);
-      }
+	time.start();
 
-      time.stop();
-      sizetime+=time;
+	matprod_in(B,U);
 
-      //cout << "condbits :  " << condbits << "     approx cond : " << LB.lcond(ANY,condbits, CHECK) << endl; 
+	time.stop();    
+	prodtime+=time; 
 
-      // Onr must then have R and B updated 
-      // Householder have been implicitely computed
+	LB.assign(B);
 
-      R=LB.getR();
+	time.start();
+
+	for (i=0; i<d; i++) {
+	
+	  LB.hsizereduce(i);
+	  LB.householder_v(i);
+	}
+
+	time.stop();
+	esizetime+=time;
+
+
+	R=LB.getR();
       
-      set(B,LB.getbase());
+	set(B,LB.getbase());
+
+      } // end method 0 for size reduction 
+      else { // new method for even size reduction 
+	
+	// Size reduction via size reduction of RZ by blocks 
+	// -------------------------------------------------
+
+	matprod_in(RZ,U);  
+
+	time.start();
+
+	matprod_in(B,U);
+
+	time.stop();    
+	prodtime+=time; 
+
+	// RZ and B same state 
+
+	setId(U);
+
+	time.start();
+
+	even_hsizereduce(S,condbits); // U implicitely updated 
+
+	time.stop();
+	esizetime+=time;
+
+	
+
+
+
+	matprod_in(B,U);
+
+	time.start();
+
+	// CHANGER LE PREC MPFR EN FONCTION DE RZ CAR A BAISSÉE
+	LB.assign(B);
+	for (i=0; i<d; i++) {
+	  
+	  LB.householder_r(i);
+	  LB.householder_v(i);
+	}
+
+	
+
+	time.stop();
+	restsizetime+=time;
+
+	R=LB.getR();
+
+	// INUTILE SANS DOUTE 
+	set(B,LB.getbase());
+
+      } // end new method for even size reduction 
 
       // Odd block loop 
       // --------------
@@ -218,10 +263,6 @@ namespace hplll {
       }
 
       
-#ifdef _OPENMP
-#pragma omp barrier
-#endif 
-
       time.stop();
       redtime += time;
       oddtime += time;
@@ -248,7 +289,7 @@ namespace hplll {
       }
       
       time.stop();
-      sizetime+=time;
+      osizetime+=time;
 
 
       // Householder have been implicitely computed
@@ -265,7 +306,9 @@ namespace hplll {
     cout << " Even reductions:   " << eventime << endl;
     cout << " Odd reductions:   " << oddtime << endl;
     cout << " Products:   " << prodtime << endl;
-    cout << " Size reds:  " << sizetime  << endl;
+    cout << " Calls even size reds:  " << esizetime  << endl;
+    cout << " Rest even size reds:  " << restsizetime  << endl;
+    cout << " Odd size reds:  " << osizetime  << endl;
   return 0;
 
 }
@@ -275,12 +318,9 @@ namespace hplll {
 /* -------------------------------------------------------- */
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void 
-PLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S)
+PLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec)
 {
 
-  print2maple(RZ,d,d);
-
-  print2maple(B,n,d);
 
   int k;
 
@@ -289,16 +329,34 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S)
   // Loop on the block columns 
   // -------------------------
 
-  // parallel for 
+  
+#ifdef _OPENMP
+#pragma omp parallel for shared (prec)
+#endif 
+
   for (k=1; k<S ; k++) {
+
+    OMPTimer c;
+    c.clear();
+    c.start();
+
+    mpfr_set_default_prec(prec);
 
     int i,j;
 
+   
     // lattice for size reduction 
     ZZ_mat<ZT> tmpM;
     tmpM.resize(Sdim,2*Sdim);
+    
     Lattice<ZT, FT, MatrixZT, MatrixFT> RZloc(tmpM,TRANSFORM,DEF_REDUCTION);
+    // Ok since the diagonal blocks are reduced 
+    //Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > RZloc(tmpM,TRANSFORM,DEF_REDUCTION);
 
+
+    // tmp for U  
+    ZZ_mat<ZT> tmpU;
+    tmpU.resize(2*Sdim,2*Sdim);
 
     // The local slice of RZ and update 
     MatrixZT newRZ;
@@ -308,7 +366,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S)
       for (j=0; j< Sdim; j++) 
 	newRZ(i,j)=RZ(i,k*Sdim+j);
 
-
+    
     // Loop in the block column 
     // ------------------------
 
@@ -316,8 +374,6 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S)
 
     for (l=k-1; l>-1; l--) {
 
-      cout << "*****" << k << "  " << l << endl; 
-      print2maple(RZloc.getR(),Sdim,Sdim);
       
       // Block extraction for size reduction
       // from RZ and the update in newR 
@@ -330,33 +386,59 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S)
 	for (j=0; j<Sdim; j++) 
 	  tmpM(i,Sdim+j)=newRZ(l*Sdim+i,j);
 
+      
       RZloc.assign(tmpM);
-
-      print2maple(RZloc.getbase(),Sdim,2*Sdim);
-      print2maple(RZloc.getU(),2*Sdim,2*Sdim);
+ 
+     
+     
       // Local size reduction 
 
-     
- cout << "**** " << endl; 
       for (i=0; i<Sdim; i++) {
+
 	RZloc.householder_r(i);
 	RZloc.householder_v(i);
       }
 
+
       for (i=Sdim; i<2*Sdim; i++) {
- 	
-	RZloc.householder_r(i);	
+
 	RZloc.hsizereduce(i,Sdim-1);
+
 	
       }
 
-      print2maple(RZloc.getU(),2*Sdim,2*Sdim);
+      // Update of U
+      tmpU=RZloc.getU();
 
+      for (i=0; i<Sdim; i++)
+	for (j=0; j<Sdim; j++) 
+	  U(l*Sdim+i,k*Sdim+j)=tmpU(i,Sdim+j);
 
+      // Update of newRZ for the remaining computations in the block column 
+      // Clean matrix product to do  RZ * U in newRZ
+
+      for (i=0; i<l*Sdim; i++)  {  
+ 
+	int jj,kk;
+	Z_NR<ZT> p;
+	
+	for (jj=0; jj<Sdim; jj++) {  // i,jj in the result 
+	  p =0; 
+	  for (kk=0; kk<Sdim; kk++) {
+	    
+	    // RZ(i,(l-1)*Sdim+kk)   x  tmpU(kk,Sdim+jj) += newRZ(i,jj) 
+	    (newRZ(i,jj)).addmul( RZ(i,l*Sdim+kk) , tmpU(kk, Sdim+jj) ); 
+	  }
+	}	
+      } // end RZ * U 
+
+      
     } // loop in the block column 
 
-
+    c.stop();
+    cout << "On block : " << k << "  " << c << endl; 
   } // parallel loop on the blocks 
+
 
 
   // Mise a jour de RZ avec newRZ, B et de R à la fin pour le nouveau RZ 
