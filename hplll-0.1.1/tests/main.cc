@@ -93,7 +93,7 @@ int main(int argc, char *argv[])  {
 
     ptime.stop();
 
-    /*     
+         
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
     T1.isreduced(delta-0.1);
 
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])  {
     cout << endl; 
     cout << "   nblov hlll " << C.nblov  << endl;
     cout << "   time hlll: " << time << endl;
-    */
+    
 
   return 0;
 }

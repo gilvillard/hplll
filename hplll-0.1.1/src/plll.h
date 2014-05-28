@@ -55,8 +55,8 @@ class PLattice
 
   int hlll(double delta, int K, unsigned int lovmax=4294967295);
  
-  void even_hsizereduce(int S);
-  void odd_hsizereduce(int S);
+  void even_hsizereduce(int S, int prec);
+  void odd_hsizereduce(int S, int prec);
 
   long  approx_cond();
   int householder();
