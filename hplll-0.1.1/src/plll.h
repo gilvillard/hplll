@@ -58,6 +58,9 @@ class PLattice
   void even_hsizereduce(int S, int prec);
   void odd_hsizereduce(int S, int prec);
 
+  unsigned int setprec(unsigned int prec);
+  unsigned int getprec();
+
   long  approx_cond();
   int householder();
 
