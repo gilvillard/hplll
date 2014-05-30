@@ -672,6 +672,19 @@ template<class T> void set(Matrix<T>& B, matrix<T> A)
  
 };
 
+template<class T> void set(matrix<T>& B, matrix<T> A) 
+{
+
+  int m,n,i,j;
+
+  m= A.getRows();
+  n= A.getCols();
+
+   for (i=0; i<m; i++) 
+    for (j=0; j<n; j++) 
+      B.set(i,j,A.get(i,j)); 
+ 
+};
 
 template<class T> void set(matrix<T>& B, Matrix<T> A) 
 {
@@ -821,6 +834,47 @@ template<class T> void matprod_in(matrix<T>& C, matrix<T> U)
       C(i,j)=tmat(i,j);
 };
 
+
+ template<class T> void pmatprod_in(matrix<T>& C, Matrix<T> U, int S)  // S blocks  
+{
+
+  int m,n;
+
+  m= C.getRows();
+  n= C.getCols();
+
+  int Sm;
+
+  Sm = m/S;
+
+  int l;
+
+#ifdef _OPENMP
+#pragma omp parallel for shared(C)
+#endif 
+
+  for (l=0; l<S; l++) { 
+
+    matrix<T> tmat;
+    tmat.resize(Sm,n);
+    
+    int i,j;
+
+    for (i=0; i<Sm; i++) 
+      for (j=0; j<n; j++) 
+	tmat.set(i,j,C(l*Sm+i,j));
+
+    matprod_in(tmat,U);
+
+    for (i=0; i<Sm; i++) 
+      for (j=0; j<n; j++) 
+	C.set(l*Sm+i,j,tmat(i,j));
+
+
+  } // On the parallel blocks 
+
+ 
+};
 
 template<class T> void matprod_in(matrix<T>& C, Matrix<T> U) 
 {

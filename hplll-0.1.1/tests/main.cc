@@ -74,7 +74,23 @@ int main(int argc, char *argv[])  {
     //cout << " cond = " << B.lcond(ANY, DEFAULT_PREC) << endl;
     //cout << " cond = " << B.lcond(ANY, 10, CHECK) << endl; 
    
+    L.setprec(2*cond);
 
+    // Truncation of the input lattice 
+    // -------------------------------
+
+    for (int j=0; j<d; j++) {
+      
+      L.hsizereduce(j);
+      L.householder_v(j);
+    }
+    
+    matrix<Z_NR<mpz_t> > RZ;
+    RZ.resize(n,d);
+
+    set_f(RZ,L.getR(),cond);
+    set(A,RZ);
+    
     mpfr_set_default_prec(cond);
 
     Timer time;
@@ -107,13 +123,24 @@ int main(int argc, char *argv[])  {
 
     time.start();
 
-    //C.hlll(delta);
+    C.hlll(delta);
 
     time.stop();
 
     cout << endl; 
     cout << "   nblov hlll " << C.nblov  << endl;
     cout << "   time hlll: " << time << endl;
+
+    transpose(AT,A);
+
+    time.start();
+
+    lllReduction(AT, delta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
+
+    time.stop();
+    cout << "   time fplll: " << time << endl;
+
+
     
 
   return 0;

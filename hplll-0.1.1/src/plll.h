@@ -47,6 +47,8 @@ class PLattice
 
   MatrixFT R; 
 
+  MatrixFT Rt; 
+
   MatrixFT V;
 
  public:
@@ -55,7 +57,7 @@ class PLattice
 
   int hlll(double delta, int K, unsigned int lovmax=4294967295);
  
-  void even_hsizereduce(int S, int prec);
+  void even_hsizereduce(int S, int prec, bool refresh); // Householder is refreshed or not 
   void odd_hsizereduce(int S, int prec);
 
   unsigned int setprec(unsigned int prec);

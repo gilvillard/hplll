@@ -95,7 +95,7 @@ namespace hplll {
     
 
     for (iter=0; stop==0; iter++) {
-      //  for (iter=0; iter < 1 ; iter ++){
+      //  for (iter=0; iter < 2 ; iter ++){
 
       // Even block reduction  
       // --------------------
@@ -112,6 +112,7 @@ namespace hplll {
       cout << " Calls even size reds:  " << esizetime << endl;
       cout << " Rest size reds:  " << restsizetime << endl;
 
+     
 
       set_f(RZ,R,condbits);  // Le limiter aux blocs 
       
@@ -137,9 +138,6 @@ namespace hplll {
 
       }
       
-#ifdef _OPENMP
-#pragma omp barrier
-#endif 
 
       time.stop();
       redtime+=time; 
@@ -153,9 +151,9 @@ namespace hplll {
       
       time.start();
       
-      matprod_in(RZ,U);  
+      pmatprod_in(RZ,U,S);  
       
-      matprod_in(B,U);
+      pmatprod_in(B,U,S);
       
       time.stop();    
       prodtime+=time; 
@@ -166,14 +164,16 @@ namespace hplll {
       
       time.start();
       
-      even_hsizereduce(S,condbits); // U implicitely updated 
+      bool refresh = false; // False: computes Rt 
+ 
+      even_hsizereduce(S,condbits,refresh); // U implicitely updated 
       
       time.stop();
       esizetime+=time;
 	
       time.start();
        
-      matprod_in(B,U);
+      pmatprod_in(B,U,S);
       
       time.stop();    
       prodtime+=time; 
@@ -181,9 +181,12 @@ namespace hplll {
       time.start();
       
       // CHANGER LE PREC MPFR EN FONCTION DE RZ CAR A BAISSÉE
+      if (refresh) 
+	householder();
+      else  
+	set(R,Rt);
       
-      householder();
-      
+
       time.stop();
       cout << "+++++++++++++++++++++++++++++++ Prec: " << mpfr_get_default_prec() << "   " << time << endl;
       restsizetime+=time;
@@ -196,7 +199,9 @@ namespace hplll {
       
       condbits=approx_cond();
 
+      
       set_f(RZ,R,condbits);
+     
 
       setprec(condbits);
   
@@ -231,9 +236,9 @@ namespace hplll {
       
       time.start();
       
-      matprod_in(RZ,U);  
+      pmatprod_in(RZ,U,S);  
 
-      matprod_in(B,U);
+      pmatprod_in(B,U,S);
       
       time.stop();    
       prodtime+=time; 
@@ -251,7 +256,7 @@ namespace hplll {
       
       time.start();
 
-      matprod_in(B,U);
+      pmatprod_in(B,U,S);
       
       time.stop();    
       prodtime+=time; 
@@ -263,6 +268,7 @@ namespace hplll {
       householder();
 
       time.stop();
+      cout << "+++++++++++++++++++++++++++++++ Prec: " << mpfr_get_default_prec() << "   " << time << endl;
       restsizetime+=time;
       
       
@@ -287,7 +293,7 @@ namespace hplll {
 /* -------------------------------------------------------- */
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void 
-PLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec)
+PLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec, bool refresh)
 {
 
 
@@ -300,7 +306,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec)
 
   //PPP  
 #ifdef _OPENMP
-  #pragma omp parallel for shared (prec)
+#pragma omp parallel for shared (prec,refresh)
 #endif 
 
   for (k=1; k<S ; k++) {
@@ -335,6 +341,8 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec)
       for (j=0; j< Sdim; j++) 
 	newRZ(i,j)=RZ(i,k*Sdim+j);
 
+    matrix<FP_NR<FT> > tmpR;
+    tmpR.resize(Sdim,2*Sdim);
     
     // Loop in the block column 
     // ------------------------
@@ -376,6 +384,17 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec)
 	
       }
 
+      if (refresh == false) { // Householder need to be available via RZ 
+
+	tmpR=RZloc.getR();
+	for (i=0; i<Sdim; i++)
+	  for (j=0; j<Sdim; j++) {
+	  
+	    Rt.set(l*Sdim+i,l*Sdim+j,tmpR(i,j)); 
+	  Rt.set(l*Sdim+i,k*Sdim+j,tmpR(i,Sdim+j));
+	} 
+      } 
+
       // Update of U
       tmpU=RZloc.getU();
 
@@ -403,6 +422,36 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec)
       
     } // loop in the block column 
 
+
+    // Last diagonal block of Householder may be required 
+    if ((refresh == false) && (k==(S-1))) { 
+
+      for (i=0; i<Sdim; i++)
+	for (j=0; j<Sdim; j++) 
+	  tmpM(i,j)=RZ(k*Sdim+i,k*Sdim+j);
+      
+      
+      RZloc.assign(tmpM);
+ 
+      // Local size reduction 
+
+      for (i=0; i<Sdim; i++) {
+
+	RZloc.householder_r(i);
+	RZloc.householder_v(i);
+      }
+
+      // 
+      tmpR=RZloc.getR();
+      for (i=0; i<Sdim; i++)
+	for (j=0; j<Sdim; j++) {
+	  
+	  Rt.set(k*Sdim+i,k*Sdim+j,tmpR(i,j)); 
+	 
+	} 
+    } // Last block for householder if not refreshed 
+    
+    
     c.stop();
     cout << "On block : " << k << "  " << c << endl; 
   } // parallel loop on the blocks 
@@ -432,7 +481,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::odd_hsizereduce(int S, int prec)
 
   //PPP  
 #ifdef _OPENMP
-  #pragma omp parallel for shared (prec)
+#pragma omp parallel for shared (prec)
 #endif 
 
 
@@ -730,7 +779,7 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline  matrix<FP_NR
   matrix<FP_NR<FT> >  RR(d,d);
   FP_NR<FT> tmp;
 
-  for (int i=0; i<d; i++) 
+  for (int i=0; i<min(n,d); i++) 
     for (int j=i; j<d; j++) {
       tmp=R.get(i,j);  // cf l'absence de const dans nr.cpp Set / Exp 
       RR.set(i,j,tmp); // reprendre boucle sur les colonnes 
@@ -765,6 +814,9 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::setprec(unsigned int prec) {
   R.clear();
   R.resize(n,d);
 
+  Rt.clear();
+  Rt.resize(n,d);
+
   unsigned newprec;
   newprec=(R.get(0,0)).getprec(); 
   if (newprec == oldprec) cout << "Warning: in function setprec plll, the change of precision has no effect" << endl; 
@@ -787,6 +839,8 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d) {
   nblov=0;
 
   R.resize(n,d);
+
+  Rt.resize(n,d);
 
   V.resize(n,d);
 

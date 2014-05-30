@@ -37,8 +37,6 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
-  typedef FP_NR<mpfr_t>   RT;
-  typedef Z_NR<mpz_t>  ZT;
   
 
   // --------------------------------------------------------------------- 
@@ -135,7 +133,7 @@ int main(int argc, char *argv[])  {
 
     // !!! Cond détruit R, à refaire après 
     FP_NR<mpfr_t> cc;
-    cc=B.cond();
+    cc=B.lcond(TRIANGULAR_PROPER);
     Z_NR<mpz_t> ccond;
     ccond.set_f(cc);
 
@@ -304,7 +302,7 @@ int main(int argc, char *argv[])  {
     int dhllltime=utime()-start;
     
     start=utime();
-    lllReduction(AT, llldelta, 0.51, LM_FAST,FT_DEFAULT,0);
+    lllReduction(AT, llldelta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
     int dfpllltime=utime()-start;
     
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T4(DA.getbase(),NO_TRANSFORM,DEF_REDUCTION);
