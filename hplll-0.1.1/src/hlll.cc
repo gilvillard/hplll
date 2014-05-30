@@ -867,7 +867,7 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline  matrix<FP_NR
   matrix<FP_NR<FT> >  RR(d,d);
   FP_NR<FT> tmp;
 
-  for (int i=0; i<d; i++) 
+  for (int i=0; i<min(n,d); i++) 
     for (int j=i; j<d; j++) {
       tmp=R.get(i,j);  // cf l'absence de const dans nr.cpp Set / Exp 
       RR.set(i,j,tmp); // reprendre boucle sur les colonnes 
