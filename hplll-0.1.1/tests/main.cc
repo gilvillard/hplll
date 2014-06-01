@@ -25,6 +25,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "matgen.h"
 #include "plll.h"
 
+#include "block.h"
+
 
 
 /* ***********************************************
@@ -60,15 +62,62 @@ int main(int argc, char *argv[])  {
       }
 
 
-    AT.resize(d,n);
-    transpose(AT,A);
 
+    if (d%K !=0) {
+
+      int i,j;
+
+      ZZ_mat<mpz_t> B; // For hpLLL 
+      B.resize(n+K-d%K,d+K-d%K); 
+
+      Z_NR<mpz_t> amax;
+      amax=0;
+
+      for (i=0; i<d; i++) 
+	if (A(i,i).cmp(amax) > 0) amax=A(i,i);
+	
+      
+      for  (i=0; i<n; i++) 
+	for (j=0; j<d; j++) 
+	  B(i,j)=A(i,j);
+
+      for  (i=0; i<K-d%K; i++)
+	B(n+i,d+i)=amax;
+
+      A.resize(n+K-d%K,d+K-d%K);
+      set(A,B);
+
+      AT.resize(d+K-d%K,n+K-d%K);
+      transpose(AT,A);
+    
+      n+=K-d%K;
+      d+=K-d%K;
+      
+    }
+    else { 
+
+      AT.resize(d,n);
+      transpose(AT,A);
+    }
+
+  
+    // Knapsack 
+    // --------
+    /*
+    ZZ_mat<mpz_t> Anew;
+    Anew.resize(n,d);
+
+    blevel(Anew, A, 2);
+ 
+    set(A,Anew);
+    */
 
     int cond; 
   
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(A);
 
     cond = L.lcond(TRIANGULAR_PROPER);
+    //cond = L.lcond(ANY,maxbitsize(A),CHECK);
 
     //cout << " cond = " << B.lcond(TRIANGULAR_PROPER) << endl; 
     //cout << " cond = " << B.lcond(ANY, DEFAULT_PREC) << endl;
@@ -86,11 +135,15 @@ int main(int argc, char *argv[])  {
     }
     
     matrix<Z_NR<mpz_t> > RZ;
-    RZ.resize(n,d);
+    RZ.resize(d,d);
 
     set_f(RZ,L.getR(),cond);
-    set(A,RZ);
     
+    A.resize(d,d);
+    AT.resize(d,d);
+
+    set(A,RZ);
+        
     mpfr_set_default_prec(cond);
 
     Timer time;
@@ -101,7 +154,7 @@ int main(int argc, char *argv[])  {
     Timer ptime;
 #endif 
 
-    PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A);
+    PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
 
     ptime.start();
 
@@ -109,6 +162,7 @@ int main(int argc, char *argv[])  {
 
     ptime.stop();
 
+    //print2maple(B.getU(),d,d);
          
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
     T1.isreduced(delta-0.1);
@@ -118,12 +172,14 @@ int main(int argc, char *argv[])  {
     cout << "   nblov plll " << B.nblov  << endl;
     cout << "   time plll: " << ptime << endl;
 
+    
+
     Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,NO_TRANSFORM,DEF_REDUCTION);
 
 
     time.start();
 
-    C.hlll(delta);
+    // C.hlll(delta);
 
     time.stop();
 
@@ -139,7 +195,7 @@ int main(int argc, char *argv[])  {
 
     time.stop();
     cout << "   time fplll: " << time << endl;
-
+    
 
     
 

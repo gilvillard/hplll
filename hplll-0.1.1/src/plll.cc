@@ -45,6 +45,9 @@ namespace hplll {
     int S;   // Number of segments and dimension of each segment  
              // Assume that d is a multiple of K >= 4 
              // K/2 and bdim >= 2 for actual segment) 
+
+    int SP=K/2;
+
     S=K/2;
     
     int k;    // block or segment loop 
@@ -53,12 +56,12 @@ namespace hplll {
         
 #ifdef _OPENMP
     OMPTimer time;
-    OMPTimer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,restsizetime;
+    OMPTimer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,restsizetime,totime,ttime;
     
     omp_set_num_threads(4);
 #else 
     Timer time;
-    Timer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,restsizetime;
+    Timer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,restsizetime,totime,ttime;
 #endif 
     
     time.clear();
@@ -70,6 +73,8 @@ namespace hplll {
     esizetime.clear();
     restsizetime.clear();
     osizetime.clear();
+    totime.clear();
+    ttime.clear();
 
     time.start();
 
@@ -94,6 +99,8 @@ namespace hplll {
     // Size reduced in input 
     
 
+    totime.start();
+
     for (iter=0; stop==0; iter++) {
       //  for (iter=0; iter < 2 ; iter ++){
 
@@ -111,7 +118,11 @@ namespace hplll {
       cout << " Products:   " << prodtime << endl;
       cout << " Calls even size reds:  " << esizetime << endl;
       cout << " Rest size reds:  " << restsizetime << endl;
-
+      totime.stop();
+      ttime+=totime;
+      cout << " Total time:  " << ttime << endl;  
+      cout << " Nblov : " << nblov << endl; 
+      totime.start();
      
 
       set_f(RZ,R,condbits);  // Le limiter aux blocs 
@@ -136,7 +147,16 @@ namespace hplll {
 	nblov+=BR.nblov;
 	putblock(U,BR.getU(),k,k,S,0);
 
+	//PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > BP(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
+	//BP.hlll(delta,4);
+
+	//cout << endl << "even nblov " << BP.nblov << endl; 
+	//nblov+=BP.nblov;
+	//putblock(U,BP.getU(),k,k,S,0);
+	// mpfr_set_default_prec(condbits); 
+
       }
+      
       
 
       time.stop();
@@ -151,10 +171,12 @@ namespace hplll {
       
       time.start();
       
-      pmatprod_in(RZ,U,S);  
+      pmatprod_in(RZ,U,SP);  
       
-      pmatprod_in(B,U,S);
+      pmatprod_in(B,U,SP);
       
+      if (transf) pmatprod_in(Uglob,U,SP);
+ 
       time.stop();    
       prodtime+=time; 
       
@@ -173,8 +195,10 @@ namespace hplll {
 	
       time.start();
        
-      pmatprod_in(B,U,S);
+      pmatprod_in(B,U,SP);
       
+      if (transf) pmatprod_in(Uglob,U,SP);
+ 
       time.stop();    
       prodtime+=time; 
       
@@ -182,7 +206,7 @@ namespace hplll {
       
       // CHANGER LE PREC MPFR EN FONCTION DE RZ CAR A BAISSÉE
       if (refresh) 
-	householder();
+	phouseholder(SP,condbits);
       else  
 	set(R,Rt);
       
@@ -215,7 +239,7 @@ namespace hplll {
 	//cout << "+++++++++++ Odd ++++++++++ " << endl; 
 	
 	Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
-	BR.set_nblov_max(lovmax);
+	//BR.set_nblov_max(lovmax);
 	BR.hlll(delta);
 	cout << endl << "odd nblov " << BR.nblov << endl;
 	nblov+=BR.nblov;
@@ -236,10 +260,12 @@ namespace hplll {
       
       time.start();
       
-      pmatprod_in(RZ,U,S);  
+      pmatprod_in(RZ,U,SP);  
 
-      pmatprod_in(B,U,S);
+      pmatprod_in(B,U,SP);
       
+      if (transf) pmatprod_in(Uglob,U,SP);
+
       time.stop();    
       prodtime+=time; 
       
@@ -256,8 +282,10 @@ namespace hplll {
       
       time.start();
 
-      pmatprod_in(B,U,S);
+      pmatprod_in(B,U,SP);
       
+      if (transf) pmatprod_in(Uglob,U,SP);
+
       time.stop();    
       prodtime+=time; 
       
@@ -265,7 +293,7 @@ namespace hplll {
       
       // CHANGER LE PREC MPFR EN FONCTION DE RZ CAR A BAISSÉE
 
-      householder();
+      phouseholder(SP,condbits);
 
       time.stop();
       cout << "+++++++++++++++++++++++++++++++ Prec: " << mpfr_get_default_prec() << "   " << time << endl;
@@ -283,6 +311,11 @@ namespace hplll {
     cout << " Calls even size reds:  " << esizetime  << endl;
     cout << " Calls odd size reds:  " << osizetime  << endl;
     cout << " Rest size reds:  " << restsizetime  << endl;
+    totime.stop();
+    ttime+=totime;
+    cout << " Total time:  " << ttime << endl;  
+
+    totime.start();
     
     return 0;
     
@@ -759,6 +792,98 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::householder()
     return 0; 
 }
 
+/* --------------------------------------------- */
+/* Complete Householder */
+/* --------------------------------------------- */
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
+PLattice<ZT,FT, MatrixZT, MatrixFT>::phouseholder(int S, int prec)
+{
+
+  int i,k,kappa;
+  FP_NR<FT> nrtmp,s,w; 
+
+ 
+  int Sdim=d/S;
+
+  int l;
+
+  for (l=0; l<S; l++)   {
+
+    // Diagonal block
+    // --------------
+
+    for (kappa=l*Sdim; kappa<(l+1)*Sdim; kappa++) {
+
+      if (l==0) 
+	R.setcol(kappa,B.getcol(kappa),0,n);
+
+      for (k=l*Sdim; k<kappa; k++) {
+	scalarprod(nrtmp, V.getcol(k,k), R.getcol(kappa,k), n-k);
+	R.fmasub(kappa,k,R.getcol(kappa,k), V.getcol(k,k), nrtmp, n-k); 
+      }
+
+      w=R.get(kappa,kappa);
+
+      if (w >=0) {
+	fp_norm(s,R.getcol(kappa,kappa),n-kappa); 
+	nrtmp.neg(s);
+	R.set(kappa,kappa,nrtmp);    
+      }
+      else {
+	fp_norm(nrtmp,R.getcol(kappa,kappa),n-kappa); // de la colonne
+	R.set(kappa,kappa,nrtmp);
+	s.neg(nrtmp);  
+      }
+
+      w.add(w,s);
+      s.mul(s,w);
+      s.sqrt(s);
+
+      V.div(kappa,kappa+1, R.getcol(kappa,kappa+1), s, n-kappa-1);
+
+      nrtmp.div(w,s);
+      V.set(kappa,kappa,nrtmp); 
+
+      for(i=kappa+1; i<d; i++)  R.set(i,kappa,0.0); 
+       
+    }  // end diag computation 
+
+ 
+    // Parallel application to other blocks 
+    // ------------------------------------
+    int lb;
+
+
+#ifdef _OPENMP
+#pragma omp parallel for shared (prec)
+#endif 
+
+    for (lb=l+1; lb<S; lb++) {
+      int kk; 
+      int pkappa; 
+      FP_NR<FT> pnrtmp;
+
+      mpfr_set_default_prec(prec);
+      
+      for (pkappa=lb*Sdim; pkappa<(lb+1)*Sdim; pkappa++) {
+
+	if (l==0) 
+	  R.setcol(pkappa,B.getcol(pkappa),0,n);
+      		
+	for (kk=l*Sdim; kk<(l+1)*Sdim; kk++) {
+	  scalarprod(pnrtmp, V.getcol(kk,kk), R.getcol(pkappa,kk), n-kk);
+	  R.fmasub(pkappa,kk,R.getcol(pkappa,kk), V.getcol(kk,kk), pnrtmp, n-kk); 
+	}
+      }
+    } 
+
+  } // end block loop 
+   
+    return 0; 
+}
+
+
 
 
 
@@ -789,6 +914,23 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline  matrix<FP_NR
     for (int j=0; j<i; j++) RR(i,j)=0.0;
   
   return RR;
+}
+
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> PLattice<ZT,FT, MatrixZT, MatrixFT>::getU()
+{
+ 
+  if (transf) { 
+    ZZ_mat<ZT> UU(d,d); 
+    for (int i=0; i<d; i++) 
+      for (int j=0; j<d; j++) UU.Set(i,j,Uglob.get(i,j)); // reprendre boucle sur les colonnes 
+    return UU;
+  }
+  else {
+    cout << "*** Error, PLLL, the transformation matrix has not been computed" << endl;
+    ZZ_mat<ZT> UU(0,0);
+    return UU;
+  }
 }
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline unsigned int 
@@ -834,7 +976,9 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::setprec(unsigned int prec) {
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> void 
-PLattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d) {
+PLattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
+
+  transf = forU;
 
   nblov=0;
 
@@ -848,17 +992,23 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d) {
 
   U.resize(d,d);
 
+  if (transf) {
+    Uglob.resize(d,d);
+    setId(Uglob);
+  } 
+
 }
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>
-PLattice<ZT,FT, MatrixZT, MatrixFT>::PLattice(ZZ_mat<ZT> A) {
+PLattice<ZT,FT, MatrixZT, MatrixFT>::PLattice(ZZ_mat<ZT> A, bool forU, int reduction_method) {
 
   
+
   n=A.getRows();
   d=A.getCols();
 
-  init(n,d); 
+  init(n,d, forU); 
 
   int i,j;
 

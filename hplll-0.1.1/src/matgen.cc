@@ -101,7 +101,7 @@ namespace hplll {
 	A(i,i)=one;
     } 
 
-    // Rectabgular uniform
+    // Rectangular uniform
     // -------------------
     else if (strcmp(type,unif) ==0) {
       n=m;
