@@ -40,7 +40,12 @@ class PLattice
 
   ZZ_mat<ZT> U;
 
+  MatrixZT Uglob;
+
+  bool transf;
+
   int n,d; 
+
 
   // Floating point objects concerned a possible precision change 
   // ************************************************************
@@ -65,15 +70,18 @@ class PLattice
 
   long  approx_cond();
   int householder();
+  int phouseholder(int S, int prec);
+
+  ZZ_mat<ZT> getU();
 
   ZZ_mat<ZT> getbase();
 
   // Not MatrixFT for the exp case 
   matrix<FP_NR<FT> > getR(); 
 
-  PLattice(ZZ_mat<ZT> A); 
+  PLattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0); 
 
-  void init(int n, int d);
+  void init(int n, int d, bool forU);
 
   //~PLattice();
 };

@@ -59,7 +59,7 @@ namespace hplll {
 	  A(i,j)=Ain(i,k*bs+j);
 
    
-      L.put(A,1,0);
+      L.assign(A);
       L.hlll(0.99);
 
       A=L.getbase();

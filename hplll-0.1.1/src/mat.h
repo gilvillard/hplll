@@ -628,6 +628,27 @@ template<class T> void setId(Matrix<T>& A)
  
 };
 
+template<class T> void setId(matrix<T>& A) 
+{
+
+  int m,n,i,j;
+
+  m= A.getRows();
+  n= A.getCols();
+
+   for (i=0; i<m; i++) 
+    for (j=0; j<n; j++) 
+      A(i,j)=0; 
+
+   T one;
+   one = 1;
+
+   for (i=0; i<m; i++) 
+       A(i,i)=one; 
+ 
+};
+
+
 template<class T> bool isId(Matrix<T> A) 
 {
 
@@ -687,6 +708,20 @@ template<class T> void set(matrix<T>& B, matrix<T> A)
 };
 
 template<class T> void set(matrix<T>& B, Matrix<T> A) 
+{
+
+  int m,n,i,j;
+
+  m= B.getRows();
+  n= B.getCols();
+
+   for (i=0; i<m; i++) 
+    for (j=0; j<n; j++) 
+      B(i,j)=A(i,j); 
+ 
+};
+
+template<class T> void set(Matrix<T>& B, Matrix<T> A) 
 {
 
   int m,n,i,j;
