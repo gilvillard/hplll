@@ -58,7 +58,7 @@ namespace hplll {
     OMPTimer time;
     OMPTimer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,restsizetime,totime,ttime;
     
-    omp_set_num_threads(8);
+    omp_set_num_threads(4);
 #else 
     Timer time;
     Timer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,restsizetime,totime,ttime;
