@@ -62,9 +62,6 @@ int main(int argc, char *argv[])  {
       }
 
 
-    
-    K=24;
-
     if (d%K !=0) {
 
       int i,j;
@@ -102,7 +99,7 @@ int main(int argc, char *argv[])  {
       transpose(AT,A);
     }
 
-    K=6;
+    
   
     // Knapsack 
     // --------
@@ -161,7 +158,7 @@ int main(int argc, char *argv[])  {
 
     ptime.start();
 
-    B.hlll(delta,K,1,lovmax);
+    B.hlll(delta,K,0,lovmax);
 
     ptime.stop();
 
