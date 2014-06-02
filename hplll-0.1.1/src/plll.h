@@ -60,7 +60,7 @@ class PLattice
 
   int nblov;
 
-  int hlll(double delta, int K, unsigned int lovmax=4294967295);
+  int hlll(double delta, int K, int level=0, unsigned int lovmax=4294967295);
  
   void even_hsizereduce(int S, int prec, bool refresh); // Householder is refreshed or not 
   void odd_hsizereduce(int S, int prec);
