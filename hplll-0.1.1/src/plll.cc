@@ -34,7 +34,7 @@ namespace hplll {
   // cas rectangles ? 
 
   template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
-  PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int K, unsigned int lovmax) { 
+  PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int K, int level, unsigned int lovmax) { 
     
     int bdim;     // Number of blocks and dimension of each block 
                   // Assume that d is a multiple of K >= 4 
@@ -58,7 +58,7 @@ namespace hplll {
     OMPTimer time;
     OMPTimer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,restsizetime,totime,ttime;
     
-    omp_set_num_threads(4);
+    omp_set_num_threads(8);
 #else 
     Timer time;
     Timer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,restsizetime,totime,ttime;
@@ -75,22 +75,32 @@ namespace hplll {
     osizetime.clear();
     totime.clear();
     ttime.clear();
-
-    time.start();
-
-    householder();
-
-    time.stop();
-    cout << "+++++++++++++++++++++++++++++++ Prec: " << mpfr_get_default_prec() << "   " << time << endl;  
-    qrtime+=time; 
-
-
+   
 
     long condbits;
     
     int iter;
 
     bool stop=0;
+
+
+    // The input matrix is assumed to be triangular and size reduced 
+    // -------------------------------------------------------------
+    
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > >  LI(getbase());
+    condbits = LI.lcond(TRIANGULAR_PROPER);
+    
+    setprec(condbits);
+
+    time.start();
+
+    householder();
+
+    time.stop();
+    cout << "++++++++++++ Level: " << level << "  +++++++++++++++++++ Prec: " << mpfr_get_default_prec() << "   " << time << endl;  
+    qrtime+=time; 
+
+
 
     
     // ************************
@@ -102,7 +112,11 @@ namespace hplll {
     totime.start();
 
     for (iter=0; stop==0; iter++) {
-      //  for (iter=0; iter < 2 ; iter ++){
+      //    for (iter=0; iter < 1 ; iter ++){
+
+      //householder();
+      // PROBLEME !!!!!!!!!!
+      phouseholder(2,condbits);
 
       // Even block reduction  
       // --------------------
@@ -111,8 +125,9 @@ namespace hplll {
 
       condbits=approx_cond();
 
-      cout << endl << "************* Even approx cond " << condbits << "    " << "S = " << S << endl; 
-      cout << " Reductions: " << redtime << endl;
+      cout << endl << "******* Level: " << level << "  ****** Even approx cond " << condbits << "    " << "S = " << S << endl; 
+      /*      
+	      cout << " Reductions: " << redtime << endl;
       cout << " Even reductions:   " << eventime << endl;
       cout << " Odd reductions:   " << oddtime << endl;
       cout << " Products:   " << prodtime << endl;
@@ -123,6 +138,7 @@ namespace hplll {
       cout << " Total time:  " << ttime << endl;  
       cout << " Nblov : " << nblov << endl; 
       totime.start();
+      */ 
      
 
       set_f(RZ,R,condbits);  // Le limiter aux blocs 
@@ -132,32 +148,36 @@ namespace hplll {
       time.start();
 
 #ifdef _OPENMP
-#pragma omp parallel for 
+      #pragma omp parallel for shared(condbits)
 #endif 
       
       for (k=0; k<S; k++) {   
 #ifdef _OPENMP	
-	cout << "thread " << omp_get_thread_num() << endl; 
+	//cout << "thread " << omp_get_thread_num() << endl; 
 #endif
 	// Double hence no global prec problem 
-	Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
-	BR.set_nblov_max(lovmax);
-	BR.hlll(delta);
-	cout << endl << "even nblov " << BR.nblov << endl; 
-	nblov+=BR.nblov;
-	putblock(U,BR.getU(),k,k,S,0);
-
-	//PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > BP(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
-	//BP.hlll(delta,4);
-
-	//cout << endl << "even nblov " << BP.nblov << endl; 
-	//nblov+=BP.nblov;
-	//putblock(U,BP.getU(),k,k,S,0);
-	// mpfr_set_default_prec(condbits); 
-
+ 
+	if (level ==0) {
+	  Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
+	  BR.set_nblov_max(lovmax);
+	  BR.hlll(delta);
+	  //cout << endl << "even nblov " << BR.nblov << endl; 
+	  nblov+=BR.nblov;
+	  putblock(U,BR.getU(),k,k,S,0);
+	} 
+	else {
+	  mpfr_set_default_prec(condbits);
+	  PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > BP(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
+	  BP.hlll(delta,4,level-1);
+	  cout << " ========= ICI " << endl; 
+	  //cout << endl << "even nblov " << BP.nblov << endl; 
+	  nblov+=BP.nblov;
+	  putblock(U,BP.getU(),k,k,S,0);
+	  mpfr_set_default_prec(condbits); 
+	}
       }
       
-      
+      mpfr_set_default_prec(condbits); 
 
       time.stop();
       redtime+=time; 
@@ -212,7 +232,7 @@ namespace hplll {
       
 
       time.stop();
-      cout << "+++++++++++++++++++++++++++++++ Prec: " << mpfr_get_default_prec() << "   " << time << endl;
+      //cout << "+++++++++++++++++++++++++++++++ Prec: " << mpfr_get_default_prec() << "   " << time << endl;
       restsizetime+=time;
       
     
@@ -238,15 +258,27 @@ namespace hplll {
       for (k=0; k<S-1; k++) {
 	//cout << "+++++++++++ Odd ++++++++++ " << endl; 
 	
-	Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
-	//BR.set_nblov_max(lovmax);
-	BR.hlll(delta);
-	cout << endl << "odd nblov " << BR.nblov << endl;
-	nblov+=BR.nblov;
+	if (level ==0) {
+	  Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
+	  //BR.set_nblov_max(lovmax);
+	  BR.hlll(delta);
+	  //cout << endl << "odd nblov " << BR.nblov << endl;
+	  nblov+=BR.nblov;
 
-	putblock(U,BR.getU(),k,k,S,bdim);
+	  putblock(U,BR.getU(),k,k,S,bdim);
+	} 
+	else {
+	  mpfr_set_default_prec(condbits);
+	  PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > BP(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
+	  BP.hlll(delta,4,level-1);
+	  cout << " ========= ICI " << endl; 
+	  //cout << endl << "even nblov " << BP.nblov << endl; 
+	  nblov+=BP.nblov;
+	  putblock(U,BP.getU(),k,k,S,bdim);
+	  mpfr_set_default_prec(condbits); 
+	}
       }
-
+      mpfr_set_default_prec(condbits); 
       
       time.stop();
       redtime += time;
@@ -292,13 +324,14 @@ namespace hplll {
       time.start();
       
       // CHANGER LE PREC MPFR EN FONCTION DE RZ CAR A BAISSÉE
-
-      phouseholder(SP,condbits);
+      
+      //phouseholder(SP,condbits);
+      //householder();
 
       time.stop();
-      cout << "+++++++++++++++++++++++++++++++ Prec: " << mpfr_get_default_prec() << "   " << time << endl;
+      //cout << "+++++++++++++++++++++++++++++++ Prec: " << mpfr_get_default_prec() << "   " << time << endl;
       restsizetime+=time;
-      
+     
       
     } // End main loop: global iterations iter 
     
@@ -486,7 +519,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec, bool refr
     
     
     c.stop();
-    cout << "On block : " << k << "  " << c << endl; 
+    //cout << "On block : " << k << "  " << c << endl; 
   } // parallel loop on the blocks 
 
 
@@ -673,7 +706,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::odd_hsizereduce(int S, int prec)
     
     
     c.stop();
-    cout << "On block : " << k << "  " << c << endl; 
+    //cout << "On block : " << k << "  " << c << endl; 
     
   } // end parallel loop on the blocks 
 
