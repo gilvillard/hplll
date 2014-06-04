@@ -167,7 +167,7 @@ namespace hplll {
 	for (j=i+1; j<n; j++) {
 	  
 	  s=size_in_bits(AT(i,i));
-	  AT(j,i).randb(s);
+	  AT(j,i).randb(s+20);
 	  
 	}
 
