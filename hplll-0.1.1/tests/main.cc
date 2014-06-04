@@ -62,6 +62,8 @@ int main(int argc, char *argv[])  {
       }
 
 
+   
+
     if (d%K !=0) {
 
       int i,j;
@@ -100,24 +102,29 @@ int main(int argc, char *argv[])  {
     }
 
     
+   int cond; 
   
+   cond = maxbitsize(A);
+
     // Knapsack 
     // --------
-    /*
+    
     ZZ_mat<mpz_t> Anew;
     Anew.resize(n,d);
 
-    blevel(Anew, A, 2);
+    blevel(Anew, A, 2, d/8);
  
     set(A,Anew);
-    */
+    //end knapsack
+   
+    //print2maple(A,d,d); 
+    
 
-    int cond; 
-  
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(A);
 
-    cond = L.lcond(TRIANGULAR_PROPER);
-    //cond = L.lcond(ANY,maxbitsize(A),CHECK);
+
+    //cond = L.lcond(TRIANGULAR_PROPER);
+    //cond = L.lcond(ANY,cond,CHECK);
 
     //cout << " cond = " << B.lcond(TRIANGULAR_PROPER) << endl; 
     //cout << " cond = " << B.lcond(ANY, DEFAULT_PREC) << endl;
@@ -168,18 +175,20 @@ int main(int argc, char *argv[])  {
     T1.isreduced(delta-0.1);
 
     
+
     cout << "   dimension = " << d  << endl;
     cout << "   nblov plll " << B.nblov  << endl;
     cout << "   time plll: " << ptime << endl;
-
+    cout << "   input bit size: " << maxbitsize(A) << endl;
     
+  
 
     Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,NO_TRANSFORM,DEF_REDUCTION);
 
 
     time.start();
 
-    // C.hlll(delta);
+    //C.hlll(delta);
 
     time.stop();
 
@@ -192,6 +201,11 @@ int main(int argc, char *argv[])  {
     time.start();
 
     lllReduction(AT, delta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
+
+    transpose(A,AT);
+
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
+    T2.isreduced(delta-0.1);
 
     time.stop();
     cout << "   time fplll: " << time << endl;

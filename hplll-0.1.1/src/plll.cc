@@ -111,12 +111,18 @@ namespace hplll {
 
     totime.start();
 
-    for (iter=0; stop==0; iter++) {
-      //    for (iter=0; iter < 1 ; iter ++){
+    //for (iter=0; stop==0; iter++) {
+              for (iter=0; iter < 1 ; iter ++){
 
-      //householder();
-      // PROBLEME !!!!!!!!!!
-      phouseholder(2,condbits);
+      
+      time.start();
+
+      phouseholder(SP,condbits);
+            
+      time.stop();      
+      restsizetime+=time;
+
+      
 
       // Even block reduction  
       // --------------------
@@ -126,10 +132,10 @@ namespace hplll {
       condbits=approx_cond();
 
       cout << endl << "******* Level: " << level << "  ****** Even approx cond " << condbits << "    " << "S = " << S << endl; 
-      /*      
-	      cout << " Reductions: " << redtime << endl;
-      cout << " Even reductions:   " << eventime << endl;
-      cout << " Odd reductions:   " << oddtime << endl;
+          
+      cout << " Reductions: " << redtime << endl;
+      //cout << " Even reductions:   " << eventime << endl;
+      //cout << " Odd reductions:   " << oddtime << endl;
       cout << " Products:   " << prodtime << endl;
       cout << " Calls even size reds:  " << esizetime << endl;
       cout << " Rest size reds:  " << restsizetime << endl;
@@ -138,7 +144,7 @@ namespace hplll {
       cout << " Total time:  " << ttime << endl;  
       cout << " Nblov : " << nblov << endl; 
       totime.start();
-      */ 
+       
      
 
       set_f(RZ,R,condbits);  // Le limiter aux blocs 
@@ -148,7 +154,7 @@ namespace hplll {
       time.start();
 
 #ifdef _OPENMP
-      #pragma omp parallel for shared(condbits)
+#pragma omp parallel for shared(condbits)
 #endif 
       
       for (k=0; k<S; k++) {   
@@ -161,7 +167,7 @@ namespace hplll {
 	  Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
 	  BR.set_nblov_max(lovmax);
 	  BR.hlll(delta);
-	  //cout << endl << "even nblov " << BR.nblov << endl; 
+	  cout << endl << "even nblov " << BR.nblov << endl; 
 	  nblov+=BR.nblov;
 	  putblock(U,BR.getU(),k,k,S,0);
 	} 
@@ -195,6 +201,7 @@ namespace hplll {
       
       pmatprod_in(B,U,SP);
       
+
       if (transf) pmatprod_in(Uglob,U,SP);
  
       time.stop();    
@@ -208,15 +215,17 @@ namespace hplll {
       
       bool refresh = false; // False: computes Rt 
  
+
       even_hsizereduce(S,condbits,refresh); // U implicitely updated 
       
       time.stop();
       esizetime+=time;
 	
       time.start();
-       
-      pmatprod_in(B,U,SP);
       
+      pmatprod_in(B,U,SP);
+
+
       if (transf) pmatprod_in(Uglob,U,SP);
  
       time.stop();    
@@ -295,7 +304,8 @@ namespace hplll {
       pmatprod_in(RZ,U,SP);  
 
       pmatprod_in(B,U,SP);
-      
+     
+
       if (transf) pmatprod_in(Uglob,U,SP);
 
       time.stop();    
@@ -314,23 +324,14 @@ namespace hplll {
       
       time.start();
 
+
       pmatprod_in(B,U,SP);
       
       if (transf) pmatprod_in(Uglob,U,SP);
 
       time.stop();    
       prodtime+=time; 
-      
-      time.start();
-      
-      // CHANGER LE PREC MPFR EN FONCTION DE RZ CAR A BAISSÉE
-      
-      //phouseholder(SP,condbits);
-      //householder();
-
-      time.stop();
-      //cout << "+++++++++++++++++++++++++++++++ Prec: " << mpfr_get_default_prec() << "   " << time << endl;
-      restsizetime+=time;
+     
      
       
     } // End main loop: global iterations iter 
@@ -547,7 +548,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::odd_hsizereduce(int S, int prec)
 
   //PPP  
 #ifdef _OPENMP
-#pragma omp parallel for shared (prec)
+  #pragma omp parallel for shared (prec)
 #endif 
 
 
@@ -889,15 +890,16 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::phouseholder(int S, int prec)
 
 
 #ifdef _OPENMP
-#pragma omp parallel for shared (prec)
+#pragma omp parallel for shared (prec,l)
 #endif 
 
     for (lb=l+1; lb<S; lb++) {
+
+      mpfr_set_default_prec(prec);
+
       int kk; 
       int pkappa; 
       FP_NR<FT> pnrtmp;
-
-      mpfr_set_default_prec(prec);
       
       for (pkappa=lb*Sdim; pkappa<(lb+1)*Sdim; pkappa++) {
 
@@ -910,6 +912,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::phouseholder(int S, int prec)
 	}
       }
     } 
+
 
   } // end block loop 
    

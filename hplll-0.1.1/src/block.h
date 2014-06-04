@@ -30,7 +30,7 @@ namespace hplll {
   // One level : block size bs
   // Knapsack cf put = 1
   // B resize outside !!! 
-  void blevel(ZZ_mat<mpz_t>& B, const ZZ_mat<mpz_t> Ain, int bs, int lllmethod=HLLL) { 
+  void blevel(ZZ_mat<mpz_t>& B, const ZZ_mat<mpz_t> Ain, int bs, int dec, int lllmethod=HLLL) { 
     
     int n,d,k,i,j;
     
@@ -58,11 +58,13 @@ namespace hplll {
 	for (j=0; j<bs; j++) 
 	  A(i,j)=Ain(i,k*bs+j);
 
-   
-      L.assign(A);
-      L.hlll(0.99);
 
-      A=L.getbase();
+      if (k>=dec) { // We skip the first blocks    
+	L.assign(A);
+	L.hlll(0.99);
+
+	A=L.getbase();
+      }
 
       for(i=0; i<n; i++) {
 	for (j=0; j<bs; j++) {

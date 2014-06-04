@@ -1353,6 +1353,7 @@ template<> void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long co
   for (j=1; j<d; j++) {
     fp_norm(norm,R.getcol(j),n);
     if (minval.cmp(norm) > 0) minval=norm;
+
   }
 
   FP_NR<mpfr_t> bf;
@@ -1362,6 +1363,8 @@ template<> void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long co
   z=0;
   FP_NR<mpfr_t> rt;
 
+  Z_NR<mpz_t> mm;
+  mm=B(0,0);
 
   for (j=0; j<d; j++) {
     fp_norm(norm,R.getcol(j),n);
@@ -1369,14 +1372,15 @@ template<> void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long co
 
       bf.mul_2si(R(i,j),condbits+1);  // +1
      
-      tt.randb(2);
-      set_z(rt,tt);
-      rt.mul(rt,norm);
-      if (j>=i) bf.add(bf,rt);
+      //tt.randb(2);
+      //set_z(rt,tt);
+      //rt.mul(rt,norm);
+      //if (j>=i) bf.add(bf,rt);
       bf.div(bf,minval);
       B(i,j).set_f(bf);
 
       }
+     
   }
 
 }
