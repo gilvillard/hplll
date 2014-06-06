@@ -29,6 +29,85 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 namespace hplll { 
 
+
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::ahlll(double delta, bool verbose) { 
+
+  
+  int kappa=0,i;
+  int prevkappa=-1; // For the looping test betwenn tow indices 
+  vector<FP_NR<FT> >  prevR(d);
+
+
+  FP_NR<FT> newt; //testaccu;
+
+  FP_NR<FT> deltab,lovtest;
+  deltab=delta;   // TO SEE 
+
+  FP_NR<FT> tmpswap;
+
+  FP_NR<FT> s,sn; // newt test 
+
+  int flag_reduce=0; // No convergence in reduce 
+
+
+  for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
+
+
+  int odd=0;
+ 
+  // Size reduction 
+  // --------------  
+
+  for (kappa=1+odd; kappa<d; kappa+=2) {
+
+    householder();
+
+
+    lovtest.mul(R.get(kappa-1,kappa-1),R.get(kappa-1,kappa-1));
+    lovtest.mul(deltab,lovtest);
+    
+    nblov+=1;
+    
+    fp_norm(s,R.getcol(kappa,kappa),structure[kappa]+1-kappa);
+    s.mul(s,s);
+    sn.mul(R.get(kappa-1,kappa),R.get(kappa-1,kappa));
+    newt.add(s,sn);
+    
+    cout << kappa-1 << "  " << kappa << endl; 
+
+  } 
+
+  // nblov à mettre 
+  // kappa 
+
+  //  while ((kappa < d) && (nblov < nblov_max)) 
+
+
+  /*
+
+      lovtest.mul(R.get(kappa-1,kappa-1),R.get(kappa-1,kappa-1));
+      lovtest.mul(deltab,lovtest);
+
+      nblov+=1;
+    
+      fp_norm(s,R.getcol(kappa,kappa),structure[kappa]+1-kappa);
+      s.mul(s,s);
+      sn.mul(R.get(kappa-1,kappa),R.get(kappa-1,kappa));
+      newt.add(s,sn);
+  */
+
+  
+
+  return 0;
+  
+};
+
+
+
+
+
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) { 
 

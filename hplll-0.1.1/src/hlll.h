@@ -110,6 +110,8 @@ public:
 
   int hlll(double delta, bool verbose=false);
 
+  int ahlll(double delta, bool verbose=false);
+
   unsigned int setprec(unsigned int prec);
   unsigned int getprec();
 

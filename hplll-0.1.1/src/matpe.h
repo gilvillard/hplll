@@ -1264,6 +1264,77 @@ cout << "Matrix([";
   };
 
 
+
+void set_f(matrix<Z_NR<mpz_t> >& B, MatrixPE<double, dpe_t> R, long condbits)
+{
+
+  int n,d;
+
+  n= B.getRows();
+  d= B.getCols();
+
+  FP_NR<dpe_t> norm,minval;
+  minval=0.0;
+  norm=0.0;
+
+  int i,j;
+
+   fp_norm(minval,R.getcol(0),n);
+
+
+  // Avant Mar 29 avr 2014 10:42:12 CEST
+  for (j=1; j<d; j++) {
+    fp_norm(norm,R.getcol(j),n);
+    if (minval.cmp(norm) > 0) minval=norm;
+
+  }
+
+  FP_NR<dpe_t> bf;
+
+  Z_NR<mpz_t> tt,z;
+  tt=0;
+  z=0;
+  FP_NR<dpe_t> rt;
+
+  Z_NR<mpz_t> mm;
+  mm=B(0,0);
+
+  for (j=0; j<d; j++) {
+    fp_norm(norm,R.getcol(j),n);
+    for (i=0; i<n; i++) {
+
+      bf.mul_2si(R.get(i,j),condbits+1);  // +1
+     
+      //tt.randb(2);
+      //set_z(rt,tt);
+      //rt.mul(rt,norm);
+      //if (j>=i) bf.add(bf,rt);
+      bf.div(bf,minval);
+      B(i,j).set_f(bf);
+
+      }
+     
+  }
+
+}
+
+/*
+template<class T> void set(MatrixPE<T>& B, matrix<T> A) 
+{
+
+  int m,n,i,j;
+
+  m= A.getRows();
+  n= A.getCols();
+
+   for (i=0; i<m; i++) 
+    for (j=0; j<n; j++) 
+      B.set(i,j,A.get(i,j)); 
+ 
+};
+*/
+
+
 } // end namespace hplll
 
 

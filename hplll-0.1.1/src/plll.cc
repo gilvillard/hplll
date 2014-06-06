@@ -111,8 +111,8 @@ namespace hplll {
 
     totime.start();
 
-    //for (iter=0; stop==0; iter++) {
-              for (iter=0; iter < 1 ; iter ++){
+    for (iter=0; stop==0; iter++) {
+      //          for (iter=0; iter < 1 ; iter ++){
 
       
       time.start();
@@ -213,7 +213,7 @@ namespace hplll {
       
       time.start();
       
-      bool refresh = false; // False: computes Rt 
+      bool refresh = true; // False: computes Rt 
  
 
       even_hsizereduce(S,condbits,refresh); // U implicitely updated 
@@ -236,8 +236,8 @@ namespace hplll {
       // CHANGER LE PREC MPFR EN FONCTION DE RZ CAR A BAISSÉE
       if (refresh) 
 	phouseholder(SP,condbits);
-      else  
-	set(R,Rt);
+      //else  
+      //set(R,Rt);
       
 
       time.stop();
@@ -734,7 +734,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::approx_cond()
   for  (j=1; j<d; j++) 
 
     for (i=0; i<j; i++) {
-      tmp.div(R(i,j),R(i,i));
+      tmp.div(R.get(i,j),R.get(i,i));
       tmp.abs(tmp);
       if (tmp.cmp(eta) > 0) eta=tmp;
     }
@@ -749,7 +749,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::approx_cond()
 
   for  (j=0; j<d; j++) 
     for (i=0; i<d; i++) {
-      tmp.div(R(j,j),R(i,i));
+      tmp.div(R.get(j,j),R.get(i,i));
       tmp.abs(tmp);
       if (tmp.cmp(maxquo) > 0) maxquo=tmp;
     }
