@@ -1331,10 +1331,10 @@ template<class ZT, class MatrixZT> void trunc(MatrixZT& B, ZZ_mat<ZT> A, long d,
 };
 
 
+//template<class ZT, class FT> void set_f(matrix<Z_NR<ZT> >& B, matrix<FP_NR<FT> > R, long condbits);
 
-template<class ZT, class FT> void set_f(matrix<Z_NR<ZT> >& B, matrix<FP_NR<FT> > R, long condbits);
-
-template<> void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long condbits)
+//template<> void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long condbits)
+void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long condbits)
 {
 
   int n,d;

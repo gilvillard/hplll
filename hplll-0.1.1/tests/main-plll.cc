@@ -104,25 +104,26 @@ int main(int argc, char *argv[])  {
     
    int cond; 
   
-   cond = maxbitsize(A);
+   //cond = maxbitsize(A);
 
     // Knapsack 
     // --------
     
-    ZZ_mat<mpz_t> Anew;
-    Anew.resize(n,d);
+    //ZZ_mat<mpz_t> Anew;
+    //Anew.resize(n,d);
 
-    blevel(Anew, A, 2);
+    //blevel(Anew, A, 2, d/8);
  
-    set(A,Anew);
-    // end knapsack
+    //set(A,Anew);
+    //end knapsack
    
+    //print2maple(A,d,d); 
     
 
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(A);
 
 
-    //cond = L.lcond(TRIANGULAR_PROPER);
+    cond = L.lcond(TRIANGULAR_PROPER);
     //cond = L.lcond(ANY,cond,CHECK);
 
     //cout << " cond = " << B.lcond(TRIANGULAR_PROPER) << endl; 
@@ -160,7 +161,8 @@ int main(int argc, char *argv[])  {
     Timer ptime;
 #endif 
 
-    PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
+    PLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
+    //PLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
 
     ptime.start();
 
@@ -174,6 +176,7 @@ int main(int argc, char *argv[])  {
     T1.isreduced(delta-0.1);
 
     
+
     cout << "   dimension = " << d  << endl;
     cout << "   nblov plll " << B.nblov  << endl;
     cout << "   time plll: " << ptime << endl;

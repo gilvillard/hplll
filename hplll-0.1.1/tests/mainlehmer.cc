@@ -36,8 +36,6 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
-  typedef FP_NR<mpfr_t>   RT;
-  typedef Z_NR<mpz_t>  ZT;
   
   ZZ_mat<mpz_t> A; // For hpLLL 
   ZZ_mat<mpz_t> C; // For Lehmer
