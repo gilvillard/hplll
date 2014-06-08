@@ -104,6 +104,9 @@ public:
   int householder();
   
   int hsizereduce(int kappa, int fromk=0);
+  int ahsizereduce(int kappa, int fromk=0);
+  int qrupdate(int iend);
+
   int decrease(int kappa);
   int seysenreduce(int kappa);
   int seysen_flag;

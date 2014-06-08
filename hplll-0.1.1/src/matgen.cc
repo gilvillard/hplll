@@ -45,6 +45,7 @@ namespace hplll {
     char line[]="cin";
     char copp[]="c";
     char unif[]="u";
+    char dec[]="dec";
     
     int nbbits=10;
     double alpha=1.4;
@@ -52,6 +53,7 @@ namespace hplll {
     d=8;
     int m = 1;
     int sN,sX,h; 
+    int shift =10;
 
     delta =0.75;
 
@@ -69,6 +71,7 @@ namespace hplll {
       MATCH_MAIN_ARGID("-N",sN);
       MATCH_MAIN_ARGID("-X",sX);
       MATCH_MAIN_ARGID("-h",h);
+      MATCH_MAIN_ARGID("-shift",shift);
     }
 
     // Knapsack 
@@ -114,6 +117,23 @@ namespace hplll {
 
 	}  
     } 
+
+    // Upper part shifted 
+    // ------------------
+    else if (strcmp(type,dec) ==0) {
+
+      n=d;      
+      A.resize(d,d); 
+
+      for (int i=1; i<d; i++)
+	for (int j=0; j<d ; j++) {
+	  A(i,j).randb(nbbits);
+	}  
+
+      for (int j=0; j<d; j++)
+	A(0,j).randb(nbbits+shift);
+
+    }  
 
     // Ajtai 
     // -----
