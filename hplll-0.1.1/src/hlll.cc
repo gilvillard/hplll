@@ -35,8 +35,8 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT>  int
 Lattice<ZT,FT, MatrixZT, MatrixFT>::ahlll(double delta, bool verbose) { 
 
   
-  int kappa=0,i;
-  int prevkappa=-1; // For the looping test betwenn tow indices 
+  int kappa=0,i,j,K;
+  
   vector<FP_NR<FT> >  prevR(d);
 
 
@@ -49,56 +49,102 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::ahlll(double delta, bool verbose) {
 
   FP_NR<FT> s,sn; // newt test 
 
-  int flag_reduce=0; // No convergence in reduce 
-
-
   for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
 
 
   int odd=0;
+
+  int swapin=1;
+
+  Timer time, tsize,tup;
+  time.clear();
+  tsize.clear();
+  tup.clear();
+  
+
+  // Main iterative loop 
+  // -------------------
+
+  for (K=0; (swapin > 0) || (odd==1); K++)  {
+
+
+    if (odd ==0) swapin=0;
  
-  // Size reduction 
-  // --------------  
+    time.start();
 
-  for (kappa=1+odd; kappa<d; kappa+=2) {
+    // Size reduction 
+    // --------------  
+    if ((K%4) ==0) {
+      for (i=0; i<d; i++) {
+	col_kept[i]=0;
+	hsizereduce(i);
+	householder_v(i);
+      }
+    } 
+     
+      for (j=0; j<d; j++) 
+	for (i=j+1; i<d; i++)
+	  R.set(i,j,0.0); 
 
-    householder();
-
-
-    lovtest.mul(R.get(kappa-1,kappa-1),R.get(kappa-1,kappa-1));
-    lovtest.mul(deltab,lovtest);
-    
-    nblov+=1;
-    
-    fp_norm(s,R.getcol(kappa,kappa),structure[kappa]+1-kappa);
-    s.mul(s,s);
-    sn.mul(R.get(kappa-1,kappa),R.get(kappa-1,kappa));
-    newt.add(s,sn);
-    
-    cout << kappa-1 << "  " << kappa << endl; 
-
-  } 
-
-  // nblov à mettre 
-  // kappa 
-
-  //  while ((kappa < d) && (nblov < nblov_max)) 
+      
+    time.stop();
+    tsize+=time;
 
 
-  /*
+    // Lovasz tests 
+    // ------------
+
+    for (kappa=1+odd; kappa<d; kappa+=2) {
 
       lovtest.mul(R.get(kappa-1,kappa-1),R.get(kappa-1,kappa-1));
       lovtest.mul(deltab,lovtest);
-
+    
+      
       nblov+=1;
     
-      fp_norm(s,R.getcol(kappa,kappa),structure[kappa]+1-kappa);
-      s.mul(s,s);
+      s.mul(R.get(kappa,kappa),R.get(kappa,kappa));
       sn.mul(R.get(kappa-1,kappa),R.get(kappa-1,kappa));
       newt.add(s,sn);
-  */
 
+      if (lovtest > newt) { // Swap, down 
+
+	swapin +=1;
+
+	nbswaps+=1;
+       
+	B.colswap(kappa-1,kappa);
+	// Mettre Bfp 
+	
+	if (transf) U.colswap(kappa-1,kappa);
+	if (lsize > 0) L.colswap(kappa-1,kappa);
+
+	structure[kappa-1]=structure[kappa];
+
+	R.colswap(kappa-1,kappa);
   
+
+      } // end swap 
+      
+	
+    } // End column loop for Lovasz tests 
+
+
+    time.start();
+      
+    qrupdate(0);
+    
+    time.stop();
+
+    tup+=time;
+     
+
+    odd=(odd +1) % 2;
+
+  } // Main iteration loop 
+
+
+  cout << endl << "**** Size reduction: " << tsize << endl; 
+  cout << "**** Update: " << tup << endl << endl << endl;
 
   return 0;
   
@@ -598,13 +644,11 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	  R.submulcol(kappa,i,x,i+1);
 	
 	  B.submulcol(kappa,i,xz,nmax);
-	
-    
 	  //B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
 	 
 	  if (transf)  
 	    U.submulcol(kappa,i,xz,min(d,nmax));
-	  //U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    //U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
 
 	  if (lsize > 0)  
 	    L.addmulcol_si_2exp(kappa,i,-lx,expo,lsize);
@@ -1811,6 +1855,305 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
    
     return 0; 
 }
+
+
+
+
+/* -------------------------------------------------------------------------
+   Size reduction 
+
+   Assumes that Householder is available until index kappa-1
+
+   Returns -1 if no convergence in the while loop:  no decrease of the norm
+
+   ------------------------------------------------------------------------- */
+
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::ahsizereduce(int kappa, int fromk) { 
+
+  nmaxkappa=structure[kappa]+1;
+
+  FP_NR<FT> approx;
+  
+  approx=0.1;
+
+
+  FP_NR<FT> t,tmpfp;
+  Z_NR<ZT>  xz,tmpz;
+
+  long expo,lx;
+
+  int i;
+
+  int nmax; // De la structure triangulaire 
+  
+  householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
+
+  // While loop for the norm decrease
+  // --------------------------------
+  
+
+  int startposition;
+  if (fromk > 0) 
+    startposition = min(kappa-1,fromk);
+  else 
+    startposition = kappa-1;
+
+
+  {
+
+    // Loop through the column 
+    // -----------------------
+
+   
+    for (i=startposition; i>-1; i--){  
+
+         
+      x.div(R.get(i,kappa),R.get(i,i)); 
+      x.rnd(x);
+
+
+      if (x.sgn() !=0) {   // Non zero combination 
+                           // --------------------
+	lx = x.get_si_exp(expo);
+
+	nmax=structure[i]+1;
+	
+	// Cf fplll 
+	// Long case 
+	if (expo == 0) {
+
+	  if (lx == 1) {
+
+	  
+
+	    R.subcol(kappa,i,i+1);
+	    
+	    B.subcol(kappa,i,nmax);
+		
+	    if (transf) 
+	      U.subcol(kappa,i,min(d,nmax));
+
+	    if (lsize > 0) 
+	      L.subcol(kappa,i,lsize);
+	
+	  } 
+	  else if (lx == -1) {
+
+	   
+ 
+	    R.addcol(kappa,i,i+1);
+	    
+	    B.addcol(kappa,i,nmax);
+		
+	    if (transf) 
+	      U.addcol(kappa,i,min(d,nmax));
+
+	    if (lsize > 0) 
+	      L.addcol(kappa,i,lsize);
+
+	  } 
+	  else { 
+ 
+	    
+
+	    R.submulcol(kappa,i,x,i+1);
+	   
+	    B.addmulcol_si(kappa,i,-lx,nmax);
+
+
+	    if (transf) 
+	      U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+
+	    if (lsize >0) 
+	      L.addmulcol_si(kappa,i,-lx,lsize);
+
+	  } 
+  
+	} // end expo == 0 
+	else {  // expo <> 0 
+
+	 
+
+	  set_f(xz,x);
+	  
+	  R.submulcol(kappa,i,x,i+1);
+	
+	  //B.submulcol(kappa,i,xz,nmax);
+	  B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+	 
+	  if (transf)  
+	    //U.submulcol(kappa,i,xz,min(d,nmax));
+	    U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+
+	  if (lsize > 0)  
+	    L.addmulcol_si_2exp(kappa,i,-lx,expo,lsize);
+
+	} // end expo <> 0 
+
+      } // Non zero combination 
+
+    } // Loop through the column
+    
+    
+  } // end while 
+   
+
+  return 0;
+
+}
+
+
+// The swap is done already 
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::qrupdate(int iend) { 
+
+  int kappa,j;
+
+  FP_NR<FT> t1,t2,x,q11,q22,q12,q21; 
+
+  // QR update 
+  // ---------
+
+  for (kappa=1; kappa <d ; kappa++) { 
+
+    if ((R.get(kappa,kappa-1)).sgn() !=0) { // Not diagonal 
+    
+	
+      t1.mul(R.get(kappa-1,kappa-1),R.get(kappa-1,kappa-1));
+      t2.mul(R.get(kappa,kappa-1),R.get(kappa,kappa-1));
+      x.add(t1,t2);
+      x.sqrt(x);
+
+      q11.div(R.get(kappa-1,kappa-1),x);
+      q22=q11;
+      q12.div(R.get(kappa,kappa-1),x);
+      q21.neg(q12);
+
+      // Col kappa-1
+      R.set(kappa-1,kappa-1,x);
+      R.set(kappa,kappa-1,0.0);
+
+      // Other columns, could be restricted to only some columns
+      // -------------------------------------------------------
+
+
+      for (j=kappa; j<d; j++) {
+
+	t1.mul(q11,R.get(kappa-1,j));
+	t2.mul(q12,R.get(kappa,j));
+	t1.add(t1,t2);
+
+	
+	t1.mul(q21,R.get(kappa-1,j));
+
+	R.set(kappa-1,j,t1); // after it is used for next 
+
+	t2.mul(q22,R.get(kappa,j));
+	t1.add(t1,t2);
+
+	R.set(kappa,j,t1);
+      }       
+    
+    } // end if non zero for diag 
+  } // end loop on the columns 
+
+  // Size reduction 
+  // --------------
+
+  FP_NR<FT> approx;
+  approx=0.1;
+
+  FP_NR<FT> t,tmpfp;
+  Z_NR<ZT>  xz,tmpz;
+  
+  long expo,lx;
+  
+  int i;
+  
+  int nmax; // De la structure triangulaire 
+  
+  for (kappa=1 ; kappa<d; kappa++) { 
+    
+    nmaxkappa=structure[kappa]+1;
+  
+
+    // Loop through the column 
+    // -----------------------
+
+    int limit;
+   
+    if (iend ==1) limit =-1;
+    else limit = kappa-2;
+
+    for (i=kappa-1; i>limit; i--){  
+         
+      x.div(R.get(i,kappa),R.get(i,i)); 
+      x.rnd(x);
+
+      if (x.sgn() !=0) {   // Non zero combination 
+                           // --------------------
+	lx = x.get_si_exp(expo);
+
+	nmax=structure[i]+1;
+	
+	// Cf fplll 
+	// Long case 
+	if (expo == 0) {
+
+	  if (lx == 1) {
+
+	    R.subcol(kappa,i,i+1);	    
+	    B.subcol(kappa,i,nmax);
+      	    if (transf) 
+	      U.subcol(kappa,i,min(d,nmax));
+	    if (lsize > 0) 
+	      L.subcol(kappa,i,lsize);
+	  } 
+	  else if (lx == -1) {
+ 
+	    R.addcol(kappa,i,i+1);
+	    B.addcol(kappa,i,nmax);
+	    if (transf) 
+	      U.addcol(kappa,i,min(d,nmax));
+	    if (lsize > 0) 
+	      L.addcol(kappa,i,lsize);
+
+	  } 
+	  else { 
+ 
+	    R.submulcol(kappa,i,x,i+1);
+	    B.addmulcol_si(kappa,i,-lx,nmax);
+	    if (transf) 
+	      U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+	    if (lsize >0) 
+	      L.addmulcol_si(kappa,i,-lx,lsize);
+	  } 
+  
+	} // end expo == 0 
+	else {  // expo <> 0 
+
+	  set_f(xz,x);
+	  R.submulcol(kappa,i,x,i+1);
+	  //B.submulcol(kappa,i,xz,nmax);
+	  B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+	  if (transf)  
+	    //U.submulcol(kappa,i,xz,min(d,nmax));
+	    U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	  if (lsize > 0)  
+	    L.addmulcol_si_2exp(kappa,i,-lx,expo,lsize);
+	} // end expo <> 0 
+      } // Non zero combination 
+
+    } // Loop through the     
+  } // end loop over the columns     
+ 
+
+
+  //==============
+  return 0;  
+} 
 
 
 } // end namespace hplll

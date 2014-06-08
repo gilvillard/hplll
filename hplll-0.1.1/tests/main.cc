@@ -66,7 +66,7 @@ int main(int argc, char *argv[])  {
     start=utime()-start;
     startsec=utimesec()-startsec;
   
-    /*
+    
     cout << "   dimension = " << d  << endl;
     cout << "   time A: " << start/1000 << " ms" << endl;
     cout << "   time : " << time  << endl;
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])  {
     transpose(A,AT);
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
     T2.isreduced(delta-0.1);
-    */
+    
 
 
  
