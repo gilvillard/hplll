@@ -24,6 +24,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "hlll.h"
 #include "matgen.h"
 
+#include "plll.h"
+
 /* ***********************************************
 
           MAIN   
@@ -48,7 +50,7 @@ int main(int argc, char *argv[])  {
   AT.resize(d,n);
   transpose(AT,A);
 
-    int start,startsec;
+    int start=0,startsec=0;
 
     Timer time;
 
@@ -56,9 +58,11 @@ int main(int argc, char *argv[])  {
     start=utime();
     startsec=utimesec();
    
-    //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
+    //PLattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > B(A,TRANSFORM,DEF_REDUCTION);
+    PLattice<mpz_t, double, matrix<Z_NR<mpz_t> >,  matrix<FP_NR<double> > > B(A,TRANSFORM,DEF_REDUCTION);
+    // PLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,TRANSFORM,DEF_REDUCTION);
 
+    
     time.start();
     B.hlll(delta);
     time.stop();
@@ -66,21 +70,24 @@ int main(int argc, char *argv[])  {
     start=utime()-start;
     startsec=utimesec()-startsec;
   
+    transpose(AT,A); // Gardé pour fplll 
+
+    matprod_in(A,B.getU());
     
     cout << "   dimension = " << d  << endl;
     cout << "   time A: " << start/1000 << " ms" << endl;
     cout << "   time : " << time  << endl;
     
 
-
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+    
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(A,NO_TRANSFORM,DEF_REDUCTION);
     T1.isreduced(delta-0.1);
 
     
+    cout << endl; 
 
-   
     cout << "--------------  FPLLL" << endl << endl; 
-    transpose(AT,A);
+    
 
     start=utime();
     startsec=utimesec();
@@ -89,7 +96,7 @@ int main(int argc, char *argv[])  {
     time.stop();
     start=utime()-start;
     startsec=utimesec()-startsec;
-    
+  
     
     cout << "   dimension = " << d  << endl;
     cout << "   time B: " << start/1000 << " ms" << endl;
@@ -98,8 +105,8 @@ int main(int argc, char *argv[])  {
     transpose(A,AT);
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
     T2.isreduced(delta-0.1);
-    
 
+    
 
  
   return 0;

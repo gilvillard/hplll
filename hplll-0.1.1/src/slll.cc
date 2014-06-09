@@ -21,8 +21,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
-#ifndef HPLLL_PLLL_CC
-#define HPLLL_PLLL_CC
+#ifndef HPLLL_SLLL_CC
+#define HPLLL_SLLL_CC
 
 #ifdef _OPENMP
 #include <omp.h>
