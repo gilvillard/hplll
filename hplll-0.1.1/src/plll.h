@@ -1,7 +1,7 @@
 /* Householder LLL 
 
-Created Mar 18 jan 2011 18:08:24 CET  
-Copyright (C) 2011, 2012, 2013      Gilles Villard 
+Created Lun  9 jui 2014 15:04:23 CEST  
+Copyright (C) 2014      Gilles Villard 
 
 This file is part of the hplll Library 
 
@@ -21,8 +21,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
-#ifndef HPLLL_HLLL_H
-#define HPLLL_HLLL_H
+#ifndef HPLLL_PLLL_H
+#define HPLLL_PLLL_H
 
 
 #include  "defs.h"
@@ -36,7 +36,7 @@ namespace hplll {
 // MatrixZT pour  matrix<Z_NR<ZT> >
 
 template<class ZT, class FT, class MatrixZT, class MatrixFT>
-class Lattice
+class PLattice
 {
 
  protected:
@@ -106,7 +106,6 @@ public:
   int householder();
   
   int hsizereduce(int kappa, int fromk=0);
-  int ahsizereduce(int kappa, int fromk=0);
   int qrupdate(int iend);
 
   int decrease(int kappa);
@@ -114,8 +113,6 @@ public:
   int seysen_flag;
 
   int hlll(double delta, bool verbose=false);
-
-  int ahlll(double delta, bool verbose=false);
 
   unsigned int setprec(unsigned int prec);
   unsigned int getprec();
@@ -133,13 +130,11 @@ public:
   // Not MatrixFT for the exp case 
   matrix<FP_NR<FT> > getR(); 
 
-  Lattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0, int lehmer_size=0); 
+  PLattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0, int lehmer_size=0); 
 
-  Lattice(matrix<FP_NR<mpfr_t> > F, ZZ_mat<ZT> A, bool forU, int reduction_method);
+  PLattice(matrix<FP_NR<mpfr_t> > F, ZZ_mat<ZT> A, bool forU, int reduction_method);
 
-  Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU=false, int reduction_method=0);
-
-  Lattice(ZZ_mat<ZT> A, long t, long sigma, bool forU, int reduction_method); 
+  PLattice(ZZ_mat<ZT> A, long t, long sigma, bool forU, int reduction_method); 
 
   void init(int n, int d, bool forU=false);
 
@@ -174,13 +169,13 @@ public:
   long lcond(int tproper =0, int flagprec=0, int flagheur=0);
 
 
-  //~Lattice();
+  //~PLattice();
 };
 
 } // end namespace hplll
 
 
-#include "hlll.cc"
+#include "plll.cc"
 
 
 #endif

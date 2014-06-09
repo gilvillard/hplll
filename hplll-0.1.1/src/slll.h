@@ -21,8 +21,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
-#ifndef HPLLL_PLLL_H
-#define HPLLL_PLLL_H
+#ifndef HPLLL_SLLL_H
+#define HPLLL_SLLL_H
 
 #include "hlll.h"
 
