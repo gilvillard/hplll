@@ -1,7 +1,7 @@
-/* OpenMP LLL 
+/* Householder LLL 
 
-Created Mer  9 avr 2014 14:07:39 CEST 
-Copyright (C) 2014  Gilles Villard 
+Created Mar 18 jan 2011 18:08:24 CET  
+Copyright (C) 2011, 2012, 2013      Gilles Villard 
 
 This file is part of the hplll Library 
 
@@ -21,75 +21,166 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
-#ifndef HPLLL_PLLL_H
-#define HPLLL_PLLL_H
+#ifndef HPLLL_HLLL_H
+#define HPLLL_HLLL_H
 
-#include "hlll.h"
+
+#include  "defs.h"
+#include  "mat.h"
+#include  "matpe.h"
+#include "matmixed.h"
 
 namespace hplll { 
 
+// MatrixFT pour  matrix<FP_NR<FT> > 
+// MatrixZT pour  matrix<Z_NR<ZT> >
 
 template<class ZT, class FT, class MatrixZT, class MatrixFT>
-class PLattice
+class Lattice
 {
+
  protected:
 
   MatrixZT B;
 
-  MatrixZT RZ;
+  MatrixZT U;
 
-  ZZ_mat<ZT> U;
-
-  MatrixZT Uglob;
-
-  bool transf;
+  MatrixZT L;
 
   int n,d; 
 
+  bool transf;
+
+  unsigned int nblov_max;
+ 
+  int lsize;
+
+  int nmaxkappa;
 
   // Floating point objects concerned a possible precision change 
   // ************************************************************
 
   MatrixFT R; 
+  MatrixFT Rkept; 
 
-  MatrixFT Rt; 
+  MatrixFT V; 
 
-  MatrixFT V;
+  MatrixFT Bfp; // floating point B 
 
- public:
+  matrix<FP_NR<FT> > VR; // Difference between MatrixFT and matrix<FP_NR<FT> >  in Exp 
+  vector<FP_NR<FT> > normB2; // Square norm  
 
-  int nblov;
+  FP_NR<FT> x; // For size reduction 
 
-  int hlll(double delta, int K, int level=0, unsigned int lovmax=4294967295);
+  vector<FP_NR<FT> > toR; // Some assignment in householder_r 
+
+  vector<int> structure; 
+
+  vector<int> col_kept;
+
+  vector<int> kappamin;
  
-  void even_hsizereduce(int S, int prec, bool refresh); // Householder is refreshed or not 
-  void odd_hsizereduce(int S, int prec);
+  vector<int> descendu;
+
+public:
+
+
+  // Timings 
+  // ******* 
+  unsigned int tps_reduce;
+  unsigned int tps_householder;
+  unsigned int tps_prepare;
+  unsigned int tps_swap;
+  unsigned int nblov,nbswaps;
+  unsigned int tps_redB;
+  
+  Timer itime;
+  Timer ichrono;
+
+  int compteur;   // while counting 
+  int tmpcompt;   // Debug or test counting 
+
+  int householder_r(int kappa); 
+  int householder_v(int kappa); 
+
+  int householder();
+  
+  int hsizereduce(int kappa, int fromk=0);
+  int ahsizereduce(int kappa, int fromk=0);
+  int qrupdate(int iend);
+
+  int decrease(int kappa);
+  int seysenreduce(int kappa);
+  int seysen_flag;
+
+  int hlll(double delta, bool verbose=false);
+
+  int ahlll(double delta, bool verbose=false);
 
   unsigned int setprec(unsigned int prec);
   unsigned int getprec();
 
-  long  approx_cond();
-  int householder();
-  int phouseholder(int S, int prec);
+  unsigned int set_nblov_max(unsigned int nb); 
+
+  ZZ_mat<ZT> getbase();
+
+  MatrixZT getmixedbase();
 
   ZZ_mat<ZT> getU();
 
-  ZZ_mat<ZT> getbase();
+  ZZ_mat<ZT> getL();
 
   // Not MatrixFT for the exp case 
   matrix<FP_NR<FT> > getR(); 
 
-  PLattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0); 
+  Lattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0, int lehmer_size=0); 
 
-  void init(int n, int d, bool forU);
+  Lattice(matrix<FP_NR<mpfr_t> > F, ZZ_mat<ZT> A, bool forU, int reduction_method);
 
-  //~PLattice();
+  Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU=false, int reduction_method=0);
+
+  Lattice(ZZ_mat<ZT> A, long t, long sigma, bool forU, int reduction_method); 
+
+  void init(int n, int d, bool forU=false);
+
+  void assign(ZZ_mat<ZT> A);
+
+  void assign(MatrixZT A); 
+
+  void shift_assign(ZZ_mat<ZT> A,  vector<int> shift);
+
+  void put(ZZ_mat<ZT> A, long upperdim, long t, long sigma=0); 
+
+  void mixed_put(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, long t, long sigma=0); 
+
+  void shift(ZZ_mat<ZT> A, long m, long sigma); 
+
+  void shiftRT(long sigma); 
+
+  // Only in the mpfr case (when possible to change the precision)
+  // *************************************************************
+
+  void isreduced(double delta);
+
+#define ANY 0
+#define TRIANGULAR_PROPER 1   
+
+#define DEFAULT_PREC 0 
+#define UNKNOWN_PREC 1
+#define CHECK  1
+
+// PREC IF >=2
+
+  long lcond(int tproper =0, int flagprec=0, int flagheur=0);
+
+
+  //~Lattice();
 };
-
 
 } // end namespace hplll
 
-#include "plll.cc"
 
-#endif 
+#include "hlll.cc"
 
+
+#endif
