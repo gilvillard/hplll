@@ -94,7 +94,6 @@ public:
   unsigned int nblov,nbswaps;
   unsigned int tps_redB;
   
-
   int compteur;   // while counting 
   int tmpcompt;   // Debug or test counting 
 
@@ -104,16 +103,14 @@ public:
   int householder();
   
   int hsizereduce(int kappa, int fromk=0);
-  int ahsizereduce(int kappa, int fromk=0);
-  int qrupdate(int iend);
-
+  
   int decrease(int kappa);
   int seysenreduce(int kappa);
   int seysen_flag;
 
   int hlll(double delta, bool verbose=false);
 
-  int ahlll(double delta, bool verbose=false);
+ 
 
   unsigned int setprec(unsigned int prec);
   unsigned int getprec();
