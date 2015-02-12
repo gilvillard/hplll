@@ -102,7 +102,10 @@ int main(int argc, char *argv[])  {
     }
 
     
-   int cond; 
+    int cond,s0;
+    s0=maxbitsize(A);
+
+ 
   
    //cond = maxbitsize(A);
 
@@ -161,8 +164,10 @@ int main(int argc, char *argv[])  {
     Timer ptime;
 #endif 
 
-    SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
-    //SLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
+    
+
+    //SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
+    SLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
 
     ptime.start();
 
@@ -180,6 +185,7 @@ int main(int argc, char *argv[])  {
     cout << "   dimension = " << d  << endl;
     cout << "   nblov plll " << B.nblov  << endl;
     cout << "   time plll: " << ptime << endl;
+    cout << "   initial size: " << s0 << "      cond: " << cond << endl;
     cout << "   input bit size: " << maxbitsize(A) << endl;
     
   
@@ -189,7 +195,7 @@ int main(int argc, char *argv[])  {
 
     time.start();
 
-    //C.hlll(delta);
+    C.hlll(delta);
 
     time.stop();
 

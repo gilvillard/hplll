@@ -130,8 +130,9 @@ namespace hplll {
 	  A(i,j).randb(nbbits);
 	}  
 
-      for (int j=0; j<d; j++)
-	A(0,j).randb(nbbits+shift);
+      for (int i=0; i<m; i++)
+	for (int j=0; j<d; j++)
+	  A(i,j).randb(nbbits+shift);
 
     }  
 

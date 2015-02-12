@@ -76,7 +76,7 @@ int main(int argc, char *argv[])  {
   Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
 
   start=utime();
-  B.hlll(delta);
+  //B.hlll(delta);
   start=utime()-start;
     
   
@@ -86,8 +86,8 @@ int main(int argc, char *argv[])  {
   cout << "   nblov: " << B.nblov << endl; 
   
   start=utime();
-  //lehmer_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, 1, 800);
-  //lehmer_lll<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > (C, A, 1, 400);
+  //lehmer_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, 1, shift);
+  //lehmer_lll<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > (C, A, 1, shift);
   Lehmer_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, shift, delta);
  
   start=utime()-start;
@@ -100,16 +100,16 @@ int main(int argc, char *argv[])  {
   Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
   Btest.isreduced(delta-0.1);
 
-  /*
+  
   start=utime();
-  lllReduction(AT, delta, 0.5, LM_WRAPPER,FT_DEFAULT,0);
+  lllReduction(AT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
   start=utime()-start;
     
   cout << endl; 
   cout << "   bits = " << nbbits << endl;
   cout << "   dimension = " << d  << endl;
   cout << "   time fplll: " << start/1000 << " ms" << endl;
-  */
+  
   //transpose(A,AT);
   //Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Ctest(A,NO_TRANSFORM,DEF_REDUCTION);
   //Ctest.isreduced(delta);

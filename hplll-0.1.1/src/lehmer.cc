@@ -128,7 +128,7 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
     // Main Lehmer loop 
     // ----------------
 
-    Lattice<ZT, FT, MatrixZT, MatrixFT> Ct(A,TRANSFORM,DEF_REDUCTION,1);
+    Lattice<ZT, FT, MatrixZT, MatrixFT> Ct(A,TRANSFORM,DEF_REDUCTION,0);
     
     int s; // max global nb current shift 
 
@@ -151,6 +151,13 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
     ZZ_mat<ZT> TT;
     TT.resize(1,n);
 
+    // For fplll 
+    ZZ_mat<ZT> V;
+    V.resize(n,n);
+
+    ZZ_mat<ZT> AT;
+    AT.resize(n,m);
+   
     for (int row = m-1; row >= 0; row--) {
 
      
@@ -159,20 +166,38 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
 	current_shift[row]+=shifts[row][s];
 
 	// WITHOUT truncation test 
-	Ct.shift_assign(C, current_shift);
-	   
+	Ct.shift_assign(C, current_shift, shift);
+
+	transpose(AT,Ct.getbase());
+
+	for (i=0; i<n; i++) 
+	  for (j=0; j<n; j++) 
+	    V(i,j)=0;
+
+	for (i=0; i<n; i++) 
+	  V(i,i)=1;
+
+	lllReduction(AT, V, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+
+	transpose(U,V);
+
+	matprod_in(C,U);
+	
+
+	/* ** HPLLL 
 	Ct.hlll(delta);
 	  
-	cout << "Size of transform " << maxbitsize(Ct.getU()) << endl; 
-	//U = Ct.getU();
+	//cout << "Size of transform " << maxbitsize(Ct.getU()) << endl; 
+	U = Ct.getU();
 
-	//matprod_in(C,U);
+	matprod_in(C,U);
+	*/
 
       } // end on s - main Lehmer loop on the shifts 
     
     } // end loop on rows 
 
-    C=Ct.getbase();   
+    //C=Ct.getbase();   
   }
 
  
@@ -286,8 +311,8 @@ lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int d, int lsigma=0) {
       set(BL,B);
 
       // ICI 
-      cout << "------------- " << endl; 
-      cout << "Size of B " << maxbitsize(BL) << endl;
+      //cout << "------------- " << endl; 
+      //cout << "Size of B " << maxbitsize(BL) << endl;
 
       current_shift+=shifts[s];
       //cout << "current shift " << current_shift << endl; 
@@ -309,7 +334,7 @@ lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int d, int lsigma=0) {
       matprod_in(B,Bt.getU());
       
       // ICI 
-      cout << "Size of U " << maxbitsize(Bt.getU()) << endl;
+      //cout << "Size of U " << maxbitsize(Bt.getU()) << endl;
 
 
       //ICI 

@@ -1368,6 +1368,8 @@ void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long condbits)
 
   for (j=0; j<d; j++) {
     fp_norm(norm,R.getcol(j),n);
+
+ 
     for (i=0; i<n; i++) {
 
       bf.mul_2si(R(i,j),condbits+1);  // +1

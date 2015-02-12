@@ -30,7 +30,7 @@ namespace hplll {
 
 
 template<class ZT, class FT, class MatrixZT, class MatrixFT>
-class PLattice
+class SLattice
 {
  protected:
 
