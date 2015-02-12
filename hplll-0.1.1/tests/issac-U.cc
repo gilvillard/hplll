@@ -36,9 +36,6 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
-  typedef FP_NR<mpfr_t>   RT;
-  typedef Z_NR<mpz_t>  ZT;
-  
 
   // --------------------------------------------------------------------- 
   
@@ -96,6 +93,7 @@ int main(int argc, char *argv[])  {
     for (int k=0; k<K; k++)
       matprod_in(A,A);
 
+
     int s;
     s = maxbitsize(A);
 
@@ -132,7 +130,7 @@ int main(int argc, char *argv[])  {
 
     // !!! Cond détruit R, à refaire après 
     FP_NR<mpfr_t> cc;
-    cc=B.cond();
+    cc=B.lcond(ANY,bits,CHECK);
     Z_NR<mpz_t> ccond;
     ccond.set_f(cc);
 
@@ -186,12 +184,13 @@ int main(int argc, char *argv[])  {
 
     A = B.getbase();
 
+
     // ---------------------------------------
     // Approximate lattice 
     // -------------------
 
     
-    bits =  (long) (((double) cond +1) * rho);
+    bits = min( (long) (((double) cond) * rho), (long) maxbitsize(A));
     
 
     matrix<Z_NR<mpz_t> > RZ;
@@ -275,6 +274,17 @@ int main(int argc, char *argv[])  {
       Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(res2,NO_TRANSFORM,DEF_REDUCTION);
       T2.isreduced(llldelta-0.1);
 
+      T2.assign(res2);
+      // !!! Cond détruit R, à refaire après 
+      FP_NR<mpfr_t> ccc;
+      ccc=T2.lcond(ANY,bits,CHECK);
+      Z_NR<mpz_t> cccond;
+      cccond.set_f(ccc);
+
+      long compcond;
+      compcond = cccond.get_si();
+
+
     // FPLLL trunc  
     // -----------
     transpose(AT,A);
@@ -334,8 +344,8 @@ int main(int argc, char *argv[])  {
       transpose(res3,res2);
     }
 
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T3(res4,NO_TRANSFORM,DEF_REDUCTION);
-    T3.isreduced(llldelta-0.1);
+    //Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T3(res4,NO_TRANSFORM,DEF_REDUCTION);
+    //T3.isreduced(llldelta-0.1);
 
 
     // Direct reduction 
@@ -360,8 +370,8 @@ int main(int argc, char *argv[])  {
     TT.resize(n,n);
     transpose(TT,AT);
 
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T5(TT,NO_TRANSFORM,DEF_REDUCTION);
-    T5.isreduced(llldelta-0.1);
+    //Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T5(TT,NO_TRANSFORM,DEF_REDUCTION);
+    //T5.isreduced(llldelta-0.1);
 
     cout << " initial  total  size = " << maxbitsize(A) << endl; 
     cout << " truncated total size = " << maxbitsize(Rtrunc) << endl ;
@@ -369,7 +379,8 @@ int main(int argc, char *argv[])  {
     cout << " cond = " << cond <<   " height = " << height << endl;
     cout << " bits = " << bits << endl; 
     cout << " n = " << n << "    shift = " << shift << "    delta = " << llldelta << "  s = " << bits << endl; 
-     
+    cout << " computed cond = " << compcond <<  endl;
+
     cout << endl; 
 
     cout << "   preliminary time: " << prelimin/1000 << " ms" << endl << endl;

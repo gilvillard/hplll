@@ -153,9 +153,9 @@ namespace hplll {
    
       time.start();
 
-#ifdef _OPENMP
-#pragma omp parallel for shared(condbits)
-#endif 
+      //#ifdef _OPENMP
+      //#pragma omp parallel for
+      //#endif 
       
       for (k=0; k<S; k++) {   
 #ifdef _OPENMP	
@@ -261,9 +261,9 @@ namespace hplll {
 
       time.start();
 
-#ifdef _OPENMP
-#pragma omp parallel for 
-#endif 
+      //#ifdef _OPENMP
+      //#pragma omp parallel for 
+      //#endif 
       for (k=0; k<S-1; k++) {
 	//cout << "+++++++++++ Odd ++++++++++ " << endl; 
 	
@@ -372,9 +372,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec, bool refr
   // -------------------------
 
   //PPP  
-#ifdef _OPENMP
-#pragma omp parallel for shared (prec,refresh)
-#endif 
+  //#ifdef _OPENMP
+  //#pragma omp parallel for shared (prec,refresh)
+  //#endif 
 
   for (k=1; k<S ; k++) {
 
@@ -547,9 +547,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::odd_hsizereduce(int S, int prec)
   // -------------------------
 
   //PPP  
-#ifdef _OPENMP
-  #pragma omp parallel for shared (prec)
-#endif 
+  //#ifdef _OPENMP
+  //#pragma omp parallel for shared (prec)
+  //#endif 
 
 
   for (k=1; k<=S ; k++) {
@@ -889,9 +889,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::phouseholder(int S, int prec)
     int lb;
 
 
-#ifdef _OPENMP
-#pragma omp parallel for shared (prec,l)
-#endif 
+    //#ifdef _OPENMP
+    //#pragma omp parallel for shared (prec,l)
+    //#endif 
 
     for (lb=l+1; lb<S; lb++) {
 

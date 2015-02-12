@@ -1062,26 +1062,35 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(MatrixZT A) {
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
-Lattice<ZT,FT, MatrixZT, MatrixFT>::shift_assign(ZZ_mat<ZT> A, vector<int> shift) {
+Lattice<ZT,FT, MatrixZT, MatrixFT>::shift_assign(ZZ_mat<ZT> A, vector<int> shift, int sigma) {
 
   nblov = 0;
 
   if (lsize > 0) {
-
+    
     for (int i=0; i<lsize; i++) 
       for (int j=0; j<d; j++) 
 	B(i,j).mul_2si(L(i,j),shift[i]);
 
-
+    
   }
   else {
     for (int i=0; i<n; i++) 
       for (int j=0; j<d; j++) 
 	B(i,j).mul_2si(A(i,j),shift[i]);
+    
+    
+    int ll = size_in_bits(B(0,0));
+    
+    for (int i=0; i<n; i++)
+      for (int j=0; j<d; j++) 
+	B(i,j).mul_2si(B(i,j),sigma - ll + 8);
+    
   }
   
+
   // ICI TMP 
-  /*
+  /*  
   ZZ_mat<ZT> T;
   T.resize(n,d);
 
@@ -1103,14 +1112,14 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::shift_assign(ZZ_mat<ZT> A, vector<int> shift
 	    
     }
   
-  //cout << "lnorm " << " : " << lnorm << endl; 
+  cout << "lnorm " << " : " << lnorm << endl; 
   
   for (int i=0; i<n; i++)
     for (int j=0; j<d; j++) 
-      T(i,j).mul_2si(T(i,j),-lnorm+max(d,40)+8);
+      T(i,j).mul_2si(T(i,j),-lnorm+max(d,40)+20);
 
-  //print2maple(T,n,d);
-  //print2maple(B,n,d);
+  print2maple(T,n,d);
+  print2maple(B,n,d);
 
   for (int i=0; i<n; i++)
     for (int j=0; j<d; j++) 

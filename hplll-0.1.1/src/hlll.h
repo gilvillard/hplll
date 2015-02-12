@@ -142,7 +142,7 @@ public:
 
   void assign(MatrixZT A); 
 
-  void shift_assign(ZZ_mat<ZT> A,  vector<int> shift);
+  void shift_assign(ZZ_mat<ZT> A,  vector<int> shift, int sigma);
 
   void put(ZZ_mat<ZT> A, long upperdim, long t, long sigma=0); 
 

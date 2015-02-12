@@ -1300,6 +1300,8 @@ void set_f(matrix<Z_NR<mpz_t> >& B, MatrixPE<double, dpe_t> R, long condbits)
   mm=B(0,0);
 
   for (j=0; j<d; j++) {
+
+    
     fp_norm(norm,R.getcol(j),n);
     for (i=0; i<n; i++) {
 
