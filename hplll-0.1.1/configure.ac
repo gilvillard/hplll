@@ -20,8 +20,8 @@ CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
 CXXFLAGS=${CXXFLAGS:-$DEFAULT_CFLAGS}
 
 #AC_DISABLE_SHARED
-#LT_INIT GV Mar  8 avr 2014 14:29:48 CEST ci-dessous à la place cf fplll ??? 
-AC_PROG_LIBTOOL
+LT_INIT 
+#AC_PROG_LIBTOOL
 
 AC_PROG_INSTALL
 
@@ -30,13 +30,6 @@ AC_LANG([C++])
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_MAKE_SET
-
-#AC_ARG_WITH(fplll,
-   #[  --with-fplll=DIR          FPLLL install directory ], [
-     #CXXFLAGS="$CXXFLAGS -I$withval/include"
-     #LDFLAGS="$LDFLAGS -L$withval/lib"
-     #fplll_lib_path="$withval/lib"
-   #])
 
 AC_ARG_WITH(mpfr,
    [  --with-mpfr=DIR          MPFR install directory ], [
@@ -52,17 +45,11 @@ AC_ARG_WITH(gmp,
        gmp_lib_path="$withval/lib"
    ])
 
-#AC_ARG_WITH(ntl,
-   #[  --with-ntl=DIR          NTL install directory ], [
-     #CXXFLAGS="$CXXFLAGS -I$withval/include"
-     #LDFLAGS="$LDFLAGS -L$withval/lib"
-     #ntl_lib_path="$withval/lib"
-   #])
-
 
 # Checks for libraries.
 AC_CHECK_LIB(gmp, __gmpz_init, , [AC_MSG_ERROR(
 [GNU MP not found, see http://gmplib.org])])
+
 AC_CHECK_LIB(mpfr, mpfr_add, , [AC_MSG_ERROR(
 [MPFR not found, see http://www.mpfr.org])])
 
@@ -99,15 +86,6 @@ AC_CHECK_LIB(mpfr, mpfr_fms, , [AC_MSG_ERROR(
 LB_CHECK_FPLLL 
 
 LB_CHECK_NTL
-
-#AC_LANG(C++)
-#SAVED_LDFLAGS=$LDFLAGS
-#LDFLAGS="$LDFLAGS -lfplll" 
-#echo "checking for cputime in -lfplll... "  # -n or \c 
-#AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <fplll.h>]], [[cputime()]])],[AC_MSG_RESULT(checking for cputime in -lfplll... yes)],[AC_MSG_ERROR([FPLLL not found, see http://perso.ens-lyon.fr/damien.stehle/fplll])
-   #])
-#LDFLAGS=$SAVED_LDFLAGS
-# Ne va pas car enlève le lfplll, faire comme ci-dessous 
 
 
 AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile macros/Makefile])
