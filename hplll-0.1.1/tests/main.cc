@@ -22,7 +22,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 #include "hlll.h"
-#include "matgen.h"
+#include "lehmer.cc"
+
+#include "tools.h"
 
 /* ***********************************************
 
@@ -36,69 +38,86 @@ int main(int argc, char *argv[])  {
   
   
   ZZ_mat<mpz_t> A; // For hpLLL 
-  ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
+  ZZ_mat<mpz_t> C; // For Lehmer
+  ZZ_mat<mpz_t> AT;  // fpLLL  
 
   // ---------------------------------------------------------------------
-
-  int n,d;
-  double delta;
-
-  command_line_basis(A, n, d, delta, argc, argv); 
-
-  AT.resize(d,n);
-  transpose(AT,A);
-
-    int start,startsec;
-
-    Timer time;
-
-    cout << "--------------  HLLL" << endl << endl; 
-    start=utime();
-    startsec=utimesec();
-   
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
-
-    time.start();
-    B.hlll(delta);
-    time.stop();
-
-    start=utime()-start;
-    startsec=utimesec()-startsec;
+  { 
   
+  int d=8;
+  int nbbits=100;
+  int shift = 0;
+  double delta = 0.75;
+
+
+    PARSE_MAIN_ARGS {
+      MATCH_MAIN_ARGID("-d",d);
+      MATCH_MAIN_ARGID("-bits",nbbits);
+      MATCH_MAIN_ARGID("-shift",shift);
+      MATCH_MAIN_ARGID("-delta",delta);
+      SYNTAX();
+    }
+
+
+
+  int start;
+
+ 
+
+  A.resize(d+1,d); 
+  AT.resize(d,d+1);  
+  AT.gen_intrel(nbbits);
+  transpose(A,AT);
+
+  //print2maple(A,d+1,d);
+
+
+  //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
+  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
+
+  start=utime();
+  //B.hlll(delta);
+  start=utime()-start;
     
-    cout << "   dimension = " << d  << endl;
-    cout << "   time A: " << start/1000 << " ms" << endl;
-    cout << "   time : " << time  << endl;
-    
-
-
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-    T1.isreduced(delta-0.1);
-
-    cout << endl; 
-
-    cout << "--------------  FPLLL" << endl << endl; 
-    transpose(AT,A);
-
-    start=utime();
-    startsec=utimesec();
-    time.start();
-    lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
-    time.stop();
-    start=utime()-start;
-    startsec=utimesec()-startsec;
   
+  cout << "   bits = " << nbbits << endl;
+  cout << "   dimension = " << d  << endl;
+  cout << "   time hplll: " << start/1000 << " ms" << endl;
+  cout << "   nblov: " << B.nblov << endl; 
+  
+  start=utime();
+  //lehmer_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, 1, shift);
+  //lehmer_lll<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > (C, A, 1, shift);
+  //Lehmer_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, shift, delta);
+  Lehmer_lll<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > (C, A, shift, delta);
+ 
+  start=utime()-start;
+
+  cout << endl; 
+  cout << "   dimension = " << d  << endl;
+  cout << "   time lehmer: " << start/1000 << " ms" << endl;
+
+  
+  Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
+  Btest.isreduced(delta-0.1);
+
+  
+  start=utime();
+  lllReduction(AT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+  start=utime()-start;
     
-    cout << "   dimension = " << d  << endl;
-    cout << "   time B: " << start/1000 << " ms" << endl;
-    cout << "   time B: " << time << endl;
+  cout << endl; 
+  cout << "   bits = " << nbbits << endl;
+  cout << "   dimension = " << d  << endl;
+  cout << "   time fplll: " << start/1000 << " ms" << endl;
+  
+  //transpose(A,AT);
+  //Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Ctest(A,NO_TRANSFORM,DEF_REDUCTION);
+  //Ctest.isreduced(delta);
+  
 
-    transpose(A,AT);
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
-    T2.isreduced(delta-0.1);
+  } 
 
-
-    //print2maple(T2.getbase(),n,d);
  
   return 0;
 }

@@ -10,11 +10,10 @@ check_PROGRAMS = arithmetic  hllltest relationstest nullspacetest
 
 noinst_PROGRAMS= main 
 
-
 #INCLUDES = -I$(top_srcdir)/src 
 
 #Mis déjà dans le configure 
-LDADD =  -lfplll  #$(top_srcdir)/src/libhplll.la
+#LDADD =  -lfplll  
 
 main_SOURCES=main.cc 
 
