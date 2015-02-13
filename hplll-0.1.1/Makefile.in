@@ -90,10 +90,13 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/macros/fplll-check.m4 \
+	$(top_srcdir)/macros/libtool.m4 \
+	$(top_srcdir)/macros/ltoptions.m4 \
+	$(top_srcdir)/macros/ltsugar.m4 \
+	$(top_srcdir)/macros/ltversion.m4 \
+	$(top_srcdir)/macros/lt~obsolete.m4 \
+	$(top_srcdir)/macros/ntl-check.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -359,9 +362,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = gnu
-
-#ACLOCAL_AMFLAGS= -I m4
-SUBDIRS = src  tests 
+ACLOCAL_AMFLAGS = -I macros
+SUBDIRS = src  tests macros 
 nobase_dist_doc_DATA = COPYING.LESSER 
 include_hpllldir = $(includedir)/hplll
 AM_CXXFLAGS = -I $(srcdir)
