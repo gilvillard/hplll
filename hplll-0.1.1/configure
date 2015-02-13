@@ -632,6 +632,10 @@ ac_includes_default="\
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
+HPLLL_HAVE_NTL_FALSE
+HPLLL_HAVE_NTL_TRUE
+HPLLL_HAVE_FPLLL_FALSE
+HPLLL_HAVE_FPLLL_TRUE
 LIBOBJS
 POW_LIB
 CXXCPP
@@ -770,11 +774,11 @@ enable_dependency_tracking
 with_gnu_ld
 with_sysroot
 enable_libtool_lock
-with_fplll
 with_mpfr
 with_gmp
-with_ntl
 enable_omp
+with_fplll
+with_ntl
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1434,10 +1438,22 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot[=DIR]    Search for dependent libraries within DIR (or the
                           compiler's sysroot if not specified).
-  --with-fplll=DIR          FPLLL install directory
   --with-mpfr=DIR          MPFR install directory
   --with-gmp=DIR          GMP install directory
-  --with-ntl=DIR          NTL install directory
+  --with-fplll=<path>|yes The FPLLL library is mandatory. If argument is yes
+                          or <empty> that means the library is reachable with
+                          the standard search path "/usr" or "/usr/local" (set
+                          as default). Otherwise you give the <path> to the
+                          directory which contain the library.
+  --with-ntl=<path>|yes|no
+                          Use NTL library. If argument is no, you do not have
+                          the library installed on your machine, and no check
+                          is done. Nothing specified : check done by default
+                          with no warning. If argument is yes or <empty> that
+                          means the library should be reachable with the
+                          standard search path (/usr or /usr/local). Otherwise
+                          you give the <path> to the directory which contain
+                          the library.
 
 Some influential environment variables:
   CC          C compiler command
@@ -16702,16 +16718,12 @@ $as_echo "no" >&6; }
 fi
 
 
-
-# Check whether --with-fplll was given.
-if test "${with_fplll+set}" = set; then :
-  withval=$with_fplll;
-     CXXFLAGS="$CXXFLAGS -I$withval/include"
-     LDFLAGS="$LDFLAGS -L$withval/lib"
-     fplll_lib_path="$withval/lib"
-
-fi
-
+#AC_ARG_WITH(fplll,
+   #[  --with-fplll=DIR          FPLLL install directory ], [
+     #CXXFLAGS="$CXXFLAGS -I$withval/include"
+     #LDFLAGS="$LDFLAGS -L$withval/lib"
+     #fplll_lib_path="$withval/lib"
+   #])
 
 
 # Check whether --with-mpfr was given.
@@ -16735,16 +16747,12 @@ if test "${with_gmp+set}" = set; then :
 fi
 
 
-
-# Check whether --with-ntl was given.
-if test "${with_ntl+set}" = set; then :
-  withval=$with_ntl;
-     CXXFLAGS="$CXXFLAGS -I$withval/include"
-     LDFLAGS="$LDFLAGS -L$withval/lib"
-     ntl_lib_path="$withval/lib"
-
-fi
-
+#AC_ARG_WITH(ntl,
+   #[  --with-ntl=DIR          NTL install directory ], [
+     #CXXFLAGS="$CXXFLAGS -I$withval/include"
+     #LDFLAGS="$LDFLAGS -L$withval/lib"
+     #ntl_lib_path="$withval/lib"
+   #])
 
 
 # Checks for libraries.
@@ -17469,83 +17477,360 @@ else
 fi
 
 
-ac_ext=cpp
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-SAVED_LDFLAGS=$LDFLAGS
-LDFLAGS="$LDFLAGS -lfplll"
-#echo "checking for cputime in -lfplll... "  # -n or \c
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+
+
+# Check whether --with-fplll was given.
+if test "${with_fplll+set}" = set; then :
+  withval=$with_fplll; if test "$withval" = yes ; then
+			FPLLL_HOME_PATH="/usr /usr/local"
+	      elif test "$withval" != no ; then
+			FPLLL_HOME_PATH="$withval /usr /usr/local"
+	     fi
+else
+  FPLLL_HOME_PATH="/usr /usr/local"
+fi
+
+
+# TO SEE FOR VERSION testing if needed (see e.g. test NTL)
+
+min_fplll_version=4.0
+
+BACKUP_CXXFLAGS=${CXXFLAGS}
+BACKUP_LIBS=${LDFLAGS}
+
+if test -n "$FPLLL_HOME_PATH"; then
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for fplll" >&5
+$as_echo_n "checking for fplll... " >&6; }
+fi
+
+for FPLLL_HOME in ${FPLLL_HOME_PATH}
+ do
+if test -r "$FPLLL_HOME/include/fplll/defs.h"; then
+
+	if test "x$FPLLL_HOME" != "x/usr" -a "x$FPLLL_HOME" != "x/usr/local"; then
+		FPLLL_CFLAGS="-I${FPLLL_HOME}/include"
+		FPLLL_LIBS="-L${FPLLL_HOME}/lib -lfplll"
+	else
+		FPLLL_CFLAGS=
+		FPLLL_LIBS="-lfplll"
+	fi
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${FPLLL_CFLAGS}"
+	LDFLAGS="${BACKUP_LIBS} ${FPLLL_LIBS}"
+
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <fplll.h>
 int
 main ()
 {
-cputime()
+FP_NR<double> x;
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking for cputime in -lfplll... yes" >&5
-$as_echo "checking for cputime in -lfplll... yes" >&6; }
+
+	if test "$cross_compiling" = yes; then :
+
+	fplll_found="yes"
+	fplll_cross="yes"
+	break
+
 else
-  as_fn_error $? "FPLLL not found, see http://perso.ens-lyon.fr/damien.stehle/fplll" "$LINENO" 5
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <fplll.h>
+	int main () { FP_NR<double> x; x=1.0; return 0;}
+
+_ACEOF
+if ac_fn_cxx_try_run "$LINENO"; then :
+
+	fplll_found="yes"
+	break
+
+else
+
+	fplll_problem="$problem $FPLLL_HOME"
+	unset FPLLL_CFLAGS
+	unset FPLLL_LIBS
+
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+
+else
+
+	fplll_found="no"
+	fplll_checked="$checked $FPLLL_HOME"
+	unset FPLLL_CFLAGS
+	unset FPLLL_LIBS
 
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
-LDFLAGS=$SAVED_LDFLAGS
-# Ne va pas car enlève le lfplll, faire comme ci-dessous
+else
+	fplll_found="no"
+fi
+done
+
+if test "x$fplll_found" = "xyes" ; then
+
+	unset FPLLL_CFLAGS
+	unset FPLLL_LIBS
+
+        LIBS="${LIBS} -lfplll"
 
 
-ac_ext=cpp
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-SAVED_LDFLAGS=$LDFLAGS
-LDFLAGS="$LDFLAGS -lntl"
-#echo "checking for to_long in -lntl... "  # -n or \c
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+
+
+
+
+$as_echo "#define HAVE_FPLLL 1" >>confdefs.h
+
+	HAVE_FPLLL=yes
+	if test "x$fplll_cross" != "xyes"; then
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: unknown" >&5
+$as_echo "unknown" >&6; }
+		echo "WARNING: You appear to be cross compiling, so there is no way to determine"
+		echo "whether your FPLLL version is new enough. I am assuming it is."
+	fi
+	:
+elif test -n "$fplll_problem"; then
+
+        CXXFLAGS=${BACKUP_CXXFLAGS}
+        LDFLAGS=${BACKUP_LIBS}
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: problem" >&5
+$as_echo "problem" >&6; }
+	#echo "Sorry, your FPLLL version is too old. Disabling."
+	as_fn_error $? "Problem with fplll. fplll is mandatory for compiling hplll." "$LINENO" 5
+	:
+elif test   "x$fplll_found" = "xno";  then
+
+        CXXFLAGS=${BACKUP_CXXFLAGS}
+        LDFLAGS=${BACKUP_LIBS}
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: not found" >&5
+$as_echo "not found" >&6; }
+
+	# GV
+	as_fn_error $? "fplll was not found. fplll is mandatory for compiling hplll." "$LINENO" 5
+
+	if test "x$FPLLL_HOME" != "x/usr" -a "x$FPLLL_HOME" != "x/usr/local" ; then
+	as_fn_error $? "fplll was not found. fplll is mandatory for compiling hplll." "$LINENO" 5
+	fi
+	:
+fi
+
+
+
+ if test "x$HAVE_FPLLL" = "xyes"; then
+  HPLLL_HAVE_FPLLL_TRUE=
+  HPLLL_HAVE_FPLLL_FALSE='#'
+else
+  HPLLL_HAVE_FPLLL_TRUE='#'
+  HPLLL_HAVE_FPLLL_FALSE=
+fi
+
+
+
+
+
+
+
+
+# Check whether --with-ntl was given.
+if test "${with_ntl+set}" = set; then :
+  withval=$with_ntl; if test "$withval" = yes ; then
+			# The "/" bad trick for forcing the warning at the end
+			# to be modified
+			NTL_HOME_PATH="/usr /usr/local /"
+	      elif test "$withval" != no ; then
+			NTL_HOME_PATH="$withval /usr /usr/local /"
+	     fi
+else
+  NTL_HOME_PATH="/usr /usr/local"
+fi
+
+
+
+# ICI A VOIR VERSION
+min_ntl_version=5.0
+
+BACKUP_CXXFLAGS=${CXXFLAGS}
+BACKUP_LIBS=${LDFLAGS}
+
+if test -n "$NTL_HOME_PATH"; then
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for ntl" >&5
+$as_echo_n "checking for ntl... " >&6; }
+fi
+
+for NTL_HOME in ${NTL_HOME_PATH}
+ do
+if test -r "$NTL_HOME/include/NTL/ZZ.h"; then
+
+	if test "x$NTL_HOME" != "x/usr" -a "x$NTL_HOME" != "x/usr/local"; then
+		NTL_CFLAGS="-I${NTL_HOME}/include"
+		NTL_LIBS="-L${NTL_HOME}/lib -lntl"
+	else
+		NTL_CFLAGS=
+		NTL_LIBS="-lntl"
+	fi
+	#CXXFLAGS="${BACKUP_CXXFLAGS} ${NTL_CFLAGS} ${GMP_CFLAGS}"
+	# GV
+	CXXFLAGS="${BACKUP_CXXFLAGS} ${NTL_CFLAGS}"
+	#LDFLAGS="${BACKUP_LIBS} ${NTL_LIBS} ${GMP_LIBS}"
+	# GV
+	LDFLAGS="${BACKUP_LIBS} ${NTL_LIBS}"
+
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <NTL/tools.h>
+#include <NTL/ZZ.h>
 int
 main ()
 {
-NTL::to_long(2)
+NTL::ZZ a;
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
-  ntlok=yes
+
+	if test "$cross_compiling" = yes; then :
+
+	ntl_found="yes"
+	ntl_cross="yes"
+	break
+
 else
-  ntlok=no
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <NTL/version.h>
+	int main () { if (NTL_MAJOR_VERSION < 5) return -1; else return 0; }
+
+_ACEOF
+if ac_fn_cxx_try_run "$LINENO"; then :
+
+	ntl_found="yes"
+	break
+
+else
+
+	ntl_problem="$problem $NTL_HOME"
+	unset NTL_CFLAGS
+	unset NTL_LIBS
+
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+
+else
+
+	ntl_found="no"
+	ntl_checked="$checked $NTL_HOME"
+	unset NTL_CFLAGS
+	unset NTL_LIBS
+
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
-#AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <NTL/tools.h>]], [[NTL::to_long(2)]])],[AC_MSG_RESULT(checking for to_long in -lntl... yes)],[AC_MSG_WARN([NTL not found, see http://www.shoup.net/ntl]) ])
-
-if test "$ntlok" = "yes"; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking for to_long in -lntl... yes" >&5
-$as_echo "checking for to_long in -lntl... yes" >&6; }
 else
-    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: NTL not found, see http://www.shoup.net/ntl" >&5
-$as_echo "$as_me: WARNING: NTL not found, see http://www.shoup.net/ntl" >&2;}
+	ntl_found="no"
+fi
+done
+
+if test "x$ntl_found" = "xyes" ; then
+	#AC_SUBST(NTL_CFLAGS)
+	#AC_SUBST(NTL_LIBS)
+	# GV
+	unset NTL_CFLAGS
+	# GV
+	unset NTL_LIBS
+
+	# GV ??
+        LIBS="${LIBS} -lntl"
+
+
+	# GV ??
+
+
+	# GV ??
+
+
+
+$as_echo "#define HAVE_NTL 1" >>confdefs.h
+
+	HAVE_NTL=yes
+	if test "x$ntl_cross" != "xyes"; then
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: unknown" >&5
+$as_echo "unknown" >&6; }
+		echo "WARNING: You appear to be cross compiling, so there is no way to determine"
+		echo "whether your NTL version is new enough. I am assuming it is."
+	fi
+	:
+elif test -n "$ntl_problem"; then
+
+        CXXFLAGS=${BACKUP_CXXFLAGS}
+        LDFLAGS=${BACKUP_LIBS}
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: problem" >&5
+$as_echo "problem" >&6; }
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: ntl >= $min_ntl_version was not found. hplll may need the NTL namespace to be enabled." >&5
+$as_echo "$as_me: WARNING: ntl >= $min_ntl_version was not found. hplll may need the NTL namespace to be enabled." >&2;}
+	#echo "Sorry, your NTL version is too old. Disabling."
+	:
+elif test   "x$ntl_found" = "xno";  then
+
+        CXXFLAGS=${BACKUP_CXXFLAGS}
+        LDFLAGS=${BACKUP_LIBS}
+
+        # Result by default search, hence no warning
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        # Result for yes, hence warning
+	if test "x$NTL_HOME" != "x/usr" -a "x$NTL_HOME" != "x/usr/local" ; then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: ntl >= $min_ntl_version was not found. hplll may need the NTL namespace to be enabled." >&5
+$as_echo "$as_me: WARNING: ntl >= $min_ntl_version was not found. hplll may need the NTL namespace to be enabled." >&2;}
+	fi
+	:
 fi
 
-if test "$ntlok" = "no"; then
-    LDFLAGS=$SAVED_LDFLAGS
+
+
+ if test "x$HAVE_NTL" = "xyes"; then
+  HPLLL_HAVE_NTL_TRUE=
+  HPLLL_HAVE_NTL_FALSE='#'
+else
+  HPLLL_HAVE_NTL_TRUE='#'
+  HPLLL_HAVE_NTL_FALSE=
 fi
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile tests/Makefile"
+
+#AC_LANG(C++)
+#SAVED_LDFLAGS=$LDFLAGS
+#LDFLAGS="$LDFLAGS -lfplll"
+#echo "checking for cputime in -lfplll... "  # -n or \c
+#AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <fplll.h>]], [[cputime()]])],[AC_MSG_RESULT(checking for cputime in -lfplll... yes)],[AC_MSG_ERROR([FPLLL not found, see http://perso.ens-lyon.fr/damien.stehle/fplll])
+   #])
+#LDFLAGS=$SAVED_LDFLAGS
+# Ne va pas car enlève le lfplll, faire comme ci-dessous
+
+
+ac_config_files="$ac_config_files Makefile src/Makefile tests/Makefile macros/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -17690,6 +17975,14 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HPLLL_HAVE_FPLLL_TRUE}" && test -z "${HPLLL_HAVE_FPLLL_FALSE}"; then
+  as_fn_error $? "conditional \"HPLLL_HAVE_FPLLL\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HPLLL_HAVE_NTL_TRUE}" && test -z "${HPLLL_HAVE_NTL_FALSE}"; then
+  as_fn_error $? "conditional \"HPLLL_HAVE_NTL\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
@@ -18669,6 +18962,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
+    "macros/Makefile") CONFIG_FILES="$CONFIG_FILES macros/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

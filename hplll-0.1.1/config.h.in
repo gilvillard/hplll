@@ -9,6 +9,9 @@
 /* Define to 1 if you have the `floor' function. */
 #undef HAVE_FLOOR
 
+/* Define if FPLLL is installed */
+#undef HAVE_FPLLL
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -29,6 +32,9 @@
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
+
+/* Define if NTL is installed */
+#undef HAVE_NTL
 
 /* Define to 1 if you have the `pow' function. */
 #undef HAVE_POW
