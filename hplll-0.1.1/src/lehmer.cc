@@ -168,6 +168,7 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
 	// WITHOUT truncation test 
 	Ct.shift_assign(C, current_shift, shift);
 
+	
 	transpose(AT,Ct.getbase());
 
 	for (i=0; i<n; i++) 
@@ -183,7 +184,14 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
 
 	matprod_in(C,U);
 	
+	cout << "********************" << endl << endl;
 
+	transpose(T,AT);
+	print2maple(T,m,n);
+
+	print2maple(C,m,n);
+
+	
 	/* ** HPLLL 
 	Ct.hlll(delta);
 	  

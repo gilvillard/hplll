@@ -1082,9 +1082,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::shift_assign(ZZ_mat<ZT> A, vector<int> shift
     
     int ll = size_in_bits(B(0,0));
     
-    for (int i=0; i<n; i++)
-      for (int j=0; j<d; j++) 
-	B(i,j).mul_2si(B(i,j),sigma - ll + 8);
+    //for (int i=0; i<n; i++)
+    //for (int j=0; j<d; j++) 
+    //	B(i,j).mul_2si(B(i,j),sigma - ll + 8);
     
   }
   
