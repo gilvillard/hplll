@@ -3177,7 +3177,6 @@ CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
 CXXFLAGS=${CXXFLAGS:-$DEFAULT_CFLAGS}
 
 #AC_DISABLE_SHARED
-#LT_INIT GV Mar  8 avr 2014 14:29:48 CEST ci-dessous à la place cf fplll ???
 case `pwd` in
   *\ * | *\	*)
     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Libtool does not cope well with whitespace in \`pwd\`" >&5
@@ -12218,7 +12217,8 @@ CC=$lt_save_CC
 
 # Only expand once:
 
-
+ GV Mar  8 avr 2014 14:29:48 CEST ci-dessous à la place cf fplll ???
+#AC_PROG_LIBTOOL
 
 
 
@@ -16718,13 +16718,6 @@ $as_echo "no" >&6; }
 fi
 
 
-#AC_ARG_WITH(fplll,
-   #[  --with-fplll=DIR          FPLLL install directory ], [
-     #CXXFLAGS="$CXXFLAGS -I$withval/include"
-     #LDFLAGS="$LDFLAGS -L$withval/lib"
-     #fplll_lib_path="$withval/lib"
-   #])
-
 
 # Check whether --with-mpfr was given.
 if test "${with_mpfr+set}" = set; then :
@@ -16746,13 +16739,6 @@ if test "${with_gmp+set}" = set; then :
 
 fi
 
-
-#AC_ARG_WITH(ntl,
-   #[  --with-ntl=DIR          NTL install directory ], [
-     #CXXFLAGS="$CXXFLAGS -I$withval/include"
-     #LDFLAGS="$LDFLAGS -L$withval/lib"
-     #ntl_lib_path="$withval/lib"
-   #])
 
 
 # Checks for libraries.
@@ -16802,6 +16788,7 @@ _ACEOF
 else
   as_fn_error $? "GNU MP not found, see http://gmplib.org" "$LINENO" 5
 fi
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for mpfr_add in -lmpfr" >&5
 $as_echo_n "checking for mpfr_add in -lmpfr... " >&6; }
@@ -17819,15 +17806,6 @@ fi
 
 
 
-
-#AC_LANG(C++)
-#SAVED_LDFLAGS=$LDFLAGS
-#LDFLAGS="$LDFLAGS -lfplll"
-#echo "checking for cputime in -lfplll... "  # -n or \c
-#AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <fplll.h>]], [[cputime()]])],[AC_MSG_RESULT(checking for cputime in -lfplll... yes)],[AC_MSG_ERROR([FPLLL not found, see http://perso.ens-lyon.fr/damien.stehle/fplll])
-   #])
-#LDFLAGS=$SAVED_LDFLAGS
-# Ne va pas car enlève le lfplll, faire comme ci-dessous
 
 
 ac_config_files="$ac_config_files Makefile src/Makefile tests/Makefile macros/Makefile"
