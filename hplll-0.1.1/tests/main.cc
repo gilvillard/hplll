@@ -47,6 +47,7 @@ int main(int argc, char *argv[])  {
   int d=8;
   int nbbits=100;
   int shift = 0;
+  int alpha = 0;
   double delta = 0.75;
 
 
@@ -54,15 +55,14 @@ int main(int argc, char *argv[])  {
       MATCH_MAIN_ARGID("-d",d);
       MATCH_MAIN_ARGID("-bits",nbbits);
       MATCH_MAIN_ARGID("-shift",shift);
+      MATCH_MAIN_ARGID("-alpha",shift);
       MATCH_MAIN_ARGID("-delta",delta);
       SYNTAX();
     }
 
 
 
-  int start;
-
- 
+  int start; 
 
   A.resize(d+1,d); 
   AT.resize(d,d+1);  
@@ -71,25 +71,18 @@ int main(int argc, char *argv[])  {
 
   //print2maple(A,d+1,d);
 
+  
+  ZZ_mat<mpz_t> A_up;
+  A_up.resize(1,d); 
 
-  //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
-  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
-
-  start=utime();
-  //B.hlll(delta);
-  start=utime()-start;
+  for (int j=0; j<d; j++)
+    A_up(0,j)=A(0,j);
+  
+  
     
-  
-  cout << "   bits = " << nbbits << endl;
-  cout << "   dimension = " << d  << endl;
-  cout << "   time hplll: " << start/1000 << " ms" << endl;
-  cout << "   nblov: " << B.nblov << endl; 
-  
   start=utime();
-  //lehmer_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, 1, shift);
-  //lehmer_lll<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > (C, A, 1, shift);
-  //Lehmer_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, shift, delta);
-  Lehmer_lll<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > (C, A, shift, delta);
+
+  lift_lll<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > (C, A_up, shift, alpha, delta);
  
   start=utime()-start;
 
@@ -98,9 +91,11 @@ int main(int argc, char *argv[])  {
   cout << "   time lehmer: " << start/1000 << " ms" << endl;
 
   
-  Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
-  Btest.isreduced(delta-0.1);
+  //Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
+  //Btest.isreduced(delta-0.1);
 
+  // FPLLL
+  // -----
   
   start=utime();
   lllReduction(AT, delta, 0.51, LM_FAST,FT_DEFAULT,0);

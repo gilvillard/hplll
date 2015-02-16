@@ -25,11 +25,10 @@ relationstest_SOURCES=relationstest.cc
 
 nullspacetest_SOURCES=nullspacetest.cc 
 
+#./relationstest ./nullspacetest 
 
 check : 
 	./arithmetic 
 	./hllltest
-	./relationstest
-	./nullspacetest 
 
 

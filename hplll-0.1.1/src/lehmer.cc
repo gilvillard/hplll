@@ -33,6 +33,34 @@ using namespace hplll;
 
 /* ***********************************************
 
+   Lift LLL algorithm 
+
+
+   ********************************************** */
+
+// TO DO method lll
+// Avec truncation 
+
+template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
+lift_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, int alpha=0, double delta=0.99) { 
+
+  int d,n;
+
+  d=A.getRows();
+  n=A.getCols();
+  
+  print2maple(A,d,n);
+
+
+
+  return 0;
+  
+
+} 
+
+
+/* ***********************************************
+
    Generalized Lehmer LLL  
 
    m x n  input matrix 
@@ -157,7 +185,9 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
 
     ZZ_mat<ZT> AT;
     AT.resize(n,m);
-   
+
+    cout << "********** " << nbshifts << endl; 
+    
     for (int row = m-1; row >= 0; row--) {
 
      
@@ -168,6 +198,7 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
 	// WITHOUT truncation test 
 	Ct.shift_assign(C, current_shift, shift);
 
+	//print2maple(Ct.getbase(),m,n);
 	
 	transpose(AT,Ct.getbase());
 
@@ -184,12 +215,12 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
 
 	matprod_in(C,U);
 	
-	cout << "********************" << endl << endl;
+	//cout << "********************" << endl << endl;
 
 	transpose(T,AT);
-	print2maple(T,m,n);
+	//	print2maple(T,m,n);
 
-	print2maple(C,m,n);
+	//print2maple(C,m,n);
 
 	
 	/* ** HPLLL 
