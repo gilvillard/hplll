@@ -55,7 +55,7 @@ int main(int argc, char *argv[])  {
       MATCH_MAIN_ARGID("-d",d);
       MATCH_MAIN_ARGID("-bits",nbbits);
       MATCH_MAIN_ARGID("-shift",shift);
-      MATCH_MAIN_ARGID("-alpha",shift);
+      MATCH_MAIN_ARGID("-alpha",alpha);
       MATCH_MAIN_ARGID("-delta",delta);
       SYNTAX();
     }
@@ -77,13 +77,13 @@ int main(int argc, char *argv[])  {
 
   for (int j=0; j<d; j++)
     A_up(0,j)=A(0,j);
-  
-  
     
   start=utime();
 
-  lift_lll<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > (C, A_up, shift, alpha, delta);
- 
+  //lift_lll<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > (C, A_up, shift, alpha, delta);
+  lift_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C, A_up, shift, alpha, delta);
+
+  
   start=utime()-start;
 
   cout << endl; 
@@ -91,8 +91,8 @@ int main(int argc, char *argv[])  {
   cout << "   time lehmer: " << start/1000 << " ms" << endl;
 
   
-  //Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
-  //Btest.isreduced(delta-0.1);
+  Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
+  Btest.isreduced(delta-0.1);
 
   // FPLLL
   // -----
