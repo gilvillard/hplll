@@ -45,6 +45,8 @@ class Lattice
 
   MatrixZT U;
 
+  MatrixZT L;
+
   int n,d; 
 
   bool transf;
@@ -121,11 +123,12 @@ public:
 
   ZZ_mat<ZT> getU();
 
-  
+  ZZ_mat<ZT> getL();
+
   // Not MatrixFT for the exp case 
   matrix<FP_NR<FT> > getR(); 
 
-  Lattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0); 
+  Lattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0, int lehmer_size=0); 
 
   Lattice(matrix<FP_NR<mpfr_t> > F, ZZ_mat<ZT> A, bool forU, int reduction_method);
 
@@ -139,6 +142,8 @@ public:
 
   void assign(MatrixZT A); 
 
+  void lift(int shift);
+  
   void shift_assign(ZZ_mat<ZT> A,  vector<int> shift, int sigma);
 
   void put(ZZ_mat<ZT> A, long upperdim, long t, long sigma=0); 

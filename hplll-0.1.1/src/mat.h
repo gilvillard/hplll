@@ -198,6 +198,15 @@ public:
  }
 
   // Assumed to replace the whole column 
+  inline void setcol(int j, Z_NR<long>* b, int beg, int l) {
+
+    for (int i=beg; i<beg+l; i++) 
+      set_z(M[j][i],b[i]);
+
+ }
+
+  
+  // Assumed to replace the whole column 
   inline void setcol(int j, FP_NR<mpfr_t>* b, int beg, int l) {
     
     for (int i=beg; i<beg+l; i++) 
@@ -986,10 +995,12 @@ cout << "Matrix([";
  for (int i=0;i<n;i++) {
     cout << "[";
     for (int j=0;j<d-1;j++) {
-      B[i][j].print();
+      //B[i][j].print();
+      cout << B[i][j];
       cout << ", ";
     }
-    B[i][d-1].print();
+    //B[i][d-1].print();
+    cout << B[i][d-1];
     if (i<n-1) cout << "  ],\n"; else  cout << "  ]\n";
  }
   cout << "]);" << endl;

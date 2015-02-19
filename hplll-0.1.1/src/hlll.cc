@@ -161,6 +161,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	B.colswap(kappa-1,kappa);
 	
 	if (transf) U.colswap(kappa-1,kappa);
+	if (lsize > 0) L.colswap(kappa-1,kappa);
 
 	Bfp.colswap(kappa-1,kappa);
 
@@ -303,6 +304,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	      
 	      if (transf) 
 		U.subcol(kappa,i,min(d,nmax));
+
+	      if (lsize > 0) 
+		L.subcol(kappa,i,lsize);
 	      
 	    } 
 	    else if (lx == -1) {
@@ -316,6 +320,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	      if (transf) 
 		U.addcol(kappa,i,min(d,nmax));
 
+	      if (lsize > 0) 
+		L.addcol(kappa,i,lsize);
+
 	    } 
 	    else { 
  
@@ -328,6 +335,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	      if (transf) 
 		U.addmulcol_si(kappa,i,-lx,min(d,nmax));
 
+	      if (lsize > 0) 
+		L.addmulcol_si(kappa,i,-lx,lsize);
 	    } 
 	    
 	  } // end expo == 0 
@@ -343,6 +352,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 	    if (transf)  
 	      U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+
+	    if (lsize >0)  
+	      L.addmulcol_si_2exp(kappa,i,-lx,expo,lsize);
 
 	  } // end expo <> 0 
 	} // Non zero combination 
@@ -462,6 +474,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 		
 	    if (transf) 
 	      U.subcol(kappa,i,min(d,nmax));
+
+	    if (lsize > 0) 
+	      L.subcol(kappa,i,lsize);
 	
 	  } 
 	  else if (lx == -1) {
@@ -475,6 +490,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	    if (transf) 
 	      U.addcol(kappa,i,min(d,nmax));
 
+	    if (lsize > 0) 
+	      L.addcol(kappa,i,lsize);
+
 	  } 
 	  else { 
  
@@ -487,6 +505,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
 	    if (transf) 
 	      U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+
+	    if (lsize >0) 
+	      L.addmulcol_si(kappa,i,-lx,lsize);
 
 	  } 
   
@@ -505,6 +526,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	  if (transf)  
 	    U.submulcol(kappa,i,xz,min(d,nmax));
 	    //U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+
+	  if (lsize > 0)  
+	    L.addmulcol_si_2exp(kappa,i,-lx,expo,lsize);
 
 	} // end expo <> 0 
 
@@ -821,7 +845,23 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> La
   }
 }
 
-  
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> Lattice<ZT,FT, MatrixZT, MatrixFT>::getL()
+{
+ 
+  if (lsize > 0) { 
+    ZZ_mat<ZT> LL(lsize,d); 
+    for (int i=0; i<lsize; i++) 
+      for (int j=0; j<d; j++) LL.Set(i,j,L.get(i,j)); // reprendre boucle sur les colonnes 
+    return LL;
+  }
+  else {
+    cout << "*** Error, HLLL, the Lehmer companion matrix has not been computed" << endl;
+    ZZ_mat<ZT> LL(0,0);
+    return LL;
+  }
+}
+
+
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline  matrix<FP_NR<FT> > Lattice<ZT,FT, MatrixZT, MatrixFT>::getR()
 {
   matrix<FP_NR<FT> >  RR(d,d);
@@ -886,7 +926,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>
-Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reduction_method) {
+Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reduction_method, int lehmer_size) {
  
   
   n=A.getRows();
@@ -910,6 +950,18 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reducti
   }
 
   nblov_max = 4294967295;
+  lsize = 0; // For other cases 
+
+  if (lehmer_size >0) {
+
+    lsize = lehmer_size;
+    L.resize(lsize,d);
+
+    for (i=0; i<lsize; i++) 
+      for (j=0; j<d; j++) 
+	L(i,j)=B(i,j);
+
+  }
 
   seysen_flag=reduction_method;
 
@@ -950,7 +1002,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR
     }
 
     nblov_max = 4294967295;
-    
+    lsize = 0; // For other cases 
+
     seysen_flag=reduction_method;
   
     matrix_structure(structure, B, A.getRowsRT(), A.getRowsZT(), d);
@@ -1007,67 +1060,64 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(MatrixZT A) {
   }
 }
 
+  
+  template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
+  Lattice<ZT,FT, MatrixZT, MatrixFT>::lift(int shift) {
+    
+    //nblov = 0;
+    
+    if (lsize > 0) {
+      
+      for (int i=0; i<lsize; i++) 
+	for (int j=0; j<d; j++) 
+	  B(i,j).mul_2si(L(i,j),shift);
+      
+      
+    }
 
+
+    // The following should be put ? 
+    //matrix_structure(structure, B, n,d);
+    //for (int i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
+    //for (int j=0; j<d; j++) kappamin[j]=-1;
+
+    if (transf) {
+      
+      U.resize(d,d);
+      for (int i=0; i<d; i++) U(i,i)=1; 
+      
+    }
+  
+  }
+
+  
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::shift_assign(ZZ_mat<ZT> A, vector<int> shift, int sigma) {
 
   nblov = 0;
 
-  
-  for (int i=0; i<n; i++) 
-    for (int j=0; j<d; j++) 
-      B(i,j).mul_2si(A(i,j),shift[i]);
-  
-  
-  // FOR THE TRUNCATION
-  // ------------------
-  //int ll = size_in_bits(B(0,0));
-  
-  //for (int i=0; i<n; i++)
-  //for (int j=0; j<d; j++) 
-  //	B(i,j).mul_2si(B(i,j),sigma - ll + 8);
- 
-  
-
-  // ICI TMP 
-  /*  
-  ZZ_mat<ZT> T;
-  T.resize(n,d);
-
-  for (int i=0; i<n; i++) 
-    for (int j=0; j<d; j++) 
-      T(i,j)=B(i,j);
-      
-  int lnorm=0;
-  Z_NR<ZT> norm;
-
-  
-  for(int j=0; j<d; j++)  {
+  if (lsize > 0) {
     
-    norm.mul(T(0,j),T(0,j));
-    for (int i=1; i<n; i++)
-      norm.addmul(T(i,j),T(i,j));
+    for (int i=0; i<lsize; i++) 
+      for (int j=0; j<d; j++) 
+	B(i,j).mul_2si(L(i,j),shift[i]);
+
     
-    lnorm = max(lnorm,size_in_bits(norm)/2);
-	    
-    }
+  }
+  else {
+    for (int i=0; i<n; i++) 
+      for (int j=0; j<d; j++) 
+	B(i,j).mul_2si(A(i,j),shift[i]);
+    
+    
+    //    int ll = size_in_bits(B(0,0));
+    
+    //for (int i=0; i<n; i++)
+    //for (int j=0; j<d; j++) 
+    //	B(i,j).mul_2si(B(i,j),sigma - ll + 8);
+    
+  }
   
-  cout << "lnorm " << " : " << lnorm << endl; 
-  
-  for (int i=0; i<n; i++)
-    for (int j=0; j<d; j++) 
-      T(i,j).mul_2si(T(i,j),-lnorm+max(d,40)+20);
-
-  print2maple(T,n,d);
-  print2maple(B,n,d);
-
-  for (int i=0; i<n; i++)
-    for (int j=0; j<d; j++) 
-    B(i,j)=T(i,j);
-  
-  //print2maple(T,n,d);
-  */
-
 
   matrix_structure(structure, B, n,d);
   for (int i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
