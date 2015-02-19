@@ -173,6 +173,10 @@ public:
   // Mise à jour de la colonne j à partir d'un vecteur de Z_NR<mpz_t>
   // On suppose qu'on remplace toute la colonne avec le nouvel exposant 
 
+  inline void setcol(int j, Z_NR<long>* b, int beg, int length);
+
+  inline void setcol(int j, Z_NR<double>* b, int beg, int length);
+  
   inline void setcol(int j, Z_NR<mpz_t>* b, int beg, int length);
 
   inline void setcol(int j, FP_NR<mpfr_t>* f, int beg, int length);
@@ -817,6 +821,54 @@ template<>  inline void MatrixPE<long double,ldpe_t>::setcol(int j, Z_NR<mpz_t>*
 };
 #endif 
 
+// Mise à jour de la colonne j à partir d'un vecteur de Z_NR<long> et Z_NR<double>
+// On suppose qu'on remplace toute la colonne
+// Faire pour long double
+
+// TODO better here simply cut and paste of above 
+ 
+template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, Z_NR<long>* b, int beg, int l) {  
+
+  if (l !=0) {
+    long maxexp=INT_MIN;
+    vector<long> tmpexp(beg+l);
+
+    for (int i=beg; i<beg+l; i++) {
+
+      M[j][i]=b[i].get_d_2exp (&tmpexp[i]);
+
+      maxexp=max(maxexp,tmpexp[i]);
+    }
+
+    exp[j]=maxexp;
+
+    for (int i=beg; i<beg+l; i++) {
+      M[j][i]=ldexp(M[j][i],tmpexp[i]-maxexp);
+    }
+  }
+};
+
+ template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, Z_NR<double>* b, int beg, int l) {  
+
+  if (l !=0) {
+    long maxexp=INT_MIN;
+    vector<long> tmpexp(beg+l);
+
+    for (int i=beg; i<beg+l; i++) {
+
+      M[j][i]=b[i].get_d_2exp (&tmpexp[i]);
+
+      maxexp=max(maxexp,tmpexp[i]);
+    }
+
+    exp[j]=maxexp;
+
+    for (int i=beg; i<beg+l; i++) {
+      M[j][i]=ldexp(M[j][i],tmpexp[i]-maxexp);
+    }
+  }
+};
+ 
 // Mise à jour de la colonne j à partir d'un vecteur de FP_NR<mpfr_t>
 // On suppose qu'on remplace toute la colonne 
 
