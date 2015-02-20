@@ -205,6 +205,13 @@ public:
 
  }
 
+  // Assumed to replace the whole column  
+  inline void setcol(int j, Z_NR<double>* b, int beg, int l) {
+
+    for (int i=beg; i<beg+l; i++) 
+      M[j][i].getData()=b[i].getData();
+
+ }
   
   // Assumed to replace the whole column 
   inline void setcol(int j, FP_NR<mpfr_t>* b, int beg, int l) {
