@@ -1075,6 +1075,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(MatrixZT A) {
       
     }
 
+    
 
     // The following should be put ? 
     //matrix_structure(structure, B, n,d);
@@ -1090,6 +1091,16 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(MatrixZT A) {
   
   }
 
+    
+template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::assignL(ZZ_mat<ZT> L_in) {
+
+  for (int i=0; i<lsize; i++) 
+    for (int j=0; j<d; j++) 
+      L(i,j)=L_in(i,j);
+      
+
+} 
   
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::shift_assign(ZZ_mat<ZT> A, vector<int> shift, int sigma) {
@@ -1759,20 +1770,30 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll_lift(double delta,  int shift, bool ver
 
   int S;
 
-  
+   
   
   // Main shift loop
   // ---------------
   for (S=0; S<shift; S+=1) {
 
+    for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
+    
     kappa=1;
     prevkappa=-1; // For the looping test betwenn tow indices
   
-    for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}  
+    //for (i=0; i<d; i++) {descendu[i]=0;}  
     
-    cout << "********** " << S-shift << endl;
+    //cout << "********** " << S-shift << endl;
     
     lift(S-shift+1);
+
+    // {
+    //   ZZ_mat<ZT> BT;
+    //   BT.resize(d,d+1);
+    //   transpose(BT,getbase());
+     
+    //   lllReduction(BT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+    // }
     
     //print2maple(getbase(),d+1,d);
     

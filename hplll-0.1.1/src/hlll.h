@@ -110,7 +110,8 @@ public:
 
   int hlll(double delta, bool verbose=false);
   int hlll_lift(double delta, int shift,  bool verbose=false);
- 
+
+  void assignL(ZZ_mat<ZT> L_in);
 
   unsigned int setprec(unsigned int prec);
   unsigned int getprec();

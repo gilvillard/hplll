@@ -65,7 +65,7 @@ lift_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, int alpha=0, double delta=0.9
    
   int nb_shifts = alpha/shift;
 
-  int last_shift = alpha%shift;
+  //int last_shift = alpha%shift;
     
   int s;
 
@@ -73,29 +73,90 @@ lift_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, int alpha=0, double delta=0.9
   
   int current_shift = -bitsize;
 
-  Lattice<ZT, FT, MatrixZT, MatrixFT> B(A_in,NO_TRANSFORM,DEF_REDUCTION,m);
+  Lattice<ZT, FT, MatrixZT, MatrixFT> B(A_in,TRANSFORM,DEF_REDUCTION,m);
 
   double moy=0.0;
   int oldnb=0;
   int maxnb=0;
 
-  MatrixZT  U;
-  U.resize(d,d);
-     
-  // Main loop on the shifts
-  // -----------------------
-  for (s=1; s <= nb_shifts; s++) {
+  Z_NR<ZT> t;
 
-   
+
+   ZZ_mat<double> Uf;
+   Uf.resize(d,d);
+
+   ZZ_mat<long int> U;
+   U.resize(d,d);
+
+
+   ZZ_mat<ZT> L;
+   L.resize(m,d);
+
+   // Main loop on the shifts
+   // -----------------------
+   for (s=1; s <= nb_shifts; s++) {
+
+    int start;
+    
     current_shift += shift;
 
+    start=utime();
+
+    for (i=0; i<m; i++) 
+      for (j=0; j<d; j++) 
+	L(i,j)=A_in(i,j);
+      
+
     
-     B.lift(current_shift);
+    ZZ_mat<double> T;
+    T.resize(d+1,d);
+     
+    for (i=0; i<m; i++) 
+      for (j=0; j<d; j++) {
+	t.mul_2si(A_in(i,j),current_shift);
+	T(i,j).getData()=t.get_d();
+      }
+        
+     for (i=0; i<d; i++)
+       for (j=0; j<d ; j++) 
+	 T(m+i,j).getData()=A_in(m+i,j).get_d(); // cf pb for assigning a double to Z_NR<double> 
 
-     B.hlll(delta);
+     start=utime()-start;
+     cout << "   time A: " << start/1000 << " ms" << endl;
 
+      start=utime();
 
+      //----------
+      
+     // Lattice<double, dpe_t,  matrix<Z_NR<double> >, MatrixPE<double, dpe_t> > Bp(T,TRANSFORM,DEF_REDUCTION,1);
+     Lattice<double, double,  matrix<Z_NR<double> >, matrix<FP_NR<double> > > Bp(T,TRANSFORM,DEF_REDUCTION,1);
+
+     Bp.hlll_lift(delta,shift);
+      
+     start=utime()-start;
+    cout << "   time B: " << start/1000 << " ms" << endl;
+    start=utime();
+
+    // ----------------
+    
+     Uf=Bp.getU();
+
+     for (i=0; i<d; i++)
+        for (j=0; j<d ; j++) 
+	  U(i,j).getData()=((long int) Uf(i,j).getData());
+
+     
+     //print2maple(U,d,d);
+     
+     matprod_in_si(A_in,U);
+
+     start=utime()-start;
+     cout << "   time C: " << start/1000 << " ms" << endl;
+
+     //print2maple(A_in,d+1,d);
           
+     cout << endl << "  size of U: " << maxbitsize(U,0,d,d)  << endl;
+     
      cout << "nblov: " << B.nblov-oldnb << "     max: " << maxnb << endl;
      maxnb=max(maxnb, ((int) B.nblov-oldnb));
      oldnb=B.nblov;
@@ -109,37 +170,37 @@ lift_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, int alpha=0, double delta=0.9
 
   // Last shift if needed
   // --------------------
-  if (last_shift > 0) {
+  // if (last_shift > 0) {
 
-    // Should be 0 
-    current_shift += last_shift;
+  //   // Should be 0 
+  //   current_shift += last_shift;
 
-    //cout << "***** " << current_shift << endl; 
+  //   //cout << "***** " << current_shift << endl; 
 
-    B.lift(current_shift);
+  //   B.lift(current_shift);
 
-    int start;
+  //   int start;
 
-    start = utime();
-    B.hlll(delta);
-    start = utime()-start;
-    cout << "   time: " << start/1000 << " ms" << endl;
+  //   start = utime();
+  //   B.hlll(delta);
+  //   start = utime()-start;
+  //   cout << "   time: " << start/1000 << " ms" << endl;
 
    
-    cout << "nblov: " << B.nblov-oldnb << "     max: " << maxnb << endl;
-     maxnb=max(maxnb, ((int) B.nblov-oldnb));
-    oldnb=B.nblov;
+  //   cout << "nblov: " << B.nblov-oldnb << "     max: " << maxnb << endl;
+  //    maxnb=max(maxnb, ((int) B.nblov-oldnb));
+  //   oldnb=B.nblov;
 
-    moy=((double) B.nblov)/((double) s);
+  //   moy=((double) B.nblov)/((double) s);
  
     
 
-  } 
+  // } 
 
   //print2maple(B.getbase(),m+d,d);
   
   cout << endl << "Total #swaps: " << B.nblov << "    Moyenne / d: " << ((int) moy/((double) d)) <<  endl; 
-  C=B.getbase();
+  C=A_in;
   
   return 0;
   
