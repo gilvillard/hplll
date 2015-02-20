@@ -1081,12 +1081,12 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(MatrixZT A) {
     //for (int i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
     //for (int j=0; j<d; j++) kappamin[j]=-1;
 
-    if (transf) {
+    //if (transf) {
       
-      U.resize(d,d);
-      for (int i=0; i<d; i++) U(i,i)=1; 
+    //U.resize(d,d);
+    //for (int i=0; i<d; i++) U(i,i)=1; 
       
-    }
+    //}
   
   }
 
@@ -1732,6 +1732,182 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
     return 0; 
 }
 
+
+  //********************************************************
+
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll_lift(double delta,  int shift, bool verbose) { 
+
+  
+  int kappa=1,i;
+  int prevkappa=-1; // For the looping test betwenn tow indices 
+  vector<FP_NR<FT> >  prevR(d);
+
+
+  FP_NR<FT> newt; //testaccu;
+
+  FP_NR<FT> deltab,lovtest;
+  deltab=delta;   // TO SEE 
+
+  FP_NR<FT> tmpswap;
+
+  FP_NR<FT> s,sn; // newt test 
+
+  int flag_reduce=0; // No convergence in reduce 
+
+
+  int S;
+
+  
+  
+  // Main shift loop
+  // ---------------
+  for (S=0; S<shift; S+=1) {
+
+    kappa=1;
+    prevkappa=-1; // For the looping test betwenn tow indices
+  
+    for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}  
+    
+    cout << "********** " << S-shift << endl;
+    
+    lift(S-shift+1);
+    
+    //print2maple(getbase(),d+1,d);
+    
+
+    // main LLL while loop
+    // -------------------
+    while ((kappa < d) && (nblov < nblov_max)) 
+      {
+
+	if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
+      
+	if (kappa == 1) { 
+	  for (i=0; i<d; i++) kappamin[i]=min(kappamin[i],0);
+	  householder_r(0);  
+	  householder_v(0);
+	
+	} 
+	else for (i=kappa+1; i<d; i++) kappamin[i]=min(kappamin[i],kappa); // lowest visit after kappa 
+
+      
+	if (descendu[kappa]>=1) {
+	
+	  if (seysen_flag == 0)
+	    flag_reduce=hsizereduce(kappa);   
+	  else 
+	    flag_reduce=seysenreduce(kappa); 
+	
+	}
+	else { 
+	
+	  if (seysen_flag == 0)
+	    flag_reduce=hsizereduce(kappa);   
+	  else 
+	    flag_reduce=seysenreduce(kappa); 
+	
+	}
+      
+	if (flag_reduce==-1) return(-1);
+      
+
+	//newt=normB2[kappa];  // The newt test was like that in old non exp 
+	//for (i=0; i<=kappa-2; i++) newt.submul(R.get(i,kappa),R.get(i,kappa));
+
+	lovtest.mul(R.get(kappa-1,kappa-1),R.get(kappa-1,kappa-1));
+	lovtest.mul(deltab,lovtest);
+
+	nblov+=1;
+    
+	fp_norm(s,R.getcol(kappa,kappa),structure[kappa]+1-kappa);
+	s.mul(s,s);
+	sn.mul(R.get(kappa-1,kappa),R.get(kappa-1,kappa));
+	newt.add(s,sn);
+ 
+
+	// ****************
+	//   UP    UP    UP 
+	// ****************
+    
+	if (lovtest <= newt) {
+
+	  /*if (verbose) {
+	    if (((kappa) < d) && (col_kept[kappa+1] == 0)) cout << "Discovering vector " 
+	    << kappa +1 << "/" << d 
+	    << " cputime=" << utimesec() -starttot << "sec" << endl; 
+	    }*/
+
+	
+	  householder_v(kappa);   // The first part of the orthogonalization is available 
+
+	  // Heuristique precision check : when R(kappa-1,kappa-1) increases in a 2x2 up and down  
+	  // ------------------------------------------------------------------------------------
+	  if (prevkappa==kappa+1) {  
+	    FP_NR<FT> t;
+	    t.abs(R.get(kappa,kappa));
+       
+	    if (t > prevR[kappa]) {
+	
+	      cout << " **** #tests = " << nblov << " **** Anomaly: the norm increases for kappa = " << kappa << endl;
+	 
+	      return -1;
+	    }
+
+	  }
+
+	
+
+	  descendu[kappa]=0;
+	  if (kappa==1) descendu[0]=0;
+	
+	  prevkappa=kappa; 
+	  prevR[kappa].abs(R.get(kappa,kappa)); 
+	
+	  kappa+=1; 
+
+
+
+	} // End up 
+
+	// ****************
+	//   DOWN   DOWN 
+	// ****************
+
+	else {
+
+	  if (kappa==1) descendu[0]=0 ;
+	  else descendu[kappa-1]=descendu[kappa]+1;
+	  descendu[kappa]=0;
+
+	  nbswaps+=1;
+       
+	  B.colswap(kappa-1,kappa);
+	
+	  if (transf) U.colswap(kappa-1,kappa);
+	  if (lsize > 0) L.colswap(kappa-1,kappa);
+
+	  Bfp.colswap(kappa-1,kappa);
+
+	  structure[kappa-1]=structure[kappa];
+
+	  VR.colswap(kappa-1,kappa);
+ 
+	  tmpswap=normB2[kappa];  normB2[kappa]=normB2[kappa-1]; normB2[kappa-1]=tmpswap;
+
+	  prevkappa=kappa; 
+	  kappa=max(kappa-1,1);  
+
+	}
+
+      } // End main LLL while loop 
+  
+  } // End shift loop
+  
+  return 0;
+  
+};
 
 
 

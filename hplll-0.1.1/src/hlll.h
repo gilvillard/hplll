@@ -109,7 +109,7 @@ public:
   int seysen_flag;
 
   int hlll(double delta, bool verbose=false);
-
+  int hlll_lift(double delta, int shift,  bool verbose=false);
  
 
   unsigned int setprec(unsigned int prec);

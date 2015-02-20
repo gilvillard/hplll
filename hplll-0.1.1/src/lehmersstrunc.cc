@@ -73,7 +73,7 @@ lift_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, int alpha=0, double delta=0.9
   
   int current_shift = -bitsize;
 
-  Lattice<ZT, FT, MatrixZT, MatrixFT> B(A_in,TRANSFORM,DEF_REDUCTION,m);
+  Lattice<ZT, FT, MatrixZT, MatrixFT> B(A_in,NO_TRANSFORM,DEF_REDUCTION,m);
 
   double moy=0.0;
   int oldnb=0;
@@ -92,38 +92,10 @@ lift_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, int alpha=0, double delta=0.9
     
      B.lift(current_shift);
 
-     ZZ_mat<mpz_t> BT;
-     BT.resize(d+1,d);
-     BT=B.getbase();
-     
-     ZZ_mat<double> T;
-     T.resize(d+1,d);
-  
-     for (int i=0; i<d+1; i++)
-       for (int j=0; j<d ; j++) 
-	 T(i,j).getData()=BT(i,j).get_d(); // cf pb for assigning a doubel to Z_NR<double> 
-
-     Lattice<double, dpe_t,  matrix<Z_NR<double> >, MatrixPE<double, dpe_t> > Bp(T,TRANSFORM,DEF_REDUCTION);
-
-     
-     int start1;
-     start1=utime();
      B.hlll(delta);
-     start1=utime()-start1;
-     
-     
-     int start2;
-     start2=utime();
-     Bp.hlll(delta);
-     start2=utime()-start2;
 
-     print2maple(B.getU(),d,d);
-     print2maple(Bp.getU(),d,d);
 
-     cout << "   time: " << start1/1000 << " ms" << "        time: " << start2/1000 << " ms" << endl;
-     
-     cout << endl << "  size of U: " << maxbitsize(B.getU())  << endl;
-     
+          
      cout << "nblov: " << B.nblov-oldnb << "     max: " << maxnb << endl;
      maxnb=max(maxnb, ((int) B.nblov-oldnb));
      oldnb=B.nblov;
