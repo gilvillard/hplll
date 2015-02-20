@@ -35,83 +35,84 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 using namespace hplll; 
 
 int main(int argc, char *argv[])  {
+  
+  
+  ZZ_mat<mpz_t> A; // For hpLLL 
+  ZZ_mat<mpz_t> C; // For Lehmer
+  ZZ_mat<mpz_t> AT;  // fpLLL  
 
-
+  // ---------------------------------------------------------------------
+  { 
+  
   int d=8;
-  int nbbits = 10;
-  
-  PARSE_MAIN_ARGS {
-    MATCH_MAIN_ARGID("-d",d);
-    MATCH_MAIN_ARGID("-bits",nbbits);
-    SYNTAX();
-  }
+  int nbbits=100;
+  int shift = 0;
+  int alpha = 0;
+  double delta = 0.75;
 
-  ZZ_mat<mpz_t> A,B,C;
 
-  int i,j;
-  
-  A.resize(d,d);
-  B.resize(d,d);
-  C.resize(d,d);
-
-  for (i=0; i<d; i++)
-    for (j=0; j<d ; j++) {
-      A(i,j).randb(nbbits);
-      B(i,j).randb(nbbits);
+    PARSE_MAIN_ARGS {
+      MATCH_MAIN_ARGID("-d",d);
+      MATCH_MAIN_ARGID("-bits",nbbits);
+      MATCH_MAIN_ARGID("-shift",shift);
+      MATCH_MAIN_ARGID("-alpha",alpha);
+      MATCH_MAIN_ARGID("-delta",delta);
+      SYNTAX();
     }
 
 
-  matrix<Z_NR<long> > Ap,Bp,Cp;
-  Ap.resize(d,d);
-  Bp.resize(d,d);
-  Cp.resize(d,d);
 
-  for (i=0; i<d; i++)
-  for (j=0; j<d ; j++) {
-    Ap(i,j)=mpz_get_si(A(i,j).getData());
-    Bp(i,j)=mpz_get_si(B(i,j).getData());
-  }
+  int start; 
 
+  A.resize(d+1,d); 
+  AT.resize(d,d+1);  
+  AT.gen_intrel(nbbits);
+  transpose(A,AT);
 
-  ZZ_mat<double> Af,Bf,Cf;
-  Af.resize(d,d);
-  Bf.resize(d,d);
-  Cf.resize(d,d);
+  //print2maple(A,d+1,d);
 
-  for (i=0; i<d; i++)
-  for (j=0; j<d ; j++) {
-    Af(i,j)=((double) Ap(i,j).getData());
-    Bf(i,j)=((double) Bp(i,j).getData());
-  }
+  
+  ZZ_mat<mpz_t> A_up;
+  A_up.resize(1,d); 
 
+  for (int j=0; j<d; j++)
+    A_up(0,j)=A(0,j);
     
-  int start;
-  
   start=utime();
-  
-  matprod(C,A,B);
 
+  //lift_lll<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > (C, A_up, shift, alpha, delta);
+  lift_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C, A_up, shift, alpha, delta);
+
+  
   start=utime()-start;
 
-  cout << "    time mpz : " << start/1000 << " ms" << endl;
+  cout << endl; 
+  cout << "   dimension = " << d  << endl;
+  cout << "   time lehmer: " << start/1000 << " ms" << endl;
 
+  
+  Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
+  Btest.isreduced(delta-0.1);
+
+  // FPLLL
+  // -----
+  
   start=utime();
-  
-  matprod(Cp,Ap,Bp);
-
+  lllReduction(AT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
   start=utime()-start;
-
-  cout << "    time long : " << start/1000 << " ms" << endl;
-
-  start=utime();
+    
+  cout << endl; 
+  cout << "   bits = " << nbbits << endl;
+  cout << "   dimension = " << d  << endl;
+  cout << "   time fplll: " << start/1000 << " ms" << endl;
   
-  matprod(Cf,Af,Bf);
-
-  start=utime()-start;
-
-  cout << "    time double : " << start/1000 << " ms" << endl;
-
+  //transpose(A,AT);
+  //Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Ctest(A,NO_TRANSFORM,DEF_REDUCTION);
+  //Ctest.isreduced(delta);
   
-  
+
+  } 
+
+ 
   return 0;
 }
