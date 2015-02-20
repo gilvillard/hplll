@@ -48,7 +48,7 @@ int main(int argc, char *argv[])  {
   int nbbits=100;
   int shift = 0;
   int alpha = 0;
-  double delta = 0.75;
+  double delta = 0.99;
 
 
     PARSE_MAIN_ARGS {
