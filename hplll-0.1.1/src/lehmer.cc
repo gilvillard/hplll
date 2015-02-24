@@ -46,7 +46,7 @@ template<class ZT, class FT, class MatrixZT, class MatrixFT> int
 lift_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, int alpha=0, double delta=0.99) { 
 
   int m,d;
-  int i,j;
+  int i,j,k;
   
   m=A.getRows();
   d=A.getCols();
@@ -81,79 +81,106 @@ lift_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, int alpha=0, double delta=0.9
 
   Z_NR<ZT> t;
 
-
    ZZ_mat<double> Uf;
    Uf.resize(d,d);
 
    ZZ_mat<long int> U;
    U.resize(d,d);
 
-
    ZZ_mat<ZT> L;
    L.resize(m,d);
+   
+   ZZ_mat<ZT> AL;
+   AL.resize(m,d);
 
    // Main loop on the shifts
    // -----------------------
    for (s=1; s <= nb_shifts; s++) {
 
     int start;
-    
-    current_shift += shift;
-
-    start=utime();
 
     for (i=0; i<m; i++) 
-      for (j=0; j<d; j++) 
-	L(i,j)=A_in(i,j);
-      
+       for (j=0; j<d; j++) 
+	 AL(i,j)=A_in(i,j);
 
+    for (i=0; i<m; i++) 
+       for (j=0; j<d; j++) 
+	 L(i,j)=A_in(i,j);
+    
+    //current_shift += shift;
+
+    start=utime();
     
     ZZ_mat<double> T;
     T.resize(d+1,d);
      
-    for (i=0; i<m; i++) 
-      for (j=0; j<d; j++) {
-	t.mul_2si(A_in(i,j),current_shift);
-	T(i,j).getData()=t.get_d();
-      }
-        
+    
      for (i=0; i<d; i++)
        for (j=0; j<d ; j++) 
-	 T(m+i,j).getData()=A_in(m+i,j).get_d(); // cf pb for assigning a double to Z_NR<double> 
+     	 T(m+i,j).getData()=A_in(m+i,j).get_d(); // cf pb for assigning a double to Z_NR<double> 
 
-     start=utime()-start;
-     cout << "   time A: " << start/1000 << " ms" << endl;
-
-      start=utime();
-
-      //----------
-      
      // Lattice<double, dpe_t,  matrix<Z_NR<double> >, MatrixPE<double, dpe_t> > Bp(T,TRANSFORM,DEF_REDUCTION,1);
      Lattice<double, double,  matrix<Z_NR<double> >, matrix<FP_NR<double> > > Bp(T,TRANSFORM,DEF_REDUCTION,1);
 
-     Bp.hlll_lift(delta,shift);
-      
-     start=utime()-start;
-    cout << "   time B: " << start/1000 << " ms" << endl;
-    start=utime();
+     start=utime();
 
-    // ----------------
-    
+     // Internal K loop
+
+     int KK=10;
+     
+     for (int K=1; K<=KK; K++) {
+
+       current_shift+=shift/KK;
+       
+       for (i=0; i<m; i++) 
+	 for (j=0; j<d; j++) {
+	   t.mul_2si(AL(i,j),current_shift);
+	   T(i,j).getData()=t.get_d();
+	 }
+     
+       Bp.assignL(T);
+
+       Bp.hlll_lift(delta,shift/KK);
+
+       start=utime()-start;
+       cout << "   time B: " << start/1000 << " ms" << endl;
+       start=utime();
+       
+       Uf=Bp.getU();
+
+      
+       for (i=0; i<d; i++)
+	 for (j=0; j<d ; j++) 
+	   U(i,j).getData()=((long int) Uf(i,j).getData());
+
+       //matprod(AL,L,U);  // Faire signed int
+	
+       for (i=0; i<m; i++) 
+	 for (j=0; j<d; j++) {
+	   AL(i,j).mul_si(L(i,0),U(0,j).GetData());
+	   for (k=1; k<d; k++) {
+	     AL(i,j).addmul_si(L(i,k),U(k,j).GetData());
+	   }
+	 }
+	    
+       start=utime()-start;
+       cout << "   time B': " << start/1000 << " ms" << endl << endl;
+       start=utime();
+
+    //----------------
+     } // End K loop
+     
      Uf=Bp.getU();
 
      for (i=0; i<d; i++)
         for (j=0; j<d ; j++) 
 	  U(i,j).getData()=((long int) Uf(i,j).getData());
-
-     
-     //print2maple(U,d,d);
      
      matprod_in_si(A_in,U);
+     
 
      start=utime()-start;
      cout << "   time C: " << start/1000 << " ms" << endl;
-
-     //print2maple(A_in,d+1,d);
           
      cout << endl << "  size of U: " << maxbitsize(U,0,d,d)  << endl;
      
@@ -168,6 +195,8 @@ lift_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, int alpha=0, double delta=0.9
      // Mettre à jour A_in 
   }
 
+   
+   
   // Last shift if needed
   // --------------------
   // if (last_shift > 0) {
