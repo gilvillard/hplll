@@ -1,4 +1,6 @@
 
+- affecter un double à Z_NR<double> 
+
 -mettre matprod_in comme membre de la classe matrix 
 
 - en pas remultiplier quand gardé tous les chiffres ou explicite shift 
