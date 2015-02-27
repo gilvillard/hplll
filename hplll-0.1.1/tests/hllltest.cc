@@ -175,7 +175,7 @@ int main(int argc, char *argv[])  {
     succeed+=1;
 
   //  *****************************************************  
-  cout << "     " <<  succeed << " hlll tests ok over " << nbtest << endl << endl; 
+  cout << endl << "     " <<  succeed << " hlll tests ok over " << nbtest << endl << endl; 
   //  *****************************************************  
 
 

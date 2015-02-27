@@ -81,7 +81,7 @@ int main(int argc, char *argv[])  {
   start=utime();
 
   //lift_lll<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > (C, A_up, shift, alpha, delta);
-  lift_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C, A_up, shift, alpha, delta);
+  relation_lift<mpz_t, double, matrix<FP_NR<double> > > (C, A_up, alpha, delta);
 
   
   start=utime()-start;
