@@ -148,7 +148,7 @@ int main(int argc, char *argv[])  {
 
 
   //  *****************************************************  
-  cout << "     " << succeed << " arithmetic tests ok over " << nbtest << endl << endl; 
+  cout << endl << "     " << succeed << " arithmetic tests ok over " << nbtest << endl << endl; 
   //  *****************************************************  
 
   return 0;
