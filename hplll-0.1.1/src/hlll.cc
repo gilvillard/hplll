@@ -845,18 +845,18 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> La
   }
 }
 
-template<class ZT,class FT, class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> Lattice<ZT,FT, MatrixZT, MatrixFT>::getL()
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline ZZ_mat<mpz_t> Lattice<ZT,FT, MatrixZT, MatrixFT>::getL()
 {
  
   if (lsize > 0) { 
-    ZZ_mat<ZT> LL(lsize,d); 
+    ZZ_mat<mpz_t> LL(lsize,d); 
     for (int i=0; i<lsize; i++) 
       for (int j=0; j<d; j++) LL.Set(i,j,L.get(i,j)); // reprendre boucle sur les colonnes 
     return LL;
   }
   else {
     cout << "*** Error, HLLL, the Lehmer companion matrix has not been computed" << endl;
-    ZZ_mat<ZT> LL(0,0);
+    ZZ_mat<mpz_t> LL(0,0);
     return LL;
   }
 }
@@ -959,7 +959,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reducti
 
     for (i=0; i<lsize; i++) 
       for (j=0; j<d; j++) 
-	L(i,j)=B(i,j);
+	L(i,j)=0;
 
   }
 
@@ -1060,24 +1060,44 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(MatrixZT A) {
   }
 }
 
+
+  template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
+  Lattice<ZT,FT, MatrixZT, MatrixFT>::lift_si(int shift) {
+    
+    //nblov = 0;
+
+    Z_NR<mpz_t> t;
+    
+    if (lsize > 0) {
+      
+      for (int i=0; i<lsize; i++) 
+	for (int j=0; j<d; j++) {
+	  t.mul_2si(L(i,j),shift);
+	  B(i,j).getData()=t.get_d();
+	}
+      
+    }
+
+
+  } 
+
   
   template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
   Lattice<ZT,FT, MatrixZT, MatrixFT>::lift(int shift) {
     
     //nblov = 0;
+
     
     if (lsize > 0) {
       
       for (int i=0; i<lsize; i++) 
-	for (int j=0; j<d; j++) 
+	for (int j=0; j<d; j++) {
 	  B(i,j).mul_2si(L(i,j),shift);
-      
+	}
       
     }
 
-    
-
-    // The following should be put ? 
+        // The following should be put ? 
     //matrix_structure(structure, B, n,d);
     //for (int i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
     //for (int j=0; j<d; j++) kappamin[j]=-1;
@@ -1093,7 +1113,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(MatrixZT A) {
 
     
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
-Lattice<ZT,FT, MatrixZT, MatrixFT>::assignL(ZZ_mat<ZT> L_in) {
+Lattice<ZT,FT, MatrixZT, MatrixFT>::assignL(ZZ_mat<mpz_t> L_in) {
 
   for (int i=0; i<lsize; i++) 
     for (int j=0; j<d; j++) 
@@ -1746,10 +1766,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
 
   //********************************************************
 
+  // def is the total remaining default for reaching the L part 
 
-template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
-Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll_lift(double delta,  int shift, bool verbose) { 
-
+  template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
+  Lattice<ZT,FT, MatrixZT, MatrixFT>::detect_lift(double delta,  int def,  int target_def, int& new_def, FP_NR<FT>& rel_bound, bool verbose) { 
   
   int kappa=1,i;
   int prevkappa=-1; // For the looping test betwenn tow indices 
@@ -1770,12 +1790,28 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll_lift(double delta,  int shift, bool ver
 
   int S;
 
-   
+  new_def = def;
+
+  Z_NR<mpz_t> epsilon;
+  Z_NR<mpz_t> one;
+  Z_NR<mpz_t> t;
+  one =1;
   
   // Main shift loop
   // ---------------
-  for (S=0; S<shift; S+=1) {
+  // Transformer en while avec size of U et choix de l'incrément 
+  // Taille en haut également ?
+  
+  for (S=0; (S<40) && (new_def < target_def); S+=1) {  // and new_def < target def -bitsize + alpha 
 
+    epsilon.mul_2si(one,-new_def-10); // En fonction de taille de U et de dec ??? 
+
+    t.abs(L(0,0));
+    if (t.cmp(epsilon) == -1) {
+      
+      return 1;
+    } 
+    
     for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
     
     kappa=1;
@@ -1784,20 +1820,14 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll_lift(double delta,  int shift, bool ver
     //for (i=0; i<d; i++) {descendu[i]=0;}  
     
     //cout << "********** " << S-shift << endl;
-    
-    lift(S-shift+1);
 
-    // {
-    //   ZZ_mat<ZT> BT;
-    //   BT.resize(d,d+1);
-    //   transpose(BT,getbase());
-     
-    //   lllReduction(BT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
-    // }
+    new_def +=1;
     
+    lift_si(new_def);
+   
+ 
     //print2maple(getbase(),d+1,d);
     
-
     // main LLL while loop
     // -------------------
     while ((kappa < d) && (nblov < nblov_max)) 
@@ -1923,15 +1953,27 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll_lift(double delta,  int shift, bool ver
 	}
 
       } // End main LLL while loop 
-  
+
+
+    // Min des normes dans R : borne inférieure pour la relation si test à epsilon respecté ? 
+    // ---------------------
+
+    FP_NR<FT> tf;
+    
+    rel_bound.abs(R(0,0));
+
+    for (i=1; i<d; i++) {
+      tf.abs(R(i,i));
+      if (rel_bound.cmp(tf) == 1) rel_bound=tf;
+    }
+    
+   
+    
   } // End shift loop
   
   return 0;
   
 };
-
-
-
 
 
 } // end namespace hplll

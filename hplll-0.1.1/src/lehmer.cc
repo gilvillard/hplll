@@ -42,11 +42,11 @@ using namespace hplll;
 // Avec truncation
 // Cas particuliers entre alpha et sigma 
 
-template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
-lift_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, int alpha=0, double delta=0.99) { 
+template<class ZT, class FT, class MatrixFT> int  
+relation_lift(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha=0, double delta=0.99) { 
 
   int m,d;
-  int i,j,k;
+  int i,j;
   
   m=A.getRows();
   d=A.getCols();
@@ -61,177 +61,102 @@ lift_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, int alpha=0, double delta=0.9
    for (i=0; i<d; i++)
       A_in(m+i,i)=1;
 
-   //print2maple(A_in,m+d,d);
-   
-  int nb_shifts = alpha/shift;
-
-  //int last_shift = alpha%shift;
-    
-  int s;
-
-  int bitsize = maxbitsize(A,0,m,d);
+   int bitsize = maxbitsize(A,0,m,d);
   
-  int current_shift = -bitsize;
-
-  Lattice<ZT, FT, MatrixZT, MatrixFT> B(A_in,TRANSFORM,DEF_REDUCTION,m);
-
-  double moy=0.0;
-  int oldnb=0;
-  int maxnb=0;
-
-  Z_NR<ZT> t;
-
+   
+   // For assigning the exact upper lattice part at each step 
+   ZZ_mat<mpz_t> L;
+   L.resize(m,d);
+   
+   // For assigning the truncated basis at each step -- dpe_t ?? 
+   ZZ_mat<double> T;
+   T.resize(d+1,d);
+   Z_NR<ZT> t;
+   
    ZZ_mat<double> Uf;
    Uf.resize(d,d);
 
    ZZ_mat<long int> U;
    U.resize(d,d);
 
-   ZZ_mat<ZT> L;
-   L.resize(m,d);
-   
-   ZZ_mat<ZT> AL;
-   AL.resize(m,d);
+   int def = -bitsize;
 
+   int target_def = -bitsize + alpha;
+   
+   int new_def;
+
+   int found;
+
+   FP_NR<FT> rel_bound;
+   
    // Main loop on the shifts
    // -----------------------
-   for (s=1; s <= nb_shifts; s++) {
+   while (def < target_def) {
 
-    int start;
+     int start;
 
-    for (i=0; i<m; i++) 
-       for (j=0; j<d; j++) 
-	 AL(i,j)=A_in(i,j);
-
-    for (i=0; i<m; i++) 
+     for (i=0; i<m; i++) 
        for (j=0; j<d; j++) 
 	 L(i,j)=A_in(i,j);
     
     //current_shift += shift;
 
     start=utime();
-    
-    ZZ_mat<double> T;
-    T.resize(d+1,d);
-     
-    
+         
      for (i=0; i<d; i++)
        for (j=0; j<d ; j++) 
      	 T(m+i,j).getData()=A_in(m+i,j).get_d(); // cf pb for assigning a double to Z_NR<double> 
 
      // Lattice<double, dpe_t,  matrix<Z_NR<double> >, MatrixPE<double, dpe_t> > Bp(T,TRANSFORM,DEF_REDUCTION,1);
-     Lattice<double, double,  matrix<Z_NR<double> >, matrix<FP_NR<double> > > Bp(T,TRANSFORM,DEF_REDUCTION,1);
+     Lattice<double, FT,  matrix<Z_NR<double> >,  MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION,1);
 
+     Bp.assignL(L);
+     
+     found = Bp.detect_lift(delta,def,target_def,new_def,rel_bound);
+
+     start=utime()-start;
+     cout << "   time A: " << start/1000 << " ms" << endl << endl;
+     cout << " Def: " << new_def << endl;
      start=utime();
-
-     // Internal K loop
-
-     int KK=10;
      
-     for (int K=1; K<=KK; K++) {
-
-       current_shift+=shift/KK;
-       
-       for (i=0; i<m; i++) 
-	 for (j=0; j<d; j++) {
-	   t.mul_2si(AL(i,j),current_shift);
-	   T(i,j).getData()=t.get_d();
-	 }
+    
      
-       Bp.assignL(T);
-
-       Bp.hlll_lift(delta,shift/KK);
-
-       start=utime()-start;
-       cout << "   time B: " << start/1000 << " ms" << endl;
-       start=utime();
-       
-       Uf=Bp.getU();
-
-      
-       for (i=0; i<d; i++)
-	 for (j=0; j<d ; j++) 
-	   U(i,j).getData()=((long int) Uf(i,j).getData());
-
-       //matprod(AL,L,U);  // Faire signed int
-	
-       for (i=0; i<m; i++) 
-	 for (j=0; j<d; j++) {
-	   AL(i,j).mul_si(L(i,0),U(0,j).GetData());
-	   for (k=1; k<d; k++) {
-	     AL(i,j).addmul_si(L(i,k),U(k,j).GetData());
-	   }
-	 }
-	    
-       start=utime()-start;
-       cout << "   time B': " << start/1000 << " ms" << endl << endl;
-       start=utime();
-
-    //----------------
-     } // End K loop
+     def=new_def;
      
      Uf=Bp.getU();
 
      for (i=0; i<d; i++)
-        for (j=0; j<d ; j++) 
-	  U(i,j).getData()=((long int) Uf(i,j).getData());
+       for (j=0; j<d ; j++) 
+	 U(i,j).getData()=((long int) Uf(i,j).getData());
      
      matprod_in_si(A_in,U);
-     
 
+   
+     
+     if (found == 1) {
+       
+       C.resize(1,d);
+       for (j=0; j<d; j++)
+	 C(0,j)=A_in(m+j,0);
+       return 1;
+     }
+     
      start=utime()-start;
-     cout << "   time C: " << start/1000 << " ms" << endl;
-          
+     cout << "   time B: " << start/1000 << " ms" << endl << endl;
+     start=utime();
+
+     cout << "***** " << new_def << endl;
+     cout << "***** " << maxbitsize(A_in)+new_def << endl;
+     
      cout << endl << "  size of U: " << maxbitsize(U,0,d,d)  << endl;
      
-     cout << "nblov: " << B.nblov-oldnb << "     max: " << maxnb << endl;
-     maxnb=max(maxnb, ((int) B.nblov-oldnb));
-     oldnb=B.nblov;
 
-     moy=((double) B.nblov)/((double) s);
-     
-     // print2maple(B.getbase(),m+d,d);
-     
-     // Mettre à jour A_in 
-  }
+   }
 
-   
-   
-  // Last shift if needed
-  // --------------------
-  // if (last_shift > 0) {
-
-  //   // Should be 0 
-  //   current_shift += last_shift;
-
-  //   //cout << "***** " << current_shift << endl; 
-
-  //   B.lift(current_shift);
-
-  //   int start;
-
-  //   start = utime();
-  //   B.hlll(delta);
-  //   start = utime()-start;
-  //   cout << "   time: " << start/1000 << " ms" << endl;
-
-   
-  //   cout << "nblov: " << B.nblov-oldnb << "     max: " << maxnb << endl;
-  //    maxnb=max(maxnb, ((int) B.nblov-oldnb));
-  //   oldnb=B.nblov;
-
-  //   moy=((double) B.nblov)/((double) s);
- 
-    
-
-  // } 
-
-  //print2maple(B.getbase(),m+d,d);
+   // found = 0
+   cout << "**** There might not be relations of norm less than " << rel_bound << endl; 
   
-  cout << endl << "Total #swaps: " << B.nblov << "    Moyenne / d: " << ((int) moy/((double) d)) <<  endl; 
-  C=A_in;
-  
-  return 0;
+   return 0;
   
 
 } 

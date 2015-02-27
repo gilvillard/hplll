@@ -25,9 +25,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define HPLLL_RELATIONS_H
 
 #include "decomp.h" 
+#include "lehmer.cc"
 
 namespace hplll { 
 
+
+  int relation_d(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> >& L, long setprec);
+    
 // ********   ATTENTION   ******************************
 //
 // Template RT but tested for mpfr .....

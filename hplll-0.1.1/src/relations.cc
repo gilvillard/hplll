@@ -27,7 +27,47 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 namespace hplll {
 
+/***********************************************************************************
 
+  TO DO 
+
+**************************************************************************************/ 
+
+ 
+int relation_d(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> >& A, long setprec) {
+
+  mpfr_set_default_prec(setprec);
+
+  int n=A.getCols();
+
+  ZZ_mat<mpz_t> L;
+  L.resize(1,n);
+
+  FP_NR<mpfr_t> t;
+  
+  for (int j=0; j<n; j++) {
+    t.mul_2si( A(0,j), setprec);
+    L(0,j).set_f(t);
+  }
+
+  int found;
+
+  // Ajuster le 10 ? 
+  int start=utime();
+  found=relation_lift<mpz_t, double, matrix<FP_NR<double> > > (C, L, setprec - 10, 0.99);
+  //found=relation_lift<mpz_t, double, matrix<FP_NR<double> > > (C, L, 3800, 0.99);
+  
+  
+  start=utime()-start;
+
+  
+  cout << "   time internal: " << start/1000 << " ms" << endl;
+  
+  return found;
+
+} 
+
+  
 // ********   ATTENTION   ******************************
 //
 // Template RT but written for mpfr .....
