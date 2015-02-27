@@ -45,7 +45,7 @@ class Lattice
 
   MatrixZT U;
 
-  MatrixZT L;
+  matrix<Z_NR<mpz_t> > L;
 
   int n,d; 
 
@@ -109,9 +109,10 @@ public:
   int seysen_flag;
 
   int hlll(double delta, bool verbose=false);
-  int hlll_lift(double delta, int shift,  bool verbose=false);
-
-  void assignL(ZZ_mat<ZT> L_in);
+  int detect_lift(double delta, int def,  int target_def,  int& new_def, FP_NR<FT>& rel_bound,  bool verbose=false);
+ 
+ 
+  void assignL(ZZ_mat<mpz_t> L_in);
 
   unsigned int setprec(unsigned int prec);
   unsigned int getprec();
@@ -124,7 +125,7 @@ public:
 
   ZZ_mat<ZT> getU();
 
-  ZZ_mat<ZT> getL();
+  ZZ_mat<mpz_t> getL();
 
   // Not MatrixFT for the exp case 
   matrix<FP_NR<FT> > getR(); 
@@ -144,6 +145,8 @@ public:
   void assign(MatrixZT A); 
 
   void lift(int shift);
+
+  void lift_si(int shift);
   
   void shift_assign(ZZ_mat<ZT> A,  vector<int> shift, int sigma);
 

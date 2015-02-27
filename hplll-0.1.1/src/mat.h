@@ -831,6 +831,29 @@ inline void matprod_in_si(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U)
       C(i,j)=tmat(i,j);
 };
 
+ inline void matprod_in_si(matrix<Z_NR<mpz_t> >& C, ZZ_mat<long int> U) 
+{
+
+  int m,n,i,j,k;
+
+  m= C.getRows();
+  n= C.getCols();
+
+  Matrix<Z_NR<mpz_t> > tmat;
+  tmat.resize(m,n);
+
+  for (i=0; i<m; i++) 
+    for (j=0; j<n; j++) {
+      tmat(i,j).mul_si(C(i,0),U(0,j).GetData());
+      for (k=1; k<n; k++) {
+	tmat(i,j).addmul_si(C(i,k),U(k,j).GetData());
+      }
+    }
+
+  for (i=0; i<m; i++) 
+    for (j=0; j<n; j++)
+      C(i,j)=tmat(i,j);
+};
 
 
 

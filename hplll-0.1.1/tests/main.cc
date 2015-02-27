@@ -23,6 +23,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "hlll.h"
 #include "lehmer.cc"
+#include "matgen.h"
+#include "relations.h"
 
 #include "tools.h"
 
@@ -36,83 +38,45 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
-  
-  ZZ_mat<mpz_t> A; // For hpLLL 
-  ZZ_mat<mpz_t> C; // For Lehmer
-  ZZ_mat<mpz_t> AT;  // fpLLL  
 
-  // ---------------------------------------------------------------------
-  { 
-  
-  int d=8;
-  int nbbits=100;
-  int shift = 0;
-  int alpha = 0;
-  double delta = 0.99;
-
-
-    PARSE_MAIN_ARGS {
-      MATCH_MAIN_ARGID("-d",d);
-      MATCH_MAIN_ARGID("-bits",nbbits);
-      MATCH_MAIN_ARGID("-shift",shift);
-      MATCH_MAIN_ARGID("-alpha",alpha);
-      MATCH_MAIN_ARGID("-delta",delta);
-      SYNTAX();
-    }
-
-
-
-  int start; 
-
-  A.resize(d+1,d); 
-  AT.resize(d,d+1);  
-  AT.gen_intrel(nbbits);
-  transpose(A,AT);
-
-  //print2maple(A,d+1,d);
-
-  
-  ZZ_mat<mpz_t> A_up;
-  A_up.resize(1,d); 
-
-  for (int j=0; j<d; j++)
-    A_up(0,j)=A(0,j);
-    
-  start=utime();
-
-  //lift_lll<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > (C, A_up, shift, alpha, delta);
-  relation_lift<mpz_t, double, matrix<FP_NR<double> > > (C, A_up, alpha, delta);
-
-  
-  start=utime()-start;
-
-  cout << endl; 
-  cout << "   dimension = " << d  << endl;
-  cout << "   time lehmer: " << start/1000 << " ms" << endl;
-
-  
-  Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
-  Btest.isreduced(delta-0.1);
-
-  // FPLLL
-  // -----
-  
-  start=utime();
-  lllReduction(AT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
-  start=utime()-start;
-    
-  cout << endl; 
-  cout << "   bits = " << nbbits << endl;
-  cout << "   dimension = " << d  << endl;
-  cout << "   time fplll: " << start/1000 << " ms" << endl;
-  
-  //transpose(A,AT);
-  //Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Ctest(A,NO_TRANSFORM,DEF_REDUCTION);
-  //Ctest.isreduced(delta);
-  
-
-  } 
-
+  matrix<FP_NR<mpfr_t> > A;   // Input matrix 
+  ZZ_mat<mpz_t> C;
  
+  int r=7; 
+  int s=7; 
+  int n=r*s+1;
+
+  int setprec=2000;
+  mpfr_set_default_prec(setprec);
+
+  gen3r2s(A,n,r,s);
+
+  print2maple(A,1,n);
+
+  // ZZ_mat<mpz_t> L;
+  // L.resize(1,n);
+
+  // for (int j=0; j<n; j++) {
+
+  //   A(0,j).mul_2si( A(0,j), setprec);
+  //   L(0,j).set_f(A(0,j));
+  // }
+
+  int found; 
+  int start;
+  start=utime();
+  
+  //found=relation_lift<mpz_t, double, matrix<FP_NR<double> > > (C, L, 3800, 0.99);
+  found = relation_d(C, A, setprec);
+  
+  start=utime()-start;
+
+  cout << "   dimension = " << n  << endl;
+  cout << "   time relation: " << start/1000 << " ms" << endl;
+  
+  if (found ==1) print2maple(C,1,n);
+
+  
+    
   return 0;
 }
