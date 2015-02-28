@@ -1767,11 +1767,12 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
   //********************************************************
 
   // def is the total remaining default for reaching the L part 
+  // Double 
 
   template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
-  Lattice<ZT,FT, MatrixZT, MatrixFT>::detect_lift(double delta,  int def,  int target_def, int& new_def, FP_NR<FT>& rel_bound, bool verbose) { 
+  Lattice<ZT,FT, MatrixZT, MatrixFT>::detect_lift(double delta,  int def,  int target_def, int& new_def,  int sizeU, FP_NR<FT>& rel_bound, bool verbose) { 
   
-  int kappa=1,i;
+    int kappa=1,i,j;
   int prevkappa=-1; // For the looping test betwenn tow indices 
   vector<FP_NR<FT> >  prevR(d);
 
@@ -1797,6 +1798,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
   Z_NR<mpz_t> t;
   one =1;
   
+  int l;
+  Z_NR<long> zt;
+
   // Main shift loop
   // ---------------
   // Transformer en while avec size of U et choix de l'incrément 
@@ -1804,9 +1808,21 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
   
   for (S=0; (S<40) && (new_def < target_def); S+=1) {  // and new_def < target def -bitsize + alpha 
 
-    epsilon.mul_2si(one,-new_def-10); // En fonction de taille de U et de dec ??? 
+    // Quel epsilon ?? 
+    // Lié à rel_bound 
+    l=0;
+    for (i=0; i<d ; i++) 
+      for (j=0; j<d; j++) {
+	zt=((long) U(i,j).getData()); 
+	l=max(l, size_in_bits(zt)); 
+      }
+
+    epsilon.mul_2si(one,sizeU+l-4); // En fonction de taille de U et de dec ??? 
 
     t.abs(L(0,0));
+    cout << " *** " << t << endl; 
+    cout << " *** " << epsilon << endl << endl; 
+
     if (t.cmp(epsilon) == -1) {
       
       return 1;

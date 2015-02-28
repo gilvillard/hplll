@@ -79,6 +79,9 @@ relation_lift(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha=0, double delta=0.99) {
    ZZ_mat<long int> U;
    U.resize(d,d);
 
+   for (i=0; i<d; i++)
+     U(i,i)=1; 
+
    int def = -bitsize;
 
    int target_def = -bitsize + alpha;
@@ -112,7 +115,7 @@ relation_lift(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha=0, double delta=0.99) {
 
      Bp.assignL(L);
      
-     found = Bp.detect_lift(delta,def,target_def,new_def,rel_bound);
+     found = Bp.detect_lift(delta,def,target_def,new_def,maxbitsize(A_in,1,d,d),rel_bound);
 
      start=utime()-start;
      cout << "   time A: " << start/1000 << " ms" << endl << endl;
@@ -131,8 +134,6 @@ relation_lift(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha=0, double delta=0.99) {
      
      matprod_in_si(A_in,U);
 
-   
-     
      if (found == 1) {
        
        C.resize(1,d);

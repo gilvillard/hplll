@@ -109,7 +109,7 @@ public:
   int seysen_flag;
 
   int hlll(double delta, bool verbose=false);
-  int detect_lift(double delta, int def,  int target_def,  int& new_def, FP_NR<FT>& rel_bound,  bool verbose=false);
+  int detect_lift(double delta, int def,  int target_def,  int& new_def, int sizeU, FP_NR<FT>& rel_bound,  bool verbose=false);
  
  
   void assignL(ZZ_mat<mpz_t> L_in);
