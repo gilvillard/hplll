@@ -31,6 +31,8 @@ namespace hplll {
 
   TO DO 
 
+At least one >= 1 ? 
+
 **************************************************************************************/ 
 
  
@@ -52,10 +54,8 @@ int relation_d(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> >& A, long setprec) 
 
   int found;
 
-  // Ajuster le 10 ? 
   int start=utime();
-  found=relation_lift<mpz_t, double, matrix<FP_NR<double> > > (C, L, setprec - 10, 0.99);
-  //found=relation_lift<mpz_t, double, matrix<FP_NR<double> > > (C, L, 3800, 0.99);
+  found=relation_lift<mpz_t, double, matrix<FP_NR<double> > > (C, L, setprec, 0.99);
   
   
   start=utime()-start;
