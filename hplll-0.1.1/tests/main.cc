@@ -46,7 +46,7 @@ int main(int argc, char *argv[])  {
   int s=7; 
   int n=r*s+1;
 
-  int setprec=1404;
+  int setprec=1417;
   mpfr_set_default_prec(setprec);
 
   gen3r2s(A,n,r,s);
