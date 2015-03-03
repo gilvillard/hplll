@@ -42,11 +42,11 @@ int main(int argc, char *argv[])  {
   matrix<FP_NR<mpfr_t> > A;   // Input matrix 
   ZZ_mat<mpz_t> C;
  
-  int r=7; 
-  int s=7; 
+  int r=8; 
+  int s=9; 
   int n=r*s+1;
 
-  int setprec=1417;
+  int setprec=3200;
   mpfr_set_default_prec(setprec);
 
   gen3r2s(A,n,r,s);

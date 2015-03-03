@@ -1767,7 +1767,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
   //********************************************************
 
   // def is the total remaining default for reaching the L part 
-  // Double 
+  // Double
+  
 
   template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
   Lattice<ZT,FT, MatrixZT, MatrixFT>::detect_lift(double delta,  int def,  int target_def, int& new_def,  int sizeU, FP_NR<FT>& rel_bound, bool verbose) { 
@@ -1793,10 +1794,26 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
 
   new_def = def;
 
-  Z_NR<mpz_t> epsilon;
-  Z_NR<mpz_t> one;
-  Z_NR<mpz_t> t;
-  one =1;
+  
+ 
+
+  FP_NR<mpfr_t> t;
+  FP_NR<mpfr_t> quot;
+  FP_NR<mpfr_t> new_quot;
+
+  FP_NR<mpfr_t> gap;
+
+  new_quot = 1.0;  // new_quot should be bigger after the first iteration of the loop 
+
+  gap=1.0;
+
+  FP_NR<mpfr_t> confidence;
+  // For testing 1/gap < confidence
+  confidence = 1.0;
+  confidence.mul_2si(confidence,-24); // En fonction de taille de U et de dec ??? 
+
+  FP_NR<mpfr_t> epsilon;
+  epsilon = 10.0; // Relation to d 
   
   int l;
   Z_NR<long> zt;
@@ -1808,8 +1825,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
   
   for (S=0; (S<40) && (new_def < target_def); S+=1) {  // and new_def < target def -bitsize + alpha 
 
-    // Quel epsilon ?? 
-    // Lié à rel_bound 
+    // Size of the transformation from the beginning
+    // ---------------------------------------------
     l=0;
     for (i=0; i<d ; i++) 
       for (j=0; j<d; j++) {
@@ -1817,16 +1834,12 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
 	l=max(l, size_in_bits(zt)); 
       }
 
-    epsilon.mul_2si(one,sizeU+l-4); // En fonction de taille de U et de dec ??? 
+    //if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
+    // if ((gap.cmp(confidence) == -1)) {
 
-    t.abs(L(0,0));
-    cout << " *** " << t << endl; 
-    cout << " *** " << epsilon << endl << endl; 
-
-    if (t.cmp(epsilon) == -1) {
-      
-      return 1;
-    } 
+    //   cout << "Candidate relation found with confidence " << gap << endl;  
+    //   return 1;
+    // } 
     
     for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
     
@@ -1971,7 +1984,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
       } // End main LLL while loop 
 
 
-    // Min des normes dans R : borne inférieure pour la relation si test à epsilon respecté ? 
+    // Min des normes dans R : borne inférieure pour la relation si test à confidence respecté ? 
     // ---------------------
 
     FP_NR<FT> tf;
@@ -1983,6 +1996,23 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
       if (rel_bound.cmp(tf) == 1) rel_bound=tf;
     }
     
+    quot = new_quot;
+    new_quot.set_z(L(0,0));
+    t=rel_bound.get_d();
+    new_quot.div(new_quot,t);
+    gap.div(new_quot,quot);
+    gap.abs(gap); 
+
+    cout << "*** gap: " << gap << "    confidence: " << confidence << endl; 
+    cout << "*** quot: " << new_quot  <<  endl << endl;
+
+    if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
+      //if ((gap.cmp(confidence) == -1)) {
+      
+      cout << "Candidate relation found with confidence " << gap << endl;  
+      return 1;
+    }
+   
    
     
   } // End shift loop
