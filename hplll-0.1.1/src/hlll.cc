@@ -1768,7 +1768,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
 
   // def is the total remaining default for reaching the L part 
   // Double
-  
+
+  // Size of U mastering ???
+  // Not limited to doubles 
 
   template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
   Lattice<ZT,FT, MatrixZT, MatrixFT>::detect_lift(double delta,  int def,  int target_def, int& new_def,  int sizeU, FP_NR<FT>& rel_bound, bool verbose) { 
@@ -1794,8 +1796,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
 
   new_def = def;
 
-  
- 
 
   FP_NR<mpfr_t> t;
   FP_NR<mpfr_t> quot;
@@ -1822,9 +1822,14 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
   // ---------------
   // Transformer en while avec size of U et choix de l'incrément 
   // Taille en haut également ?
-  
-  for (S=0; (S<40) && (new_def < target_def); S+=1) {  // and new_def < target def -bitsize + alpha 
 
+  int incr=8;
+  
+  for (S=0; (S<80) && (new_def < target_def); S+=incr) {  // and new_def < target def -bitsize + alpha 
+
+    new_def +=incr;
+
+	
     // Size of the transformation from the beginning
     // ---------------------------------------------
     l=0;
@@ -1850,7 +1855,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
     
     //cout << "********** " << S-shift << endl;
 
-    new_def +=1;
     
     lift_si(new_def);
    
@@ -2003,8 +2007,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
     gap.div(new_quot,quot);
     gap.abs(gap); 
 
-    cout << "*** gap: " << gap << "    confidence: " << confidence << endl; 
-    cout << "*** quot: " << new_quot  <<  endl << endl;
+    // cout << "*** gap: " << gap << "    confidence: " << confidence << endl; 
+    // cout << "*** quot: " << new_quot  <<  endl << endl;
 
     if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
       //if ((gap.cmp(confidence) == -1)) {

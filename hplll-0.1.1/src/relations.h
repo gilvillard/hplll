@@ -24,13 +24,25 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef HPLLL_RELATIONS_H
 #define HPLLL_RELATIONS_H
 
-#include "decomp.h" 
+#include "hlll.h" 
+#include "matmixed.h"
+
 #include "lehmer.cc"
+
+#include "decomp.h"
+#include "decompz.h"
 
 namespace hplll { 
 
+  // Calls double routines via a restarting process
+  int relation_lift(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> >& L, long setprec);
 
-  int relation_d(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> >& L, long setprec);
+  template<class ZT, class FT, class MatrixFT> int  
+    relation_lift_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha=0, double delta=0.99);
+
+  template<class ZT, class FT, class MatrixFT> int  
+    relations_lll(ZZ_mat<ZT>& C, matrix<FP_NR<mpfr_t> > F, int prec, int lalpha, int lsigma);
+
     
 // ********   ATTENTION   ******************************
 //
