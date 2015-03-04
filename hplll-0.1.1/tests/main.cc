@@ -42,11 +42,11 @@ int main(int argc, char *argv[])  {
   matrix<FP_NR<mpfr_t> > A;   // Input matrix 
   ZZ_mat<mpz_t> C;
  
-  int r=8; 
-  int s=9; 
+  int r=2; 
+  int s=2; 
   int n=r*s+1;
 
-  int setprec=3200;
+  int setprec=90;
   mpfr_set_default_prec(setprec);
 
   gen3r2s(A,n,r,s);
@@ -67,16 +67,20 @@ int main(int argc, char *argv[])  {
   start=utime();
   
   //found=relation_lift<mpz_t, double, matrix<FP_NR<double> > > (C, L, 3800, 0.99);
-  found = relation_d(C, A, setprec);
+  found = relation_lift(C, A, setprec);
+
+  if (found ==1) print2maple(C,1,n);
+ 
+  found = relations_lll<mpz_t, dpe_t, MatrixPE<double, dpe_t> > (C, A, setprec, 80, 0);
   
   start=utime()-start;
 
   cout << "   dimension = " << n  << endl;
   cout << "   time relation: " << start/1000 << " ms" << endl;
   
-  if (found ==1) print2maple(C,1,n);
+  if (found ==1) print2maple(C,n,1);
 
-  
+  if (found > 1) print2maple(C,n,found);
     
   return 0;
 }
