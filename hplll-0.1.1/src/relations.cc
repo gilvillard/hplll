@@ -140,6 +140,7 @@ namespace hplll {
 	  T(m+i,j).getData()=A_in(m+i,j).get_d(); // cf pb for assigning a double to Z_NR<double> 
 
       // Lattice<double, dpe_t,  matrix<Z_NR<double> >, MatrixPE<double, dpe_t> > Bp(T,TRANSFORM,DEF_REDUCTION,1);
+      // FAIRE UN SET !!!!!!!!!
       Lattice<double, FT,  matrix<Z_NR<double> >,  MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION,1);
 
       Bp.assignL(L);
@@ -260,7 +261,7 @@ relations_lll(ZZ_mat<ZT>& C, matrix<FP_NR<mpfr_t> > F, int prec, int lalpha, int
    epsilon=B.get_epsilon();
    cout << endl << "epsilon = " << epsilon << endl << endl; 
 
-   epsilon=B.shift_epsilon(20);
+   epsilon=B.shift_epsilon(10);
    //epsilon=B.shift_epsilon(1000);  // Pour B4 
 
    cout << endl << "shifted epsilon = " << epsilon << endl << endl;
@@ -269,17 +270,22 @@ relations_lll(ZZ_mat<ZT>& C, matrix<FP_NR<mpfr_t> > F, int prec, int lalpha, int
 
    // Unique shift 
    // ------------
-   
+
+   // ***** Régler le epsilon par rapport à la taille de U ?
    if (lsigma ==0) {  
+
+     print2maple(B,n+1,n);
      
      Lattice<ZT, FT, MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> >, MatrixFT> D(B,NO_TRANSFORM,DEF_REDUCTION);
        
      D.hlll(0.99);
        
        B=D.getmixedbase();
-
+	
        B.shift(-lalpha);
 
+        print2maple(B,n+1,n);
+              
        //print2maple(B,n+1,n);
 
        // Zero column test 
@@ -355,7 +361,13 @@ relations_lll(ZZ_mat<ZT>& C, matrix<FP_NR<mpfr_t> > F, int prec, int lalpha, int
 
      // Loop of elementary shifts 
      // -------------------------
-    
+     // Arrêter selon la précision !!!!!!!!!! et epsilon taille U !!!!!!!!
+
+     // fplll
+     ZZ_mat<ZT> A;
+     
+     A.resize(d+n,n);
+       
      while (notfound) {
      //for (int K=0; K<1; K++) { 
 
@@ -367,14 +379,29 @@ relations_lll(ZZ_mat<ZT>& C, matrix<FP_NR<mpfr_t> > F, int prec, int lalpha, int
        
        BL.shift(current_shift);
 
-       Bt.mixed_put(BL, lsigma+2*n); // Heuristic 
+       cout << "********** " << endl;
+       
+       print2maple(BL,4,n);
+       
+       Bt.mixed_put(BL, lsigma+2); // Heuristic 
+
+       print2maple(Bt.getmixedbase(),4,n);
+
+       // Faire la meme chose en affectation Bt à partir de B 
+       lift_truncate(A,B,lsigma,lsigma+2);
+
+       //lllReduction(A, 0.99, 0.501, LM_WRAPPER,FT_DEFAULT,0);
+       
+       print2maple(A,4,n);
        
        Bt.hlll(0.9999);
        
        // Required multiplication update when BL has been truncated 
        matprod_in(B,Bt.getU());
        // if not truncated one should not multiply evrything        
-      
+
+       
+       
        // Zero column test 
        // ----------------
        
