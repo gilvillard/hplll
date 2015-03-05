@@ -412,6 +412,16 @@ template<template <class T> class MatrixT, class RT, class ZT> void matprod_in(M
 
 
 template<template <class T> class MatrixT, class RT, class ZT> 
+  void lift_truncate(Matrix<ZT>& A, MatrixRZ<MatrixT, RT,ZT> B, int def, int bits) {
+
+
+  
+  cout << A << endl;
+  
+}
+
+ 
+template<template <class T> class MatrixT, class RT, class ZT> 
   void mixed_trunc(MatrixRZ<MatrixT, RT,ZT>& B, MatrixRZ<MatrixT, RT,ZT> A, long t, long tau) {
 
   // Division of the first d rows  
