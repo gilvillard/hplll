@@ -1255,6 +1255,9 @@ template<> void trunc_sigma(matrix<Z_NR<mpz_t> >& B, ZZ_mat<mpz_t> A, long n, lo
 };
 */
 
+
+ 
+
 // ********************************************************************
 // 
 //       TRUNCATION OF A BASIS for lift, lehmer, nullspace, L1

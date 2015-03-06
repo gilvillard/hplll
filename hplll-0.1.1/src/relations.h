@@ -40,8 +40,8 @@ namespace hplll {
   template<class ZT, class FT, class MatrixFT> int  
     relation_lift_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha=0, double delta=0.99);
 
-  template<class ZT, class FT, class MatrixFT> int  
-    relations_lll(ZZ_mat<ZT>& C, matrix<FP_NR<mpfr_t> > F, int prec, int lalpha, int lsigma);
+  template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
+    relation_lll_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha, int shift=0, double delta=0.99);
 
     
 // ********   ATTENTION   ******************************

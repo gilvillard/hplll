@@ -39,48 +39,64 @@ using namespace hplll;
 int main(int argc, char *argv[])  {
   
 
-  matrix<FP_NR<mpfr_t> > A;   // Input matrix 
+  // matrix<FP_NR<mpfr_t> > A;   // Input matrix 
   ZZ_mat<mpz_t> C;
  
-  int r=4; 
-  int s=4; 
-  int n=r*s+1;
+  // int r=4; 
+  // int s=4; 
+  // int n=r*s+1;
 
-  int setprec=240;
-  mpfr_set_default_prec(setprec);
+  // int setprec=240;
+  // mpfr_set_default_prec(setprec);
 
-  gen3r2s(A,n,r,s);
+  // gen3r2s(A,n,r,s);
 
-  print2maple(A,1,n);
+  // print2maple(A,1,n);
 
-  // ZZ_mat<mpz_t> L;
-  // L.resize(1,n);
 
-  // for (int j=0; j<n; j++) {
+  //int start;
+  //start=utime();
 
-  //   A(0,j).mul_2si( A(0,j), setprec);
-  //   L(0,j).set_f(A(0,j));
-  // }
-
-  int found; 
-  int start;
-  start=utime();
+  // !!!!! Quand directement en flottant
   
   //found=relation_lift<mpz_t, double, matrix<FP_NR<double> > > (C, L, 3800, 0.99);
-  found = relation_lift(C, A, setprec);
+  //found = relation_lift(C, A, setprec);
 
-  if (found ==1) print2maple(C,1,n);
- 
-  found = relations_lll<mpz_t, dpe_t, MatrixPE<double, dpe_t> > (C, A, setprec, 0, 4);
+  //if (found ==1) print2maple(C,1,n);
+
+  // !!!!! Temporaire en passant pas une matrice entière
+
+
+  ZZ_mat<mpz_t> A; // For hpLLL
+  ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL
+
+  // ---------------------------------------------------------------------
+
+  int n,d;
   
-  start=utime()-start;
+    
+  double delta;
 
-  cout << "   dimension = " << n  << endl;
-  cout << "   time relation: " << start/1000 << " ms" << endl;
+  command_line_basis(A, n, d, delta, argc, argv);
+
+  AT.resize(d,n);
+  transpose(AT,A);
+
+  C.resize(n,d);
+
   
-  if (found ==1) print2maple(C,n,1);
+  lift_truncate(C,A,-40,0);
 
-  if (found > 1) print2maple(C,n,found);
+  
+  
+  // start=utime()-start;
+
+  // cout << "   dimension = " << n  << endl;
+  // cout << "   time relation: " << start/1000 << " ms" << endl;
+  
+  // if (found ==1) print2maple(C,n,1);
+
+  // if (found > 1) print2maple(C,n,found);
     
   return 0;
 }
