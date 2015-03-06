@@ -33,6 +33,270 @@ using namespace hplll;
 
 
 
+
+
+
+/* ***********************************************
+
+   Lehmer like integer relations using LLL  
+
+   d x n  input matrix 
+
+   B m x n global lattice with the initial identity 
+
+	  Returns the nullity as soon as >= n-d 
+          Full rank required ? 
+
+   alpha : bits, global shit for the upper part 
+   lsigma : bits, elementary shift (step) size à la Lehmer 
+   unique shift if lsigma=0;
+
+   method : HLLL or FPLLL 
+
+   ********************************************** */
+
+/// !!!!!!!!!!!!!   FAIRE VERSION SANS TRONCATURE 
+  
+template<class ZT, class FT, class MatrixFT> int  
+relations_lll_mixed(ZZ_mat<ZT>& C, matrix<FP_NR<mpfr_t> > F, int prec, int lalpha, int lsigma) { 
+
+  
+ mpfr_set_default_prec(prec); 
+
+  int d,n,m;
+  int i=0,j=0;
+
+   d=F.getRows();
+   n=F.getCols();
+   m=d+n;
+
+   int nullity=0;
+   bool zeroedcol; 
+   
+   vector<int> nullcols;  // Zeroed columns in the upper part : 1, otherwise 0
+   nullcols.resize(n); 
+
+   // Copy in the temporary basis and initial shift 
+   // ---------------------------------------------
+   // ICI 
+   //print2maple(F,d,n);
+
+   MatrixRZ<matrix, FP_NR<mpfr_t>,Z_NR<ZT> > B;
+
+   B.resize(d,n,n);
+
+
+   for (i=0; i<d; i++) 
+      for (j=0; j<n; j++) 
+	B.setRT(i,j,F.get(i,j));
+
+   Z_NR<ZT> one;
+   one=1;
+   for (i=0; i<n; i++) 
+     B.setZT(i,i,one);
+
+   B.shift(lalpha);
+ 
+   // For the zero test 
+   // -----------------
+   
+   FP_NR<mpfr_t> epsilon;
+   epsilon=B.get_epsilon();
+   cout << endl << "epsilon = " << epsilon << endl << endl; 
+
+   epsilon=B.shift_epsilon(10);
+   //epsilon=B.shift_epsilon(1000);  // Pour B4 
+
+   cout << endl << "shifted epsilon = " << epsilon << endl << endl;
+
+   FP_NR<mpfr_t> tmpabs; 
+
+   // Unique shift 
+   // ------------
+
+   // ***** Régler le epsilon par rapport à la taille de U ?
+   if (lsigma ==0) {  
+
+     print2maple(B,n+1,n);
+     
+     Lattice<ZT, FT, MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> >, MatrixFT> D(B,NO_TRANSFORM,DEF_REDUCTION);
+       
+     D.hlll(0.99);
+       
+       B=D.getmixedbase();
+	
+       B.shift(-lalpha);
+
+        print2maple(B,n+1,n);
+              
+       //print2maple(B,n+1,n);
+
+       // Zero column test 
+       // ----------------
+       
+       nullity=0;
+   
+
+       for (j=0; j<n; j++) {
+
+	 nullcols[j]=0; 
+	 zeroedcol=true;
+	 for (i=0; i<d; i++) {
+	   tmpabs.abs(B.getRT(i,j));
+	   // ICI 
+	   cout << tmpabs << "   vs   " << epsilon << endl; 
+	   if (tmpabs.cmp(epsilon) >0 )  zeroedcol=false;  
+	 }
+	 if (zeroedcol) { 
+	   nullity+=1;
+	   nullcols[j]=1; 
+	 } 
+       }
+     
+
+     // Shift too small for being a unique shift 
+     // ----------------------------------------
+     
+     if ((nullity==0) || (nullity==n)) { // attention dimensions 
+       cout << endl << " *** Anomaly? Nullity is "  << nullity << ", too small shift or lack of precision?" << endl; 
+       return -1; 
+     }
+     else {
+
+       C.resize(n, nullity);
+       
+       int decj=0;
+       for (j=0; j<n; j++) {  
+	 if (nullcols[j]==1) {
+	   for (i=0; i<n; i++) 
+	     C(i,decj)=B.getZT(i,j);
+	   decj++; 
+	 }
+       }
+
+     } // Nullity ok 
+     
+     // ICI 
+     cout << "  ****  Nb swaps: " <<  D.nblov << endl;  
+     return nullity; 
+     
+   } // End unique shift 
+   
+
+   // Several shifts Lehmer like loop 
+   // -------------------------------
+   
+   else {
+
+     MatrixRZ<matrix, FP_NR<mpfr_t>,Z_NR<ZT> > BL;
+
+     BL.resize(d,n,n);
+
+     int max2up=0;
+     max2up=B.maxbitsizeRT();
+
+     Lattice<ZT, FT, MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> >, MatrixFT> Bt(B,TRANSFORM,DEF_REDUCTION);
+
+     bool notfound=1;
+
+     int current_shift;
+     current_shift = -max2up;
+
+     // Loop of elementary shifts 
+     // -------------------------
+     // Arrêter selon la précision !!!!!!!!!! et epsilon taille U !!!!!!!!
+
+     // fplll
+     ZZ_mat<ZT> A;
+     
+     A.resize(d+n,n);
+       
+     while (notfound) {
+     //for (int K=0; K<1; K++) { 
+
+       BL.set(B);
+
+       current_shift+=lsigma;
+       // ICI       
+       cout << "current shift " << current_shift << endl; 
+       
+       BL.shift(current_shift);
+
+       cout << "********** " << endl;
+       
+       print2maple(BL,4,n);
+       
+       Bt.mixed_put(BL, lsigma+2*n); // Heuristic 
+
+       print2maple(Bt.getmixedbase(),4,n);
+       
+       print2maple(A,4,n);
+       
+       Bt.hlll(0.9999);
+       
+       // Required multiplication update when BL has been truncated 
+       matprod_in(B,Bt.getU());
+       // if not truncated one should not multiply evrything        
+
+       
+       
+       // Zero column test 
+       // ----------------
+       
+       nullity=0;
+
+       // ICI 
+       //cout << endl << " ------------------------------- " << endl; 
+
+       for (j=0; j<n; j++) {
+	 nullcols[j]=0; 
+	 zeroedcol=true;
+	 for (i=0; i<d; i++) {
+	   tmpabs.abs(B.getRT(i,j));
+	   // ICI 
+	   //cout << tmpabs << "   vs   " << epsilon << endl; 
+	   if (tmpabs.cmp(epsilon) >0 )  zeroedcol=false;  
+	 }
+	 if (zeroedcol) { 
+	   nullity+=1;
+	   nullcols[j]=1; 
+	 } 
+       }
+
+       if (nullity > 0) {
+
+	 notfound=0;
+
+	 C.resize(n, nullity);
+	 
+	 int decj=0;
+	 for (j=0; j<n; j++) {  
+	   if (nullcols[j]==1) {
+	     for (i=0; i<n; i++) 
+	       C(i,decj)=B.getZT(i,j);
+	     decj++; 
+	   }
+	 }
+
+	 // ICI 
+	 //print2maple(C,n,nullity);
+	 return nullity; 
+       } 
+       
+     } // End while loop on the Lehmer shifts 
+
+   } // End else Lehmer case 
+   
+   
+   return nullity;
+};
+
+
+  
+
+
+
+
 /* ***********************************************
 
    Generalized Lehmer LLL  
