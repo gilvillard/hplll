@@ -72,7 +72,7 @@ namespace hplll {
   *************************************************/    
 
   template<class ZT, class FT, class MatrixFT> int  
-  relation_lift_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha=0, double delta=0.99) { 
+  relation_lift_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha, double delta) { 
 
     int m,d;
     int i,j;
@@ -197,7 +197,7 @@ namespace hplll {
   
 
   template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
-  relation_lll_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha, int shift=0, double delta=0.99) {
+  relation_lll_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha, int shift, double delta) {
 
     int found;
 
