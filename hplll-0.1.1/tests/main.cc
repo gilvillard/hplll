@@ -85,7 +85,7 @@ int main(int argc, char *argv[])  {
   C.resize(n,d);
 
   
-  lift_truncate(C,A,-40,0);
+  lift_truncate(C,A,-40,20);
 
   
   
