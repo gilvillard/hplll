@@ -42,11 +42,11 @@ int main(int argc, char *argv[])  {
   matrix<FP_NR<mpfr_t> > A;   // Input matrix 
   ZZ_mat<mpz_t> C;
  
-  int r=6; 
-  int s=6; 
+  int r=9; 
+  int s=9; 
   int n=r*s+1;
 
-  int setprec=4000;
+  int setprec=4800;
   mpfr_set_default_prec(setprec);
 
   gen3r2s(A,n,r,s);
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])  {
 
   cout << endl << "----------" << endl;
  
-  found=relation_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C, A, setprec);  
+  found=relation_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C, A, setprec, 10, FPLLL);  
 
   
   //if (found ==1) print2maple(C,1,n);
