@@ -35,15 +35,19 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 namespace hplll { 
 
   // Calls double routines via a restarting process
-  int relation_lift(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> >& L, long setprec);
+  int relation_lift(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > L, long setprec);
 
   template<class ZT, class FT, class MatrixFT> int  
     relation_lift_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha=0, double delta=0.99);
 
   template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
+    relation_lll(ZZ_mat<ZT>& C,  const matrix<FP_NR<mpfr_t> > L, long setprec);
+  
+  template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
     relation_lll_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha, int shift=0, double delta=0.99);
 
-    
+
+  
 // ********   ATTENTION   ******************************
 //
 // Template RT but tested for mpfr .....

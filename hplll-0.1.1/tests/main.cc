@@ -39,56 +39,38 @@ using namespace hplll;
 int main(int argc, char *argv[])  {
   
 
-  // matrix<FP_NR<mpfr_t> > A;   // Input matrix 
+  matrix<FP_NR<mpfr_t> > A;   // Input matrix 
   ZZ_mat<mpz_t> C;
  
-  // int r=4; 
-  // int s=4; 
-  // int n=r*s+1;
+  int r=6; 
+  int s=6; 
+  int n=r*s+1;
 
-  // int setprec=240;
-  // mpfr_set_default_prec(setprec);
+  int setprec=4000;
+  mpfr_set_default_prec(setprec);
 
-  // gen3r2s(A,n,r,s);
+  gen3r2s(A,n,r,s);
 
-  // print2maple(A,1,n);
-
-
+  int found; 
   //int start;
   //start=utime();
 
   // !!!!! Quand directement en flottant
   
   //found=relation_lift<mpz_t, double, matrix<FP_NR<double> > > (C, L, 3800, 0.99);
-  //found = relation_lift(C, A, setprec);
+  found = relation_lift(C, A, setprec);
+  
+  if (found == 1) print2maple(C,1,n);
 
+  cout << endl << "----------" << endl;
+ 
+  found=relation_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C, A, setprec);  
+
+  
   //if (found ==1) print2maple(C,1,n);
 
   // !!!!! Temporaire en passant pas une matrice entière
 
-
-  ZZ_mat<mpz_t> A; // For hpLLL
-  ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL
-
-  // ---------------------------------------------------------------------
-
-  int n,d;
-  
-    
-  double delta;
-
-  command_line_basis(A, n, d, delta, argc, argv);
-
-  AT.resize(d,n);
-  transpose(AT,A);
-
-  C.resize(n,d);
-
-  
-  lift_truncate(C,A,-40,20);
-
-  
-  
   // start=utime()-start;
 
   // cout << "   dimension = " << n  << endl;

@@ -1810,6 +1810,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
   FP_NR<mpfr_t> confidence;
   // For testing 1/gap < confidence
   confidence = 1.0;
+
+  // relié, plus petit,  au shift sur S (ex 80) 
   confidence.mul_2si(confidence,-24); // En fonction de taille de U et de dec ??? 
 
   FP_NR<mpfr_t> epsilon;
