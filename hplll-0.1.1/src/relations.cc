@@ -120,7 +120,9 @@ namespace hplll {
     int found;
 
     FP_NR<FT> rel_bound;
-   
+
+    Lattice<double, FT,  matrix<Z_NR<double> >,  MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION,1);
+     
     // Main loop on the shifts
     // -----------------------
     while (def < target_def) {
@@ -141,8 +143,8 @@ namespace hplll {
 
       // Lattice<double, dpe_t,  matrix<Z_NR<double> >, MatrixPE<double, dpe_t> > Bp(T,TRANSFORM,DEF_REDUCTION,1);
       // FAIRE UN SET !!!!!!!!!
-      Lattice<double, FT,  matrix<Z_NR<double> >,  MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION,1);
-
+     
+      Bp.assign(T);
       Bp.assignL(L);
      
       found = Bp.detect_lift(delta,def,target_def,new_def,maxbitsize(A_in,1,d,d),rel_bound);
@@ -171,24 +173,16 @@ namespace hplll {
 	return 1;
       }
      
-      // start=utime()-start;
-      // cout << "   time B: " << start/1000 << " ms" << endl << endl;
-      // start=utime();
-
-      // cout << "***** " << new_def << endl;
-      // cout << "***** " << maxbitsize(A_in)+new_def << endl;
-     
-      // cout << endl << "  size of U: " << maxbitsize(U,0,d,d)  << endl;
-     
 
     }
 
+   
     // found = 0
     cout << "**** There might not be relations of norm less than " << rel_bound << endl; 
   
     return 0;
-  
-
+    
+    
   } 
 
 /*************************************************************
@@ -201,7 +195,7 @@ namespace hplll {
   // Régler les paramètres en fonction des types de données
   
   template<class ZT, class FT, class MatrixZT, class MatrixFT> int 
-  relation_lll(ZZ_mat<ZT>& C, const matrix<FP_NR<mpfr_t> > A, long setprec) {
+  relation_lll(ZZ_mat<ZT>& C, const matrix<FP_NR<mpfr_t> > A, long setprec, long shift, int lllmethod=HLLL) {
 
     mpfr_set_default_prec(setprec);
 
@@ -220,7 +214,7 @@ namespace hplll {
     int found;
 
     int start=utime();
-    found=relation_lll_z<ZT, FT, MatrixZT, MatrixFT> (C, L, setprec, 20, 0.99);
+    found=relation_lll_z<ZT, FT, MatrixZT, MatrixFT> (C, L, setprec, shift, 0.99, lllmethod);
   
   
     start=utime()-start;
@@ -235,7 +229,7 @@ namespace hplll {
   //*************
   
   template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
-  relation_lll_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha, int shift, double delta) {
+  relation_lll_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha, int shift, double delta, int lllmethod=HLLL) {
 
     int m,d;
     int i,j;
@@ -258,17 +252,19 @@ namespace hplll {
     int bitsize = maxbitsize(A,0,m,d);
   
     // For assigning the truncated basis at each step
-    
-    ZZ_mat<ZT> T;
+
+    // ICI long 
+    //ZZ_mat<ZT> T,TT;
+    ZZ_mat<long> T,TT;
     T.resize(m+d,d);
-
-    
-    ZZ_mat<ZT> U;
+    TT.resize(d,m+d);
+ 
+    // ICI long 
+    //ZZ_mat<ZT> U,UT;
+    ZZ_mat<long> U,UT;
     U.resize(d,d);
-
-    for (i=0; i<d; i++)
-      U(i,i)=1; 
-
+    UT.resize(d,d);
+ 
     int def = -bitsize;
 
     int target_def = -bitsize + alpha;
@@ -290,10 +286,17 @@ namespace hplll {
     FP_NR<mpfr_t> epsilon;
     epsilon = 10.0; // Relation to d 
     
+    
     Z_NR<ZT> tz,maxcol;
 
-    Lattice<ZT, FT, MatrixZT, MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION,1);
+    // ICI long 
+    //Lattice<ZT, FT, MatrixZT, MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION,1);
+    Lattice<long, FT, matrix<Z_NR<long> >, MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION,1);
     // Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > Bp(T,TRANSFORM,DEF_REDUCTION,1);
+
+    // Faire le produi de U ou la laisser mettre à jour ???
+
+    
     
     // Main loop on the shifts
     // -----------------------
@@ -301,15 +304,39 @@ namespace hplll {
 
       if ((target_def - def) < shift) def=target_def;
       else def+=shift;
-      
-      lift_truncate(T,A_in,def,shift+2*d);
-      
-      Bp.assign(T);
 
-      Bp.hlll(delta);
-      
-      matprod_in(A_in,Bp.getU());
+      lift_truncate(T,A_in,def,shift+d);
 
+      cout << "****** sizeof T: " << maxbitsize(T,0,d+1,d) << endl;
+      
+      if (lllmethod == HLLL) {
+	      
+	Bp.assign(T);
+	
+	Bp.hlll(delta);
+
+	// ICI long 
+	//matprod_in(A_in,Bp.getU());
+	matprod_in_si(A_in,Bp.getU());
+      }
+
+      else if (lllmethod == FPLLL) {
+
+	transpose(TT,T);
+
+	setId(UT);
+	
+	lllReduction(TT, UT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+
+	transpose(U,UT);
+	  
+	// ICI long 
+	//matprod_in(A_in,U);
+	matprod_in_si(A_in,U);
+	cout << "****** sizeof U: " << maxbitsize(U,0,d,d) << endl;
+
+      } 
+      
       // Test
       // ----
 
@@ -352,6 +379,8 @@ namespace hplll {
     } // End while 
 
     // // found = 0
+
+    // How to do ??? One QR ??? 
     // cout << "**** There might not be relations of norm less than " << rel_bound << endl; 
   
     return found;

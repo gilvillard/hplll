@@ -1272,7 +1272,7 @@ template<> void trunc_sigma(matrix<Z_NR<mpz_t> >& B, ZZ_mat<mpz_t> A, long n, lo
 // Le calcul flottant de la norme spécialiser : double, dpe selon la taille
  
 // Avec des flottants size in bits ici 
- template<class ZT> void lift_truncate(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, long def, long bits) {
+void lift_truncate(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long def, long bits) {
 
    int i,j;
    
@@ -1291,7 +1291,7 @@ template<> void trunc_sigma(matrix<Z_NR<mpz_t> >& B, ZZ_mat<mpz_t> A, long n, lo
    // Min max norms of the columns 
    int mmax,mmin;
   
-   Z_NR<ZT> t;
+   Z_NR<mpz_t> t;
 
    mmax=0;
    for (i=0; i<n; i++) { 
@@ -1321,7 +1321,63 @@ template<> void trunc_sigma(matrix<Z_NR<mpz_t> >& B, ZZ_mat<mpz_t> A, long n, lo
 
  };
   
- 
+// LONG 
+ // Avec des flottants size in bits ici 
+void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
+
+  
+  int i,j;
+   
+   int n=A.getRows();
+   int d=A.getCols();
+
+   ZZ_mat<mpz_t> C;
+   C.resize(n,d);
+   
+   for (j=0; j<d; j++) 
+     C(0,j).mul_2si(A(0,j),def);
+
+   for (i=1; i<n; i++)
+     for (j=0; j<d; j++) 
+       C(i,j)=A(i,j);
+
+   
+   // Min max norms of the columns 
+   int mmax,mmin;
+  
+   Z_NR<mpz_t> t;
+
+   mmax=0;
+   for (i=0; i<n; i++) { 
+     t.abs(C(i,0));
+     mmax=max(mmax,size_in_bits(t));
+   }
+   mmin=mmax;
+
+   for (j=1; j<d ; j++) { 
+     mmax=0;
+     for (i=0; i<n; i++) { 
+       t.abs(C(i,j));
+       mmax=max(mmax,size_in_bits(t));
+     }
+     mmin = min(mmin, mmax);
+   }
+
+   // Truncation 
+
+   if (mmin > bits) {
+     long s= - (mmin - bits);
+
+     for (i=0; i<n; i++)
+       for (j=0; j<d; j++) 
+	 C(i,j).mul_2si(C(i,j),s);
+   }
+
+   for (i=0; i<n; i++)
+     for (j=0; j<d; j++)
+       C_out(i,j)=mpz_get_si(C(i,j).getData());
+
+}; 
 
 // ********************************************************************
 // 
