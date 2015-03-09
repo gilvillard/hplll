@@ -1278,9 +1278,8 @@ template<> void trunc_sigma(matrix<Z_NR<mpz_t> >& B, ZZ_mat<mpz_t> A, long n, lo
    
    int n=A.getRows();
    int d=A.getCols();
-   
-   print2maple(A,n,d);
 
+   
    for (j=0; j<d; j++) 
      C(0,j).mul_2si(A(0,j),def);
 
@@ -1288,8 +1287,7 @@ template<> void trunc_sigma(matrix<Z_NR<mpz_t> >& B, ZZ_mat<mpz_t> A, long n, lo
      for (j=0; j<d; j++) 
        C(i,j)=A(i,j);
 
-   print2maple(C,n,d);
-
+   
    // Min max norms of the columns 
    int mmax,mmin;
   
@@ -1320,8 +1318,7 @@ template<> void trunc_sigma(matrix<Z_NR<mpz_t> >& B, ZZ_mat<mpz_t> A, long n, lo
        for (j=0; j<d; j++) 
 	 C(i,j).mul_2si(C(i,j),s);
    } 
-      
-   print2maple(C,n,d);
+
  };
   
  

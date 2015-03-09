@@ -35,7 +35,7 @@ namespace hplll {
 
   **************************************************************************************/ 
   
-  int relation_lift(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> >& A, long setprec) {
+  int relation_lift(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long setprec) {
 
     mpfr_set_default_prec(setprec);
 
@@ -193,22 +193,171 @@ namespace hplll {
 
 /*************************************************************
 
+   Methode et limiter avec long 
+   m= 1 for the moment 
+   Faire une version sans troncature 
  *************************************************************/
-  
 
-  template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
-  relation_lll_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha, int shift, double delta) {
+  // Régler les paramètres en fonction des types de données
+  
+  template<class ZT, class FT, class MatrixZT, class MatrixFT> int 
+  relation_lll(ZZ_mat<ZT>& C, const matrix<FP_NR<mpfr_t> > A, long setprec) {
+
+    mpfr_set_default_prec(setprec);
+
+    int n=A.getCols();
+
+    ZZ_mat<ZT> L;
+    L.resize(1,n);
+
+    FP_NR<mpfr_t> t;
+  
+    for (int j=0; j<n; j++) {
+      t.mul_2si( A(0,j), setprec);
+      L(0,j).set_f(t);
+    }
 
     int found;
 
+    int start=utime();
+    found=relation_lll_z<ZT, FT, MatrixZT, MatrixFT> (C, L, setprec, 20, 0.99);
+  
+  
+    start=utime()-start;
+
+  
+    cout << "   time internal: " << start/1000 << " ms" << endl;
+  
+    return found;
+    
+  } 
+
+  //*************
+  
+  template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
+  relation_lll_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha, int shift, double delta) {
+
+    int m,d;
+    int i,j;
+  
+    m=A.getRows();
+    d=A.getCols();
+
+    ZZ_mat<ZT> A_in;
+    A_in.resize(m+d,d);
+
+    // **** m=1 for the moment
+    
+    for (j=0; j<d; j++)
+	A_in(0,j)=A(0,j);
+    
+    for (i=0; i<d; i++)
+      A_in(m+i,i)=1;
 
 
+    int bitsize = maxbitsize(A,0,m,d);
+  
+    // For assigning the truncated basis at each step
+    
+    ZZ_mat<ZT> T;
+    T.resize(m+d,d);
 
     
+    ZZ_mat<ZT> U;
+    U.resize(d,d);
+
+    for (i=0; i<d; i++)
+      U(i,i)=1; 
+
+    int def = -bitsize;
+
+    int target_def = -bitsize + alpha;
+
+    int found;
+
+    FP_NR<mpfr_t> quot,new_quot,tf;
+    new_quot = 1.0;  // new_quot should be bigger after the first iteration of the loop 
+
+    FP_NR<mpfr_t> gap;
+    gap=1.0;
+
+    FP_NR<mpfr_t> confidence;
+    // For testing 1/gap < confidence
+    confidence = 1.0;
+    // relié, plus petit,  au shift sur S (ex 80) 
+    confidence.mul_2si(confidence,-24); // En fonction de taille de U et de dec ??? 
+
+    FP_NR<mpfr_t> epsilon;
+    epsilon = 10.0; // Relation to d 
+    
+    Z_NR<ZT> tz,maxcol;
+
+    Lattice<ZT, FT, MatrixZT, MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION,1);
+    // Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > Bp(T,TRANSFORM,DEF_REDUCTION,1);
+    
+    // Main loop on the shifts
+    // -----------------------
+    while (def < target_def) {
+
+      if ((target_def - def) < shift) def=target_def;
+      else def+=shift;
+      
+      lift_truncate(T,A_in,def,shift+2*d);
+      
+      Bp.assign(T);
+
+      Bp.hlll(delta);
+      
+      matprod_in(A_in,Bp.getU());
+
+      // Test
+      // ----
+
+      quot = new_quot;
+       
+      tz.abs(A_in(0,0));
+      new_quot.set_z(tz);
+
+      
+      maxcol.abs(A_in(0,0));
+      maxcol.mul_2si(maxcol,def);
+
+      for (i=0; i<d; i++) {
+	tz.abs(A_in(m+i,0));
+	if (tz.cmp(maxcol) ==1) maxcol = tz;
+      }
+
+      tf.set_z(maxcol);
+      new_quot.div(new_quot,tf);
+
+            
+      gap.div(new_quot,quot);
+      gap.abs(gap); 
+
+      if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
+       
+	C.resize(1,d);
+	for (j=0; j<d; j++)
+	  C(0,j)=A_in(m+j,0);
+
+
+	print2maple(C,1,d);
+	
+      cout << "Candidate relation found with confidence " << gap << endl;  
+      return 1;
+    
+      found=0;
+      } 
+      
+    } // End while 
+
+    // // found = 0
+    // cout << "**** There might not be relations of norm less than " << rel_bound << endl; 
+  
     return found;
 
     
-  } 
+  };
 
   
 // ********   ATTENTION   ******************************
