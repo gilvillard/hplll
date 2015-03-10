@@ -42,11 +42,11 @@ int main(int argc, char *argv[])  {
   matrix<FP_NR<mpfr_t> > A;   // Input matrix 
   ZZ_mat<mpz_t> C;
  
-  int r=9; 
-  int s=9; 
+  int r=8; 
+  int s=8; 
   int n=r*s+1;
 
-  int setprec=5000;
+  int setprec=3320;
   mpfr_set_default_prec(setprec);
 
   gen3r2s(A,n,r,s);
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])  {
 
    int start=utime();
 
-   relation_lift_d_z<long, double> (C, L,  setprec, 10, 0.99, FPLLL);
+   relation_lift_d_z<long, double> (C, L,  setprec, 120, 0.99, FPLLL);
     
    start=utime()-start;
    

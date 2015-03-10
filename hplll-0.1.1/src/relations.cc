@@ -216,9 +216,7 @@ namespace hplll {
     int start=utime();
     found=relation_lll_z<ZT, FT, MatrixZT, MatrixFT> (C, L, setprec, shift, 0.99, lllmethod);
   
-  
     start=utime()-start;
-
   
     cout << "   time internal: " << start/1000 << " ms" << endl;
   
@@ -239,7 +237,8 @@ namespace hplll {
 
     ZZ_mat<ZT> A_in;
     A_in.resize(m+d,d);
-
+   
+ 
     // **** m=1 for the moment
     
     for (j=0; j<d; j++)
@@ -248,7 +247,7 @@ namespace hplll {
     for (i=0; i<d; i++)
       A_in(m+i,i)=1;
 
-
+    
     int bitsize = maxbitsize(A,0,m,d);
   
     // For assigning the truncated basis at each step
@@ -294,23 +293,23 @@ namespace hplll {
     Lattice<long, FT, matrix<Z_NR<long> >, MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION,1);
     // Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > Bp(T,TRANSFORM,DEF_REDUCTION,1);
 
-    // Faire le produi de U ou la laisser mettre à jour ???
+    // Faire le produit de U ou la laisser mettre à jour ???
 
-    
-    
+       
     // Main loop on the shifts
     // -----------------------
     while (def < target_def) {
 
-      if ((target_def - def) < shift) def=target_def;
+      if ((target_def - def) <= shift) 
+	def=target_def;
       else def+=shift;
 
-      lift_truncate(T,A_in,def,shift+d);
+      lift_truncate(T, A_in, def, shift+d);
 
-      cout << "****** sizeof T: " << maxbitsize(T,0,d+1,d) << endl;
+      cout << "****** sizeof T: " << maxbitsize(T,0,d+1,d) << "    " << sizeof(__float128) << endl;
       
       if (lllmethod == HLLL) {
-	      
+
 	Bp.assign(T);
 	
 	Bp.hlll(delta);
@@ -325,18 +324,17 @@ namespace hplll {
 	transpose(TT,T);
 
 	setId(UT);
-	
-	lllReduction(TT, UT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
-
-	transpose(U,UT);
 	  
+	lllReduction(TT, UT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+	
+	transpose(U,UT);
+	
 	// ICI long 
 	//matprod_in(A_in,U);
 	matprod_in_si(A_in,U);
-	cout << "****** sizeof U: " << maxbitsize(U,0,d,d) << endl;
-
+	//cout << "****** sizeof U: " << maxbitsize(U,0,d,d) << endl;
       } 
-      
+
       // Test
       // ----
 
@@ -370,11 +368,12 @@ namespace hplll {
 
 	print2maple(C,1,d);
 	
-      cout << "Candidate relation found with confidence " << gap << endl;  
-      return 1;
+	cout << "Candidate relation found with confidence " << gap << endl;  
+	return 1;
     
-      found=0;
+	found=0;
       } 
+    
       
     } // End while 
 
@@ -388,6 +387,287 @@ namespace hplll {
     
   };
 
+
+  // *********************
+  // ZT long et FT double les types internes
+  
+  // Voir par quoi templater ??? 
+  template<class ZT, class FT> int relation_lift_d_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A,  int alpha, int shift, double delta, int lllmethod=HLLL) { 
+
+    int m,d;
+    int i,j;
+  
+    m=A.getRows();
+    d=A.getCols();
+    
+    ZZ_mat<mpz_t> A_in;
+    A_in.resize(m+d,d);
+   
+    // **** m=1 for the moment
+    
+    for (j=0; j<d; j++)
+      A_in(0,j)=A(0,j);
+    
+    for (i=0; i<d; i++)
+      A_in(m+i,i)=1;
+
+    ZZ_mat<mpz_t> L;
+    L.resize(m,d);
+   
+    int bitsize = maxbitsize(A,0,m,d);
+  
+    // For assigning the truncated basis at each step
+
+    ZZ_mat<FT> Tf;
+    Tf.resize(d,d);
+
+    ZZ_mat<ZT> U,UT;
+    U.resize(d,d);
+    UT.resize(d,d);
+ 
+    int def = -bitsize;
+
+    int target_def = -bitsize + alpha;
+
+    int new_def;
+    
+    int found;
+
+    FP_NR<mpfr_t> new_quot;
+    new_quot = 1.0;
+    
+    // Main loop on the shifts
+    // -----------------------
+    while (def < target_def) {
+
+      for (i=0; i<m; i++) 
+     	for (j=0; j<d; j++) 
+	  L(i,j)=A_in(i,j);
+    
+      for (i=0; i<d; i++)
+     	for (j=0; j<d ; j++) 
+	  Tf(i,j)=A_in(m+i,j).get_d(); // long double ? 
+
+      setId(U);
+      
+      found=detect_lift_d<ZT, FT>(U, L, Tf, new_def, def, target_def, new_quot, shift, 0.99, lllmethod);
+
+      def=new_def;
+
+      matprod_in_si(A_in,U);
+
+      if (found == 1) {
+       
+	C.resize(1,d);
+	for (j=0; j<d; j++)
+	  C(0,j)=A_in(m+j,0);
+
+	print2maple(C,1,d);
+	
+	return 1;
+      }
+      
+    }
+
+    // // found = 0
+    // cout << "**** There might not be relations of norm less than " << rel_bound << endl; 
+  
+    return 0;
+    
+    
+  } 
+   //*************
+  // Tout en double 
+  // Quelques étapes en flottant à l'intérieur
+  // En exact pour 
+  // Pour un restart
+  // FT type interne pour la matrice de passage, retournée en ZT = double  
+  // avec mise à jour de def comme detect_lift 
+  // **** m=1 for the moment
+  // Dpe pour FT aussi, long double
+  // et get_ld
+  // A_in est d x d !!!!!
+  
+  template<class ZT, class FT> int  
+  detect_lift_d(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT> A_in_f, int& new_def, int def,  int target_def,
+		FP_NR<mpfr_t>& new_quot, int shift, double delta, int lllmethod=HLLL) {
+
+    int m,d;
+    int i,j;
+  
+    m=L_in.getRows();
+    d=L_in.getCols();
+
+    // Toujours mpz_t
+    ZZ_mat<mpz_t> L;
+    L.resize(m,d);
+    
+    for (j=0; j<d; j++)
+      L(0,j)=L_in(0,j);
+
+    ZZ_mat<FT> Af;
+    Af.resize(m+d,d);
+
+    for (i=0; i<d; i++)
+      for (j=0; j<d; j++)
+	Af(m+i,j)=A_in_f(i,j);
+
+    ZZ_mat<FT> AfT;
+    AfT.resize(d,m+d);
+    
+    // Transform for the intermediary lifting steps 
+    ZZ_mat<ZT> V;
+    V.resize(d,d);
+    
+    ZZ_mat<FT> Vf;
+    Vf.resize(d,d);
+
+    ZZ_mat<FT> VfT;
+    VfT.resize(d,d);
+
+    // For the end test
+    // ----------------
+    int found=0;
+
+    FP_NR<mpfr_t> quot;
+    
+
+    FP_NR<mpfr_t> gap;
+    gap=1.0;
+
+    FP_NR<mpfr_t> confidence;
+    // For testing 1/gap < confidence
+    confidence = 1.0;
+    // relié, plus petit,  au shift sur S (ex 80) 
+    confidence.mul_2si(confidence,-24); // En fonction de taille de U et de dec ??? 
+
+    FP_NR<mpfr_t> epsilon;
+    epsilon = 10.0; // Relation to d 
+    
+
+    // -----------
+    
+    Lattice<FT, FT,  matrix<Z_NR<FT> >, matrix<FP_NR<FT> > > B(Af,TRANSFORM,DEF_REDUCTION);
+
+    // Loop
+    // update def
+    // get base 
+    // Lift L and trucate and update Af 
+    // put 
+
+    Z_NR<mpz_t> tz;
+    
+    FP_NR<FT> tf;
+      
+    int S;
+
+    new_def = def;
+
+    cout << "----------- "  << endl;
+    
+
+    int incr=20;
+    
+    for (S=0; S<shift; S++) {  // Limiter en borne de U  // while comme detect lift de hplll 
+      
+      new_def += incr; // incrément du défaut 
+      
+      // Lift and truncate
+     
+      for (i=0; i<m; i++) 
+	for (j=0; j<d; j++) {
+	  tz.mul_2si(L(i,j),new_def);
+	  Af(i,j)=tz.get_d();  // long double ? 
+	}
+
+      if (lllmethod == HLLL) {
+	
+	B.assign(Af);
+
+	B.hlll(delta);
+
+	Af = B.getbase(); // The first row will change 
+	
+	Vf = B.getU();
+      }
+      else if (lllmethod == FPLLL) {
+
+	transpose(AfT,Af);
+	
+	setId(VfT);
+	
+	lllReduction(AfT, VfT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+
+	transpose(Af,AfT);
+	
+	transpose(Vf,VfT);
+	
+      } 
+      
+      for (i=0; i<d; i++) 
+	for (j=0; j<d; j++) {
+	  tf = Vf(i,j).getData();  // Pour long double ou autre, vérifier et passer par set_z ? 
+	  V(i,j).set_f(tf);
+
+	}
+      
+      matprod_in(U,V); 
+
+      matprod_in_si(L,V);
+
+
+      // Test
+      // ----
+
+      quot = new_quot;
+      
+      Z_NR<mpz_t> xz;
+      xz.abs(L(0,0)); 
+      new_quot.set_z(xz);
+
+      Z_NR<FT> tmpz,maxcol;
+      
+      maxcol.abs(Af(0,0));
+      
+      for (i=0; i<d; i++) {
+       	tmpz.abs(Af(i,0));
+	if (tmpz.cmp(maxcol) == 1) maxcol = tmpz;
+      } 
+
+       FP_NR<mpfr_t> xf;
+       xf = maxcol.getData(); // Double vers mpfr voir long double 
+       new_quot.div(new_quot,xf);
+
+       cout << endl << "**  U bits: " << maxbitsize(U,0,d,d) << endl; 
+       cout << "      quot: " << new_quot << endl; 
+            
+      gap.div(new_quot,quot);
+      gap.abs(gap); 
+
+      if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
+       
+      // 	C.resize(1,d);
+      // 	for (j=0; j<d; j++)
+      // 	  C(0,j)=A_in(m+j,0);
+
+
+      // 	print2maple(C,1,d);
+	
+       	cout << "Candidate relation found with confidence " << gap << endl;  
+       	return 1;
+    
+      } 
+
+      
+    } // End main shift loop 
+    
+      
+    return found; 
+
+    
+  };
+
+  
   
 // ********   ATTENTION   ******************************
 //

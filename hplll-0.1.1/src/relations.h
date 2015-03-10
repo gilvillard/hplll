@@ -47,6 +47,10 @@ namespace hplll {
     relation_lll_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha, int shift=0, double delta=0.99, int lllmethod=HLLL);
 
 
+  template<class ZT, class FT> int  
+    detect_lift_d(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT> A_in_f, int& new_def, int def,
+		  int target_def, FP_NR<mpfr_t>& new_quot, int shift, double delta, int lllmethod=HLLL);
+    
   
 // ********   ATTENTION   ******************************
 //
