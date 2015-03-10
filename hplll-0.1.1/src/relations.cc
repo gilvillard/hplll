@@ -34,8 +34,12 @@ namespace hplll {
       Calls LLL with elementary lifts 
 
   **************************************************************************************/ 
+
+  // ZT long et FT double les types internes  
+  // Voir par quoi templater ???
   
-  int relation_lift(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long setprec) {
+  template<class ZT, class FT> 
+  int relation_lift(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long setprec, long shift, int lllmethod=HLLL) {
 
     mpfr_set_default_prec(setprec);
 
@@ -54,8 +58,7 @@ namespace hplll {
     int found;
 
     int start=utime();
-    found=relation_lift_z<mpz_t, double, matrix<FP_NR<double> > > (C, L, setprec, 0.99);
-  
+    found=relation_lift_d_z<ZT, FT> (C, L,  setprec, shift, 0.99, lllmethod);
   
     start=utime()-start;
 
@@ -306,7 +309,7 @@ namespace hplll {
 
       lift_truncate(T, A_in, def, shift+d);
 
-      cout << "****** sizeof T: " << maxbitsize(T,0,d+1,d) << "    " << sizeof(__float128) << endl;
+      //cout << "****** sizeof T: " << maxbitsize(T,0,d+1,d) << "    " << sizeof(__float128) << endl;
       
       if (lllmethod == HLLL) {
 
@@ -566,7 +569,7 @@ namespace hplll {
     cout << "----------- "  << endl;
     
 
-    int incr=20;
+    int incr=10;
     
     for (S=0; S<shift; S++) {  // Limiter en borne de U  // while comme detect lift de hplll 
       

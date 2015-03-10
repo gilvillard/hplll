@@ -35,8 +35,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 namespace hplll { 
 
   // Calls double routines via a restarting process
-  int relation_lift(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > L, long setprec);
+  template<class ZT, class FT> 
+    int relation_lift(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long setprec, long shift, int lllmethod=HLLL); 
+    
+  template<class ZT, class FT> int relation_lift_d_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A,  int alpha, int shift,
+						     double delta, int lllmethod=HLLL);
 
+  template<class ZT, class FT> int  
+    detect_lift_d(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT> A_in_f, int& new_def, int def,
+		  int target_def, FP_NR<mpfr_t>& new_quot, int shift, double delta, int lllmethod=HLLL);
+    
   template<class ZT, class FT, class MatrixFT> int  
     relation_lift_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha=0, double delta=0.99);
 
@@ -47,9 +55,7 @@ namespace hplll {
     relation_lll_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha, int shift=0, double delta=0.99, int lllmethod=HLLL);
 
 
-  template<class ZT, class FT> int  
-    detect_lift_d(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT> A_in_f, int& new_def, int def,
-		  int target_def, FP_NR<mpfr_t>& new_quot, int shift, double delta, int lllmethod=HLLL);
+  
     
   
 // ********   ATTENTION   ******************************
