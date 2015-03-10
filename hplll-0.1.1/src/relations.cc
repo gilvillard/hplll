@@ -569,7 +569,7 @@ namespace hplll {
     cout << "----------- "  << endl;
     
 
-    int incr=10;
+    int incr=16;
     
     for (S=0; S<shift; S++) {  // Limiter en borne de U  // while comme detect lift de hplll 
       

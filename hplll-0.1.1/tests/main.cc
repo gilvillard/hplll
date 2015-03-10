@@ -46,7 +46,7 @@ int main(int argc, char *argv[])  {
   int s=9; 
   int n=r*s+1;
 
-  int setprec=5000;
+  int setprec=5200;
   mpfr_set_default_prec(setprec);
 
   gen3r2s(A,n,r,s);
@@ -63,12 +63,9 @@ int main(int argc, char *argv[])  {
 
    int start=utime();
    
-   relation_lift<long, double>(C, A, setprec, 40, FPLLL);
-    
-   // relation_lift_d_z<long, double> (C, L,  setprec, 100, 0.99, HLLL);
-    
-   start=utime()-start;
+   relation_lift<long, double>(C, A, setprec, 20, FPLLL);
    
+   start=utime()-start;
    
    cout << "   time internal: " << start/1000 << " ms" << endl;
       

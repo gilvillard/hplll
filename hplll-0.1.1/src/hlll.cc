@@ -1773,7 +1773,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
   // Not limited to doubles 
 
   template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
-  Lattice<ZT,FT, MatrixZT, MatrixFT>::detect_lift(double delta,  int def,  int target_def, int& new_def,  int sizeU, FP_NR<FT>& rel_bound, bool verbose) { 
+  Lattice<ZT,FT, MatrixZT, MatrixFT>::detect_lift(double delta,  int def,  int target_def, int& new_def,
+						  int sizeU, FP_NR<FT>& rel_bound, bool verbose) { 
   
     int kappa=1,i,j;
   int prevkappa=-1; // For the looping test betwenn tow indices 
