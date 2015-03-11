@@ -20,15 +20,12 @@ along with the hplll Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-
+#include "hlll.h"
+#include "lehmer.cc"
 #include "matgen.h"
-#include "relations.h" 
+#include "relations.h"
 
-#include "nullspace.h" 
-
-#include "matmixed.h" 
-
-using namespace hplll;
+#include "tools.h"
 
 /* ***********************************************
 
@@ -36,15 +33,11 @@ using namespace hplll;
 
    ********************************************** */
 
-
+using namespace hplll; 
 
 int main(int argc, char *argv[])  {
-  
-  
-  typedef FP_NR<mpfr_t>   RT;
-  typedef Z_NR<mpz_t>  ZT;
-  
-  // Reading of the zero 
+
+    // Reading of the zero 
 
   filebuf fb;
   iostream os(&fb);
@@ -60,23 +53,24 @@ int main(int argc, char *argv[])  {
   fb.close();
 
   
-  int setprec=31000;
+  int setprec=32500;
   mpfr_set_default_prec(setprec);
 
   FP_NR<mpfr_t> zzf,tf;
   tf=10.0;
   set_z(zzf,zz);
-   
+
   while (zzf.cmp(10.0) > 0) {
     zzf.div(zzf,tf);
   } 
 
  
+ 
   // Real matrix 
   // -----------
 
  
-  matrix<RT> F;
+  matrix<FP_NR<mpfr_t> > F;
 
   F.resize(1,deg+1);
 
@@ -87,22 +81,32 @@ int main(int argc, char *argv[])  {
     tf.mul(F.get(0,k-1),F.get(0,1));
     F.set(0,k,tf);
   }
-  
-  //print2maple(F,1,deg+1);
- 
-  int nullity;
 
+  FP_NR<mpfr_t> t,mmax;
+
+  mmax=0.0;
+  
+  for(int k=0; k<deg+1; k++) {
+    t.abs(F(0,k));
+    if (t.cmp(mmax) ==1) mmax=t;
+  }
+
+  
+  cout << " **** Max: " << mmax << endl;
+  
   ZZ_mat<mpz_t> C;
  
   int start=utime();
 
-  nullity=relations_lll<mpz_t, dpe_t, MatrixPE<double, dpe_t> > (C, F, setprec, 29200, 0);
+  relation_lift<long, double>(C, F, 30400, 800, FPLLL);
+  
+  //nullity=relations_lll<mpz_t, dpe_t, MatrixPE<double, dpe_t> > (C, F, setprec, 29200, 0);
 
   start = utime()-start;
 
-  print2maple(C,6,1);
+  //print2maple(C,6,1);
 
-  cout << endl << "   Nullity: " << nullity << endl;
+  //cout << endl << "   Nullity: " << nullity << endl;
   cout << endl << "   Time: " << start/1000 << " ms" << endl;
  
 
