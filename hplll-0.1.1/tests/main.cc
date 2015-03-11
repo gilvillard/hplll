@@ -46,7 +46,7 @@ int main(int argc, char *argv[])  {
   int s=9; 
   int n=r*s+1;
 
-  int setprec=5200;
+  int setprec=4800;
   mpfr_set_default_prec(setprec);
 
   gen3r2s(A,n,r,s);
@@ -61,20 +61,13 @@ int main(int argc, char *argv[])  {
     L(0,j).set_f(t);
   }
 
-   int start=utime();
-   
-   relation_lift<long, double>(C, A, setprec, 20, FPLLL);
-   
-   start=utime()-start;
-   
-   cout << "   time internal: " << start/1000 << " ms" << endl;
-      
-    return 0; 
-
+ 
+   relation_lift<long, double>(C, A, setprec, 1200, FPLLL);
+  
   
   //found = relation_lift(C, A, setprec);
-
-  //found=relation_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C, A, setprec, 10, FPLLL);  
+     
+  //relation_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C, A, setprec, 10, FPLLL);  
 
       
   return 0;
