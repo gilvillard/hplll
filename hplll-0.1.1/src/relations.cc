@@ -69,125 +69,8 @@ namespace hplll {
     
   } 
 
-  /************************************************
-     Companion integer subroutine for above one 
-     Restricted to doubles for the moment 
-  *************************************************/    
 
-  template<class ZT, class FT, class MatrixFT> int  
-  relation_lift_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha, double delta) { 
-
-    int m,d;
-    int i,j;
   
-    m=A.getRows();
-    d=A.getCols();
-
-    ZZ_mat<ZT> A_in;
-    A_in.resize(m+d,d);
-
-    for (i=0; i<m; i++)
-      for (j=0; j<d; j++)
-	A_in(i,j)=A(i,j);
-
-    for (i=0; i<d; i++)
-      A_in(m+i,i)=1;
-
-    int bitsize = maxbitsize(A,0,m,d);
-  
-   
-    // For assigning the exact upper lattice part at each step 
-    ZZ_mat<mpz_t> L;
-    L.resize(m,d);
-   
-    // For assigning the truncated basis at each step -- dpe_t ?? 
-    ZZ_mat<double> T;
-    T.resize(d+1,d);
-    Z_NR<ZT> t;
-   
-    ZZ_mat<double> Uf;
-    Uf.resize(d,d);
-
-    ZZ_mat<long int> U;
-    U.resize(d,d);
-
-    for (i=0; i<d; i++)
-      U(i,i)=1; 
-
-    int def = -bitsize;
-
-    int target_def = -bitsize + alpha;
-   
-    int new_def;
-
-    int found;
-
-    FP_NR<FT> rel_bound;
-
-    Lattice<double, FT,  matrix<Z_NR<double> >,  MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION,1);
-     
-    // Main loop on the shifts
-    // -----------------------
-    while (def < target_def) {
-
-      //int start;
-
-      for (i=0; i<m; i++) 
-	for (j=0; j<d; j++) 
-	  L(i,j)=A_in(i,j);
-    
-      //current_shift += shift;
-
-      //start=utime();
-         
-      for (i=0; i<d; i++)
-	for (j=0; j<d ; j++) 
-	  T(m+i,j).getData()=A_in(m+i,j).get_d(); // cf pb for assigning a double to Z_NR<double> 
-
-      // Lattice<double, dpe_t,  matrix<Z_NR<double> >, MatrixPE<double, dpe_t> > Bp(T,TRANSFORM,DEF_REDUCTION,1);
-      // FAIRE UN SET !!!!!!!!!
-     
-      Bp.assign(T);
-      Bp.assignL(L);
-     
-      found = Bp.detect_lift(delta,def,target_def,new_def,maxbitsize(A_in,1,d,d),rel_bound);
-      
-      // start=utime()-start;
-      // cout << "   time A: " << start/1000 << " ms" << endl << endl;
-      // cout << " Def: " << new_def << endl;
-      // start=utime();
-     
-     
-      def=new_def;
-     
-      Uf=Bp.getU();
-
-      for (i=0; i<d; i++)
-	for (j=0; j<d ; j++) 
-	  U(i,j).getData()=((long int) Uf(i,j).getData());
-     
-      matprod_in_si(A_in,U);
-
-      if (found == 1) {
-       
-	C.resize(1,d);
-	for (j=0; j<d; j++)
-	  C(0,j)=A_in(m+j,0);
-	return 1;
-      }
-     
-
-    }
-
-   
-    // found = 0
-    cout << "**** There might not be relations of norm less than " << rel_bound << endl; 
-  
-    return 0;
-    
-    
-  } 
-
 /*************************************************************
 
    Methode et limiter avec long 
@@ -393,6 +276,7 @@ namespace hplll {
 
   // *********************
   // ZT long et FT double les types internes
+  // Verifier l'affectation de double à Z_NR<double>
   
   // Voir par quoi templater ??? 
   template<class ZT, class FT> int relation_lift_d_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A,  int alpha, int shift, double delta, int lllmethod=HLLL) { 
@@ -449,7 +333,7 @@ namespace hplll {
     
       for (i=0; i<d; i++)
      	for (j=0; j<d ; j++) 
-	  Tf(i,j)=A_in(m+i,j).get_d(); // long double ? 
+	  Tf(i,j).getData()=A_in(m+i,j).get_d(); // long double ?
 
       setId(U);
       
@@ -474,7 +358,8 @@ namespace hplll {
 
     // // found = 0
     // cout << "**** There might not be relations of norm less than " << rel_bound << endl; 
-  
+
+        
     return 0;
     
     
@@ -490,6 +375,7 @@ namespace hplll {
   // Dpe pour FT aussi, long double
   // et get_ld
   // A_in est d x d !!!!!
+  // Verifier l'affectation de double à Z_NR<double>
   
   template<class ZT, class FT> int  
   detect_lift_d(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT> A_in_f, int& new_def, int def,  int target_def,
@@ -566,12 +452,10 @@ namespace hplll {
 
     new_def = def;
 
-    cout << "----------- "  << endl;
+   
+    int incr=40;
     
-
-    int incr=16;
-    
-    for (S=0; S<shift; S++) {  // Limiter en borne de U  // while comme detect lift de hplll 
+    for (S=0; S<shift; S+= incr) {  // Limiter en borne de U  // while comme detect lift de hplll 
       
       new_def += incr; // incrément du défaut 
       
@@ -580,9 +464,13 @@ namespace hplll {
       for (i=0; i<m; i++) 
 	for (j=0; j<d; j++) {
 	  tz.mul_2si(L(i,j),new_def);
-	  Af(i,j)=tz.get_d();  // long double ? 
+	  Af(i,j).getData()=tz.get_d();  // long double ?
+
+	  
 	}
 
+      
+      
       if (lllmethod == HLLL) {
 	
 	B.assign(Af);
@@ -595,15 +483,15 @@ namespace hplll {
       }
       else if (lllmethod == FPLLL) {
 
-	transpose(AfT,Af);
+      	transpose(AfT,Af);
 	
-	setId(VfT);
+      	setId(VfT);
 	
-	lllReduction(AfT, VfT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+      	lllReduction(AfT, VfT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
 
-	transpose(Af,AfT);
+      	transpose(Af,AfT);
 	
-	transpose(Vf,VfT);
+      	transpose(Vf,VfT);
 	
       } 
       
@@ -641,12 +529,14 @@ namespace hplll {
        xf = maxcol.getData(); // Double vers mpfr voir long double 
        new_quot.div(new_quot,xf);
 
-       cout << endl << "**  U bits: " << maxbitsize(U,0,d,d) << endl; 
-       cout << "      quot: " << new_quot << endl; 
+       
             
       gap.div(new_quot,quot);
       gap.abs(gap); 
 
+      // cout << endl << "**  U bits: " << maxbitsize(U,0,d,d) << endl;
+      // cout << "     quot : " << new_quot << endl; 
+	
       if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
        
       // 	C.resize(1,d);
@@ -661,7 +551,9 @@ namespace hplll {
     
       } 
 
-      
+     
+       
+       
     } // End main shift loop 
     
       
