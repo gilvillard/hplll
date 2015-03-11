@@ -428,7 +428,7 @@ namespace hplll {
     // For testing 1/gap < confidence
     confidence = 1.0;
     // relié, plus petit,  au shift sur S (ex 80) 
-    confidence.mul_2si(confidence,-24); // En fonction de taille de U et de dec ??? 
+    confidence.mul_2si(confidence,-40); // En fonction de taille de U et de dec ??? 
 
     FP_NR<mpfr_t> epsilon;
     epsilon = 10.0; // Relation to d 
@@ -453,7 +453,7 @@ namespace hplll {
     new_def = def;
 
    
-    int incr=40;
+    int incr=18;
     
     for (S=0; S<shift; S+= incr) {  // Limiter en borne de U  // while comme detect lift de hplll 
       
@@ -468,8 +468,6 @@ namespace hplll {
 
 	  
 	}
-
-      
       
       if (lllmethod == HLLL) {
 	
@@ -527,22 +525,25 @@ namespace hplll {
 
        FP_NR<mpfr_t> xf;
        xf = maxcol.getData(); // Double vers mpfr voir long double 
-       new_quot.div(new_quot,xf);
-
-       
+       new_quot.div(new_quot,xf);    
             
       gap.div(new_quot,quot);
       gap.abs(gap); 
 
-      // cout << endl << "**  U bits: " << maxbitsize(U,0,d,d) << endl;
-      // cout << "     quot : " << new_quot << endl; 
-	
-      if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
+      cout << endl << "**  U bits: " << maxbitsize(U,0,d,d) << endl;
+      cout << "     gap : " << gap << endl; 
+      cout << "     quot : " << new_quot << endl; 
+      cout << "     maxcol : " << maxcol << endl;
+      cout << "L: " << L(0,0) << endl;
+      cout << "Af: " << Af(0,0) << endl;
+
+      // 
+      if ((gap.cmp(confidence) == -1) && (new_quot.cmp(xf) == -1)) {
+      //if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
        
       // 	C.resize(1,d);
       // 	for (j=0; j<d; j++)
       // 	  C(0,j)=A_in(m+j,0);
-
 
       // 	print2maple(C,1,d);
 	
