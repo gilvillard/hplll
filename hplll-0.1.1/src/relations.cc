@@ -37,11 +37,10 @@ namespace hplll {
 
   // ZT long et FT double les types internes  
   // Voir par quoi templater ???
+  // alpha correct bits
   
   template<class ZT, class FT> 
-  int relation_lift(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long setprec, long shift, int lllmethod=HLLL) {
-
-    mpfr_set_default_prec(setprec);
+  int relation_lift(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long alpha, long shift, int lllmethod=HLLL) {
 
     int n=A.getCols();
 
@@ -51,18 +50,18 @@ namespace hplll {
     FP_NR<mpfr_t> t;
   
     for (int j=0; j<n; j++) {
-      t.mul_2si( A(0,j), setprec);
+      t.mul_2si( A(0,j), alpha);
       L(0,j).set_f(t);
     }
 
     int found;
 
     int start=utime();
-    found=relation_lift_d_z<ZT, FT> (C, L,  setprec, shift, 0.99, lllmethod);
+    found=relation_lift_d_z<ZT, FT> (C, L,  alpha, shift, 0.99, lllmethod);
   
     start=utime()-start;
 
-  
+ 
     cout << "   time internal: " << start/1000 << " ms" << endl;
   
     return found;
@@ -79,11 +78,10 @@ namespace hplll {
  *************************************************************/
 
   // Régler les paramètres en fonction des types de données
+   // alpha correct bits
   
   template<class ZT, class FT, class MatrixZT, class MatrixFT> int 
-  relation_lll(ZZ_mat<ZT>& C, const matrix<FP_NR<mpfr_t> > A, long setprec, long shift, int lllmethod=HLLL) {
-
-    mpfr_set_default_prec(setprec);
+  relation_lll(ZZ_mat<ZT>& C, const matrix<FP_NR<mpfr_t> > A, long alpha, long shift, int lllmethod=HLLL) {
 
     int n=A.getCols();
 
@@ -93,14 +91,14 @@ namespace hplll {
     FP_NR<mpfr_t> t;
   
     for (int j=0; j<n; j++) {
-      t.mul_2si( A(0,j), setprec);
+      t.mul_2si( A(0,j), alpha);
       L(0,j).set_f(t);
     }
 
     int found;
 
     int start=utime();
-    found=relation_lll_z<ZT, FT, MatrixZT, MatrixFT> (C, L, setprec, shift, 0.99, lllmethod);
+    found=relation_lll_z<ZT, FT, MatrixZT, MatrixFT> (C, L, alpha, shift, 0.99, lllmethod);
   
     start=utime()-start;
   
@@ -139,14 +137,14 @@ namespace hplll {
     // For assigning the truncated basis at each step
 
     // ICI long 
-    //ZZ_mat<ZT> T,TT;
-    ZZ_mat<long> T,TT;
+    ZZ_mat<ZT> T,TT;
+    //ZZ_mat<long> T,TT;
     T.resize(m+d,d);
     TT.resize(d,m+d);
  
     // ICI long 
-    //ZZ_mat<ZT> U,UT;
-    ZZ_mat<long> U,UT;
+    ZZ_mat<ZT> U,UT;
+    //ZZ_mat<long> U,UT;
     U.resize(d,d);
     UT.resize(d,d);
  
@@ -154,7 +152,7 @@ namespace hplll {
 
     int target_def = -bitsize + alpha;
 
-    int found;
+    int found=0;
 
     FP_NR<mpfr_t> quot,new_quot,tf;
     new_quot = 1.0;  // new_quot should be bigger after the first iteration of the loop 
@@ -175,8 +173,8 @@ namespace hplll {
     Z_NR<ZT> tz,maxcol;
 
     // ICI long 
-    //Lattice<ZT, FT, MatrixZT, MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION,1);
-    Lattice<long, FT, matrix<Z_NR<long> >, MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION,1);
+    Lattice<ZT, FT, MatrixZT, MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION,1);
+    //Lattice<long, FT, matrix<Z_NR<long> >, MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION,1);
     // Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > Bp(T,TRANSFORM,DEF_REDUCTION,1);
 
     // Faire le produit de U ou la laisser mettre à jour ???
@@ -190,7 +188,7 @@ namespace hplll {
 	def=target_def;
       else def+=shift;
 
-      lift_truncate(T, A_in, def, shift+d);
+      lift_truncate(T, A_in, def, shift+2*d);
 
       //cout << "****** sizeof T: " << maxbitsize(T,0,d+1,d) << "    " << sizeof(__float128) << endl;
       
@@ -201,8 +199,8 @@ namespace hplll {
 	Bp.hlll(delta);
 
 	// ICI long 
-	//matprod_in(A_in,Bp.getU());
-	matprod_in_si(A_in,Bp.getU());
+       matprod_in(A_in,Bp.getU());
+       //	matprod_in_si(A_in,Bp.getU());
       }
 
       else if (lllmethod == FPLLL) {
@@ -216,8 +214,8 @@ namespace hplll {
 	transpose(U,UT);
 	
 	// ICI long 
-	//matprod_in(A_in,U);
-	matprod_in_si(A_in,U);
+	matprod_in(A_in,U);
+	//matprod_in_si(A_in,U);
 	//cout << "****** sizeof U: " << maxbitsize(U,0,d,d) << endl;
       } 
 
@@ -233,6 +231,9 @@ namespace hplll {
       maxcol.abs(A_in(0,0));
       maxcol.mul_2si(maxcol,def);
 
+      cout << "L: " << A_in(0,0) << endl;
+      cout << "Af: " << maxcol << endl;
+      
       for (i=0; i<d; i++) {
 	tz.abs(A_in(m+i,0));
 	if (tz.cmp(maxcol) ==1) maxcol = tz;
@@ -245,6 +246,12 @@ namespace hplll {
       gap.div(new_quot,quot);
       gap.abs(gap); 
 
+      //cout << endl << "**  U bits: " << maxbitsize(U,0,d,d) << endl;
+      cout << "     gap : " << gap << endl; 
+      cout << "     quot : " << new_quot << endl; 
+      cout << "     maxcol : " << maxcol << endl;
+     
+      
       if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
        
 	C.resize(1,d);
@@ -257,7 +264,6 @@ namespace hplll {
 	cout << "Candidate relation found with confidence " << gap << endl;  
 	return 1;
     
-	found=0;
       } 
     
       
@@ -318,15 +324,21 @@ namespace hplll {
 
     int new_def;
     
-    int found;
+    int found=0;
 
     FP_NR<mpfr_t> new_quot;
     new_quot = 1.0;
+
+    int intern_shift = shift;
     
     // Main loop on the shifts
     // -----------------------
     while (def < target_def) {
 
+      if ((target_def - def) <= shift) 
+	intern_shift = target_def - def; 
+     
+      
       for (i=0; i<m; i++) 
      	for (j=0; j<d; j++) 
 	  L(i,j)=A_in(i,j);
@@ -337,7 +349,7 @@ namespace hplll {
 
       setId(U);
       
-      found=detect_lift_d<ZT, FT>(U, L, Tf, new_def, def, target_def, new_quot, shift, 0.99, lllmethod);
+      found=detect_lift_d<ZT, FT>(U, L, Tf, new_def, def, target_def, new_quot, intern_shift, 0.99, lllmethod);
 
       def=new_def;
 
@@ -356,11 +368,10 @@ namespace hplll {
       
     }
 
-    // // found = 0
+   
     // cout << "**** There might not be relations of norm less than " << rel_bound << endl; 
-
-        
-    return 0;
+     
+    return found; // 0 here 
     
     
   } 
@@ -452,8 +463,8 @@ namespace hplll {
 
     new_def = def;
 
-   
-    int incr=18;
+    
+    int incr=18;  // Déborde un peu par rapport au shift éventuellement, mais ok 
     
     for (S=0; S<shift; S+= incr) {  // Limiter en borne de U  // while comme detect lift de hplll 
       
@@ -537,30 +548,21 @@ namespace hplll {
       cout << "L: " << L(0,0) << endl;
       cout << "Af: " << Af(0,0) << endl;
 
-      // 
-      if ((gap.cmp(confidence) == -1) && (new_quot.cmp(xf) == -1)) {
-      //if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
+      
+      if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
        
-      // 	C.resize(1,d);
-      // 	for (j=0; j<d; j++)
-      // 	  C(0,j)=A_in(m+j,0);
-
-      // 	print2maple(C,1,d);
-	
        	cout << "Candidate relation found with confidence " << gap << endl;  
        	return 1;
-    
+	
       } 
-
-     
-       
-       
+      
+      
     } // End main shift loop 
     
       
     return found; 
 
-    
+  
   };
 
   
