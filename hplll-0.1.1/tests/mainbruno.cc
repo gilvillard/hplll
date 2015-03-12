@@ -20,9 +20,12 @@ along with the hplll Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#include "hlll.h"
+#include "lehmer.cc"
+#include "matgen.h"
+#include "relations.h"
 
-#include "relations.h" 
-#include "nullspace.h" 
+#include "tools.h"
 
 using namespace hplll;
 
@@ -85,11 +88,9 @@ int main(int argc, char *argv[])  {
 
   int start = utime();
 
- 
-  relations_lll<mpz_t, dpe_t, MatrixPE<double, dpe_t> > (C, F, setprec, setprec, 0);
-  //relations_hjls<mpfr_t, double, matrix<FP_NR<double > > >(C,F,1,setprec);
-  //restarting_hjls<mpfr_t, double, matrix<FP_NR<double > > >(C,F,1,setprec);
+  relation_lift<long, double>(C, F, setprec, 800, FPLLL);
 
+  
   start = utime()-start;
   cout << endl << "   Time: " << start/1000 << " ms" << endl;
   cout << endl << "   Time: " << start << " us" << endl;

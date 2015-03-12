@@ -20,7 +20,6 @@ along with the hplll Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-
 #include "hlll.h"
 #include "lehmer.cc"
 #include "matgen.h"
@@ -28,47 +27,75 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "tools.h"
 
+using namespace hplll;
+
+
 /* ***********************************************
 
           MAIN   
 
    ********************************************** */
 
-using namespace hplll; 
+
 
 int main(int argc, char *argv[])  {
   
+  // TEST BRUNO
+  // Types
+  // *****
 
-  matrix<FP_NR<mpfr_t> > A;   // Input matrix 
-  ZZ_mat<mpz_t> C;
+  typedef mpfr_t RT;
  
-  int r=10; 
-  int s=10; 
-  int n=r*s+1;
 
-  int setprec=6500;
+
+  filebuf fb;
+  iostream os(&fb);
+
+  ZZ_mat<mpz_t> A;
+  int bits, n;
+  fb.open ("tbs.in",ios::in);
+  os >> bits ;
+  os >> n;
+  A.resize(1,n);
+  os >> A;
+  fb.close();
+
+
+  int setprec=bits;
   mpfr_set_default_prec(setprec);
+  cout << "Bits: " << bits << ", " <<  n << " input real numbers" << endl << endl;
 
-  gen3r2s(A,n,r,s);
 
-  // ZZ_mat<mpz_t> L;
-  // L.resize(1,n);
+  FP_NR<RT> quodigits;
+  quodigits=2;
+  quodigits.pow_si(quodigits,-bits);
 
-  // FP_NR<mpfr_t> t;
+  quodigits.print();
+  cout << endl; 
+
+  matrix<FP_NR<RT> > F;   // Input matrix
+  FP_NR<RT> tmp;
+  F.resize(1,n);
+  for (int j=0; j<n; j++) {
+    set_z(tmp,A(0,j));
+    tmp.mul(tmp,quodigits);
+    F.set(0,j,tmp);
+  }
+
+  print2maple(F,1,n);
+
+  ZZ_mat<mpz_t> C;
+
+
+  int start = utime();
+
+  relation_lift<long, double>(C, F, setprec, 10, FPLLL);
+
   
-  // for (int j=0; j<n; j++) {
-  //   t.mul_2si( A(0,j), setprec);
-  //   L(0,j).set_f(t);
-  // }
+  start = utime()-start;
+  cout << endl << "   Time: " << start/1000 << " ms" << endl;
+  cout << endl << "   Time: " << start << " us" << endl;
 
- 
-   relation_lift<long, double>(C, A, setprec-20, 1200, FPLLL);
-  
-  
-  //found = relation_lift(C, A, setprec);
-     
-  //relation_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C, A, setprec, 10, FPLLL);  
 
-      
   return 0;
 }

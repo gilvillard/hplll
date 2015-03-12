@@ -250,7 +250,12 @@ namespace hplll {
       cout << "     gap : " << gap << endl; 
       cout << "     quot : " << new_quot << endl; 
       cout << "     maxcol : " << maxcol << endl;
-     
+
+      // Mettre avant possible // Faire relation bound 
+      if (A_in(0,0).sgn() ==0) {
+	def = target_def;
+	return 0; 
+      }
       
       if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
        
@@ -335,10 +340,11 @@ namespace hplll {
     // -----------------------
     while (def < target_def) {
 
+      cout << "." << flush;
+      
       if ((target_def - def) <= shift) 
 	intern_shift = target_def - def; 
      
-      
       for (i=0; i<m; i++) 
      	for (j=0; j<d; j++) 
 	  L(i,j)=A_in(i,j);
@@ -362,15 +368,42 @@ namespace hplll {
 	  C(0,j)=A_in(m+j,0);
 
 	print2maple(C,1,d);
-	
+
+       
 	return 1;
       }
       
     }
 
+    // Relation bound
+    // --------------
+
+    unsigned oldprec;
+    oldprec=mpfr_get_default_prec();
+
+    mpfr_set_default_prec(2*d);
+
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A_in,NO_TRANSFORM,DEF_REDUCTION);
+
+    B.householder();
+
+    matrix<FP_NR<mpfr_t> > R;
+
+    R=B.getR();
+
+    FP_NR<mpfr_t> minr, tr;
+
+    minr.abs(R(0,0));
+    for (i=1; i<d; i++) {
+      tr.abs(R(i,i));
+      if (minr.cmp(tr) > 0) minr=tr;
+    }
+
+    cout << endl << "** Lack of precision with min Rii = " << minr << endl; 
+
+    mpfr_set_default_prec(oldprec);
+
    
-    // cout << "**** There might not be relations of norm less than " << rel_bound << endl; 
-     
     return found; // 0 here 
     
     
@@ -439,7 +472,7 @@ namespace hplll {
     // For testing 1/gap < confidence
     confidence = 1.0;
     // relié, plus petit,  au shift sur S (ex 80) 
-    confidence.mul_2si(confidence,-40); // En fonction de taille de U et de dec ??? 
+    confidence.mul_2si(confidence,-32); // En fonction de taille de U et de dec ??? 
 
     FP_NR<mpfr_t> epsilon;
     epsilon = 10.0; // Relation to d 
@@ -462,11 +495,12 @@ namespace hplll {
     int S;
 
     new_def = def;
-
     
-    int incr=18;  // Déborde un peu par rapport au shift éventuellement, mais ok 
+    int incr=10;  // Déborde un peu par rapport au shift éventuellement, mais ok 
     
     for (S=0; S<shift; S+= incr) {  // Limiter en borne de U  // while comme detect lift de hplll 
+
+      
       
       new_def += incr; // incrément du défaut 
       
@@ -519,6 +553,8 @@ namespace hplll {
       // Test
       // ----
 
+      
+      
       quot = new_quot;
       
       Z_NR<mpz_t> xz;
@@ -541,21 +577,27 @@ namespace hplll {
       gap.div(new_quot,quot);
       gap.abs(gap); 
 
-      cout << endl << "**  U bits: " << maxbitsize(U,0,d,d) << endl;
-      cout << "     gap : " << gap << endl; 
-      cout << "     quot : " << new_quot << endl; 
-      cout << "     maxcol : " << maxcol << endl;
-      cout << "L: " << L(0,0) << endl;
-      cout << "Af: " << Af(0,0) << endl;
+       cout << endl << "**  U bits: " << maxbitsize(U,0,d,d) << endl;
+      // cout << "     gap : " << gap << endl; 
+      // cout << "     quot : " << new_quot << endl; 
+      // cout << "     maxcol : " << maxcol << endl;
+      // cout << "L: " << L(0,0) << endl;
+      // cout << "Af: " << Af(0,0) << endl;
 
-      
+      // Mettre avant possible
+      if (L(0,0).sgn() ==0) {
+	new_def = target_def;
+	return 0; 
+      }
+ 
       if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
        
-       	cout << "Candidate relation found with confidence " << gap << endl;  
+       	cout << endl << "Candidate relation found with confidence " << gap << endl;  
        	return 1;
 	
       } 
-      
+
+     
       
     } // End main shift loop 
     
