@@ -42,27 +42,27 @@ int main(int argc, char *argv[])  {
   matrix<FP_NR<mpfr_t> > A;   // Input matrix 
   ZZ_mat<mpz_t> C;
  
-  int r=9; 
-  int s=9; 
+  int r=10; 
+  int s=10; 
   int n=r*s+1;
 
-  int setprec=5500;
+  int setprec=6500;
   mpfr_set_default_prec(setprec);
 
   gen3r2s(A,n,r,s);
 
-  ZZ_mat<mpz_t> L;
-  L.resize(1,n);
+  // ZZ_mat<mpz_t> L;
+  // L.resize(1,n);
 
-  FP_NR<mpfr_t> t;
+  // FP_NR<mpfr_t> t;
   
-  for (int j=0; j<n; j++) {
-    t.mul_2si( A(0,j), setprec);
-    L(0,j).set_f(t);
-  }
+  // for (int j=0; j<n; j++) {
+  //   t.mul_2si( A(0,j), setprec);
+  //   L(0,j).set_f(t);
+  // }
 
  
-   relation_lift<long, double>(C, A, setprec, 1200, FPLLL);
+   relation_lift<long, double>(C, A, setprec-20, 1200, FPLLL);
   
   
   //found = relation_lift(C, A, setprec);

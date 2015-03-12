@@ -53,7 +53,7 @@ int main(int argc, char *argv[])  {
   fb.close();
 
   
-  int setprec=32500;
+  int setprec=34000;
   mpfr_set_default_prec(setprec);
 
   FP_NR<mpfr_t> zzf,tf;
@@ -82,22 +82,13 @@ int main(int argc, char *argv[])  {
     F.set(0,k,tf);
   }
 
-  FP_NR<mpfr_t> t,mmax;
-
-  mmax=0.0;
-  
-  for(int k=0; k<deg+1; k++) {
-    t.abs(F(0,k));
-    if (t.cmp(mmax) ==1) mmax=t;
-  }
-
-  
-  cout << " **** Max: " << mmax << endl;
+ 
   
   ZZ_mat<mpz_t> C;
  
   int start=utime();
 
+  // Alpha must be less than prec by a factor of ||F|| for having alpha bits 
   relation_lift<long, double>(C, F, 30400, 800, FPLLL);
   
   //nullity=relations_lll<mpz_t, dpe_t, MatrixPE<double, dpe_t> > (C, F, setprec, 29200, 0);
