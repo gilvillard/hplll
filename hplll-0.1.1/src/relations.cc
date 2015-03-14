@@ -40,7 +40,7 @@ namespace hplll {
   // alpha correct bits
   
   template<class ZT, class FT> 
-  int relation_lift(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long alpha, long shift, int lllmethod=HLLL) {
+  int relation_lift(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long alpha, long shift, int lllmethod) {
 
     int n=A.getCols();
 
@@ -81,7 +81,7 @@ namespace hplll {
    // alpha correct bits
   
   template<class ZT, class FT, class MatrixZT, class MatrixFT> int 
-  relation_lll(ZZ_mat<ZT>& C, const matrix<FP_NR<mpfr_t> > A, long alpha, long shift, int lllmethod=HLLL) {
+  relation_lll(ZZ_mat<ZT>& C, const matrix<FP_NR<mpfr_t> > A, long alpha, long shift, int lllmethod) {
 
     int n=A.getCols();
 
@@ -111,7 +111,7 @@ namespace hplll {
   //*************
   
   template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
-  relation_lll_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha, int shift, double delta, int lllmethod=HLLL) {
+  relation_lll_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha, int shift, double delta, int lllmethod) {
 
     int m,d;
     int i,j;
@@ -290,7 +290,7 @@ namespace hplll {
   // Verifier l'affectation de double à Z_NR<double>
   
   // Voir par quoi templater ??? 
-  template<class ZT, class FT> int relation_lift_d_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A,  int alpha, int shift, double delta, int lllmethod=HLLL) { 
+  template<class ZT, class FT> int relation_lift_d_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A,  int alpha, int shift, double delta, int lllmethod) { 
 
     int m,d;
     int i,j;
@@ -423,7 +423,7 @@ namespace hplll {
   
   template<class ZT, class FT> int  
   detect_lift_d(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT> A_in_f, int& new_def, int def,  int target_def,
-		FP_NR<mpfr_t>& new_quot, int shift, double delta, int lllmethod=HLLL) {
+		FP_NR<mpfr_t>& new_quot, int shift, double delta, int lllmethod) {
 
     int m,d;
     int i,j;
