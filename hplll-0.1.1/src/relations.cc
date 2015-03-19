@@ -1,7 +1,7 @@
-/* HJLS and PSLQ relation algorithms 
+/* LLL and HJLS relation algorithms 
 
 Created Jeu  7 mar 2013 15:01:41 CET
-Copyright (C) 2013      Gilles Villard 
+Copyright (C) 2013,2015      Gilles Villard 
 
 This file is part of the hplll Library 
 
@@ -399,7 +399,7 @@ namespace hplll {
       if (minr.cmp(tr) > 0) minr=tr;
     }
 
-    cout << endl << "** Lack of precision with min Rii = " << minr << endl; 
+    cout << endl << "** No relation found with min Rii = " << minr << endl; 
 
     mpfr_set_default_prec(oldprec);
 
@@ -472,7 +472,7 @@ namespace hplll {
     // For testing 1/gap < confidence
     confidence = 1.0;
     // relié, plus petit,  au shift sur S (ex 80) 
-    confidence.mul_2si(confidence,-32); // En fonction de taille de U et de dec ??? 
+    confidence.mul_2si(confidence,-80); // > que incr !!! (fct taille de U ?)  
 
     FP_NR<mpfr_t> epsilon;
     epsilon = 10.0; // Relation to d 
@@ -496,12 +496,10 @@ namespace hplll {
 
     new_def = def;
     
-    int incr=10;  // Déborde un peu par rapport au shift éventuellement, mais ok 
+    int incr=50;  // Déborde un peu par rapport au shift éventuellement, mais ok 
     
     for (S=0; S<shift; S+= incr) {  // Limiter en borne de U  // while comme detect lift de hplll 
 
-      
-      
       new_def += incr; // incrément du défaut 
       
       // Lift and truncate
@@ -509,11 +507,12 @@ namespace hplll {
       for (i=0; i<m; i++) 
 	for (j=0; j<d; j++) {
 	  tz.mul_2si(L(i,j),new_def);
+	  cout << "***" << tz << endl; 
 	  Af(i,j).getData()=tz.get_d();  // long double ?
-
-	  
+	  cout << "   " << Af(i,j) << endl; 
 	}
-      
+
+     
       if (lllmethod == HLLL) {
 	
 	B.assign(Af);
@@ -525,11 +524,11 @@ namespace hplll {
 	Vf = B.getU();
       }
       else if (lllmethod == FPLLL) {
-
+	
       	transpose(AfT,Af);
 	
       	setId(VfT);
-	
+
       	lllReduction(AfT, VfT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
 
       	transpose(Af,AfT);
@@ -544,7 +543,9 @@ namespace hplll {
 	  V(i,j).set_f(tf);
 
 	}
-      
+
+      cout << endl << "* V bits: " << maxbitsize(V,0,d,d) << endl;
+      cout << "* U bits: " << maxbitsize(U,0,d,d) << endl;
       matprod_in(U,V); 
 
       matprod_in_si(L,V);
@@ -552,8 +553,6 @@ namespace hplll {
 
       // Test
       // ----
-
-      
       
       quot = new_quot;
       
@@ -561,6 +560,7 @@ namespace hplll {
       xz.abs(L(0,0)); 
       new_quot.set_z(xz);
 
+      
       Z_NR<FT> tmpz,maxcol;
       
       maxcol.abs(Af(0,0));
@@ -573,17 +573,19 @@ namespace hplll {
        FP_NR<mpfr_t> xf;
        xf = maxcol.getData(); // Double vers mpfr voir long double 
        new_quot.div(new_quot,xf);    
-            
+
       gap.div(new_quot,quot);
       gap.abs(gap); 
 
-       cout << endl << "**  U bits: " << maxbitsize(U,0,d,d) << endl;
-      // cout << "     gap : " << gap << endl; 
-      // cout << "     quot : " << new_quot << endl; 
+      cout << endl << "**  U bits: " << maxbitsize(U,0,d,d) << endl;
+     
+      cout << "     gap : " << gap << endl; 
+      cout << "     quot : " << new_quot << endl; 
       // cout << "     maxcol : " << maxcol << endl;
       // cout << "L: " << L(0,0) << endl;
       // cout << "Af: " << Af(0,0) << endl;
 
+      
       // Mettre avant possible
       if (L(0,0).sgn() ==0) {
 	new_def = target_def;
@@ -597,7 +599,7 @@ namespace hplll {
 	
       } 
 
-     
+      
       
     } // End main shift loop 
     
