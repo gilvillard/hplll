@@ -45,7 +45,7 @@ int main(int argc, char *argv[])  {
   // *****
 
   typedef mpfr_t RT;
-  typedef double FT;
+ 
 
 
   filebuf fb;
@@ -71,6 +71,7 @@ int main(int argc, char *argv[])  {
   quodigits.pow_si(quodigits,-bits);
 
   quodigits.print();
+  cout << endl; 
 
   matrix<FP_NR<RT> > F;   // Input matrix
   FP_NR<RT> tmp;
@@ -88,7 +89,7 @@ int main(int argc, char *argv[])  {
 
   int start = utime();
 
-  relation_lift<long, double>(C, F, setprec, 800, FPLLL);
+  relation_lift<long, double>(C, F, setprec, 10, FPLLL);
 
   
   start = utime()-start;
