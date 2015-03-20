@@ -472,7 +472,7 @@ namespace hplll {
     // For testing 1/gap < confidence
     confidence = 1.0;
     // relié, plus petit,  au shift sur S (ex 80) 
-    confidence.mul_2si(confidence,-80); // > que incr !!! (fct taille de U ?)  
+    confidence.mul_2si(confidence,-60); // > que incr !!! (fct taille de U ?)  
 
     FP_NR<mpfr_t> epsilon;
     epsilon = 10.0; // Relation to d 
@@ -496,7 +496,7 @@ namespace hplll {
 
     new_def = def;
     
-    int incr=50;  // Déborde un peu par rapport au shift éventuellement, mais ok 
+    int incr=20;  // Déborde un peu par rapport au shift éventuellement, mais ok 
     
     for (S=0; S<shift; S+= incr) {  // Limiter en borne de U  // while comme detect lift de hplll 
 
@@ -507,9 +507,9 @@ namespace hplll {
       for (i=0; i<m; i++) 
 	for (j=0; j<d; j++) {
 	  tz.mul_2si(L(i,j),new_def);
-	  cout << "***" << tz << endl; 
+	 
 	  Af(i,j).getData()=tz.get_d();  // long double ?
-	  cout << "   " << Af(i,j) << endl; 
+	  
 	}
 
      
@@ -518,7 +518,7 @@ namespace hplll {
 	B.assign(Af);
 
 	B.hlll(delta);
-
+	cout << "nblov/d: " << ((int) (((double) B.nblov)/((double) d))) << endl; 
 	Af = B.getbase(); // The first row will change 
 	
 	Vf = B.getU();
@@ -544,8 +544,8 @@ namespace hplll {
 
 	}
 
-      cout << endl << "* V bits: " << maxbitsize(V,0,d,d) << endl;
-      cout << "* U bits: " << maxbitsize(U,0,d,d) << endl;
+      //cout << "V bits: " << maxbitsize(V,0,d,d) << endl;
+      
       matprod_in(U,V); 
 
       matprod_in_si(L,V);
@@ -577,10 +577,9 @@ namespace hplll {
       gap.div(new_quot,quot);
       gap.abs(gap); 
 
-      cout << endl << "**  U bits: " << maxbitsize(U,0,d,d) << endl;
-     
-      cout << "     gap : " << gap << endl; 
-      cout << "     quot : " << new_quot << endl; 
+           
+      //cout << "     gap : " << gap << endl; 
+      //cout << "     quot : " << new_quot << endl; 
       // cout << "     maxcol : " << maxcol << endl;
       // cout << "L: " << L(0,0) << endl;
       // cout << "Af: " << Af(0,0) << endl;

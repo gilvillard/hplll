@@ -64,7 +64,12 @@ int main(int argc, char *argv[])  {
     zzf.div(zzf,tf);
   } 
 
- 
+  fb.open ("zero",ios::out);
+  //  os >> bits ;
+  //os >> n;
+  os << zzf; 
+  fb.close();
+  
  
   // Real matrix 
   // -----------
