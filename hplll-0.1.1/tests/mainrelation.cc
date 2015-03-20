@@ -42,18 +42,18 @@ int main(int argc, char *argv[])  {
   matrix<FP_NR<mpfr_t> > A;   // Input matrix 
   ZZ_mat<mpz_t> C;
  
-  int r=10; 
-  int s=10; 
+  int r=8; 
+  int s=8; 
   int n=r*s+1;
 
-  int setprec=600;
+  int setprec=4000;
   mpfr_set_default_prec(setprec);
 
   gen3r2s(A,n,r,s);
 
   
   // Alpha must be less than prec by a factor of ||F|| for having alpha bits
-  relation_lift<long, double>(C, A, setprec, 1200, FPLLL);
+  relation_lift<long, double>(C, A, setprec, 400, FPLLL);
   
   
   //found = relation_lift(C, A, setprec);
