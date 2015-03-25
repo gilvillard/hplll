@@ -46,14 +46,14 @@ int main(int argc, char *argv[])  {
   int s=8; 
   int n=r*s+1;
 
-  int setprec=6650;
+  int setprec=2800;
   mpfr_set_default_prec(setprec);
 
   gen3r2s(A,n,r,s);
 
   
   // Alpha must be less than prec by a factor of ||F|| for having alpha bits
-  relation_lift<long, double>(C, A, setprec, 800, HLLL);
+  relation_lift<long, double>(C, A, setprec, 100, HLLL);
   
   
   //found = relation_lift(C, A, setprec);

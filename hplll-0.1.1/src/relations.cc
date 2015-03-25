@@ -496,7 +496,7 @@ namespace hplll {
 
     new_def = def;
     
-    int incr=20;  // Déborde un peu par rapport au shift éventuellement, mais ok 
+    int incr=2;  // Déborde un peu par rapport au shift éventuellement, mais ok 
     
     for (S=0; S<shift; S+= incr) {  // Limiter en borne de U  // while comme detect lift de hplll 
 
