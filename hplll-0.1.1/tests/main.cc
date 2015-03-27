@@ -42,19 +42,26 @@ int main(int argc, char *argv[])  {
   matrix<FP_NR<mpfr_t> > A;   // Input matrix 
   ZZ_mat<mpz_t> C;
  
-  int r=8; 
-  int s=8; 
+  int r=6; 
+  int s=6; 
   int n=r*s+1;
 
-  int setprec=2800;
+  int setprec=7000;
   mpfr_set_default_prec(setprec);
 
   gen3r2s(A,n,r,s);
 
+  int found;
   
   // Alpha must be less than prec by a factor of ||F|| for having alpha bits
-  relation_f<long, double>(C, A, setprec, 200, FPLLL);
+  found=relation_f<long, double>(C, A, setprec, 60, 1000, 20);
+
+  if (found ==1)  print2maple(C,n,1);
+	      
+  //relation_f<long, double>(C, F, 244, 60, 800, 40, FPLLL,0.99);
   
+  // relation_f(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long alpha,
+  //		   long confidence_gap = 60, long shift = 200, long increment = 20, int lllmethod = FPLLL, double delta = 0.99);
   
   //found = relation_lift(C, A, setprec);
      
