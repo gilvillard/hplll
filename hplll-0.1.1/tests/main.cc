@@ -53,7 +53,7 @@ int main(int argc, char *argv[])  {
 
   
   // Alpha must be less than prec by a factor of ||F|| for having alpha bits
-  relation_lift<long, double>(C, A, setprec, 100, HLLL);
+  relation_f<long, double>(C, A, setprec, 200, FPLLL);
   
   
   //found = relation_lift(C, A, setprec);
