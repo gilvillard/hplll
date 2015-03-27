@@ -94,7 +94,7 @@ int main(int argc, char *argv[])  {
   int start=utime();
 
   // Alpha must be less than prec by a factor of ||F|| for having alpha bits 
-  relation_lift<long, double>(C, F, 30400, 800, FPLLL);
+  relation_f<long, double>(C, F, 30400, 60, 800);
   
   //nullity=relations_lll<mpz_t, dpe_t, MatrixPE<double, dpe_t> > (C, F, setprec, 29200, 0);
 

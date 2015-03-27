@@ -1038,7 +1038,8 @@ cout << "Matrix([";
 };
 
 // From fplll llldiff 
-
+// Up to the sign eg for relation tests
+ 
 template <class T>
 int matcmp (Matrix<T> B1, Matrix<T> B2, int c, int r)
 {

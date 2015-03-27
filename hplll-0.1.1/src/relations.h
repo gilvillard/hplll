@@ -38,19 +38,25 @@ namespace hplll {
 
   // Calls underlying long-double routines
   
-  template<class ZT, class FT> 
-    int relation_f(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long alpha, long conshift, int lllmethod=HLLL); 
-    
-  template<class ZT, class FT> int relation_lift_d_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A,  int alpha, int shift,
-						     double delta, int lllmethod=HLLL);
+  template<class ZT, class FT>
+    int relation_f(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long alpha,
+		   long confidence_gap = 60, long shift = 200, long increment = 20,
+		   int lllmethod = FPLLL, double delta = 0.99);
+
+  template<class ZT, class FT>
+    int relation_f_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A,  int alpha,
+			  long confidence_gap = 60, long shift = 200, long increment = 20,
+			  int lllmethod = FPLLL, double delta = 0.99);
 
   template<class ZT, class FT> int  
-    detect_lift_d(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT> A_in_f, int& new_def, int def,
-		  int target_def, FP_NR<mpfr_t>& new_quot, int shift, double delta, int lllmethod=HLLL);
-    
-  template<class ZT, class FT, class MatrixFT> int  
-    relation_lift_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha=0, double delta=0.99);
+    detect_lift_f_z(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT> A_in_f, int& new_def, int def,
+		    int target_def, FP_NR<mpfr_t>& new_quot,
+		    long confidence_gap = 60, long shift = 200, long increment = 20,
+		    int lllmethod = FPLLL, double delta = 0.99);
 
+  
+  // Underlying lll calls with same template parameters 
+  
   template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
     relation_lll(ZZ_mat<ZT>& C,  const matrix<FP_NR<mpfr_t> > L, long setprec, long shift, int lllmethod=HLLL);
   

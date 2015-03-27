@@ -34,7 +34,9 @@ using namespace hplll;
 int main(int argc, char *argv[])  {
  
   int n;
-  int r,s,t,u;
+  int r,s;
+
+  int found;
 
   int difference; 
 
@@ -55,8 +57,7 @@ int main(int argc, char *argv[])  {
   matrix<FP_NR<mpfr_t> > A;   // Input matrix 
 
   typedef mpz_t integer_t;
-  typedef matrix<Z_NR<integer_t> > MatrixZT;
-
+  
   ZZ_mat<integer_t> C;  // Output relations 
   ZZ_mat<integer_t> Ccheck;  // Output relations 
 
@@ -75,19 +76,23 @@ int main(int argc, char *argv[])  {
 
   nbrel=1;
 
-  cout << "     hjls test matrix double, dim = " << n <<", " << setprec << " bits " << endl; 
+  cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl; 
 
-  nbrel=relations_hjls<mpfr_t,double,matrix<FP_NR<double> > >(C,A,nbrel,setprec);
+  found=relation_f<long, double>(C, A, setprec); 
 
+  
   Ccheck.resize(n,1);
   fb.open ("C1_out",ios::in);
   os >> Ccheck ;
   fb.close();
 
+  if (found != 1)
+    cerr << "*** Problem in relation test, no relation found" << endl;
+  
   if (nbrel==1) {
     difference = !matcmp(C, Ccheck, 1, n);
     if (difference) {
-      cerr << "*** Invalid matrix comparison in hjls test" << endl;
+      cerr << "*** Invalid matrix comparison in relation test" << endl;
     }
     else 
       succeed+=1;
@@ -95,77 +100,79 @@ int main(int argc, char *argv[])  {
 
 #ifdef HPLLL_WITH_LONG_DOUBLE
    //  -------------------- TEST i --------------------------------
-  nbtest+=1;
+  // nbtest+=1;
 
-  r=5; 
-  s=5; 
-  n=r*s+1;
+  // r=5; 
+  // s=5; 
+  // n=r*s+1;
   
   
-  setprec=600;
-  mpfr_set_default_prec(setprec);
+  // setprec=600;
+  // mpfr_set_default_prec(setprec);
 
-  gen3r2s(A,n,r,s);
+  // gen3r2s(A,n,r,s);
 
-  nbrel=1;
+  // nbrel=1;
 
-  cout << "     hjls test exp long dpe, dim = " << n <<", " << setprec << " bits " << endl; 
+  // cout << "     hjls test exp long dpe, dim = " << n <<", " << setprec << " bits " << endl; 
 
-  nbrel=relations_hjls<mpfr_t,ldpe_t, MatrixPE<long double, ldpe_t> >(C,A,nbrel,setprec);
+  // nbrel=relations_hjls<mpfr_t,ldpe_t, MatrixPE<long double, ldpe_t> >(C,A,nbrel,setprec);
  
 
-  Ccheck.resize(n,1);
-  fb.open ("C2_out",ios::in);
-  os >> Ccheck ;
-  fb.close();
+  // Ccheck.resize(n,1);
+  // fb.open ("C2_out",ios::in);
+  // os >> Ccheck ;
+  // fb.close();
 
-  if (nbrel==1) {
-    difference = !matcmp(C, Ccheck, 1, n);
-    if (difference) {
-      cerr << "*** Invalid matrix comparison in hjls test" << endl;
-    }
-    else 
-      succeed+=1;
-  }
+  // if (nbrel==1) {
+  //   difference = !matcmp(C, Ccheck, 1, n);
+  //   if (difference) {
+  //     cerr << "*** Invalid matrix comparison in hjls test" << endl;
+  //   }
+  //   else 
+  //     succeed+=1;
+  // }
 #endif 
   
   //  -------------------- TEST i --------------------------------
-  nbtest+=1;
+  // nbtest+=1;
 
-  r=2;
-  s=3;
-  t=3;
-  u=2;
-  n=r*s+t*u+1;
+  // int t,u;
+  
+  // r=2;
+  // s=3;
+  // t=3;
+  // u=2;
+  // n=r*s+t*u+1;
 
-  setprec=660;
-  mpfr_set_default_prec(setprec);
+  // setprec=660;
+  // mpfr_set_default_prec(setprec);
 
-  gen3r2s7t5u(A,n,r,s,t,u); 
+  // gen3r2s7t5u(A,n,r,s,t,u); 
 
-  nbrel=1;
+  // nbrel=1;
 
-  cout << "     hjls 2 vector test exp dpe, dim = " << n <<", " << setprec << " bits " << endl; 
+  // cout << "     hjls 2 vector test exp dpe, dim = " << n <<", " << setprec << " bits " << endl; 
 
-  nbrel=relations_hjls<mpfr_t, dpe_t, MatrixPE<double, dpe_t> >(C,A,nbrel,setprec);
+  // nbrel=relations_hjls<mpfr_t, dpe_t, MatrixPE<double, dpe_t> >(C,A,nbrel,setprec);
  
-  Ccheck.resize(n,1);
-  fb.open ("C3_out",ios::in);
-  os >> Ccheck ;
-  fb.close();
+  // Ccheck.resize(n,1);
+  // fb.open ("C3_out",ios::in);
+  // os >> Ccheck ;
+  // fb.close();
 
-  if (nbrel==1) {
-    difference = !matcmp(C, Ccheck, 1, n);
-    if (difference) {
-      cerr << "*** Invalid matrix comparison in hjls test" << endl;
-    }
-    else 
-      succeed+=1;
-  }
+  // if (nbrel==1) {
+  //   difference = !matcmp(C, Ccheck, 1, n);
+  //   if (difference) {
+  //     cerr << "*** Invalid matrix comparison in hjls test" << endl;
+  //   }
+  //   else 
+  //     succeed+=1;
+  // }
   
 
   //  *****************************************************  
-  cout << "     " << succeed << " relations tests ok over " << nbtest << endl; 
+  cout << endl << "     " << succeed << " relations tests ok over " << nbtest << endl; 
   //  *****************************************************  
 
   return 0;
