@@ -1,6 +1,8 @@
 /* HJLS and PSLQ relation algorithms 
 
 Created Jeu  7 mar 2013 15:01:41 CET
+        Ven 27 mar 2015 14:18:38 CET
+
 Copyright (C) 2013      Gilles Villard 
 
 This file is part of the hplll Library 
@@ -34,9 +36,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 namespace hplll { 
 
-  // Calls double routines via a restarting process
+  // Calls underlying long-double routines
+  
   template<class ZT, class FT> 
-    int relation_lift(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long setprec, long shift, int lllmethod=HLLL); 
+    int relation_f(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long alpha, long conshift, int lllmethod=HLLL); 
     
   template<class ZT, class FT> int relation_lift_d_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A,  int alpha, int shift,
 						     double delta, int lllmethod=HLLL);
@@ -53,34 +56,6 @@ namespace hplll {
   
   template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
     relation_lll_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha, int shift=0, double delta=0.99, int lllmethod=HLLL);
-
-
-  
-    
-  
-// ********   ATTENTION   ******************************
-//
-// Template RT but tested for mpfr .....
-//
-/* *************************************************************
-
-   COMPUTING INTEGER RELATIONS FOR A FLOATING POINT MATRIX 
-
-   Method 1: HJLS, starting from the matrix d x n 
-              using the identiy for calling decomp with dec > 0 
-
-   Method 2: 1) compute an associated floating FGAS 
-             2) go through the FGAS decomposition      
-
-  
-   d x n 
-   Hence nullity (returned) is <= nbrel < n-d
-
-   ************************************************************ */
-
-
-
-template<class RT,  class FT, class MatrixFT>  int relations_hjls(ZZ_mat<mpz_t>& C, const matrix<FP_NR<RT> >& A, long nbrel, long setprec); 
 
 
 } // end namespace hplll
