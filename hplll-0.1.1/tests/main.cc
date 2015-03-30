@@ -42,19 +42,28 @@ int main(int argc, char *argv[])  {
   matrix<FP_NR<mpfr_t> > A;   // Input matrix 
   ZZ_mat<mpz_t> C;
  
-  int r=6; 
-  int s=6; 
+  int r=7; 
+  int s=7; 
   int n=r*s+1;
 
-  int setprec=7000;
+  int setprec=1660;
   mpfr_set_default_prec(setprec);
 
   gen3r2s(A,n,r,s);
 
   int found;
+
+  verboseDepth = 1;
   
   // Alpha must be less than prec by a factor of ||F|| for having alpha bits
+  
+  int start=utime();
+
   found=relation_f<long, double>(C, A, setprec, 60, 1000, 20);
+
+  start=utime()-start;
+ 
+  cout << "Time for the relation: " << start/1000 << " ms" << endl;
 
   if (found ==1)  print2maple(C,n,1);
 	      
