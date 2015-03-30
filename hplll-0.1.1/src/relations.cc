@@ -57,13 +57,7 @@ namespace hplll {
 
     int found;
 
-    int start=utime();
     found=relation_f_z<ZT, FT> (C, L, alpha, confidence_gap, shift, increment, lllmethod, delta);
-    
-    start=utime()-start;
-
- 
-    cout << "     time internal: " << start/1000 << " ms" << endl;
   
     return found;
     
@@ -73,6 +67,7 @@ namespace hplll {
   /***********************************************************************************
 
       Companion to relation_f  
+      Relation from an integer matrix 
       Restricted to doubles for the moment 
       Calls LLL with elementary lifts on ZT long et FT double 
 
@@ -130,14 +125,12 @@ namespace hplll {
     new_quot = 1.0;
 
     int intern_shift = shift;
-
-    cout << "     ";
     
     // Main loop on the shifts
     // -----------------------
     while (def < target_def) {
 
-      cout << "." << flush;
+      HPLLL_INFO("Current default: ",def); 
       
       if ((target_def - def) <= shift) 
 	intern_shift = target_def - def; 
@@ -195,7 +188,7 @@ namespace hplll {
       if (minr.cmp(tr) > 0) minr=tr;
     }
 
-    cout << endl << "** No relation found with min Rii = " << minr << endl; 
+    cerr << endl << "** No relation found with min Rii = " << minr << endl; 
 
     mpfr_set_default_prec(oldprec);
 
@@ -203,22 +196,28 @@ namespace hplll {
     return found; // 0 here 
     
     
-  } 
-   //*************
-  // Tout en double 
-  // Quelques étapes en flottant à l'intérieur
-  // En exact pour 
-  // Pour un restart
-  // FT type interne pour la matrice de passage, retournée en ZT = double  
-  // avec mise à jour de def comme detect_lift 
-  // **** m=1 for the moment
-  // Dpe pour FT aussi, long double
-  // et get_ld
-  // A_in est d x d !!!!!
-  // Verifier l'affectation de double à Z_NR<double>
+  }
 
 
-  
+
+
+   /***********************************************************************************
+
+      Companion to relation_f_z
+      Restricted to doubles for the moment 
+
+      Actually calls LLL with elementary lifts on ZT long et FT double 
+
+      TODO: + Check assigment from double to Z_NR<double>
+            + Use of long doubles or dpe 
+
+      TODO: m = 1 for the moment 
+
+      L (1 x d) and A_in d x d 
+
+  **************************************************************************************/ 
+
+    
   template<class ZT, class FT> int  
   detect_lift_f_z(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT> A_in_f, int& new_def, int def,  int target_def,
 		FP_NR<mpfr_t>& new_quot,
@@ -351,9 +350,10 @@ namespace hplll {
       size_of_U = maxbitsize(U,0,d,d);
       size_of_V = maxbitsize(V,0,d,d);
 
+      // Heuristic to check 
       if ((size_of_U + size_of_V) > 50) {
 
-	cout << "**** Anomaly with the bit size of the transform (long), maybe check the value of the shift" << endl;
+	cerr << "**** Anomaly with the bit size of the transform (long), maybe check the value of the shift" << endl;
 	return 0;
 
       }
@@ -408,7 +408,7 @@ namespace hplll {
  
       if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
        
-       	cout << endl << "     Candidate relation found with confidence " << gap << endl;  
+	HPLLL_INFO("Candidate relation found with confidence: ",gap); 
        	return 1;
 	
       } 
