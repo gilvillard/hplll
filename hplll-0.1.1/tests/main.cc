@@ -20,7 +20,6 @@ along with the hplll Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-
 #include "hlll.h"
 #include "lehmer.cc"
 #include "matgen.h"
@@ -28,54 +27,75 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "tools.h"
 
+using namespace hplll;
+
+
 /* ***********************************************
 
           MAIN   
 
    ********************************************** */
 
-using namespace hplll; 
+
 
 int main(int argc, char *argv[])  {
   
+  // TEST BRUNO
+  // Types
+  // *****
 
-  matrix<FP_NR<mpfr_t> > A;   // Input matrix 
-  ZZ_mat<mpz_t> C;
+  typedef mpfr_t RT;
  
-  int r=7; 
-  int s=7; 
-  int n=r*s+1;
 
-  int setprec=1660;
+
+  filebuf fb;
+  iostream os(&fb);
+
+  ZZ_mat<mpz_t> A;
+  int bits, n;
+  fb.open ("tbs2.in",ios::in);
+  os >> bits ;
+  os >> n;
+  A.resize(1,n);
+  os >> A;
+  fb.close();
+
+  int setprec=bits;
   mpfr_set_default_prec(setprec);
+  cout << "Bits: " << bits << ", " <<  n << " input real numbers" << endl << endl;
 
-  gen3r2s(A,n,r,s);
 
-  int found;
+  FP_NR<RT> quodigits;
+  quodigits=2;
+  quodigits.pow_si(quodigits,-bits);
 
-  verboseDepth = 1;
+  quodigits.print();
+  cout << endl; 
+
+  matrix<FP_NR<RT> > F;   // Input matrix
+  FP_NR<RT> tmp;
+  F.resize(1,n);
+  for (int j=0; j<n; j++) {
+    set_z(tmp,A(0,j));
+    tmp.mul(tmp,quodigits);
+    F.set(0,j,tmp);
+  }
+
+  print2maple(F,1,n);
+
+  ZZ_mat<mpz_t> C;
+
+
+  int start = utime();
+
+  relation_f<long, double>(C, F, 244, 60, 800, 40, FPLLL,0.99);
+
+  print2maple(C,n,1);
   
-  // Alpha must be less than prec by a factor of ||F|| for having alpha bits
-  
-  int start=utime();
+  start = utime()-start;
+  cout << endl << "   Time: " << start/1000 << " ms" << endl;
+  cout << endl << "   Time: " << start << " us" << endl;
 
-  found=relation_f<long, double>(C, A, setprec, 60, 1000, 20);
 
-  start=utime()-start;
- 
-  cout << "Time for the relation: " << start/1000 << " ms" << endl;
-
-  if (found ==1)  print2maple(C,n,1);
-	      
-  //relation_f<long, double>(C, F, 244, 60, 800, 40, FPLLL,0.99);
-  
-  // relation_f(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long alpha,
-  //		   long confidence_gap = 60, long shift = 200, long increment = 20, int lllmethod = FPLLL, double delta = 0.99);
-  
-  //found = relation_lift(C, A, setprec);
-     
-  //relation_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C, A, setprec, 10, FPLLL);  
-
-      
   return 0;
 }

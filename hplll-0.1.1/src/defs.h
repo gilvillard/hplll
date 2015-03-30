@@ -45,6 +45,19 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 #include "nr-ld.cpp"  // Should be cleaned and in part in the test above 
 
+
+// By default, but does nothing at level 0  
+#define HPLLL_VERBOSE
+
+#ifdef HPLLL_VERBOSE
+int verboseDepth = 0;
+#define HPLLL_INFO(x,y) {if (verboseDepth > 0) cout << x << y << endl;}
+#else
+#define HPLLL_INFO(x,y)
+#endif 
+
+
+
 namespace hplll { 
 
 #define DEF_REDUCTION 0
