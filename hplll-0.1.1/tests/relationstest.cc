@@ -78,6 +78,8 @@ int main(int argc, char *argv[])  {
 
   cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl; 
 
+ 
+  
   found=relation_f<long, double>(C, A, setprec); 
 
   
@@ -127,6 +129,8 @@ int main(int argc, char *argv[])  {
 
   cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl; 
 
+ 
+   
   found=relation_f<long, double>(C, A, setprec); 
 
   
@@ -165,25 +169,24 @@ int main(int argc, char *argv[])  {
   mpfr_set_default_prec(setprec);
  
 
-
-  FP_NR<mpfr_t> quodigits;
-  quodigits=2;
-  quodigits.pow_si(quodigits,-setprec);
-
-  
   FP_NR<mpfr_t> tmp;
   A.resize(1,n);
   for (int j=0; j<n; j++) {
     set_z(tmp,AZ(0,j));
-    tmp.mul(tmp,quodigits);
+    tmp.mul_2si(tmp,-setprec);
     A.set(0,j,tmp);
   }
-
+  
   nbrel=1;
   cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl;
-  
-  found = relation_f<long, double>(C, A, 204, 60, 800, 40, FPLLL,0.99);
 
+  print2maple(A,1,n);
+
+  verboseDepth=1;
+  
+  found = relation_f<long, double>(C, A, 240, 60, 800, 40, FPLLL,0.99);
+
+  //print2maple(C,n,1);
   
   Ccheck.resize(n,1);
   fb.open ("C3_out",ios::in);
@@ -192,15 +195,16 @@ int main(int argc, char *argv[])  {
 
   if (found != 1)
     cerr << "*** Problem in relation test, no relation found" << endl;
-  
-  if (nbrel==1) {
+  else if (nbrel==1) {
     difference = !matcmp(C, Ccheck, 1, n);
     if (difference) {
       cerr << "*** Invalid matrix comparison in relation test" << endl;
     }
     else 
-      succeed+=1;
+      succeed+=1;   
   }
+ 
+  
 
 
   
