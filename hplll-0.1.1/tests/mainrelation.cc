@@ -46,7 +46,7 @@ int main(int argc, char *argv[])  {
   int s=7; 
   int n=r*s+1;
 
-  int setprec=1660;
+  int setprec=2000;
   mpfr_set_default_prec(setprec);
 
   gen3r2s(A,n,r,s);
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])  {
  
   cout << "Time for the relation: " << start/1000 << " ms" << endl;
 
-  if (found ==1)  print2maple(C,n,1);
+  //if (found ==1)  print2maple(C,n,1);
 	      
   //relation_f<long, double>(C, F, 244, 60, 800, 40, FPLLL,0.99);
   
