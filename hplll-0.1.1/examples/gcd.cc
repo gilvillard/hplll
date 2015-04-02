@@ -8,21 +8,34 @@ using namespace hplll;
 
 int main(void) {
 
-  typedef mpz_t integer_t;
-  typedef matrix<Z_NR<integer_t> > MatrixZT;
+  ZZ_mat<mpz_t> A; // For hpLLL 
+  ZZ_mat<mpz_t> AT;  // fpLLL  
 
-  ZZ_mat<integer_t> A; // For hpLLL 
-  ZZ_mat<integer_t> AT;  // fpLLL  
-
- 
-  A.resize(5,4); 
-  AT.resize(4,5);  
-  AT.gen_intrel(10);
-  transpose(A,AT);
-
-  Lattice<integer_t, double, MatrixZT, matrix<FP_NR<double> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
-  B.hlll(0.9);
+  /* For computing the gcd of 1136 and 2672 */
   
-  print2maple(B.getbase(),5,4);
+  A.resize(2,2); 
+  AT.resize(2,2);
+
+  A(0,0)=113600;
+  A(0,1)=267200;
+  A(1,0)=1;
+  A(1,1)=0;
+  
+  transpose(AT,A);
+
+  /* Via hlll lattice reduction */
+  
+  Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A);
+  B.hlll(0.99);
+
+  
+  print2maple(B.getbase(),2,2);
+
+  cout << endl << B.getbase() << endl; 
+
+  lllReduction(AT, 0.99, 0.501, LM_WRAPPER);
+
+  cout << endl << AT << endl; 
+  
 
 }

@@ -1,6 +1,6 @@
 #! /bin/sh
 
-CXXFLAGS += -O2 -Wall 
+CXXFLAGS += -O2 -Wall
 
 FPLLL_LIBS += -lfplll
 MPFR_LIBS +=  -lmpfr
