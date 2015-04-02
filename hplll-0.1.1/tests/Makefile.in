@@ -89,7 +89,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 check_PROGRAMS = arithmetic$(EXEEXT) hllltest$(EXEEXT) \
-	relationstest$(EXEEXT)
+	relationstest$(EXEEXT) relationstesthuge$(EXEEXT)
 noinst_PROGRAMS = main$(EXEEXT)
 subdir = tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -124,6 +124,9 @@ main_LDADD = $(LDADD)
 am_relationstest_OBJECTS = relationstest.$(OBJEXT)
 relationstest_OBJECTS = $(am_relationstest_OBJECTS)
 relationstest_LDADD = $(LDADD)
+am_relationstesthuge_OBJECTS = relationstesthuge.$(OBJEXT)
+relationstesthuge_OBJECTS = $(am_relationstesthuge_OBJECTS)
+relationstesthuge_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -159,9 +162,10 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(arithmetic_SOURCES) $(hllltest_SOURCES) $(main_SOURCES) \
-	$(relationstest_SOURCES)
+	$(relationstest_SOURCES) $(relationstesthuge_SOURCES)
 DIST_SOURCES = $(arithmetic_SOURCES) $(hllltest_SOURCES) \
-	$(main_SOURCES) $(relationstest_SOURCES)
+	$(main_SOURCES) $(relationstest_SOURCES) \
+	$(relationstesthuge_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -310,8 +314,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = gnu
-EXTRA_DIST = 416_in 2_in 3_in C1_out  C2_out C3_out  \
-             C4_out C5_out C6_out C7_out 
+EXTRA_DIST = 416_in 2_in 3_in C1_out  C2_out C3_in C3_out  \
+             C_huge_in C_huge_out 
 
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
@@ -323,6 +327,11 @@ main_SOURCES = main.cc
 arithmetic_SOURCES = arithmetic.cc  
 hllltest_SOURCES = hllltest.cc  
 relationstest_SOURCES = relationstest.cc 
+
+#nullspacetest_SOURCES=nullspacetest.cc mettre à jour avec hjls.h 
+
+#./relationstest ./nullspacetest 
+relationstesthuge_SOURCES = relationstesthuge.cc 
 all: all-am
 
 .SUFFIXES:
@@ -391,6 +400,10 @@ relationstest$(EXEEXT): $(relationstest_OBJECTS) $(relationstest_DEPENDENCIES) $
 	@rm -f relationstest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(relationstest_OBJECTS) $(relationstest_LDADD) $(LIBS)
 
+relationstesthuge$(EXEEXT): $(relationstesthuge_OBJECTS) $(relationstesthuge_DEPENDENCIES) $(EXTRA_relationstesthuge_DEPENDENCIES) 
+	@rm -f relationstesthuge$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(relationstesthuge_OBJECTS) $(relationstesthuge_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -401,6 +414,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hllltest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/relationstest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/relationstesthuge.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -636,14 +650,13 @@ uninstall-am:
 .PRECIOUS: Makefile
 
 
-#nullspacetest_SOURCES=nullspacetest.cc mettre à jour avec hjls.h 
-
-#./relationstest ./nullspacetest 
-
 check : 
 	./arithmetic 
 	./hllltest
 	./relationstest
+
+huge : 
+	./relationstesthuge 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

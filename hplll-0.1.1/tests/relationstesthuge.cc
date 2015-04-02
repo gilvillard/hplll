@@ -96,7 +96,7 @@ int main(int argc, char *argv[])  {
   
   found = relation_f<long, double>(C, A, 30400, 60, 800);
 
-  //  print2maple(C,n,1);
+  print2maple(C,n,1);
   
   Ccheck.resize(n,1);
   fb.open ("C_huge_out",ios::in);

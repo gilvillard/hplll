@@ -87,12 +87,37 @@ int main(int argc, char *argv[])  {
     F.set(0,k,tf);
   }
 
- 
+
+  matrix<Z_NR<mpz_t> > FZ;
+  Z_NR<mpz_t> tz;
+  
+  FZ.resize(1,deg+1);
+
+  for(int k=0; k<deg+1; k++) {
+    tf.mul_2si(F(0,k),setprec);
+    tz.set_f(tf);
+    FZ.set(0,k,tz);
+  }
+
+
+  fb.open ("C_huge_in",ios::out);
+  os << setprec << endl;
+  os << deg+1 << endl;
+  os << "[[" << endl; 
+  for(int k=0; k<deg+1; k++) {
+    os << FZ(0,k) << endl; 
+  }
+  os << "]]" << endl;
+  fb.close();
+
+  
   
   ZZ_mat<mpz_t> C;
  
   int start=utime();
 
+  verboseDepth=1;
+  
   // Alpha must be less than prec by a factor of ||F|| for having alpha bits 
   relation_f<long, double>(C, F, 30400, 60, 800);
   

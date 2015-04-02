@@ -1,12 +1,14 @@
 AUTOMAKE_OPTIONS = gnu
 
-EXTRA_DIST= 416_in 2_in 3_in C1_out  C2_out C3_out  \
-             C4_out C5_out C6_out C7_out 
+EXTRA_DIST= 416_in 2_in 3_in C1_out  C2_out C3_in C3_out  \
+             C_huge_in C_huge_out 
 
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
 
-check_PROGRAMS = arithmetic  hllltest relationstest 
+check_PROGRAMS = arithmetic  hllltest relationstest relationstesthuge
+
+
 #nullspacetest : mettre à jour avec hjls.h 
 
 noinst_PROGRAMS= main 
@@ -28,9 +30,17 @@ relationstest_SOURCES=relationstest.cc
 
 #./relationstest ./nullspacetest 
 
+relationstesthuge_SOURCES=relationstesthuge.cc 
+
 check : 
 	./arithmetic 
 	./hllltest
 	./relationstest
+
+huge : 
+	./relationstesthuge 
+
+
+
 
 
