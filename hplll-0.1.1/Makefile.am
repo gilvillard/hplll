@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS = gnu
 
 ACLOCAL_AMFLAGS= -I macros
 
-SUBDIRS= src  tests macros 
+SUBDIRS= src  tests macros examples 
 
 nobase_dist_doc_DATA = COPYING.LESSER 
 
