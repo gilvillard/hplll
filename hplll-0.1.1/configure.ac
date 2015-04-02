@@ -88,6 +88,6 @@ LB_CHECK_FPLLL
 LB_CHECK_NTL
 
 
-AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile macros/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile macros/Makefile examples/Makefile])
 AC_OUTPUT
 

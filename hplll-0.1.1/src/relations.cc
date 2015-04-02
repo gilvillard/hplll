@@ -55,6 +55,8 @@ namespace hplll {
       L(0,j).set_f(t);
     }
 
+    //print2maple(L,1,n);
+    
     int found;
 
     found=relation_f_z<ZT, FT> (C, L, alpha, confidence_gap, shift, increment, lllmethod, delta);
@@ -148,6 +150,7 @@ namespace hplll {
       found=detect_lift_f_z<ZT, FT>(U, L, Tf, new_def, def, target_def, new_quot,
 				    confidence_gap, intern_shift, increment, lllmethod, delta);
 
+      
       
       def=new_def;
 
@@ -353,7 +356,7 @@ namespace hplll {
       // Heuristic to check 
       if ((size_of_U + size_of_V) > 50) {
 
-	cerr << "**** Anomaly with the bit size of the transform (long), maybe check the value of the shift" << endl;
+	cerr << "**** Anomaly with the bit size of the transform (long) > 50, maybe check the value of the shift" << endl;
 	return 0;
 
       }
@@ -372,7 +375,13 @@ namespace hplll {
       quot = new_quot;
       
       Z_NR<mpz_t> xz;
-      xz.abs(L(0,0)); 
+      // ICI NEW ???
+      if (L(0,0).sgn() ==0) {
+	xz=1;
+	cout << " ********** ICI ********" << endl; 
+      }
+      else
+	xz.abs(L(0,0)); 
       new_quot.set_z(xz);
 
       
@@ -393,18 +402,19 @@ namespace hplll {
       gap.abs(gap); 
 
            
-      //cout << "     gap : " << gap << endl; 
-      //cout << "     quot : " << new_quot << endl; 
+      // cout << "     gap : " << gap << endl; 
+      // cout << "     quot : " << new_quot << endl; 
       // cout << "     maxcol : " << maxcol << endl;
       // cout << "L: " << L(0,0) << endl;
-      // cout << "Af: " << Af(0,0) << endl;
+      // cout << "Af: " << Af(0,0) << endl << endl;
 
       
       // Mettre avant possible
-      if (L(0,0).sgn() ==0) {
-	new_def = target_def;
-	return 0; 
-      }
+      // if (L(0,0).sgn() ==0) {
+      // 	new_def = target_def;
+       
+      // 	return 0; 
+      // }
  
       if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
        

@@ -125,13 +125,13 @@ am__can_run_installinfo = \
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 am__DIST_COMMON = $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing aclocal-1.14
+ACLOCAL = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing aclocal-1.15
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
 AUTOCONF = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing autoconf
 AUTOHEADER = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing autoheader
-AUTOMAKE = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing automake-1.14
+AUTOMAKE = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing automake-1.15
 AWK = awk
 CC = gcc
 CCDEPMODE = depmode=gcc3
