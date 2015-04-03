@@ -11,14 +11,17 @@ check_PROGRAMS = arithmetic  hllltest relationstest relationstesthuge
 
 #nullspacetest : mettre à jour avec hjls.h 
 
-noinst_PROGRAMS= main 
+
+noinst_PROGRAMS = main
+
+main_SOURCES=main.cc 
+
 
 #INCLUDES = -I$(top_srcdir)/src 
 
 #Mis déjà dans le configure 
 #LDADD =  -lfplll  
 
-main_SOURCES=main.cc 
 
 arithmetic_SOURCES=arithmetic.cc  
 
@@ -26,20 +29,17 @@ hllltest_SOURCES=hllltest.cc
 
 relationstest_SOURCES=relationstest.cc 
 
+relationstesthuge_SOURCES=relationstesthuge.cc 
+
 #nullspacetest_SOURCES=nullspacetest.cc mettre à jour avec hjls.h 
 
 #./relationstest ./nullspacetest 
 
-relationstesthuge_SOURCES=relationstesthuge.cc 
 
 check : 
 	./arithmetic 
 	./hllltest
 	./relationstest
-
-huge : 
-	./relationstesthuge 
-
 
 
 
