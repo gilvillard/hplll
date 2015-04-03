@@ -2,6 +2,8 @@
 
 CXXFLAGS += -O2 -Wall
 
+# Here with standard installation directories
+
 FPLLL_LIBS += -lfplll
 MPFR_LIBS +=  -lmpfr
 GMP_LIBS   += -lgmp
