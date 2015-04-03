@@ -373,12 +373,11 @@ namespace hplll {
       // ----
       
       quot = new_quot;
-      
+
+      // 0 can be the epsilon or an artefact of integer basis reduction 
       Z_NR<mpz_t> xz;
-      // ICI NEW ???
-      if (L(0,0).sgn() ==0) {
-	xz=1;
-	cout << " ********** ICI ********" << endl; 
+      if (L(0,0).sgn() ==0) { // For making the gap pertinent even if 0 
+	xz=1; 
       }
       else
 	xz.abs(L(0,0)); 
