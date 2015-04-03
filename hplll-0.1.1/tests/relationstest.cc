@@ -180,10 +180,6 @@ int main(int argc, char *argv[])  {
   nbrel=1;
   cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl;
 
-  print2maple(A,1,n);
-
-  verboseDepth=1;
-  
   found = relation_f<long, double>(C, A, 240, 60, 800, 40, FPLLL,0.99);
 
   //print2maple(C,n,1);

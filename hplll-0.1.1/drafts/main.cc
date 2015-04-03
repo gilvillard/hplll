@@ -1,5 +1,6 @@
-/* integer relations test file  
+/* Integer matrix nullspace test file  
 
+Created Dim  7 avr 2013 16:54:03 CEST
 Copyright (C) 2013      Gilles Villard 
 
 This file is part of the hplll Library 
@@ -19,10 +20,9 @@ along with the hplll Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#include "matgen.h"
-#include "relations.h" 
 
-using namespace hplll;
+#include "hlll.h"
+#include "matgen.h"
 
 /* ***********************************************
 
@@ -30,97 +30,94 @@ using namespace hplll;
 
    ********************************************** */
 
+using namespace hplll; 
 
 int main(int argc, char *argv[])  {
+  
+  
+  ZZ_mat<mpz_t> A0,A; // For hpLLL 
+  ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
+
+  // ---------------------------------------------------------------------
+
+  int n,d;
+  double delta;
+
+  command_line_basis(A0, n, d, delta, argc, argv); 
+
+  A.resize(n,d);
+  AT.resize(d,n);
+  transpose(AT,A);
+
+    int start,startsec;
+
+    Timer time;
+
+    cout << "--------------  HLLL" << endl << endl; 
+    start=utime();
+    startsec=utimesec();
+   
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM,DEF_REDUCTION);
+
+    time.start();
+    B.hlll(delta);
+    time.stop();
+
+    start=utime()-start;
+    startsec=utimesec()-startsec;
+  
+    
+    cout << "   dimension = " << d  << endl;
+    cout << "   time A: " << start/1000 << " ms" << endl;
+    cout << "   time : " << time  << endl;
+    
+
+
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+    T1.isreduced(delta-0.1);
+
+    cout << endl; 
+
+    cout << "--------------  FPLLL FAST" << endl << endl; 
+    transpose(AT,A0);
+
+    start=utime();
+    startsec=utimesec();
+    time.start();
+    lllReduction(AT, delta, 0.501, LM_FAST);
+    time.stop();
+    start=utime()-start;
+    startsec=utimesec()-startsec;
+  
+    
+    cout << "   dimension = " << d  << endl;
+    cout << "   time B: " << start/1000 << " ms" << endl;
+    cout << "   time B: " << time << endl;
+
+    transpose(A,AT);
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
+    T2.isreduced(delta-0.1);
+
+    cout << "--------------  FPLLL WRAPPER" << endl << endl; 
+    // transpose(AT,A0);
+
+    // start=utime();
+    // startsec=utimesec();
+    // time.start();
+    // lllReduction(AT, delta, 0.501, LM_WRAPPER, FT_DEFAULT,0,LLL_VERBOSE);
+    // time.stop();
+    // start=utime()-start;
+    // startsec=utimesec()-startsec;
+  
+    
+    // cout << "   dimension = " << d  << endl;
+    // cout << "   time C: " << start/1000 << " ms" << endl;
+    // cout << "   time C: " << time << endl;
+
+    // transpose(A,AT);
+    // Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T3(A,NO_TRANSFORM,DEF_REDUCTION);
+    // T3.isreduced(delta-0.1);
+
  
-  int n;
-  
-  int found;
-
-  int difference; 
-
-  int succeed=0;
-  int nbtest=0;
-
-  filebuf fb;
-  iostream os(&fb);
-
-  int nbrel;
-
-  long setprec;
-
-  //  *****************************************************  
-  cout <<  "Testing relation finder" << endl; 
-  //  *****************************************************  
-
-  matrix<FP_NR<mpfr_t> > A;   // Input matrix 
-
-  typedef mpz_t integer_t;
-  
-  ZZ_mat<integer_t> C;  // Output relations 
-  ZZ_mat<integer_t> Ccheck;  // Output relations 
-
- 
-  //  -------------------- TEST i --------------------------------
-  nbtest+=1;
-
-  
-
-  ZZ_mat<mpz_t> AZ;
-  
-  fb.open ("C_huge_in",ios::in);
-  os >> setprec ;
-  os >> n;
-  AZ.resize(1,n);
-  os >> AZ;
-  fb.close();
-
-  
-  mpfr_set_default_prec(setprec);
- 
-
-  FP_NR<mpfr_t> tmp;
-  A.resize(1,n);
-  for (int j=0; j<n; j++) {
-    set_z(tmp,AZ(0,j));
-    tmp.mul_2si(tmp,-setprec);
-    A.set(0,j,tmp);
-  }
-  
-  nbrel=1;
-  cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl;
-
-  //print2maple(A,1,n);
-
-  verboseDepth=1;
-  
-  found = relation_f<long, double>(C, A, 30400, 60, 800);
-
-  //  print2maple(C,n,1);
-  
-  Ccheck.resize(n,1);
-  fb.open ("C_huge_out",ios::in);
-  os >> Ccheck ;
-  fb.close();
-
-  if (found != 1)
-    cerr << "*** Problem in relation test, no relation found" << endl;
-  else if (nbrel==1) {
-    difference = !matcmp(C, Ccheck, 1, n);
-    if (difference) {
-      cerr << "*** Invalid matrix comparison in relation test" << endl;
-    }
-    else 
-      succeed+=1;   
-  }
- 
-  
-
-
-  
-  //  *****************************************************  
-  cout << endl << "     " << succeed << " relations tests ok over " << nbtest << endl; 
-  //  *****************************************************  
-
   return 0;
 }

@@ -1,4 +1,4 @@
-main.o: main.cc ../src/matgen.h ../src/defs.h \
+main.o: main.cc ../src/hlll.h ../src/defs.h \
  /usr/local/include/c++/4.9.2/cmath \
  /usr/local/include/c++/4.9.2/x86_64-apple-darwin14.0.0/bits/c++config.h \
  /usr/local/include/c++/4.9.2/x86_64-apple-darwin14.0.0/bits/os_defines.h \
@@ -180,12 +180,11 @@ main.o: main.cc ../src/matgen.h ../src/defs.h \
  /Users/gvillard/Soft/with-gcc-4.9/include/fplll/evaluator.h \
  /Users/gvillard/Soft/with-gcc-4.9/include/fplll/fplllv31.h \
  ../src/givtimer.C ../src/givtimer.h ../src/ldpe.h ../src/nr-ld.cpp \
- ../src/tools.h ../src/mat.h ../src/mixed-col.h ../src/matpe.h \
- ../src/matgen.cc ../src/matgen.h ../src/relations.h ../src/hlll.h \
- ../src/matmixed.h ../src/hlll.cc ../src/lehmer.cc ../src/decomp.h \
- ../src/decomp.cc ../src/decompz.h ../src/decompz.cc ../src/relations.cc
+ ../src/mat.h ../src/mixed-col.h ../src/matpe.h ../src/matmixed.h \
+ ../src/hlll.cc ../src/matgen.h ../src/tools.h ../src/matgen.cc \
+ ../src/matgen.h
 
-../src/matgen.h:
+../src/hlll.h:
 
 ../src/defs.h:
 
@@ -671,34 +670,20 @@ main.o: main.cc ../src/matgen.h ../src/defs.h \
 
 ../src/nr-ld.cpp:
 
-../src/tools.h:
-
 ../src/mat.h:
 
 ../src/mixed-col.h:
 
 ../src/matpe.h:
 
-../src/matgen.cc:
-
-../src/matgen.h:
-
-../src/relations.h:
-
-../src/hlll.h:
-
 ../src/matmixed.h:
 
 ../src/hlll.cc:
 
-../src/lehmer.cc:
+../src/matgen.h:
 
-../src/decomp.h:
+../src/tools.h:
 
-../src/decomp.cc:
+../src/matgen.cc:
 
-../src/decompz.h:
-
-../src/decompz.cc:
-
-../src/relations.cc:
+../src/matgen.h:
