@@ -12,11 +12,6 @@ check_PROGRAMS = arithmetic  hllltest relationstest relationstesthuge
 #nullspacetest : mettre à jour avec hjls.h 
 
 
-noinst_PROGRAMS = main
-
-main_SOURCES=main.cc 
-
-
 #INCLUDES = -I$(top_srcdir)/src 
 
 #Mis déjà dans le configure 
