@@ -30,6 +30,9 @@ relationstesthuge_SOURCES=relationstesthuge.cc
 
 #./relationstest ./nullspacetest 
 
+noinst_PROGRAMS = gentable1
+
+gentable1_SOURCES=gentable1.cc
 
 check : 
 	./arithmetic 
