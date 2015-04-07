@@ -126,9 +126,12 @@ int main(int argc, char *argv[])  {
 	B1.hlll(delta); //* name
 	time.stop();
 
+ 
 	os << "Run " << run << "  with d = " << d[k] << ",  bits = " << bits[k] << ",  delta = " << delta <<  endl << endl;
 	os << "    hlll: " << time << endl ;
-    
+	time.print(os);
+	os << endl;
+	
 	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T11(B1.getbase(),NO_TRANSFORM,DEF_REDUCTION); //* names
 
 	T11.isreduced(delta-0.1); //* name
@@ -143,6 +146,8 @@ int main(int argc, char *argv[])  {
   
 
 	os << "   fplll: " << time << endl << endl ;
+	time.print(os);
+	os << endl;
    
 	transpose(A,AT);
 	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T12(A,NO_TRANSFORM,DEF_REDUCTION); //* name
