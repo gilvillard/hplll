@@ -91,7 +91,7 @@ int main(int argc, char *argv[])  {
 
   K=k;
 
-  double delta=0.75;
+  double delta=0.99;
 
   int run=0;
   
