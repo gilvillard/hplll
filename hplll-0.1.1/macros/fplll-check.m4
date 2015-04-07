@@ -47,7 +47,7 @@ if test -r "$FPLLL_HOME/include/fplll/defs.h"; then
 		FPLLL_LIBS="-lfplll"
 	fi
 	CXXFLAGS="${BACKUP_CXXFLAGS} ${FPLLL_CFLAGS}"
-	LDFLAGS="${BACKUP_LIBS} ${FPLLL_LIBS}"
+	LDFLAGS="${BACKUP_LIBS} ${FPLLL_LIBS} -Wl,-rpath,${FPLLL_HOME}/lib"
 
 	AC_TRY_LINK(
 	[#include <fplll.h>],
