@@ -408,7 +408,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
   FP_NR<FT> approx;
   
-  approx=0.1;
+  approx=0.000001;
 
 
   FP_NR<FT> t,tmpfp;
@@ -520,12 +520,12 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	  
 	  R.submulcol(kappa,i,x,i+1);
 	
-	  B.submulcol(kappa,i,xz,nmax);
-	  //B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+	  //B.submulcol(kappa,i,xz,nmax);
+	  B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
 	 
 	  if (transf)  
-	    U.submulcol(kappa,i,xz,min(d,nmax));
-	    //U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    //U.submulcol(kappa,i,xz,min(d,nmax));
+	    U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
 
 	  if (lsize > 0)  
 	    L.addmulcol_si_2exp(kappa,i,-lx,expo,lsize);
