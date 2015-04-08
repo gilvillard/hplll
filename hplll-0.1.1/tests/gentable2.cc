@@ -36,7 +36,7 @@ int main(int argc, char *argv[])  {
   
   filebuf fb;
   iostream os(&fb);
-  fb.open ("table1.txt",ios::out);
+  fb.open ("table2.txt",ios::out);
 
   ZZ_mat<mpz_t> A; // For hpLLL 
   ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
