@@ -34,14 +34,14 @@ AC_PROG_MAKE_SET
 AC_ARG_WITH(mpfr,
    [  --with-mpfr=DIR          MPFR install directory ], [
       CXXFLAGS="$CXXFLAGS -I$withval/include"
-       LDFLAGS="$LDFLAGS -L$withval/lib"
+       LDFLAGS="$LDFLAGS -L$withval/lib -Wl,-rpath,$withval/lib"
        mpfr_lib_path="$withval/lib"
    ])
 
 AC_ARG_WITH(gmp,
    [  --with-gmp=DIR          GMP install directory ], [
       CXXFLAGS="$CXXFLAGS -I$withval/include"
-       LDFLAGS="$LDFLAGS -L$withval/lib"
+       LDFLAGS="$LDFLAGS -L$withval/lib -Wl,-rpath,$withval/lib"
        gmp_lib_path="$withval/lib"
    ])
 
