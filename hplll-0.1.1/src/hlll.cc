@@ -56,7 +56,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
  
   while ((kappa < d) && (nblov < nblov_max)) 
     {
-
+      
       if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
       
       if (kappa == 1) { 
@@ -377,6 +377,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
       nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ? 
 
+      
     }
     else {
       nonstop=0;
@@ -408,7 +409,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
   FP_NR<FT> approx;
   
-  approx=0.000001;
+  approx=0.1;
 
 
   FP_NR<FT> t,tmpfp;
@@ -425,6 +426,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
   
   householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous
 
+      
   // While loop for the norm decrease
   // --------------------------------
   
@@ -545,18 +547,32 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
       t.mul(approx,normB2[kappa]);
       
       householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
-      
-      nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ? 
+
+      nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ?
       
     }
-    else {
+      
+    else 
       nonstop=0;
-      
-    }
+
+    // Heuristic test for not enough precision with respect to delta  
+    if (nonstop==0) {
+  
+      FP_NR<FT> mu;
+
+      for (i=0; i<kappa; i++) {
+    	mu.div(R.get(i,kappa),R.get(i,i));
+    	mu.abs(mu);
+    	if (mu.cmp(1.0) == 1) {
+    	  cout << " **** #tests = " << nblov << " **** Anomaly, not size reduced, kappa = " << kappa << endl;
+    	  return -1;
+    	}
+      }	
+    } // end test 
 
   } // end while 
    
-
+  
   return somedone;
 
 }
@@ -578,10 +594,11 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
   // ----------
   if (kappa==0) {
 
-     if (col_kept[kappa])    
+    if (col_kept[kappa]) {
      
-       R.setcol(kappa,Bfp.getcol(kappa),nmaxkappa);
-
+      R.setcol(kappa,Bfp.getcol(kappa),nmaxkappa);
+    
+    }
      else {
       
        col_kept[kappa]=1; 
@@ -664,7 +681,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
       col_kept[kappa]=1;  
       
       Bfp.setcol(kappa,B.getcol(kappa),0,nmaxkappa);
-
+       
       fp_norm_sq(normB2[kappa], Bfp.getcol(kappa), nmaxkappa);
  
       // k =0 
@@ -698,7 +715,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
     for (i=kappa; i<nmaxkappa; i++) toR[i]=Rkept.get_non_normalized(i,kappa-1);
     
     R.setcol(kappa,&toR[0],nmaxkappa);
-    
+
     
     kappamin[kappa]=kappa;
 
