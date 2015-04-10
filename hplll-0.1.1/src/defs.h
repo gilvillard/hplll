@@ -62,7 +62,7 @@ namespace hplll {
 
 #define DEF_REDUCTION 0
 #define NO_LONG 1
-#define SEYSEN_REDUCTION 1 
+#define SEYSEN_REDUCTION 2 
 #define TRANSFORM 1
 #define INV_T_TRANSFORM 2 
 #define NO_TRANSFORM 0
