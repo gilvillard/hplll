@@ -52,43 +52,43 @@ int main(int argc, char *argv[])  {
 
   //------------
   d[k]=20;
-  bits[k]=400;
+  bits[k]=2000;
   k+=1;
 
   d[k]=60;
-  bits[k]=3600;
+  bits[k]=6000;
   k+=1;
 
   d[k]=80;
-  bits[k]=4600;
+  bits[k]=8000;
   k+=1;
   
   d[k]=120;
-  bits[k]=7200;
+  bits[k]=1200;
   k+=1;
 
   d[k]=160;
-  bits[k]=12000;
+  bits[k]=1600;
   k+=1;
 
   d[k]=180;
-  bits[k]=16000;
+  bits[k]=18000;
   k+=1;
 
   d[k]=220;
-  bits[k]=16000;
+  bits[k]=22000;
   k+=1;
 
   d[k]=240;
-  bits[k]=20000;
+  bits[k]=24000;
   k+=1;
 
   d[k]=260;
-  bits[k]=20000;
+  bits[k]=26000;
   k+=1;
 
   d[k]=280;
-  bits[k]=20000;
+  bits[k]=28000;
   k+=1;
 
   //-------------
@@ -101,6 +101,7 @@ int main(int argc, char *argv[])  {
   
   Timer time;
 
+  int status;
 
     os << endl << "FPLLL wrapper and HPLLL running times / intrel bases" << endl; 
     os <<         "----------------------------------------------------" << endl << endl;
@@ -127,7 +128,7 @@ int main(int argc, char *argv[])  {
 	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B1(A,NO_TRANSFORM,DEF_REDUCTION);  //* name 
 
 	time.start();
-	B1.hlll(delta); //* name
+	status=B1.hlll(delta); //* name
 	time.stop();
 
  
@@ -135,11 +136,12 @@ int main(int argc, char *argv[])  {
 	os << "    hlll: " << time << endl ;
 	time.print(os);
 	os << endl;
-	
-	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T11(B1.getbase(),NO_TRANSFORM,DEF_REDUCTION); //* names
 
-	T11.isreduced(delta-0.1); //* name
+	if (status ==0) {
+	  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T11(B1.getbase(),NO_TRANSFORM,DEF_REDUCTION); //* names
 
+	  T11.isreduced(delta-0.1); //* name
+	} 
 	cout << endl; 
 
 	cout << "--------------  FPLLL WRAPPER" << endl << endl; 
