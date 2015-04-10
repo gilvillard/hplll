@@ -108,6 +108,8 @@ public:
   int seysenreduce(int kappa);
   int seysen_flag;
 
+  int fast_long_flag;
+
   int hlll(double delta, bool verbose=false);
   int detect_lift(double delta, int def,  int target_def,  int& new_def, int sizeU, FP_NR<FT>& rel_bound,  bool verbose=false);
  

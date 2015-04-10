@@ -70,7 +70,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       
       if (descendu[kappa]>=1) {
 	
-	if (seysen_flag == 0)
+	if (seysen_flag < 2)
 	  flag_reduce=hsizereduce(kappa);   
 	else 
 	  flag_reduce=seysenreduce(kappa); 
@@ -78,7 +78,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       }
       else { 
 	
-	if (seysen_flag == 0)
+	if (seysen_flag < 2)
 	  flag_reduce=hsizereduce(kappa);   
 	else 
 	  flag_reduce=seysenreduce(kappa); 
@@ -426,6 +426,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
   
   householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous
 
+  
       
   // While loop for the norm decrease
   // --------------------------------
@@ -437,7 +438,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
   else 
     startposition = kappa-1;
 
-
+  
   while (nonstop) {
 
     w++;
@@ -453,7 +454,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
       //x.div(R.get(i,kappa),R.get(i,i));
       x.div(R.get_non_normalized(i,kappa),R.get_non_normalized(i,i));
-
       x.rnd(x);
  
  
@@ -501,38 +501,58 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
  
 	    somedone = 1;
 
-	    R.submulcol(kappa,i,x,i+1);
-	   
-	    B.addmulcol_si(kappa,i,-lx,nmax);
+	    if (fast_long_flag == 1) {
+	    
+	      R.submulcol(kappa,i,x,i+1);
+	      B.addmulcol_si(kappa,i,-lx,nmax);
+	      if (transf)  
+		U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+	      if (lsize > 0)  
+		L.addmulcol_si(kappa,i,-lx,lsize);
 
+	    } // end fast_long
+	    else {
+	      
+	      set_f(xz,x);  
+	  
+	      R.submulcol(kappa,i,x,i+1);	
+	      B.submulcol(kappa,i,xz,nmax);
+	      if (transf)  
+		U.submulcol(kappa,i,xz,min(d,nmax));
+	      if (lsize > 0)
+		L.submulcol(kappa,i,xz,lsize);
+	    } // end no long
 
-	    if (transf) 
-	      U.addmulcol_si(kappa,i,-lx,min(d,nmax));
-
-	    if (lsize >0) 
-	      L.addmulcol_si(kappa,i,-lx,lsize);
-
-	  } 
+	    
+	  } // end else expo ==0 and not 1 or -1
   
 	} // end expo == 0 
 	else {  // expo <> 0 
 
 	  somedone = 1;
 
-	  //set_f(xz,x);  // selon comment fait dessous 
+	  if (fast_long_flag == 1) {
+	    
+	    R.submulcol(kappa,i,x,i+1);
+	    B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+	    if (transf)  
+	      U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    if (lsize > 0)  
+	      L.addmulcol_si_2exp(kappa,i,-lx,expo,lsize);
+
+	  } // end fast_long
+	  else {
+	    
+	    set_f(xz,x);  
 	  
-	  R.submulcol(kappa,i,x,i+1);
-	
-	  //B.submulcol(kappa,i,xz,nmax);
-	  B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
-	 
-	  if (transf)  
-	    //U.submulcol(kappa,i,xz,min(d,nmax));
-	    U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
-
-	  if (lsize > 0)  
-	    L.addmulcol_si_2exp(kappa,i,-lx,expo,lsize);
-
+	    R.submulcol(kappa,i,x,i+1);	
+	    B.submulcol(kappa,i,xz,nmax);
+	    if (transf)  
+	      U.submulcol(kappa,i,xz,min(d,nmax));
+	    if (lsize > 0)
+	      L.submulcol(kappa,i,xz,lsize);
+	  } // end no long
+	  
 	} // end expo <> 0 
 
       } // Non zero combination 
@@ -556,23 +576,30 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
     else 
       nonstop=0;
 
-    // Heuristic test for not enough precision with respect to delta  
-    // if (nonstop==0) {
-  
-    //   FP_NR<FT> mu;
+    // Heuristic test for not enough precision with respect to delta
+    // Should be done much more efficiently
+    
+    if ((nonstop==0) && (somedone ==1))  {
+    
+      FP_NR<FT> mu;
 
-    //   for (i=0; i<kappa; i++) {
-    // 	mu.div(R.get_non_normalized(i,kappa),R.get_non_normalized(i,i));
-    // 	mu.abs(mu);
-    // 	if (mu.cmp(1.0) == 1) {
-    // 	  cout << " **** #tests = " << nblov << " **** Anomaly, not size reduced, kappa = " << kappa << endl;
-    // 	  return -1;
-    // 	}
-    //   }	
-    // } // end test 
+      for (i=0; i<kappa; i++) {
+	
+    	mu.div(R.get_non_normalized(i,kappa),R.get_non_normalized(i,i));
+    	mu.abs(mu);
+    	if (mu.cmp(1) == 1) {
+	  
+    	  cout << " **** #tests = " << nblov << " **** Anomaly, not size reduced, kappa = " << kappa  << endl;
+	  
+    	  return -1;
+    	}
+      }
+     
+    } // end test 
 
+    
   } // end while 
-   
+
   
   return somedone;
 
@@ -683,6 +710,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
       
       Bfp.setcol(kappa,B.getcol(kappa),0,nmaxkappa);
        
+       
       fp_norm_sq(normB2[kappa], Bfp.getcol(kappa), nmaxkappa);
  
       // k =0 
@@ -712,6 +740,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
     //for (i=0; i<kappa; i++) toR[i]=Rkept.get_non_normalized(i,i);
     // GV Mer 21 mai 2014 17:11:32 CEST for the rectangular case
 
+    // Should be done more efficiently
+    
     if (kappa < nmaxkappa) {
       
       for (i=0; i<kappa; i++) toR[i]=Rkept.get_non_normalized(i,i);
@@ -997,6 +1027,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reducti
 
   seysen_flag=reduction_method;
 
+  if (reduction_method == DEF_REDUCTION) fast_long_flag = 1;
+  else if  (reduction_method == NO_LONG)  fast_long_flag = 0;
+
   matrix_structure(structure, B, n,d);
 
 
@@ -1037,6 +1070,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR
     lsize = 0; // For other cases 
 
     seysen_flag=reduction_method;
+
+    if (reduction_method == DEF_REDUCTION) fast_long_flag = 1;
+    else if  (reduction_method == NO_LONG)  fast_long_flag = 0;
   
     matrix_structure(structure, B, A.getRowsRT(), A.getRowsZT(), d);
 }
@@ -1914,7 +1950,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
       
 	if (descendu[kappa]>=1) {
 	
-	  if (seysen_flag == 0)
+	  if (seysen_flag < 2)
 	    flag_reduce=hsizereduce(kappa);   
 	  else 
 	    flag_reduce=seysenreduce(kappa); 
@@ -1922,7 +1958,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
 	}
 	else { 
 	
-	  if (seysen_flag == 0)
+	  if (seysen_flag < 2)
 	    flag_reduce=hsizereduce(kappa);   
 	  else 
 	    flag_reduce=seysenreduce(kappa); 

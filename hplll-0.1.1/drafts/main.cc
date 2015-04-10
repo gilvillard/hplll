@@ -59,7 +59,7 @@ int main(int argc, char *argv[])  {
     start=utime();
     startsec=utimesec();
    
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM,DEF_REDUCTION);
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
 
     time.start();
     status=B.hlll(delta);
@@ -75,26 +75,26 @@ int main(int argc, char *argv[])  {
     
     
     if (status ==0) {
-      Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+      Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,NO_LONG);
       T1.isreduced(delta-0.1);
-    }
+      }
     cout << endl; 
 
-    cout << "--------------  FPLLL WRAPPER" << endl << endl; 
-    transpose(AT,A0);
+    // cout << "--------------  FPLLL WRAPPER" << endl << endl; 
+    // transpose(AT,A0);
 
-    start=utime();
-    startsec=utimesec();
-    time.start();
-    lllReduction(AT, delta, 0.501, LM_WRAPPER);
-    time.stop();
-    start=utime()-start;
-    startsec=utimesec()-startsec;
+    // start=utime();
+    // startsec=utimesec();
+    // time.start();
+    // lllReduction(AT, delta, 0.501, LM_WRAPPER);
+    // time.stop();
+    // start=utime()-start;
+    // startsec=utimesec()-startsec;
   
     
-    cout << "   dimension = " << d  << endl;
-    cout << "   time B: " << start/1000 << " ms" << endl;
-    cout << "   time B: " << time << endl;
+    // cout << "   dimension = " << d  << endl;
+    // cout << "   time B: " << start/1000 << " ms" << endl;
+    // cout << "   time B: " << time << endl;
 
     // transpose(A,AT);
     // Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);

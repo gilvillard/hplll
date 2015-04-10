@@ -615,6 +615,8 @@ template<>  inline FP_NR<dpe_t>   MatrixPE<double, dpe_t>::get_non_normalized(in
 
   }
 
+
+ 
 #ifdef HPLLL_WITH_LONG_DOUBLE
 template<>  inline FP_NR<ldpe_t>   MatrixPE<long double, ldpe_t>::get_non_normalized(int i, int j) { // voir double ou long double 
 
@@ -1001,7 +1003,7 @@ template<>  inline void MatrixPE<double, dpe_t>::setcol(int j, const mixed_col<F
       M[j][i]=ldexp(M[j][i],tmpexp[i]-maxexp);
     }
 
-  } // non zero length 
+  } // nonzero length 
 
 }; 
 
