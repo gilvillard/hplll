@@ -116,7 +116,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
 	
 	householder_v(kappa);   // The first part of the orthogonalization is available 
-
+	
 	// Heuristique precision check : when R(kappa-1,kappa-1) increases in a 2x2 up and down  
 	// ------------------------------------------------------------------------------------
 	if (prevkappa==kappa+1) {  
@@ -451,11 +451,12 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
    
     for (i=startposition; i>-1; i--){  
 
-         
-      x.div(R.get(i,kappa),R.get(i,i)); 
+      //x.div(R.get(i,kappa),R.get(i,i));
+      x.div(R.get_non_normalized(i,kappa),R.get_non_normalized(i,i));
+
       x.rnd(x);
-
-
+ 
+ 
       if (x.sgn() !=0) {   // Non zero combination 
                            // --------------------
 	lx = x.get_si_exp(expo);
@@ -518,7 +519,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
 	  somedone = 1;
 
-	  set_f(xz,x);
+	  //set_f(xz,x);  // selon comment fait dessous 
 	  
 	  R.submulcol(kappa,i,x,i+1);
 	
@@ -556,19 +557,19 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
       nonstop=0;
 
     // Heuristic test for not enough precision with respect to delta  
-    if (nonstop==0) {
+    // if (nonstop==0) {
   
-      FP_NR<FT> mu;
+    //   FP_NR<FT> mu;
 
-      for (i=0; i<kappa; i++) {
-    	mu.div(R.get(i,kappa),R.get(i,i));
-    	mu.abs(mu);
-    	if (mu.cmp(1.0) == 1) {
-    	  cout << " **** #tests = " << nblov << " **** Anomaly, not size reduced, kappa = " << kappa << endl;
-    	  return -1;
-    	}
-      }	
-    } // end test 
+    //   for (i=0; i<kappa; i++) {
+    // 	mu.div(R.get_non_normalized(i,kappa),R.get_non_normalized(i,i));
+    // 	mu.abs(mu);
+    // 	if (mu.cmp(1.0) == 1) {
+    // 	  cout << " **** #tests = " << nblov << " **** Anomaly, not size reduced, kappa = " << kappa << endl;
+    // 	  return -1;
+    // 	}
+    //   }	
+    // } // end test 
 
   } // end while 
    
@@ -677,7 +678,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
     // -----------------------------------------------------------
     else { 
 
-     
+      
       col_kept[kappa]=1;  
       
       Bfp.setcol(kappa,B.getcol(kappa),0,nmaxkappa);
@@ -696,7 +697,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
 	length--;
 	
 	scalarprod(VR(k,kappa), V.getcol(k,k), Rkept.getcol(k-1,k), length);
-	
+		
 	Rkept.fmasub(k,k, Rkept.getcol(k-1,k), V.getcol(k,k), VR(k,kappa), length);  // de k-1 à k 
       }
       
@@ -709,13 +710,23 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
     // Dummy in the standard case, made special for the MatrixPE case 
    
     //for (i=0; i<kappa; i++) toR[i]=Rkept.get_non_normalized(i,i);
-    // GV Mer 21 mai 2014 17:11:32 CEST for the rectangular case 
-    for (i=0; (i<kappa) && (i< nmaxkappa); i++) toR[i]=Rkept.get_non_normalized(i,i);
+    // GV Mer 21 mai 2014 17:11:32 CEST for the rectangular case
 
-    for (i=kappa; i<nmaxkappa; i++) toR[i]=Rkept.get_non_normalized(i,kappa-1);
+    if (kappa < nmaxkappa) {
+      
+      for (i=0; i<kappa; i++) toR[i]=Rkept.get_non_normalized(i,i);
+      for (i=kappa; i<nmaxkappa; i++) toR[i]=Rkept.get_non_normalized(i,kappa-1);
+      
+      R.setcol(kappa,&toR[0],nmaxkappa);
+      
+    }
+    else {
+      
+      for (i=0; i< nmaxkappa; i++) toR[i]=Rkept.get_non_normalized(i,i);
     
-    R.setcol(kappa,&toR[0],nmaxkappa);
+      R.setcol(kappa,&toR[0],nmaxkappa);
 
+      }
     
     kappamin[kappa]=kappa;
 
@@ -747,12 +758,14 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_v(int kappa)
 
     fp_norm(s,R.getcol(kappa,kappa),nmaxkappa-kappa); 
     tmpdpe.neg(s);
-    R.set(kappa,kappa,tmpdpe);  // On ne met pas à zéro, inutile, sauf pour getR 
+    R.set(kappa,kappa,tmpdpe);  // On ne met pas à zéro, inutile, sauf pour getR
+    
   }
   else {
 
     fp_norm(tmpdpe,R.getcol(kappa,kappa),nmaxkappa-kappa); // de la colonne 
     R.set(kappa,kappa,tmpdpe);
+    
     s.neg(tmpdpe); 
   }
 
@@ -762,13 +775,15 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_v(int kappa)
   s.sqrt(s);
 
   V.div(kappa,kappa+1, R.getcol(kappa,kappa+1), s, nmaxkappa-kappa-1);
-
+ 
   // vraiment utile il n'y a pas deja des 0?   --> sans doute pas 12/04/11  
   for (i=nmaxkappa; i< n; i++) V.set(i,kappa,0.0);  // V à zéro car ré-utilisé plus loin ensuite (pas R); 
-  tmpdpe.div(w,s);
-  V.set(kappa,kappa,tmpdpe); 
 
- 
+
+  tmpdpe.div(w,s);
+    
+  V.set(kappa,kappa,tmpdpe); 
+  
   return 0; 
 }
 

@@ -921,29 +921,36 @@ template<>  inline void MatrixPE<long double, ldpe_t>::setcol(int j, FP_NR<mpfr_
   // Pas de normalisation 
   // On suppose qu'on remplace toute la colonne avec le nouvel exposant +++++++++++++
 
-template<> inline void  MatrixPE<double,dpe_t>::setcol(int j, const FP_NR<dpe_t>* vd, int nmax) {   
+  
+template<> inline void  MatrixPE<double,dpe_t>::setcol(int j, const FP_NR<dpe_t>* vd, int nmax) {
 
   double* v = &M[j][0];
-
+  
   int d;
   
   if (nmax !=0) {
+
     
-    // Calcul pour le nouvel exposant 
+    double v_mant[nmax];
+    DPE_EXP_T v_exp[nmax];
+    
+
+    // Calcul pour le nouvel exposant
     d=INT_MIN;
-
+    
     for (int i=0; i<nmax; i++) {
-      //tmp[i]=vd[i].getData();
-      d=max(d,DPE_EXP(vd[i].getData()));
+      v_exp[i]=DPE_EXP(vd[i].getData());
+      d=max(d,v_exp[i]);
+      v_mant[i]=DPE_MANT(vd[i].getData());
     }
-
+        
     for (int i=0; i<nmax; i++) {
-      v[i]=ldexp(DPE_MANT(vd[i].getData()),DPE_EXP(vd[i].getData())-d);
+      v[i]=ldexp(v_mant[i],v_exp[i]-d);
     }
     
     exp[j]=d;
     
-  }  // Longueur !=0 
+  }  // Longueur !=0
 
 };
 
@@ -1066,20 +1073,26 @@ template<> inline void  MatrixPE<long double, ldpe_t>::setcol(int j, const FP_NR
   int d;
   
   if (nmax !=0) {
-    
-    // Calcul pour le nouvel exposant 
+
+
+    long double v_mant[nmax];
+    LDPE_EXP_T v_exp[nmax];
+
+    // Calcul pour le nouvel exposant
     d=INT_MIN;
-
+    
     for (int i=0; i<nmax; i++) {
-      //tmp[i]=vd[i].getData();
-      d=max(d,LDPE_EXP(vd[i].getData()));
+      v_exp[i]=LDPE_EXP(vd[i].getData());
+      d=max(d,v_exp[i]);
+      v_mant[i]=LDPE_MANT(vd[i].getData());
     }
-
+        
     for (int i=0; i<nmax; i++) {
-      v[i]=ldexpl(LDPE_MANT(vd[i].getData()),LDPE_EXP(vd[i].getData())-d);
+      v[i]=ldexpl(v_mant[i],v_exp[i]-d);
     }
     
     exp[j]=d;
+    
     
   }  // Longueur !=0 
 
