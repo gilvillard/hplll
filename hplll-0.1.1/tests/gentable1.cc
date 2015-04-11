@@ -73,7 +73,7 @@ int main(int argc, char *argv[])  {
   k+=1;
 
   d[k]=190;
-  bits[k]=22000;
+  bits[k]=19000;
   k+=1;
 
   //-------------
