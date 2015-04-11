@@ -452,8 +452,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
    
     for (i=startposition; i>-1; i--){  
 
-      //x.div(R.get(i,kappa),R.get(i,i));
-      x.div(R.get_non_normalized(i,kappa),R.get_non_normalized(i,i));
+      x.div(R.get(i,kappa),R.get(i,i));
+      //x.div(R.get_non_normalized(i,kappa),R.get_non_normalized(i,i));
       x.rnd(x);
  
  
@@ -510,7 +510,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	      if (lsize > 0)  
 		L.addmulcol_si(kappa,i,-lx,lsize);
 
-	      //} // end fast_long
+	    //   } // end fast_long
 	    // else {
 	      
 	    //   set_f(xz,x);  
@@ -712,7 +712,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
        
        
       fp_norm_sq(normB2[kappa], Bfp.getcol(kappa), nmaxkappa);
- 
+      
       // k =0 
       k=0;
       scalarprod(VR(k,kappa), V.getcol(k,k), Bfp.getcol(kappa,k), length);

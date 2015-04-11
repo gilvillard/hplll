@@ -64,11 +64,11 @@ int main(int argc, char *argv[])  {
   k+=1;
   
   d[k]=120;
-  bits[k]=1200;
+  bits[k]=12000;
   k+=1;
 
   d[k]=160;
-  bits[k]=1600;
+  bits[k]=16000;
   k+=1;
 
   d[k]=180;
