@@ -90,7 +90,8 @@ host_triplet = @host@
 check_PROGRAMS = arithmetic$(EXEEXT) hllltest$(EXEEXT) \
 	relationstest$(EXEEXT) relationstesthuge$(EXEEXT)
 EXTRA_PROGRAMS = gentable1$(EXEEXT) gentable2$(EXEEXT) \
-	gentable3$(EXEEXT) gentable4$(EXEEXT)
+	gentable3$(EXEEXT) gentable4$(EXEEXT) gentable5$(EXEEXT) \
+	gentable6$(EXEEXT)
 subdir = tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/macros/fplll-check.m4 \
@@ -126,6 +127,12 @@ gentable3_LDADD = $(LDADD)
 am_gentable4_OBJECTS = gentable4.$(OBJEXT)
 gentable4_OBJECTS = $(am_gentable4_OBJECTS)
 gentable4_LDADD = $(LDADD)
+am_gentable5_OBJECTS = gentable5.$(OBJEXT)
+gentable5_OBJECTS = $(am_gentable5_OBJECTS)
+gentable5_LDADD = $(LDADD)
+am_gentable6_OBJECTS = gentable6.$(OBJEXT)
+gentable6_OBJECTS = $(am_gentable6_OBJECTS)
+gentable6_LDADD = $(LDADD)
 am_hllltest_OBJECTS = hllltest.$(OBJEXT)
 hllltest_OBJECTS = $(am_hllltest_OBJECTS)
 hllltest_LDADD = $(LDADD)
@@ -171,12 +178,12 @@ am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(arithmetic_SOURCES) $(gentable1_SOURCES) \
 	$(gentable2_SOURCES) $(gentable3_SOURCES) $(gentable4_SOURCES) \
-	$(hllltest_SOURCES) $(relationstest_SOURCES) \
-	$(relationstesthuge_SOURCES)
+	$(gentable5_SOURCES) $(gentable6_SOURCES) $(hllltest_SOURCES) \
+	$(relationstest_SOURCES) $(relationstesthuge_SOURCES)
 DIST_SOURCES = $(arithmetic_SOURCES) $(gentable1_SOURCES) \
 	$(gentable2_SOURCES) $(gentable3_SOURCES) $(gentable4_SOURCES) \
-	$(hllltest_SOURCES) $(relationstest_SOURCES) \
-	$(relationstesthuge_SOURCES)
+	$(gentable5_SOURCES) $(gentable6_SOURCES) $(hllltest_SOURCES) \
+	$(relationstest_SOURCES) $(relationstesthuge_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -344,6 +351,8 @@ gentable1_SOURCES = gentable1.cc
 gentable2_SOURCES = gentable2.cc
 gentable3_SOURCES = gentable3.cc
 gentable4_SOURCES = gentable4.cc
+gentable5_SOURCES = gentable5.cc
+gentable6_SOURCES = gentable6.cc
 all: all-am
 
 .SUFFIXES:
@@ -407,6 +416,14 @@ gentable4$(EXEEXT): $(gentable4_OBJECTS) $(gentable4_DEPENDENCIES) $(EXTRA_genta
 	@rm -f gentable4$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(gentable4_OBJECTS) $(gentable4_LDADD) $(LIBS)
 
+gentable5$(EXEEXT): $(gentable5_OBJECTS) $(gentable5_DEPENDENCIES) $(EXTRA_gentable5_DEPENDENCIES) 
+	@rm -f gentable5$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(gentable5_OBJECTS) $(gentable5_LDADD) $(LIBS)
+
+gentable6$(EXEEXT): $(gentable6_OBJECTS) $(gentable6_DEPENDENCIES) $(EXTRA_gentable6_DEPENDENCIES) 
+	@rm -f gentable6$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(gentable6_OBJECTS) $(gentable6_LDADD) $(LIBS)
+
 hllltest$(EXEEXT): $(hllltest_OBJECTS) $(hllltest_DEPENDENCIES) $(EXTRA_hllltest_DEPENDENCIES) 
 	@rm -f hllltest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(hllltest_OBJECTS) $(hllltest_LDADD) $(LIBS)
@@ -430,6 +447,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gentable2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gentable3.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gentable4.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gentable5.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gentable6.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hllltest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/relationstest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/relationstesthuge.Po@am__quote@
