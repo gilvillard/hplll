@@ -104,7 +104,7 @@ int main(int argc, char *argv[])  {
   Lattice<integer_t, double, MatrixZT, matrix<FP_NR<double> > > B2(A,NO_TRANSFORM,DEF_REDUCTION);
   B2.hlll(delta);
   transpose(AT,B2.getbase());
- 
+  
   TT.resize(d,d+1);
   fb.open ("2_in",ios::in);
   os >> TT ;

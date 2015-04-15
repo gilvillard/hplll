@@ -576,13 +576,46 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
       nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ?
 
-      if ((prev_nonstop ==0) && (nonstop == 0))
+      // Heuristic test
+      // The norm is not increasing for several steps
+      // This may happen exceptionnaly in correct cases with mu_ij = 1/2 exactly
+      //  (and alternates between to values 1/2 and -1/2 in floating point 
+      // Or happen when not enough precision
+      // Hence here: test of soze reduction, if yes then exit if no then return -1 
+      if ((prev_nonstop ==0) && (nonstop == 0)) {
 	count_nonstop +=1;
+
+	if (count_nonstop > 8) {
+
+	  FP_NR<FT> one;
+	  one = 1.0;
 	  
-      if (count_nonstop > 8) {
-	cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, kappa = " << kappa  << endl;
-	return -1;
-      } 
+	  FP_NR<FT> theta;
+	  theta = 0.01;
+	  theta.mul(theta,R.get(kappa,kappa));
+	  
+	  FP_NR<FT> mu,mu_test;
+
+	  for (i=0; i<kappa; i++) {
+	    
+	    mu.div(R.get(i,kappa),R.get(i,i));
+	    mu.abs(mu);
+
+	    mu_test.div(theta,R.get(i,i));
+	    mu_test.add(mu_test,one);
+
+	    if (mu.cmp(mu_test) == 1) {
+	      cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, kappa = " << kappa  << endl;
+	      return -1;
+	    }
+	    
+	  }
+
+	  somedone = 0; 
+	} 
+	
+      } // End test prec 
+	    
       prev_nonstop = nonstop;
       
     }
@@ -596,20 +629,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
     
     // if ((nonstop==0) && (somedone ==1))  {
     
-    //   FP_NR<FT> mu;
-
-    //   for (i=0; i<kappa; i++) {
-    // 	mu.div(R.get_non_normalized(i,kappa),R.get_non_normalized(i,i));
-    // 	//mu.div(R.get(i,kappa),R.get(i,i));
-    // 	mu.abs(mu);
-    // 	if (mu.cmp(1) == 1) {
-
-	  
-    // 	  cout << " **** #tests = " << nblov << " **** Anomaly, not size reduced, kappa = " << kappa  << "   mu: " << mu << endl;
-	  
-    // 	  return -1;
-    // 	}
-    //   }
+     
      
     // } // end test 
 
