@@ -84,6 +84,14 @@ int main(int argc, char *argv[])  {
   bits[k]=24000;
   k+=1;
 
+  d[k]=250;
+  bits[k]=25000;
+  k+=1;
+
+  d[k]=260;
+  bits[k]=26000;
+  k+=1;
+  
   //-------------
 
   K=k;

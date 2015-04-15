@@ -36,7 +36,7 @@ int main(int argc, char *argv[])  {
   
   filebuf fb;
   iostream os(&fb);
-  fb.open ("table3.txt",ios::out);
+  fb.open ("table4.txt",ios::out);
 
   ZZ_mat<mpz_t> A; // For hpLLL 
   ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
@@ -46,79 +46,60 @@ int main(int argc, char *argv[])  {
   int k,K;
 
   vector<int> d(100);
-  vector<int> bits(100);
+ 
 
+  double alpha = 1.2;
   k=0;
 
   //------------
+  d[k]=20;
+  k+=1;
 
+  d[k]=40;
+  k+=1;
+  
   d[k]=60;
-  bits[k]=6000;
   k+=1;
 
   d[k]=80;
-  bits[k]=8000;
+  k+=1;
+
+  d[k]=100;
+  k+=1;
+
+  d[k]=120;
   k+=1;
   
-  d[k]=120;
-  bits[k]=12000;
+  d[k]=140;
   k+=1;
 
   d[k]=160;
-  bits[k]=16000;
   k+=1;
 
   d[k]=180;
-  bits[k]=18000;
   k+=1;
 
   d[k]=200;
-  bits[k]=20000;
   k+=1;
-
+  
   d[k]=220;
-  bits[k]=22000;
   k+=1;
 
   d[k]=240;
-  bits[k]=24000;
-  k+=1;
-
-  d[k]=250;
-  bits[k]=25000;
   k+=1;
 
   d[k]=260;
-  bits[k]=26000;
   k+=1;
 
   d[k]=280;
-  bits[k]=28000;
   k+=1;
-
+  
   d[k]=300;
-  bits[k]=30000;
   k+=1;
 
   d[k]=320;
-  bits[k]=32000;
   k+=1;
-
-  d[k]=340;
-  bits[k]=34000;
-  k+=1;
-
-  d[k]=360;
-  bits[k]=36000;
-  k+=1;
-
-  d[k]=380;
-  bits[k]=38000;
-  k+=1;
-
-  d[k]=400;
-  bits[k]=40000;
-  k+=1;
+  
   //-------------
 
   K=k;
@@ -131,8 +112,9 @@ int main(int argc, char *argv[])  {
 
   int status;
 
-    os << endl << "FPLLL wrapper and HPLLL running times / intrel bases, limites double / long double" << endl; 
-    os <<         "----------------------------------------------------------------------------------" << endl << endl;
+    os << endl << "FPLLL wrapper and HPLLL running times / Ajtai bases" << endl; 
+
+    os <<         "---------------------------------------------------" << endl << endl;
  
     for (int k=0; k<K; k++) { 
 
@@ -143,17 +125,17 @@ int main(int argc, char *argv[])  {
       
       run+=1;
 
-      A.resize(d[k]+1,d[k]);
-      AT.resize(d[k],d[k]+1);
+      A.resize(d[k],d[k]);
+      AT.resize(d[k],d[k]);
 
-      AT.gen_intrel(bits[k]);
+      AT.gen_ajtai(alpha);
+
       transpose(A,AT);
+      
 
-
-      cout << "--------------  HLLL double" << endl << endl; 
+      cout << "--------------  HLLL" << endl << endl; 
 
       {
-	
 	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B1(A,NO_TRANSFORM,DEF_REDUCTION);  //* name 
 
 	time.start();
@@ -161,7 +143,7 @@ int main(int argc, char *argv[])  {
 	time.stop();
 
  
-	os << "Run " << run << "  with d = " << d[k] << ",  bits = " << bits[k] << ",  delta = " << delta <<  endl << endl;
+	os << "Run " << run << "  with d = " << d[k] << ",  alpha = " << alpha << ",  delta = " << delta <<  endl << endl;
 	os << "    hlll: " << time << endl ;
 	time.print(os);
 	os << endl;
@@ -173,33 +155,20 @@ int main(int argc, char *argv[])  {
 	} 
 	cout << endl; 
 
-	
-      }
-
-      cout << "--------------  HLLL long double" << endl << endl; 
-
-      {
-	
-	Lattice<mpz_t, ldpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<long double, ldpe_t> > B1(A,NO_TRANSFORM,DEF_REDUCTION);  //* name 
-
+	cout << "--------------  FPLLL WRAPPER" << endl << endl; 
+    
 	time.start();
-	status=B1.hlll(delta); //* name
+	lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
 	time.stop();
+  
 
- 
-	os << "Run " << run << "  with d = " << d[k] << ",  bits = " << bits[k] << ",  delta = " << delta <<  endl << endl;
-	os << "    hlll: " << time << endl ;
+	os << "   fplll: " << time << endl << endl ;
 	time.print(os);
 	os << endl;
-
-	if (status ==0) {
-	  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T11(B1.getbase(),NO_TRANSFORM,DEF_REDUCTION); //* names
-
-	  T11.isreduced(delta-0.1); //* name
-	} 
-	cout << endl; 
-
-	
+   
+	transpose(A,AT);
+	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T12(A,NO_TRANSFORM,DEF_REDUCTION); //* name
+	T12.isreduced(delta-0.1); //* name
       } 
    
     }// End on runs, k loop

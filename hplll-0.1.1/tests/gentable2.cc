@@ -67,6 +67,10 @@ int main(int argc, char *argv[])  {
   bits[k]=12000;
   k+=1;
 
+  d[k]=140;
+  bits[k]=14000;
+  k+=1;
+  
   d[k]=160;
   bits[k]=16000;
   k+=1;
@@ -91,6 +95,10 @@ int main(int argc, char *argv[])  {
   bits[k]=28000;
   k+=1;
 
+  d[k]=300;
+  bits[k]=30000;
+  k+=1;
+  
   //-------------
 
   K=k;
