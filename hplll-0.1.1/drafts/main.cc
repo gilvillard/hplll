@@ -60,7 +60,9 @@ int main(int argc, char *argv[])  {
     startsec=utimesec();
    
     Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
-
+    //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
+ 
+     
     time.start();
     //status=B.hlll(0.7);
     status=B.hlll(delta);
