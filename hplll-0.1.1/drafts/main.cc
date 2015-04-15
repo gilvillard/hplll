@@ -62,7 +62,7 @@ int main(int argc, char *argv[])  {
     Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
 
     time.start();
-    status=B.hlll(0.7);
+    //status=B.hlll(0.7);
     status=B.hlll(delta);
     time.stop();
 

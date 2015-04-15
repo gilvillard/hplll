@@ -420,6 +420,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
   int i,w=0;
 
   bool nonstop=1;
+  bool prev_nonstop = 1;
+  int count_nonstop = 0;
+  
   bool somedone=0;
 
   int nmax; // De la structure triangulaire 
@@ -438,9 +441,11 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
   else 
     startposition = kappa-1;
 
-  
-  while (nonstop) {
 
+  somedone = 1;
+  
+  //while (nonstop) {
+  while (somedone == 1) { 
     w++;
 
     somedone = 0;
@@ -460,7 +465,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
       if (x.sgn() !=0) {   // Non zero combination 
                            // --------------------
 	lx = x.get_si_exp(expo);
-
+	
 	nmax=structure[i]+1;
 	
 	// Cf fplll 
@@ -570,32 +575,43 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
       householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
 
       nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ?
+
+      if ((prev_nonstop ==0) && (nonstop == 0))
+	count_nonstop +=1;
+	  
+      if (count_nonstop > 8) {
+	cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, kappa = " << kappa  << endl;
+	return -1;
+      } 
+      prev_nonstop = nonstop;
       
     }
       
     else 
       nonstop=0;
 
+    
     // Heuristic test for not enough precision with respect to delta
     // Should be done much more efficiently
     
-    if ((nonstop==0) && (somedone ==1))  {
+    // if ((nonstop==0) && (somedone ==1))  {
     
-      FP_NR<FT> mu;
+    //   FP_NR<FT> mu;
 
-      for (i=0; i<kappa; i++) {
-	
-    	mu.div(R.get_non_normalized(i,kappa),R.get_non_normalized(i,i));
-    	mu.abs(mu);
-    	if (mu.cmp(1) == 1) {
+    //   for (i=0; i<kappa; i++) {
+    // 	mu.div(R.get_non_normalized(i,kappa),R.get_non_normalized(i,i));
+    // 	//mu.div(R.get(i,kappa),R.get(i,i));
+    // 	mu.abs(mu);
+    // 	if (mu.cmp(1) == 1) {
+
 	  
-    	  cout << " **** #tests = " << nblov << " **** Anomaly, not size reduced, kappa = " << kappa  << endl;
+    // 	  cout << " **** #tests = " << nblov << " **** Anomaly, not size reduced, kappa = " << kappa  << "   mu: " << mu << endl;
 	  
-    	  return -1;
-    	}
-      }
+    // 	  return -1;
+    // 	}
+    //   }
      
-    } // end test 
+    // } // end test 
 
     
   } // end while 
