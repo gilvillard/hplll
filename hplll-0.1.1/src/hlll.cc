@@ -35,7 +35,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
   
   int kappa=1,i;
-  int prevkappa=-1; // For the looping test betwenn tow indices 
+  int prevkappa=-1; // For the looping test between tow indices 
   vector<FP_NR<FT> >  prevR(d);
 
 
@@ -68,23 +68,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       else for (i=kappa+1; i<d; i++) kappamin[i]=min(kappamin[i],kappa); // lowest visit after kappa 
 
       
-      if (descendu[kappa]>=1) {
 	
-	if (seysen_flag < 2)
-	  flag_reduce=hsizereduce(kappa);   
-	else 
-	  flag_reduce=seysenreduce(kappa); 
-	
-      }
-      else { 
-	
-	if (seysen_flag < 2)
-	  flag_reduce=hsizereduce(kappa);   
-	else 
-	  flag_reduce=seysenreduce(kappa); 
-	
-      }
-      
+      if (seysen_flag < 2)
+	flag_reduce=hsizereduce(kappa);   
+      else 
+	flag_reduce=seysenreduce(kappa); 
+
+            
       if (flag_reduce==-1) return(-1);
       
 
@@ -161,8 +151,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	B.colswap(kappa-1,kappa);
 	
 	if (transf) U.colswap(kappa-1,kappa);
-	if (lsize > 0) L.colswap(kappa-1,kappa);
-
+	
 	Bfp.colswap(kappa-1,kappa);
 
 	structure[kappa-1]=structure[kappa];
@@ -304,9 +293,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	      
 	      if (transf) 
 		U.subcol(kappa,i,min(d,nmax));
-
-	      if (lsize > 0) 
-		L.subcol(kappa,i,lsize);
 	      
 	    } 
 	    else if (lx == -1) {
@@ -320,9 +306,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	      if (transf) 
 		U.addcol(kappa,i,min(d,nmax));
 
-	      if (lsize > 0) 
-		L.addcol(kappa,i,lsize);
-
 	    } 
 	    else { 
  
@@ -335,8 +318,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	      if (transf) 
 		U.addmulcol_si(kappa,i,-lx,min(d,nmax));
 
-	      if (lsize > 0) 
-		L.addmulcol_si(kappa,i,-lx,lsize);
 	    } 
 	    
 	  } // end expo == 0 
@@ -352,9 +333,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 	    if (transf)  
 	      U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
-
-	    if (lsize >0)  
-	      L.addmulcol_si_2exp(kappa,i,-lx,expo,lsize);
 
 	  } // end expo <> 0 
 	} // Non zero combination 
@@ -421,7 +399,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
   bool nonstop=1;
   bool prev_nonstop = 1;
-  int count_nonstop = 0;
   
   bool somedone=0;
 
@@ -458,7 +435,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
     for (i=startposition; i>-1; i--){  
 
       x.div(R.get(i,kappa),R.get(i,i));
-      //x.div(R.get_non_normalized(i,kappa),R.get_non_normalized(i,i));
       x.rnd(x);
  
  
@@ -482,9 +458,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 		
 	    if (transf) 
 	      U.subcol(kappa,i,min(d,nmax));
-
-	    if (lsize > 0) 
-	      L.subcol(kappa,i,lsize);
 	
 	  } 
 	  else if (lx == -1) {
@@ -498,37 +471,29 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	    if (transf) 
 	      U.addcol(kappa,i,min(d,nmax));
 
-	    if (lsize > 0) 
-	      L.addcol(kappa,i,lsize);
-
 	  } 
 	  else { 
  
 	    somedone = 1;
 
-	    //if (fast_long_flag == 1) {
+	    if (fast_long_flag == 1) {
 	    
 	      R.submulcol(kappa,i,x,i+1);
 	      B.addmulcol_si(kappa,i,-lx,nmax);
 	      if (transf)  
 		U.addmulcol_si(kappa,i,-lx,min(d,nmax));
-	      if (lsize > 0)  
-		L.addmulcol_si(kappa,i,-lx,lsize);
-
-	    //   } // end fast_long
-	    // else {
 	      
-	    //   set_f(xz,x);  
-	  
-	    //   R.submulcol(kappa,i,x,i+1);	
-	    //   B.submulcol(kappa,i,xz,nmax);
-	    //   if (transf)  
-	    // 	U.submulcol(kappa,i,xz,min(d,nmax));
-	    //   if (lsize > 0)
-	    // 	L.submulcol(kappa,i,xz,lsize);
-	    // } // end no long
 
-	    
+	    } // end fast_long
+	    else {
+	      
+	      set_f(xz,x);  
+	      
+	      R.submulcol(kappa,i,x,i+1);	
+	      B.submulcol(kappa,i,xz,nmax);
+	      if (transf)  
+	     	U.submulcol(kappa,i,xz,min(d,nmax));
+	    }	      	    
 	  } // end else expo ==0 and not 1 or -1
   
 	} // end expo == 0 
@@ -536,27 +501,24 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
 	  somedone = 1;
 
-	  //if (fast_long_flag == 1) {
+	  if (fast_long_flag == 1) {
 	    
 	    R.submulcol(kappa,i,x,i+1);
 	    B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
 	    if (transf)  
 	      U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
-	    if (lsize > 0)  
-	      L.addmulcol_si_2exp(kappa,i,-lx,expo,lsize);
-
-	    //} // end fast_long
-	  // else {
 	    
-	  //   set_f(xz,x);  
+	    } // end fast_long
+	  else {
+	   
+	    set_f(xz,x);  
 	  
-	  //   R.submulcol(kappa,i,x,i+1);	
-	  //   B.submulcol(kappa,i,xz,nmax);
-	  //   if (transf)  
-	  //     U.submulcol(kappa,i,xz,min(d,nmax));
-	  //   if (lsize > 0)
-	  //     L.submulcol(kappa,i,xz,lsize);
-	  // } // end no long
+	    R.submulcol(kappa,i,x,i+1);	
+	    B.submulcol(kappa,i,xz,nmax);
+	    if (transf)  
+	      U.submulcol(kappa,i,xz,min(d,nmax));
+	  
+	  } // end no long
 	  
 	} // end expo <> 0 
 
@@ -581,39 +543,34 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
       // This may happen exceptionnaly in correct cases with mu_ij = 1/2 exactly
       //  (and alternates between to values 1/2 and -1/2 in floating point 
       // Or happen when not enough precision
-      // Hence here: test of soze reduction, if yes then exit if no then return -1 
+      // Hence here: test of size reduction, if yes then exit if no then return -1 
       if ((prev_nonstop ==0) && (nonstop == 0)) {
-	count_nonstop +=1;
-
-	if (count_nonstop > 8) {
-
-	  FP_NR<FT> one;
-	  one = 1.0;
+      	
+      	  FP_NR<FT> one;
+      	  one = 1.0;
 	  
-	  FP_NR<FT> theta;
-	  theta = 0.01;
-	  theta.mul(theta,R.get(kappa,kappa));
+      	  FP_NR<FT> theta;
+      	  theta = 0.0000001;
+      	  theta.mul(theta,R.get(kappa,kappa));
 	  
-	  FP_NR<FT> mu,mu_test;
+      	  FP_NR<FT> mu,mu_test;
 
-	  for (i=0; i<kappa; i++) {
+      	  for (i=0; i<kappa; i++) {
 	    
-	    mu.div(R.get(i,kappa),R.get(i,i));
-	    mu.abs(mu);
+      	    mu.div(R.get(i,kappa),R.get(i,i));
+      	    mu.abs(mu);
 
-	    mu_test.div(theta,R.get(i,i));
-	    mu_test.add(mu_test,one);
+      	    mu_test.div(theta,R.get(i,i));
+      	    mu_test.add(mu_test,one);
 
-	    if (mu.cmp(mu_test) == 1) {
-	      cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, kappa = " << kappa  << endl;
-	      return -1;
-	    }
+      	    if (mu.cmp(mu_test) == 1) {
+      	      cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, kappa = " << kappa  << endl;
+      	      return -1;
+      	    }
 	    
-	  }
-
-	  somedone = 0; 
-	} 
-	
+      	  }
+      	  somedone = 0;  // Here, should be size reduced, hence ok for continuing 
+	  
       } // End test prec 
 	    
       prev_nonstop = nonstop;
@@ -943,23 +900,7 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> La
   }
 }
 
-template<class ZT,class FT, class MatrixZT, class MatrixFT> inline ZZ_mat<mpz_t> Lattice<ZT,FT, MatrixZT, MatrixFT>::getL()
-{
- 
-  if (lsize > 0) { 
-    ZZ_mat<mpz_t> LL(lsize,d); 
-    for (int i=0; i<lsize; i++) 
-      for (int j=0; j<d; j++) LL.Set(i,j,L.get(i,j)); // reprendre boucle sur les colonnes 
-    return LL;
-  }
-  else {
-    cout << "*** Error, HLLL, the Lehmer companion matrix has not been computed" << endl;
-    ZZ_mat<mpz_t> LL(0,0);
-    return LL;
-  }
-}
-
-
+  
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline  matrix<FP_NR<FT> > Lattice<ZT,FT, MatrixZT, MatrixFT>::getR()
 {
   matrix<FP_NR<FT> >  RR(d,d);
@@ -1024,7 +965,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>
-Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reduction_method, int lehmer_size) {
+Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reduction_method) {
  
   
   n=A.getRows();
@@ -1048,19 +989,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reducti
   }
 
   nblov_max = 4294967295;
-  lsize = 0; // For other cases 
-
-  if (lehmer_size >0) {
-
-    lsize = lehmer_size;
-    L.resize(lsize,d);
-
-    for (i=0; i<lsize; i++) 
-      for (j=0; j<d; j++) 
-	L(i,j)=0;
-
-  }
-
+  
   seysen_flag=reduction_method;
 
   if (reduction_method == DEF_REDUCTION) fast_long_flag = 1;
@@ -1103,7 +1032,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR
     }
 
     nblov_max = 4294967295;
-    lsize = 0; // For other cases 
+    
 
     seysen_flag=reduction_method;
 
@@ -1165,93 +1094,24 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(MatrixZT A) {
 }
 
 
-  template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
-  Lattice<ZT,FT, MatrixZT, MatrixFT>::lift_si(int shift) {
-    
-    //nblov = 0;
-
-    Z_NR<mpz_t> t;
-    
-    if (lsize > 0) {
-      
-      for (int i=0; i<lsize; i++) 
-	for (int j=0; j<d; j++) {
-	  t.mul_2si(L(i,j),shift);
-	  B(i,j).getData()=t.get_d();
-	}
-      
-    }
-
-
-  } 
-
-  
-  template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
-  Lattice<ZT,FT, MatrixZT, MatrixFT>::lift(int shift) {
-    
-    //nblov = 0;
-
-    
-    if (lsize > 0) {
-      
-      for (int i=0; i<lsize; i++) 
-	for (int j=0; j<d; j++) {
-	  B(i,j).mul_2si(L(i,j),shift);
-	}
-      
-    }
-
-        // The following should be put ? 
-    //matrix_structure(structure, B, n,d);
-    //for (int i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
-    //for (int j=0; j<d; j++) kappamin[j]=-1;
-
-    //if (transf) {
-      
-    //U.resize(d,d);
-    //for (int i=0; i<d; i++) U(i,i)=1; 
-      
-    //}
-  
-  }
-
-    
-template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
-Lattice<ZT,FT, MatrixZT, MatrixFT>::assignL(ZZ_mat<mpz_t> L_in) {
-
-  for (int i=0; i<lsize; i++) 
-    for (int j=0; j<d; j++) 
-      L(i,j)=L_in(i,j);
-      
-
-} 
-  
+        
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::shift_assign(ZZ_mat<ZT> A, vector<int> shift, int sigma) {
 
   nblov = 0;
 
-  if (lsize > 0) {
-    
-    for (int i=0; i<lsize; i++) 
-      for (int j=0; j<d; j++) 
-	B(i,j).mul_2si(L(i,j),shift[i]);
-
-    
-  }
-  else {
-    for (int i=0; i<n; i++) 
-      for (int j=0; j<d; j++) 
-	B(i,j).mul_2si(A(i,j),shift[i]);
-    
-    
-    //    int ll = size_in_bits(B(0,0));
+  for (int i=0; i<n; i++) 
+    for (int j=0; j<d; j++) 
+      B(i,j).mul_2si(A(i,j),shift[i]);
+  
+  
+  //    int ll = size_in_bits(B(0,0));
     
     //for (int i=0; i<n; i++)
     //for (int j=0; j<d; j++) 
     //	B(i,j).mul_2si(B(i,j),sigma - ll + 8);
     
-  }
+  
   
 
   matrix_structure(structure, B, n,d);
@@ -1868,269 +1728,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
 }
 
 
-  //********************************************************
-
-  // def is the total remaining default for reaching the L part 
-  // Double
-
-  // Size of U mastering ???
-  // Not limited to doubles 
-
-  template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
-  Lattice<ZT,FT, MatrixZT, MatrixFT>::detect_lift(double delta,  int def,  int target_def, int& new_def,
-						  int sizeU, FP_NR<FT>& rel_bound, bool verbose) { 
-  
-    int kappa=1,i,j;
-  int prevkappa=-1; // For the looping test betwenn tow indices 
-  vector<FP_NR<FT> >  prevR(d);
-
-
-  FP_NR<FT> newt; //testaccu;
-
-  FP_NR<FT> deltab,lovtest;
-  deltab=delta;   // TO SEE 
-
-  FP_NR<FT> tmpswap;
-
-  FP_NR<FT> s,sn; // newt test 
-
-  int flag_reduce=0; // No convergence in reduce 
-
-
-  int S;
-
-  new_def = def;
-
-
-  FP_NR<mpfr_t> t;
-  FP_NR<mpfr_t> quot;
-  FP_NR<mpfr_t> new_quot;
-
-  FP_NR<mpfr_t> gap;
-
-  new_quot = 1.0;  // new_quot should be bigger after the first iteration of the loop 
-
-  gap=1.0;
-
-  FP_NR<mpfr_t> confidence;
-  // For testing 1/gap < confidence
-  confidence = 1.0;
-
-  // relié, plus petit,  au shift sur S (ex 80) 
-  confidence.mul_2si(confidence,-24); // En fonction de taille de U et de dec ??? 
-
-  FP_NR<mpfr_t> epsilon;
-  epsilon = 10.0; // Relation to d 
-  
-  int l;
-  Z_NR<long> zt;
-
-  // Main shift loop
-  // ---------------
-  // Transformer en while avec size of U et choix de l'incrément 
-  // Taille en haut également ?
-
-  int incr=8;
-  
-  for (S=0; (S<80) && (new_def < target_def); S+=incr) {  // and new_def < target def -bitsize + alpha 
-
-    new_def +=incr;
-
-	
-    // Size of the transformation from the beginning
-    // ---------------------------------------------
-    l=0;
-    for (i=0; i<d ; i++) 
-      for (j=0; j<d; j++) {
-	zt=((long) U(i,j).getData()); 
-	l=max(l, size_in_bits(zt)); 
-      }
-
-    //if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
-    // if ((gap.cmp(confidence) == -1)) {
-
-    //   cout << "Candidate relation found with confidence " << gap << endl;  
-    //   return 1;
-    // } 
-    
-    for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
-    
-    kappa=1;
-    prevkappa=-1; // For the looping test betwenn tow indices
-  
-    //for (i=0; i<d; i++) {descendu[i]=0;}  
-    
-    //cout << "********** " << S-shift << endl;
-
-    
-    lift_si(new_def);
-   
- 
-    //print2maple(getbase(),d+1,d);
-    
-    // main LLL while loop
-    // -------------------
-    while ((kappa < d) && (nblov < nblov_max)) 
-      {
-
-	if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
-      
-	if (kappa == 1) { 
-	  for (i=0; i<d; i++) kappamin[i]=min(kappamin[i],0);
-	  householder_r(0);  
-	  householder_v(0);
-	
-	} 
-	else for (i=kappa+1; i<d; i++) kappamin[i]=min(kappamin[i],kappa); // lowest visit after kappa 
-
-      
-	if (descendu[kappa]>=1) {
-	
-	  if (seysen_flag < 2)
-	    flag_reduce=hsizereduce(kappa);   
-	  else 
-	    flag_reduce=seysenreduce(kappa); 
-	
-	}
-	else { 
-	
-	  if (seysen_flag < 2)
-	    flag_reduce=hsizereduce(kappa);   
-	  else 
-	    flag_reduce=seysenreduce(kappa); 
-	
-	}
-      
-	if (flag_reduce==-1) return(-1);
-      
-
-	//newt=normB2[kappa];  // The newt test was like that in old non exp 
-	//for (i=0; i<=kappa-2; i++) newt.submul(R.get(i,kappa),R.get(i,kappa));
-
-	lovtest.mul(R.get(kappa-1,kappa-1),R.get(kappa-1,kappa-1));
-	lovtest.mul(deltab,lovtest);
-
-	nblov+=1;
-    
-	fp_norm(s,R.getcol(kappa,kappa),structure[kappa]+1-kappa);
-	s.mul(s,s);
-	sn.mul(R.get(kappa-1,kappa),R.get(kappa-1,kappa));
-	newt.add(s,sn);
- 
-
-	// ****************
-	//   UP    UP    UP 
-	// ****************
-    
-	if (lovtest <= newt) {
-
-	  /*if (verbose) {
-	    if (((kappa) < d) && (col_kept[kappa+1] == 0)) cout << "Discovering vector " 
-	    << kappa +1 << "/" << d 
-	    << " cputime=" << utimesec() -starttot << "sec" << endl; 
-	    }*/
-
-	
-	  householder_v(kappa);   // The first part of the orthogonalization is available 
-
-	  // Heuristique precision check : when R(kappa-1,kappa-1) increases in a 2x2 up and down  
-	  // ------------------------------------------------------------------------------------
-	  if (prevkappa==kappa+1) {  
-	    FP_NR<FT> t;
-	    t.abs(R.get(kappa,kappa));
-       
-	    if (t > prevR[kappa]) {
-	
-	      cout << " **** #tests = " << nblov << " **** Anomaly: the norm increases for kappa = " << kappa << endl;
-	 
-	      return -1;
-	    }
-
-	  }
-
-	
-
-	  descendu[kappa]=0;
-	  if (kappa==1) descendu[0]=0;
-	
-	  prevkappa=kappa; 
-	  prevR[kappa].abs(R.get(kappa,kappa)); 
-	
-	  kappa+=1; 
-
-
-
-	} // End up 
-
-	// ****************
-	//   DOWN   DOWN 
-	// ****************
-
-	else {
-
-	  if (kappa==1) descendu[0]=0 ;
-	  else descendu[kappa-1]=descendu[kappa]+1;
-	  descendu[kappa]=0;
-
-	  nbswaps+=1;
-       
-	  B.colswap(kappa-1,kappa);
-	
-	  if (transf) U.colswap(kappa-1,kappa);
-	  if (lsize > 0) L.colswap(kappa-1,kappa);
-
-	  Bfp.colswap(kappa-1,kappa);
-
-	  structure[kappa-1]=structure[kappa];
-
-	  VR.colswap(kappa-1,kappa);
- 
-	  tmpswap=normB2[kappa];  normB2[kappa]=normB2[kappa-1]; normB2[kappa-1]=tmpswap;
-
-	  prevkappa=kappa; 
-	  kappa=max(kappa-1,1);  
-
-	}
-
-      } // End main LLL while loop 
-
-
-    // Min des normes dans R : borne inférieure pour la relation si test à confidence respecté ? 
-    // ---------------------
-
-    FP_NR<FT> tf;
-    
-    rel_bound.abs(R(0,0));
-
-    for (i=1; i<d; i++) {
-      tf.abs(R(i,i));
-      if (rel_bound.cmp(tf) == 1) rel_bound=tf;
-    }
-    
-    quot = new_quot;
-    new_quot.set_z(L(0,0));
-    t=rel_bound.get_d();
-    new_quot.div(new_quot,t);
-    gap.div(new_quot,quot);
-    gap.abs(gap); 
-
-    // cout << "*** gap: " << gap << "    confidence: " << confidence << endl; 
-    // cout << "*** quot: " << new_quot  <<  endl << endl;
-
-    if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
-      //if ((gap.cmp(confidence) == -1)) {
-      
-      cout << "Candidate relation found with confidence " << gap << endl;  
-      return 1;
-    }
-   
-   
-    
-  } // End shift loop
-  
-  return 0;
-  
-};
 
 
 } // end namespace hplll

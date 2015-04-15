@@ -22,11 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 #include "hlll.h"
-#include "lehmer.cc"
 #include "matgen.h"
-#include "relations.h"
-
-#include "tools.h"
 
 /* ***********************************************
 
@@ -38,45 +34,75 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
+  
+  ZZ_mat<mpz_t> A0,A; // For hpLLL 
+  ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
 
-  matrix<FP_NR<mpfr_t> > A;   // Input matrix 
-  ZZ_mat<mpz_t> C;
+  // ---------------------------------------------------------------------
+
+  int n,d;
+  double delta;
+
+  command_line_basis(A0, n, d, delta, argc, argv); 
+
+  A.resize(n,d);
+  AT.resize(d,n);
+  transpose(AT,A);
+
+    int start,startsec;
+
+    Timer time;
+
+    int status;
+    
+    cout << "--------------  HLLL" << endl << endl; 
+    start=utime();
+    startsec=utimesec();
+   
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
+    //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
  
-  int r=8; 
-  int s=8; 
-  int n=r*s+1;
+     
+    time.start();
+    status=B.hlll(delta);
+    time.stop();
 
-  int setprec=2800;
-  mpfr_set_default_prec(setprec);
-
-  gen3r2s(A,n,r,s);
-
-  int found;
-
-  verboseDepth = 1;
-
+    start=utime()-start;
+    startsec=utimesec()-startsec;
   
-  // Alpha must be less than prec by a factor of ||F|| for having alpha bits
+    
+    cout << "   dimension = " << d  << endl;
+    cout << "   time A: " << start/1000 << " ms" << endl;
+    time.print(cout);
+    
+    
+    if (status ==0) {
+      Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,NO_LONG);
+      T1.isreduced(delta-0.1);
+      }
+    cout << endl; 
 
-  Timer time;
+    cout << "--------------  FPLLL WRAPPER" << endl << endl; 
+    transpose(AT,A0);
 
-  time.start();
-  found=relation_f<long, double>(C, A, setprec, 60, 200, 20);
-  time.stop();
-
-  cout << "Fast method " << endl;
-  time.print(cout);
-  cout << endl; 
-
-  time.start();
-  found=relation_lll<dpe_t, MatrixPE<double, dpe_t> > (C, A, setprec, 400, 300);
-  time.stop();
-
-  cout << "Relation lll " << endl;
-  time.print(cout);
+    start=utime();
+    startsec=utimesec();
+    time.start();
+    lllReduction(AT, delta, 0.501, LM_WRAPPER);
+    time.stop();
+    start=utime()-start;
+    startsec=utimesec()-startsec;
   
-  //if (found ==1)  print2maple(C,n,1);
+    
+    cout << "   dimension = " << d  << endl;
+    cout << "   time B: " << start/1000 << " ms" << endl;
+    time.print(cout);
+ 
+    transpose(A,AT);
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
+    T2.isreduced(delta-0.1);
 
-        
+   
+
   return 0;
 }
