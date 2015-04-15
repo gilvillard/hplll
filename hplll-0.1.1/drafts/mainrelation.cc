@@ -42,11 +42,11 @@ int main(int argc, char *argv[])  {
   matrix<FP_NR<mpfr_t> > A;   // Input matrix 
   ZZ_mat<mpz_t> C;
  
-  int r=7; 
-  int s=7; 
+  int r=8; 
+  int s=8; 
   int n=r*s+1;
 
-  int setprec=2000;
+  int setprec=2800;
   mpfr_set_default_prec(setprec);
 
   gen3r2s(A,n,r,s);
@@ -54,28 +54,29 @@ int main(int argc, char *argv[])  {
   int found;
 
   verboseDepth = 1;
+
   
   // Alpha must be less than prec by a factor of ||F|| for having alpha bits
+
+  Timer time;
+
+  time.start();
+  found=relation_f<long, double>(C, A, setprec, 60, 200, 20);
+  time.stop();
+
+  cout << "Fast method " << endl;
+  time.print(cout);
+  cout << endl; 
+
+  time.start();
+  found=relation_lll<dpe_t, MatrixPE<double, dpe_t> > (C, A, setprec, 400, 300);
+  time.stop();
+
+  cout << "Relation lll " << endl;
+  time.print(cout);
   
-  int start=utime();
-
-  found=relation_f<long, double>(C, A, setprec, 60, 1000, 20);
-
-  start=utime()-start;
- 
-  cout << "Time for the relation: " << start/1000 << " ms" << endl;
-
   //if (found ==1)  print2maple(C,n,1);
-	      
-  //relation_f<long, double>(C, F, 244, 60, 800, 40, FPLLL,0.99);
-  
-  // relation_f(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long alpha,
-  //		   long confidence_gap = 60, long shift = 200, long increment = 20, int lllmethod = FPLLL, double delta = 0.99);
-  
-  //found = relation_lift(C, A, setprec);
-     
-  //relation_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C, A, setprec, 10, FPLLL);  
 
-      
+        
   return 0;
 }
