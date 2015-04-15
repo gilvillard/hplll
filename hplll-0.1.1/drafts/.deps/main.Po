@@ -181,8 +181,10 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
  /Users/gvillard/Soft/with-gcc-4.9/include/fplll/fplllv31.h \
  ../src/givtimer.C ../src/givtimer.h ../src/ldpe.h ../src/nr-ld.cpp \
  ../src/mat.h ../src/mixed-col.h ../src/matpe.h ../src/matmixed.h \
- ../src/hlll.cc ../src/matgen.h ../src/tools.h ../src/matgen.cc \
- ../src/matgen.h
+ ../src/hlll.cc ../src/lehmer.cc ../src/hlll.h ../src/matgen.h \
+ ../src/tools.h ../src/matgen.cc ../src/matgen.h ../src/relations.h \
+ ../src/lehmer.cc ../src/decomp.h ../src/decomp.cc ../src/decompz.h \
+ ../src/decompz.cc ../src/relations.cc ../src/tools.h
 
 ../src/hlll.h:
 
@@ -680,6 +682,10 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 
 ../src/hlll.cc:
 
+../src/lehmer.cc:
+
+../src/hlll.h:
+
 ../src/matgen.h:
 
 ../src/tools.h:
@@ -687,3 +693,19 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 ../src/matgen.cc:
 
 ../src/matgen.h:
+
+../src/relations.h:
+
+../src/lehmer.cc:
+
+../src/decomp.h:
+
+../src/decomp.cc:
+
+../src/decompz.h:
+
+../src/decompz.cc:
+
+../src/relations.cc:
+
+../src/tools.h:
