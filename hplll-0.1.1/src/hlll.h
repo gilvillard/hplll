@@ -45,16 +45,13 @@ class Lattice
 
   MatrixZT U;
 
-  matrix<Z_NR<mpz_t> > L;
-
   int n,d; 
 
   bool transf;
 
   unsigned int nblov_max;
- 
-  int lsize;
 
+  
   int nmaxkappa;
 
   // Floating point objects concerned a possible precision change 
@@ -111,9 +108,7 @@ public:
   int fast_long_flag;
 
   int hlll(double delta, bool verbose=false);
-  int detect_lift(double delta, int def,  int target_def,  int& new_def, int sizeU, FP_NR<FT>& rel_bound,  bool verbose=false);
- 
- 
+   
   void assignL(ZZ_mat<mpz_t> L_in);
 
   unsigned int setprec(unsigned int prec);
@@ -127,12 +122,10 @@ public:
 
   ZZ_mat<ZT> getU();
 
-  ZZ_mat<mpz_t> getL();
-
   // Not MatrixFT for the exp case 
   matrix<FP_NR<FT> > getR(); 
 
-  Lattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0, int lehmer_size=0); 
+  Lattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0); 
 
   Lattice(matrix<FP_NR<mpfr_t> > F, ZZ_mat<ZT> A, bool forU, int reduction_method);
 
@@ -146,10 +139,6 @@ public:
 
   void assign(MatrixZT A); 
 
-  void lift(int shift);
-
-  void lift_si(int shift);
-  
   void shift_assign(ZZ_mat<ZT> A,  vector<int> shift, int sigma);
 
   void put(ZZ_mat<ZT> A, long upperdim, long t, long sigma=0); 

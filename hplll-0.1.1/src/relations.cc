@@ -55,8 +55,6 @@ namespace hplll {
       L(0,j).set_f(t);
     }
 
-    //print2maple(L,1,n);
-    
     int found;
 
     found=relation_f_z<ZT, FT> (C, L, alpha, confidence_gap, shift, increment, lllmethod, delta);
@@ -303,7 +301,7 @@ namespace hplll {
     new_def = def;
    
     
-    for (S=0; S<shift; S+= increment) {  // Limiter en borne de U  // while comme detect lift de hplll 
+    for (S=0; S<shift; S+= increment) { 
 
       new_def += increment; // incrément du défaut 
       
@@ -433,23 +431,26 @@ namespace hplll {
   };
 
 
-  
-/*************************************************************
+  /***********************************************************************************
 
-   Methode et limiter avec long 
-   m= 1 for the moment 
-   Faire une version sans troncature 
- *************************************************************/
+      Relation_lll
+     
+      Calls LLL with successive lifts on mpz_t and FT bases  
 
-  // Régler les paramètres en fonction des types de données
-   // alpha correct bits
-  
-  template<class ZT, class FT, class MatrixZT, class MatrixFT> int 
-  relation_lll(ZZ_mat<ZT>& C, const matrix<FP_NR<mpfr_t> > A, long alpha, long shift, int lllmethod) {
+      alpha correct bits
+
+   TODO: tune the parameters according to input data types 
+
+  **************************************************************************************/ 
+
+    
+  template<class FT, class MatrixFT> int 
+  relation_lll(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long alpha,
+	       long confidence_gap, long shift, int lllmethod, double delta) {
 
     int n=A.getCols();
 
-    ZZ_mat<ZT> L;
+    ZZ_mat<mpz_t> L;
     L.resize(1,n);
 
     FP_NR<mpfr_t> t;
@@ -461,23 +462,29 @@ namespace hplll {
 
     int found;
 
-    int start=utime();
-    found=relation_lll_z<ZT, FT, MatrixZT, MatrixFT> (C, L, alpha, shift, 0.99, lllmethod);
-  
-    start=utime()-start;
-  
-    cout << "   time internal: " << start/1000 << " ms" << endl;
-  
+    found=relation_lll_z<FT, MatrixFT> (C, L, alpha, confidence_gap, shift, lllmethod, delta);
+
     return found;
     
   } 
 
-  //*************
-  // dpe ?
+  /***********************************************************************************
 
+      Companion to relation_lll 
+      Relation from an integer matrix 
+      
+      Calls LLL with successive lifts on mpz_t and FT bases
+
+      alpha correct bits
+
+      TODO: 
+
+  **************************************************************************************/ 
   
-  template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
-  relation_lll_z(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int alpha, int shift, double delta, int lllmethod) {
+  
+  template<class FT, class MatrixFT> int  
+  relation_lll_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long alpha,
+		 long confidence_gap, long shift, int lllmethod, double delta) {
 
     int m,d;
     int i,j;
@@ -485,7 +492,7 @@ namespace hplll {
     m=A.getRows();
     d=A.getCols();
 
-    ZZ_mat<ZT> A_in;
+    ZZ_mat<mpz_t> A_in;
     A_in.resize(m+d,d);
    
  
@@ -502,15 +509,15 @@ namespace hplll {
   
     // For assigning the truncated basis at each step
 
-    // ICI long 
-    ZZ_mat<ZT> T,TT;
-    //ZZ_mat<long> T,TT;
+    
+    ZZ_mat<mpz_t> T,TT;
+    
     T.resize(m+d,d);
     TT.resize(d,m+d);
  
-    // ICI long 
-    ZZ_mat<ZT> U,UT;
-    //ZZ_mat<long> U,UT;
+    
+    ZZ_mat<mpz_t> U,UT;
+    
     U.resize(d,d);
     UT.resize(d,d);
  
@@ -530,43 +537,38 @@ namespace hplll {
     // For testing 1/gap < confidence
     confidence = 1.0;
     // relié, plus petit,  au shift sur S (ex 80) 
-    confidence.mul_2si(confidence,-24); // En fonction de taille de U et de dec ??? 
+    confidence.mul_2si(confidence,-confidence_gap);  // > shift  !!!  
 
     FP_NR<mpfr_t> epsilon;
-    epsilon = 10.0; // Relation to d 
+    epsilon = 10.0; 
     
     
-    Z_NR<ZT> tz,maxcol;
+    Z_NR<mpz_t> tz,maxcol;
 
-    // ICI long 
-    Lattice<ZT, FT, MatrixZT, MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION,1);
-    //Lattice<long, FT, matrix<Z_NR<long> >, MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION,1);
-    // Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > Bp(T,TRANSFORM,DEF_REDUCTION,1);
-
-    // Faire le produit de U ou la laisser mettre à jour ???
-
+   
+    Lattice<mpz_t, FT, matrix<Z_NR<mpz_t> >, MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION);
+   
        
     // Main loop on the shifts
     // -----------------------
     while (def < target_def) {
 
+      HPLLL_INFO("Current default: ",def);
+       
       if ((target_def - def) <= shift) 
 	def=target_def;
       else def+=shift;
 
       lift_truncate(T, A_in, def, shift+2*d);
 
-      //cout << "****** sizeof T: " << maxbitsize(T,0,d+1,d) << "    " << sizeof(__float128) << endl;
-      
       if (lllmethod == HLLL) {
 
 	Bp.assign(T);
 	
 	Bp.hlll(delta);
 
-	// ICI long 
-       matprod_in(A_in,Bp.getU());
-       //	matprod_in_si(A_in,Bp.getU());
+	matprod_in(A_in,Bp.getU());
+	//avec long: matprod_in_si(A_in,U);
       }
 
       else if (lllmethod == FPLLL) {
@@ -579,9 +581,8 @@ namespace hplll {
 	
 	transpose(U,UT);
 	
-	// ICI long 
 	matprod_in(A_in,U);
-	//matprod_in_si(A_in,U);
+	//avec long: matprod_in_si(A_in,U);
 	//cout << "****** sizeof U: " << maxbitsize(U,0,d,d) << endl;
       } 
 
@@ -589,16 +590,20 @@ namespace hplll {
       // ----
 
       quot = new_quot;
-       
-      tz.abs(A_in(0,0));
+
+      if (A_in(0,0).sgn() ==0) { // For making the gap pertinent even if 0 
+	tz=1; 
+      }
+      else
+	tz.abs(A_in(0,0)); 
       new_quot.set_z(tz);
 
-      
+            
       maxcol.abs(A_in(0,0));
       maxcol.mul_2si(maxcol,def);
 
-      cout << "L: " << A_in(0,0) << endl;
-      cout << "Af: " << maxcol << endl;
+      // cout << "L: " << A_in(0,0) << endl;
+      // cout << "Af: " << maxcol << endl;
       
       for (i=0; i<d; i++) {
 	tz.abs(A_in(m+i,0));
@@ -612,27 +617,15 @@ namespace hplll {
       gap.div(new_quot,quot);
       gap.abs(gap); 
 
-      //cout << endl << "**  U bits: " << maxbitsize(U,0,d,d) << endl;
-      cout << "     gap : " << gap << endl; 
-      cout << "     quot : " << new_quot << endl; 
-      cout << "     maxcol : " << maxcol << endl;
-
-      // Mettre avant possible // Faire relation bound 
-      if (A_in(0,0).sgn() ==0) {
-	def = target_def;
-	return 0; 
-      }
-      
+            
       if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
        
-	C.resize(1,d);
+	C.resize(d,1);
 	for (j=0; j<d; j++)
-	  C(0,j)=A_in(m+j,0);
+	  C(j,0)=A_in(m+j,0);
 
-
-	print2maple(C,1,d);
+	HPLLL_INFO("Candidate relation found with confidence: ",gap);
 	
-	cout << "Candidate relation found with confidence " << gap << endl;  
 	return 1;
     
       } 
@@ -640,14 +633,39 @@ namespace hplll {
       
     } // End while 
 
-    // // found = 0
 
-    // How to do ??? One QR ??? 
-    // cout << "**** There might not be relations of norm less than " << rel_bound << endl; 
-  
-    return found;
+        // Relation bound
+    // --------------
 
-    
+    unsigned oldprec;
+    oldprec=mpfr_get_default_prec();
+
+    mpfr_set_default_prec(2*d);
+
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A_in,NO_TRANSFORM,DEF_REDUCTION);
+
+    B.householder();
+
+    matrix<FP_NR<mpfr_t> > R;
+
+    R=B.getR();
+
+    FP_NR<mpfr_t> minr, tr;
+
+    minr.abs(R(0,0));
+    for (i=1; i<d; i++) {
+      tr.abs(R(i,i));
+      if (minr.cmp(tr) > 0) minr=tr;
+    }
+
+    cerr << endl << "** No relation found with min Rii = " << minr << endl; 
+
+    mpfr_set_default_prec(oldprec);
+
+   
+    return found; // 0 here 
+
+        
   };
 
 

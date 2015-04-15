@@ -77,7 +77,7 @@ namespace hplll {
     // Knapsack 
     // --------
     if (strcmp(type,knapsack) ==0) {
-     
+
       n=d+1;
       A.resize(d+1,d); 
       AT.resize(d,d+1);  
@@ -204,7 +204,16 @@ namespace hplll {
       A.resize(d,d); 
       AT.resize(d,d);  
       AT.gen_ntrulike(nbbits,q);
+      
       transpose(A,AT);
+
+      for (int i=0; i<d/2; i++)
+	for (int j=0; j<d; j++)
+	  A(i,j)=AT(j,i+d/2);
+
+      for (int i=0; i<d/2; i++)
+	for (int j=0; j<d; j++)
+	  A(i+d/2,j)=AT(j,i);
     } 
 
     // -------------------------------
