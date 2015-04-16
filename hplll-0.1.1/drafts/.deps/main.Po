@@ -179,10 +179,11 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
  /Users/gvillard/Soft/with-gcc-4.9/include/fplll/gso.h \
  /Users/gvillard/Soft/with-gcc-4.9/include/fplll/evaluator.h \
  /Users/gvillard/Soft/with-gcc-4.9/include/fplll/fplllv31.h \
- ../src/givtimer.C ../src/givtimer.h ../src/ldpe.h ../src/nr-ld.cpp \
- ../src/mat.h ../src/mixed-col.h ../src/matpe.h ../src/matmixed.h \
- ../src/hlll.cc ../src/matgen.h ../src/tools.h ../src/matgen.cc \
- ../src/matgen.h
+ ../src/givtimer.C ../src/givtimer.h \
+ /usr/local/lib/gcc/x86_64-apple-darwin14.0.0/4.9.2/include/omp.h \
+ ../src/ldpe.h ../src/nr-ld.cpp ../src/mat.h ../src/mixed-col.h \
+ ../src/matpe.h ../src/matmixed.h ../src/hlll.cc ../src/matgen.h \
+ ../src/tools.h ../src/matgen.cc ../src/matgen.h
 
 ../src/hlll.h:
 
@@ -665,6 +666,8 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 ../src/givtimer.C:
 
 ../src/givtimer.h:
+
+/usr/local/lib/gcc/x86_64-apple-darwin14.0.0/4.9.2/include/omp.h:
 
 ../src/ldpe.h:
 

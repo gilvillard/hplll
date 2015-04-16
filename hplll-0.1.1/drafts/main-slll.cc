@@ -122,16 +122,17 @@ int main(int argc, char *argv[])  {
    
     //print2maple(A,d,d); 
     
-
+    
+ 
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(A);
 
 
-    cond = L.lcond(TRIANGULAR_PROPER);
-    //cond = L.lcond(ANY,cond,CHECK);
+    //cond = L.lcond(TRIANGULAR_PROPER);
+    cond = L.lcond(ANY,cond,CHECK);
 
-    //cout << " cond = " << B.lcond(TRIANGULAR_PROPER) << endl; 
-    //cout << " cond = " << B.lcond(ANY, DEFAULT_PREC) << endl;
-    //cout << " cond = " << B.lcond(ANY, 10, CHECK) << endl; 
+    cout << " cond = " << L.lcond(TRIANGULAR_PROPER) << endl; 
+    cout << " cond = " << L.lcond(ANY, DEFAULT_PREC) << endl;
+    cout << " cond = " << L.lcond(ANY, 10, CHECK) << endl; 
    
     L.setprec(2*cond);
 
@@ -153,7 +154,9 @@ int main(int argc, char *argv[])  {
     AT.resize(d,d);
 
     set(A,RZ);
-        
+
+    print2maple(A,d,d);
+    
     mpfr_set_default_prec(cond);
 
     Timer time;
@@ -166,7 +169,7 @@ int main(int argc, char *argv[])  {
 
     
 
-    //SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
+    // //SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
     SLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
 
     ptime.start();
