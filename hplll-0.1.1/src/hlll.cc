@@ -452,10 +452,11 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
 	    somedone = 1;
 
+	    
 	    R.subcol(kappa,i,i+1);
 	    
 	    B.subcol(kappa,i,nmax);
-		
+	    	    
 	    if (transf) 
 	      U.subcol(kappa,i,min(d,nmax));
 	
