@@ -126,7 +126,7 @@ public:
   // Not MatrixFT for the exp case 
   matrix<FP_NR<FT> > getR(); 
 
-  Lattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0); 
+  Lattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0, int rect=0); 
 
   Lattice(matrix<FP_NR<mpfr_t> > F, ZZ_mat<ZT> A, bool forU, int reduction_method);
 
@@ -138,6 +138,9 @@ public:
 
   void assign(ZZ_mat<ZT> A);
 
+  // FICI 
+  void colswap(int ii,int ij);
+  
   void assign(MatrixZT A); 
 
   void shift_assign(ZZ_mat<ZT> A,  vector<int> shift, int sigma);
