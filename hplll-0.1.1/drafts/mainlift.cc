@@ -155,8 +155,8 @@ using namespace hplll;
       // Heuristic to check 
       if ((size_of_U + size_of_V) > 50) {
 
-	cerr << "**** Anomaly with the bit size of the transform (long) > 50, maybe check the value of the shift" << endl;
-	return 0;
+      	cerr << "**** Anomaly with the bit size of the transform (long) > 50, maybe check the value of the shift" << endl;
+      	return 0;
 
       }
             
@@ -323,7 +323,7 @@ int main(int argc, char *argv[])  {
   
      
     time.start();
-    lift_z<long, double>(C, AR,  maxbitsize(AR), 60, 40, 10, FPLLL,delta);
+    lift_z<long, double>(C, AR,  maxbitsize(AR), 60, 60, 10, FPLLL, delta);
 			  // long confidence_gap = 60, long shift = 200, long increment = 20,
 			  // int lllmethod = FPLLL, double delta = 0.99);
     time.stop();

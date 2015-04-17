@@ -62,7 +62,8 @@ int main(int argc, char *argv[])  {
       }
 
 
-   
+    // Make the dimension divisible by K
+    // ---------------------------------
 
     if (d%K !=0) {
 
@@ -101,41 +102,36 @@ int main(int argc, char *argv[])  {
       transpose(AT,A);
     }
 
-    
-    int cond,s0;
-    s0=maxbitsize(A);
 
- 
-  
-   //cond = maxbitsize(A);
+    //print2maple(A,n,d);
+    
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > Bin(A);
 
-    // Knapsack 
-    // --------
-    
-    //ZZ_mat<mpz_t> Anew;
-    //Anew.resize(n,d);
+    Bin.hlll(0.3);
 
-    //blevel(Anew, A, 2, d/8);
- 
-    //set(A,Anew);
-    //end knapsack
-   
-    //print2maple(A,d,d); 
+    A=Bin.getbase();
     
-    
+    int cond;
+
+    //print2maple(A,n,d);
  
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(A);
 
 
-    //cond = L.lcond(TRIANGULAR_PROPER);
+   
     cond = L.lcond(ANY,cond,CHECK);
 
-    cout << " cond = " << L.lcond(TRIANGULAR_PROPER) << endl; 
-    cout << " cond = " << L.lcond(ANY, DEFAULT_PREC) << endl;
-    cout << " cond = " << L.lcond(ANY, 10, CHECK) << endl; 
-   
+    // cout << " cond = " << L.lcond(TRIANGULAR_PROPER) << endl; 
+    // cout << " cond = " << L.lcond(ANY, DEFAULT_PREC) << endl;
+    // cout << " cond = " << L.lcond(ANY, 10, CHECK) << endl; 
+
+    cout << " cond = " << cond << endl; 
+    cout << " prec = " << 2*cond << endl;
+    
     L.setprec(2*cond);
 
+  
+    
     // Truncation of the input lattice 
     // -------------------------------
 
@@ -155,7 +151,7 @@ int main(int argc, char *argv[])  {
 
     set(A,RZ);
 
-    print2maple(A,d,d);
+    //print2maple(A,d,d);
     
     mpfr_set_default_prec(cond);
 
@@ -188,7 +184,6 @@ int main(int argc, char *argv[])  {
     cout << "   dimension = " << d  << endl;
     cout << "   nblov plll " << B.nblov  << endl;
     cout << "   time plll: " << ptime << endl;
-    cout << "   initial size: " << s0 << "      cond: " << cond << endl;
     cout << "   input bit size: " << maxbitsize(A) << endl;
     
   

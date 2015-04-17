@@ -74,6 +74,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       else 
 	flag_reduce=seysenreduce(kappa); 
 
+      
             
       if (flag_reduce==-1) return(-1);
       
@@ -87,7 +88,16 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       nblov+=1;
     
       fp_norm(s,R.getcol(kappa,kappa),structure[kappa]+1-kappa);
+
+      // FICI 
+      if (s.cmp(0.000001) < 1)
+	return kappa+1;
+
+      
       s.mul(s,s);
+
+      
+      
       sn.mul(R.get(kappa-1,kappa),R.get(kappa-1,kappa));
       newt.add(s,sn);
  
@@ -106,6 +116,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
 	
 	householder_v(kappa);   // The first part of the orthogonalization is available 
+
 	
 	// Heuristique precision check : when R(kappa-1,kappa-1) increases in a 2x2 up and down  
 	// ------------------------------------------------------------------------------------
@@ -756,6 +767,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
 
   } // else kappa !=0 
 
+  
  return 0;
 }
 
@@ -871,10 +883,18 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::getprec() {
 
 template<class ZT,class FT,class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> Lattice<ZT,FT, MatrixZT, MatrixFT>::getbase()
 {
-  ZZ_mat<ZT> BB(n,d);
-  for (int i=0; i<n; i++) 
-    for (int j=0; j<d; j++) BB.Set(i,j,B(i,j)); // reprendre boucle sur les colonnes 
+  // ZZ_mat<ZT> BB(n,d);
+  // for (int i=0; i<n; i++) 
+  //   for (int j=0; j<d; j++) BB.Set(i,j,B(i,j)); // reprendre boucle sur les colonnes 
 
+  // FICI
+  int nd=B.getCols();
+  
+  ZZ_mat<ZT> BB(n,nd);
+  for (int i=0; i<n; i++) 
+    for (int j=0; j<nd; j++) BB.Set(i,j,B(i,j)); // reprendre boucle sur les colonnes 
+
+  
   return BB;
 }
 
@@ -966,8 +986,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>
-Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reduction_method) {
- 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reduction_method, int rect) {
+
   
   n=A.getRows();
   d=A.getCols();
@@ -998,7 +1018,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reducti
 
   matrix_structure(structure, B, n,d);
 
-
+  //FICI
+  if (rect >0) d=rect;
+  
  }
 
 
@@ -1050,6 +1072,28 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR
 // 
 // -------------------------------------------------------------------  
 
+template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::colswap(int ii,int ij) {
+
+  // FICI OPTIMISER POUR NE PAS TOUT RECALCULER ? 
+  nblov = 0;
+
+  B.colswap(ii,ij);
+  
+  matrix_structure(structure, B, n,d);
+  
+  for (int i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
+  for (int j=0; j<d; j++) kappamin[j]=-1;
+
+  if (transf) {
+    
+    U.resize(d,d);
+    for (int i=0; i<d; i++) U(i,i)=1; 
+   
+  }
+  
+}
+  
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(ZZ_mat<ZT> A) {
 
