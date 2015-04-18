@@ -21,8 +21,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
-#ifndef HPLLL_HLLL_H
-#define HPLLL_HLLL_H
+#ifndef HPLLL_HLLLG_H
+#define HPLLL_HLLLG_H
 
 
 #include  "defs.h"
@@ -37,7 +37,7 @@ namespace hplll {
 // MatrixZT pour  matrix<Z_NR<ZT> >
 
 template<class ZT, class FT, class MatrixZT, class MatrixFT>
-class Lattice
+class GLattice
 {
 
  protected:
@@ -46,7 +46,7 @@ class Lattice
 
   MatrixZT U;
 
-  int n,d; 
+  int n,d,dim,newd; 
 
   bool transf;
 
@@ -126,13 +126,13 @@ public:
   // Not MatrixFT for the exp case 
   matrix<FP_NR<FT> > getR(); 
 
-  Lattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0); 
+  GLattice(ZZ_mat<ZT> A, int dimension, bool forU=false, int reduction_method=0); 
 
-  Lattice(matrix<FP_NR<mpfr_t> > F, ZZ_mat<ZT> A, bool forU, int reduction_method);
+  GLattice(matrix<FP_NR<mpfr_t> > F, ZZ_mat<ZT> A, bool forU, int reduction_method);
 
-  Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU=false, int reduction_method=0);
+  GLattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU=false, int reduction_method=0);
 
-  Lattice(ZZ_mat<ZT> A, long t, long sigma, bool forU, int reduction_method); 
+  GLattice(ZZ_mat<ZT> A, long t, long sigma, bool forU, int reduction_method); 
 
   void init(int n, int d, bool forU=false);
 
@@ -173,7 +173,7 @@ public:
 } // end namespace hplll
 
 
-#include "hlll.cc"
+#include "hlllg.cc"
 
 
 #endif

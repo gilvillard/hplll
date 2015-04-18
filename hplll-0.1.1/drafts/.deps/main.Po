@@ -182,8 +182,9 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
  ../src/givtimer.C ../src/givtimer.h \
  /usr/local/lib/gcc/x86_64-apple-darwin14.0.0/4.9.2/include/omp.h \
  ../src/ldpe.h ../src/nr-ld.cpp ../src/mat.h ../src/mixed-col.h \
- ../src/matpe.h ../src/matmixed.h ../src/hlll.cc ../src/matgen.h \
- ../src/tools.h ../src/matgen.cc ../src/matgen.h
+ ../src/matpe.h ../src/matmixed.h ../src/hlll.cc ../src/hlllg.h \
+ ../src/hlllg.cc ../src/matgen.h ../src/tools.h ../src/matgen.cc \
+ ../src/matgen.h
 
 ../src/hlll.h:
 
@@ -682,6 +683,10 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 ../src/matmixed.h:
 
 ../src/hlll.cc:
+
+../src/hlllg.h:
+
+../src/hlllg.cc:
 
 ../src/matgen.h:
 
