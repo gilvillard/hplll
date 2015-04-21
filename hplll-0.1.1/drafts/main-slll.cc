@@ -107,7 +107,7 @@ int main(int argc, char *argv[])  {
     
     Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > Bin(A);
 
-    Bin.hlll(0.3);
+    Bin.hlll(0.4);
 
     A=Bin.getbase();
     
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])  {
 
 
    
-    cond = L.lcond(ANY,cond,CHECK);
+    cond = L.lcond(ANY,  DEFAULT_PREC);
 
     // cout << " cond = " << L.lcond(TRIANGULAR_PROPER) << endl; 
     // cout << " cond = " << L.lcond(ANY, DEFAULT_PREC) << endl;

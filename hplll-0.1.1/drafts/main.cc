@@ -22,7 +22,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 #include "hlll.h"
-#include "hlllg.h"
 #include "matgen.h"
 
 /* ***********************************************
@@ -41,114 +40,68 @@ int main(int argc, char *argv[])  {
 
   // ---------------------------------------------------------------------
 
-  int n,d,k,i,j;
+  int n,d;
   double delta;
 
   command_line_basis(A0, n, d, delta, argc, argv); 
 
-  int nblocks=2;
-  int recouv=2;
-  
-  vector< ZZ_mat<mpz_t> > TA(nblocks);
+  A.resize(n,d);
+  AT.resize(d,n);
+  transpose(AT,A);
 
-  //print2maple(A0,n,d);
-    
-  if ((d%nblocks) ==0) {
-    for (k=0; k<nblocks-1; k++) {
-      
-      (TA[k]).resize(n,d/nblocks+recouv);
+    int start,startsec;
 
-      for (i=0; i<n; i++)
-	for (j=0; j<d/nblocks+recouv; j++)
-	  (TA[k])(i,j)=A0(i,k*(d/nblocks)+j);
-      
-    
-    }
-    (TA[k]).resize(n,d/nblocks);
+    Timer time;
 
-    for (i=0; i<n; i++)
-      for (j=0; j<d/nblocks; j++)
-	(TA[k])(i,j)=A0(i,k*(d/nblocks)+j);
-      
+    int status;
     
-    
-  }
-  else {
-    for (k=0; k<nblocks-1; k++) {
-      
-      (TA[k]).resize(n,d/nblocks+1+recouv);
-
-      for (i=0; i<n; i++)
-	for (j=0; j<d/nblocks+1+recouv; j++)
-	  (TA[k])(i,j)=A0(i,k*(d/nblocks+1)+j);
-      
-    
-    }
-    (TA[k]).resize(n,d/nblocks);
-
-    for (i=0; i<n; i++)
-      for (j=0; j<d/nblocks; j++)
-	(TA[k])(i,j)=A0(i,k*(d/nblocks+1)+j);
-    
-    
-  } 
-
-  int newd=0;
-  for (k=0; k<nblocks; k++)
-    newd+=(TA[k]).getCols();
-
+    cout << "--------------  HLLL" << endl << endl; 
+    start=utime();
+    startsec=utimesec();
+   
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
+    //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
  
-  ZZ_mat<mpz_t> L;
-  L.resize(n,newd);
-
-  int kacc=0;
-
- 
-    
-
-  OMPTimer time;
-
-  time.start();
-#pragma omp parallel num_threads(nblocks)
-    {
-      int id=omp_get_thread_num();
-      
-      Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(TA[id],NO_TRANSFORM);
-      
-      B.hlll(delta);
-
-      TA[id]=B.getbase();
-	
-    }
-  time.stop();
-
-    cout << "********* " << time << endl;
-
-
-    kacc=0;
-    
-    for (k=0; k<nblocks; k++) {
-      for (j=0; j<(TA[k]).getCols(); j++) {
-	for (i=0; i<n; i++) {
-	  L(i,kacc)=(TA[k])(i,j);
-	}
-	kacc+=1;
-      }
-    } 
-
-    //print2maple(L,n,newd);
-    // Reduction of the generating set 
-    // -------------------------------
-
-
+     
     time.start();
-    GLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > W(L, d);
+    status=B.hlll(delta);
+    time.stop();
 
+    start=utime()-start;
+    startsec=utimesec()-startsec;
+  
     
+    cout << "   dimension = " << d  << endl;
+    cout << "   time A: " << start/1000 << " ms" << endl;
+    time.print(cout);
+    
+    
+    if (status ==0) {
+      Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,NO_LONG);
+      T1.isreduced(delta-0.1);
+      }
+    cout << endl; 
 
-    W.hlll(delta);
+    cout << "--------------  FPLLL WRAPPER" << endl << endl; 
+    transpose(AT,A0);
 
-    //print2maple(W.getbase(),n,newd);   
+    start=utime();
+    startsec=utimesec();
+    time.start();
+    lllReduction(AT, delta, 0.501, LM_WRAPPER);
+    time.stop();
+    start=utime()-start;
+    startsec=utimesec()-startsec;
+  
+    
+    cout << "   dimension = " << d  << endl;
+    cout << "   time B: " << start/1000 << " ms" << endl;
+    time.print(cout);
+ 
+    transpose(A,AT);
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
+    T2.isreduced(delta-0.1);
+
    
 
   return 0;
