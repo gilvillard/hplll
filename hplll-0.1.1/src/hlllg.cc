@@ -54,7 +54,15 @@ GLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
   for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
 
+  // For local min in R
 
+  FP_NR<FT> minr;
+
+  int swapj;
+
+  // For zero test in B
+
+  bool zerocol;
 
   // ***************************************
   //
@@ -63,19 +71,18 @@ GLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
   // ***************************************
 
 
-  for (int K=0; K<6; K++) {  // while newd > d 
-
-    // ICI 
-    cout << "----------------   " << newd << endl; 
+  // for (int K=0; K<4; K++) {  // while newd > d 
+  while ((dim < newd) || (kappa < dim)) {
+    
  
-    print2maple(getbase(),n,newd);
+    //print2maple(getbase(),n,newd);
 
     // LLL while on the dim part
     // -------------------------
 
     while ((kappa < dim) && (nblov < nblov_max)) 
       {
-      
+
 	if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
       
 	if (kappa == 1) { 
@@ -88,8 +95,7 @@ GLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
       
 	flag_reduce=hsizereduce(kappa);   
-	
-            
+
 	if (flag_reduce==-1) return(-1);
       
 
@@ -107,16 +113,28 @@ GLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	// -------
 	if (s.cmp(0.000001) < 1) {
 
-	  cout << "*********** zero pivot " << endl; 
-	  break;
+	  zerocol = true;
+	  
+	  for (i=0; i<n; i++)
+	    if (B(i,kappa).sgn() != 0) {
+	      zerocol = false;
+	      break; 
+	    }
 
+	  if (zerocol) {
+	    break; 
+	  } 
+	  else {
+	    newt=0.0; // for making kappa decrease 
+	  } 
+	  
+	} // Non zero diag, normal LLL 
+	else {
+	  s.mul(s,s);
+	  
+	  sn.mul(R.get(kappa-1,kappa),R.get(kappa-1,kappa));
+	  newt.add(s,sn);
 	}
-       
-	s.mul(s,s);
-
-	sn.mul(R.get(kappa-1,kappa),R.get(kappa-1,kappa));
-	newt.add(s,sn);
- 
 
 	// ****************
 	//   UP    UP    UP 
@@ -147,9 +165,7 @@ GLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	      return -1;
 	    }
 
-	  }
-
-	
+	  }	
 
 	  descendu[kappa]=0;
 	  if (kappa==1) descendu[0]=0;
@@ -195,55 +211,79 @@ GLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       } // End main LLL loop 
     
 
-print2maple(getbase(),n,d);
+    //print2maple(getbase(),n,newd);
 
     // Dim part reduced 
     // ----------------
-    if (kappa == dim) {
-      cout << "*** ICI " << endl;  
-      for (j=dim; j<newd; j++) {
+    if ((kappa == dim) && (dim < newd)) {
 
-	flag_reduce=hsizereduce(j,dim-1);   
+      //for (i=dim; i<newd; i++) {col_kept[i]=0; descendu[i]=0;}
+      
+      flag_reduce=hsizereduce(dim,dim-1);
+
+      minr.abs(R.get(dim-1,dim));  // Test if zero directly here ? 
+      swapj = dim;
+      
+      for (j=dim+1; j<newd; j++) {
+
+	flag_reduce=hsizereduce(j,dim-1);
 	// *** Check if size reduction ok 
 	// *** Mettre en test qd manque de précision ?? 
 
-	// Same thing as down in LLL 
+	// Same thing as down in LLL
 
-	if (kappa==1) descendu[0]=0 ;
-	else descendu[dim-1]=0; // 0 could work 
-	// Nothing done for prevR ? 
+	tmpswap.abs(R.get(dim-1,j));
 
-	descendu[dim]=0;
-
-	nbswaps+=1;
-	
-	B.colswap(dim-1,dim);
-	
-	if (transf) U.colswap(dim-1,dim);
-	
-	Bfp.colswap(dim-1,dim);
-	
-	structure[dim-1]=structure[dim];
-	
-	VR.colswap(dim-1,dim);
-	
-	tmpswap=normB2[dim];  normB2[dim]=normB2[dim-1]; normB2[dim-1]=tmpswap;
-	
-	prevkappa=dim-1; 
-	kappa=dim-1;  
-
-	
+	if (minr.cmp(tmpswap) == 1) {
+	  minr = tmpswap; 
+	  swapj = j;
+	}
       }
+
+      for (i=dim-1; i<newd; i++) {descendu[i]=0;}
+
+      nbswaps+=1;
+
+      B.colswap(dim-1,swapj);
+	
+      if (transf) U.colswap(dim-1,swapj);
       
-    }
-    // Zero diagonal entry 
-    // -------------------
-    else {
+      Bfp.colswap(dim-1,swapj);
+      
+      //structure[dim-1]=structure[swapj]; // Could be avoided 
+	
+      VR.colswap(dim-1,swapj);
+	
+      tmpswap=normB2[swapj];  normB2[swapj]=normB2[dim-1]; normB2[dim-1]=tmpswap;
+	
+      // prevkappa=dim-1; // should be already this value 
+      kappa=dim-1;  
+      
+    } // end dim part reduced
+    
+    // Else if zero diagonal entry 
+    // ---------------------------
+    else if (dim < newd) {
 
+      B.colswap(kappa,newd-1);
+	
+      if (transf) U.colswap(kappa,newd-1);
 
+      // Dimension decrease
+	
+      newd -= 1;
+
+      // Everything needs to be recomputed since the lattice have been reduced before 
+      for (i=kappa; i<newd; i++) {col_kept[i]=0; descendu[i]=0;}
+      //for (i=kappa; i<newd; i++) {descendu[i]=0;}
+ 
+      matrix_structure(structure, B, n,newd);
+      
+      prevkappa=kappa; 
+	
     } // end zero diag  
 
-print2maple(getbase(),n,d);
+    //print2maple(getbase(),n,newd);
 
   } // End loop on the whole set 
   
@@ -954,11 +994,12 @@ GLattice<ZT,FT, MatrixZT, MatrixFT>::getprec() {
 }
 
 
+  // Limited to the part less than newd 
 template<class ZT,class FT,class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> GLattice<ZT,FT, MatrixZT, MatrixFT>::getbase()
 {
-   ZZ_mat<ZT> BB(n,d);
+   ZZ_mat<ZT> BB(n,newd);
    for (int i=0; i<n; i++) 
-     for (int j=0; j<d; j++) BB.Set(i,j,B(i,j)); // reprendre boucle sur les colonnes 
+     for (int j=0; j<newd; j++) BB.Set(i,j,B(i,j)); // reprendre boucle sur les colonnes 
 
   
   return BB;

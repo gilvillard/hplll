@@ -571,6 +571,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
       	    mu_test.add(mu_test,one);
 
       	    if (mu.cmp(mu_test) == 1) {
+	      
       	      cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, kappa = " << kappa  << endl;
       	      return -1;
       	    }

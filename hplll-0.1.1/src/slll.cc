@@ -372,7 +372,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec, bool refr
   // -------------------------
 
   //PPP  
-  #ifdef _OPENMP
+#ifdef _OPENMP
   #pragma omp parallel for shared (prec,refresh)
   #endif 
 
@@ -391,9 +391,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec, bool refr
     ZZ_mat<ZT> tmpM;
     tmpM.resize(Sdim,2*Sdim);
     
-    Lattice<ZT, FT, MatrixZT, MatrixFT> RZloc(tmpM,TRANSFORM,DEF_REDUCTION);
+    //Lattice<ZT, FT, MatrixZT, MatrixFT> RZloc(tmpM,TRANSFORM,DEF_REDUCTION);
     // Ok since the diagonal blocks are reduced 
-    //Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > RZloc(tmpM,TRANSFORM,DEF_REDUCTION);
+    Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > RZloc(tmpM,TRANSFORM,DEF_REDUCTION);
 
 
     // tmp for U  
@@ -451,16 +451,16 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec, bool refr
 	
       }
 
-      if (refresh == false) { // Householder need to be available via RZ 
+      // if (refresh == false) { // Householder need to be available via RZ 
 
-	tmpR=RZloc.getR();
-	for (i=0; i<Sdim; i++)
-	  for (j=0; j<Sdim; j++) {
+      // 	tmpR=RZloc.getR();
+      // 	for (i=0; i<Sdim; i++)
+      // 	  for (j=0; j<Sdim; j++) {
 	  
-	    Rt.set(l*Sdim+i,l*Sdim+j,tmpR(i,j)); 
-	  Rt.set(l*Sdim+i,k*Sdim+j,tmpR(i,Sdim+j));
-	} 
-      } 
+      // 	    Rt.set(l*Sdim+i,l*Sdim+j,tmpR(i,j)); 
+      // 	  Rt.set(l*Sdim+i,k*Sdim+j,tmpR(i,Sdim+j));
+      // 	} 
+      // } 
 
       // Update of U
       tmpU=RZloc.getU();
@@ -491,32 +491,32 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec, bool refr
 
 
     // Last diagonal block of Householder may be required 
-    if ((refresh == false) && (k==(S-1))) { 
+    // if ((refresh == false) && (k==(S-1))) { 
 
-      for (i=0; i<Sdim; i++)
-	for (j=0; j<Sdim; j++) 
-	  tmpM(i,j)=RZ(k*Sdim+i,k*Sdim+j);
+    //   for (i=0; i<Sdim; i++)
+    // 	for (j=0; j<Sdim; j++) 
+    // 	  tmpM(i,j)=RZ(k*Sdim+i,k*Sdim+j);
       
       
-      RZloc.assign(tmpM);
+    //   RZloc.assign(tmpM);
  
-      // Local size reduction 
+    //   // Local size reduction 
 
-      for (i=0; i<Sdim; i++) {
+    //   for (i=0; i<Sdim; i++) {
 
-	RZloc.householder_r(i);
-	RZloc.householder_v(i);
-      }
+    // 	RZloc.householder_r(i);
+    // 	RZloc.householder_v(i);
+    //   }
 
-      // 
-      tmpR=RZloc.getR();
-      for (i=0; i<Sdim; i++)
-	for (j=0; j<Sdim; j++) {
+    //   // 
+    //   tmpR=RZloc.getR();
+    //   for (i=0; i<Sdim; i++)
+    // 	for (j=0; j<Sdim; j++) {
 	  
-	  Rt.set(k*Sdim+i,k*Sdim+j,tmpR(i,j)); 
+    // 	  Rt.set(k*Sdim+i,k*Sdim+j,tmpR(i,j)); 
 	 
-	} 
-    } // Last block for householder if not refreshed 
+    // 	} 
+    // } // Last block for householder if not refreshed 
     
     
     c.stop();

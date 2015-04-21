@@ -20,15 +20,9 @@ along with the hplll Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-
 #include "hlll.h"
 #include "matgen.h"
 
-
-
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 
 /* ***********************************************
 
@@ -36,72 +30,80 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
    ********************************************** */
 
-using namespace hplll; 
+using namespace hplll;
 
-int main(int argc, char *argv[])  {
-  
-  
-  ZZ_mat<mpz_t> A0,A; // For hpLLL 
-  ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
+int main() {
 
-  // ---------------------------------------------------------------------
+  int d=300;
+  int nbbits=20;
+ 
+  ZZ_mat<mpz_t> A0;
+  
+  matrix<Z_NR<mpz_t> > A;
 
-  int n,d;
-  double delta;
-  
-  command_line_basis(A0, n, d, delta, argc, argv); 
-  
-  A.resize(n,d);
-  AT.resize(d,n);
-  transpose(AT,A);
+  A0.resize(d,d); 
+  A.resize(d,d);  
+  A0.gen_uniform(nbbits);
 
-  
+  A.set(A0); 
+ 
+  MatrixPE<double, dpe_t>  Af; 
+  Af.resize(d,d);
+
+  MatrixPE<double, dpe_t>  Bf; 
+  Bf.resize(d,d);
+ 
+  int j;
+
+  for (j=0; j<d; j++) {
+    Af.setcol(j,A.getcol(j),0,d);
+    Bf.setcol(j,A.getcol(j),0,d);
+  }
+
   OMPTimer time;
 
-  {
-    time.start();
+  FP_NR<dpe_t> x,y,one;
+  x = 22.0;
+  y = 22.0;
+  one = 1.0;
+
+  int NK=100;
   
-#pragma omp parallel num_threads(2)
-    {
-      Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
-      Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A0,NO_TRANSFORM);
-      
-      if (omp_get_thread_num() ==0)
-	B.hlll(delta);
-      
-      if (omp_get_thread_num() ==1)
-	C.hlll(delta);
-      
-    }
+  time.start();
+  for (int k=0; k<NK; k++) {
+    x.add(x,one);
+    Af.submulcol(10, 20, x, d);
+    Bf.submulcol(10, 20, x, d);
+  } 
+  time.stop();
+
+  cout << endl << "**** seq: " << time << endl; 
+
+  
+  time.start();
+  
+#pragma omp parallel for num_threads(2)  shared(NK,d)
+  for (int i =0; i<2; i++) {
     
-    time.stop();
-    
-    
-    cout << "-- Parallel time:" << time  << endl; 
+    if (i ==0)
+      for (int k=0; k<NK; k++) {
+	 x.add(x,one);
+	Af.submulcol(10, 20, x, d);
+	
+      }
+    else
+      for (int k=0; k<NK; k++) {
+	 y.add(y,one);
+	Bf.submulcol(10, 20, y, d);
+      }
   }
-    
-     
-   
-   {
-    time.start();
+  time.stop();
 
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A0,NO_TRANSFORM);
-      
-    
-    B.hlll(delta);
-      
-    
-    C.hlll(delta);
-      
-    
-    time.stop();
-    
-    
-    cout << "-- Seq time:" << time  << endl; 
-   }
+  cout << endl << "**** par: " << time << endl; 
 
-   
 
-  return 0;
+  
+  
 }
+
+

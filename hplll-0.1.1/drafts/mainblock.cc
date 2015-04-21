@@ -22,6 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 #include "hlll.h"
+#include "hlllg.h"
 #include "matgen.h"
 
 /* ***********************************************
@@ -40,229 +41,184 @@ int main(int argc, char *argv[])  {
 
   // ---------------------------------------------------------------------
 
-  int n,d,k,i,j;
+  int n,d,k,i,j,l;
   double delta;
 
   command_line_basis(A0, n, d, delta, argc, argv); 
 
   int nblocks=2;
-  int recouv=4;
+  int pcent = 5;   // pc * d > 100 
   
+ 
+ 
   vector< ZZ_mat<mpz_t> > TA(nblocks);
 
-  //print2maple(A0,n,d);
-    
-  if ((d%nblocks) ==0) {
-    for (k=0; k<nblocks-1; k++) {
-      
-      (TA[k]).resize(n,d/nblocks+recouv);
+  vector<int> dimb(nblocks);
 
-      for (i=0; i<n; i++)
-	for (j=0; j<d/nblocks+recouv; j++)
-	  (TA[k])(i,j)=A0(i,k*(d/nblocks)+j);
-      
-    
-    }
-    (TA[k]).resize(n,d/nblocks);
-
-    for (i=0; i<n; i++)
-      for (j=0; j<d/nblocks; j++)
-	(TA[k])(i,j)=A0(i,k*(d/nblocks)+j);
-      
-    
-    
-  }
+  // Slices of the orginal problem
+  // -----------------------------
+  
+  if ((d%nblocks) ==0)
+    for (k=0; k<nblocks; k++)
+      dimb[k]=d/nblocks;
   else {
-    for (k=0; k<nblocks-1; k++) {
-      
-      (TA[k]).resize(n,d/nblocks+1+recouv);
+    for (k=0; k<d%nblocks; k++)
+      dimb[k]=d/nblocks+1;
+    for (k=d%nblocks; k<nblocks; k++)
+      dimb[k]=d/nblocks;
+  }
 
-      for (i=0; i<n; i++)
-	for (j=0; j<d/nblocks+1+recouv; j++)
-	  (TA[k])(i,j)=A0(i,k*(d/nblocks+1)+j);
-      
+  // Plus overlap, but in the first block  
+  // ------------------------------------
+  
+  int recouv=d*pcent/100;
+
+  TA[0].resize(n,dimb[0]);
+  
+  for (k=1; k<nblocks; k++)
+    TA[k].resize(n,dimb[k]+recouv);
+
+  
+  cout << endl << dimb << "    " << recouv << endl; 
     
+  // Assign the non overlapping part
+  // -------------------------------
+  
+  j=0;
+  for (k=0; k<nblocks; k++) {
+    for (l=0; l<dimb[k]; l++) {
+      for (i=0; i<n;i++)
+	(TA[k])(i,l)=A0(i,j);
+      j++;
     }
-    (TA[k]).resize(n,d/nblocks);
+  }
 
-    for (i=0; i<n; i++)
-      for (j=0; j<d/nblocks; j++)
-	(TA[k])(i,j)=A0(i,k*(d/nblocks+1)+j);
-    
-    
-  } 
-
-  int newd=0;
-  for (k=0; k<nblocks; k++)
-    newd+=(TA[k]).getCols();
-
+  // Assign the overlapping part, but for the 1rst block 
+  // ---------------------------------------------------
  
-  ZZ_mat<mpz_t> L;
-  L.resize(n,newd);
+  // k=0;
+  // for (l=0; l<recouv; l++) {
+  //   for (i=0; i<n;i++)
+  //     (TA[k])(i,dimb[k]+l)=A0(i,dimb[k]+l);
+  // }
+  
 
-  int kacc=0;
-
- 
+  // The first vectors to the other blocks 
+  for (k=1; k<nblocks; k++) 
+    for (l=0; l<recouv; l++) 
+      for (i=0; i<n;i++)
+	(TA[k])(i,dimb[k]+l)=A0(i,l);
     
 
+  // Dimension updates
+  // -----------------
+
+  int newd =0;
+  newd+=dimb[0];
+  
+  // But the first block 
+  for (k=1; k<nblocks; k++) {
+      dimb[k]+=recouv;
+      newd+=dimb[k];
+  }
+
+
+  // for (k=0; k<nblocks; k++)
+  //   print2maple(TA[k],n, dimb[k]);
+  
+  // Reduction of the slices
+  // -----------------------
+ 
+  
   OMPTimer time;
 
   time.start();
 #pragma omp parallel num_threads(nblocks)
-    {
-      int id=omp_get_thread_num();
+  {
+    int id=omp_get_thread_num();
+       
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(TA[id],NO_TRANSFORM);
       
-      Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(TA[id],NO_TRANSFORM);
-      
-      B.hlll(delta);
+    B.hlll(delta);
 
-      TA[id]=B.getbase();
+    TA[id]=B.getbase();
 	
-    }
+  }
   time.stop();
+     
+  cout << endl << "Parallel time: " << time << endl;
 
-    cout << "********* " << time << endl;
 
+  // The generating set 
+  // ------------------
+  
+  ZZ_mat<mpz_t> L;
+  L.resize(n,newd);
 
-    kacc=0;
+  
+  // Reconstruction of a generating set from reduced slices  
+  // ------------------------------------------------------
+
+  j=0;
+  for (k=0; k<nblocks; k++) {
+    for (l=0; l<dimb[k]; l++) {
+      for (i=0; i<n;i++)
+	L(i,j)= (TA[k])(i,l); 
+      j++;
+    }
+  }
+
+ 
+  
+  // int block_ind=0;
+  // j=0;
+
+  // for (l=0; l<dimb[0]; l++) {
     
-    for (k=0; k<nblocks; k++) {
-      for (j=0; j<(TA[k]).getCols(); j++) {
-	for (i=0; i<n; i++) {
-	  L(i,kacc)=(TA[k])(i,j);
-	}
-	kacc+=1;
-      }
-    } 
+  //   for (k=0; k<nblocks; k++) 
+  //     if (block_ind < dimb[k]) {
 
-    //print2maple(L,n,newd);
+  // 	for (i=0; i<n; i++)
+  // 	  L(i,j)= (TA[k])(i,block_ind); 
+  // 	j++;
+  //     }
+
+  //   block_ind+=1;
+  // }
+    
+
+     
+     // Reduction of the generating set 
+    // -------------------------------
+
 
     time.start();
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > W(L,NO_TRANSFORM,DEF_REDUCTION,d);
-
+    GLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > W(L, d);
    
-    
-    int status;
+    W.hlll(delta);
 
-     while (newd > d) {
+    time.stop();
+    cout << endl << "Remaining time: " << time << endl;
+    
+    // //print2maple(W.getbase(),n,newd);   
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(W.getbase(),NO_TRANSFORM,NO_LONG);
+    T1.isreduced(delta-0.1);   
+
+      // ***************
+
+      Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A0,NO_TRANSFORM);
+
+      time.start();
+      C.hlll(delta);
+      time.stop();
+
+      cout << endl << endl << "Conventional: " << time << endl;
+
+      Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(C.getbase(),NO_TRANSFORM,NO_LONG);
+      T2.isreduced(delta-0.1);   
+
+
+    //   //print2maple(W.getbase(),n,d);
       
-       cout << "------" << newd << endl;
-       
-       status = W.hlll(delta);
-       
-       cout << "status " << status << endl; 
-       
-       if (status ==0) {
-
-	 for (j=0; j<newd-d; j++) 
-	   W.hsizereduce(d+j,d-1);
-    
-	 W.colswap(d-1,d);
-	 
-       }
-       
-      else {
-
-	W.colswap(status-1,newd-1);
-		
-     	newd -=1;
-  
-      }
-     } // endd while
-     time.stop();
-     cout << "********* " << time << endl;
-
-     
-     // Car valeur non conservée avant 
-     
-     for (k=0; k<nblocks; k++)
-       newd+=(TA[k]).getCols();
-  
-     ZZ_mat<mpz_t> A1,A2;
-     A1.resize(n,newd);
-     A1=W.getbase();
-
-     A2.resize(n,d);
-     for (i=0; i<n; i++)
-       for (j=0; j<d; j++)
-	 A2(i,j)=A1(i,j);
-
-     // print2maple(A2,n,d);
-     
-     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(A2,NO_TRANSFORM,NO_LONG);
-     T1.isreduced(delta-0.1);
-       
-     //print2maple(W.getbase(),n,d);
-    
-    //   cout << d << "   " << newd << endl;  
-      
-    //  
-    // time.stop();
-
-    
-    // //print2maple(L,n,d+1);
-    
-    // cout << "********* " << time << endl;
-
-    //print2maple(A0,n,d);
-    
-    //print2maple(L,n,newd);
-    
-    // int start,startsec;
-
-    // Timer time;
-
-    // int status;
-    
-    // cout << "--------------  HLLL" << endl << endl; 
-    // start=utime();
-    // startsec=utimesec();
-   
-    // Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
-    // //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
- 
-     
-    // time.start();
-    // status=B.hlll(0.7);
-    // status=B.hlll(delta);
-    // time.stop();
-
-    // start=utime()-start;
-    // startsec=utimesec()-startsec;
-  
-    
-    // cout << "   dimension = " << d  << endl;
-    // cout << "   time A: " << start/1000 << " ms" << endl;
-    // time.print(cout);
-    
-    
-    // if (status ==0) {
-    //   Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,NO_LONG);
-    //   T1.isreduced(delta-0.1);
-    //   }
-    // cout << endl; 
-
-    // cout << "--------------  FPLLL WRAPPER" << endl << endl; 
-    // transpose(AT,A0);
-
-    // start=utime();
-    // startsec=utimesec();
-    // time.start();
-    // lllReduction(AT, delta, 0.501, LM_WRAPPER);
-    // time.stop();
-    // start=utime()-start;
-    // startsec=utimesec()-startsec;
-  
-    
-    // cout << "   dimension = " << d  << endl;
-    // cout << "   time B: " << start/1000 << " ms" << endl;
-    // time.print(cout);
- 
-    // transpose(A,AT);
-    // Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
-    // T2.isreduced(delta-0.1);
-
-   
-
   return 0;
 }
