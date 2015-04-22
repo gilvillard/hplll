@@ -923,9 +923,9 @@ template<class T> void matprod_in(matrix<T>& C, matrix<T> U)
 
   int l;
 
-#ifdef _OPENMP
-#pragma omp parallel for shared(C)
-#endif 
+/* #ifdef _OPENMP */
+/* #pragma omp parallel for shared(C) */
+/* #endif  */
 
   for (l=0; l<S; l++) { 
 

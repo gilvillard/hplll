@@ -325,7 +325,7 @@ namespace hplll {
 	//cout << "nblov/d: " << ((int) (((double) B.nblov)/((double) d))) << endl; 
 	Af = B.getbase(); // The first row will change 
 	
-	Vf = B.getU();
+	Vf = B.getU(); // cf conversion vers entiers implicite ??? de ZR double vers FP NR double ? bug ? 
       }
       else if (lllmethod == FPLLL) {
 
