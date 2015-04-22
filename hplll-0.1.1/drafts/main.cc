@@ -23,6 +23,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "hlll.h"
 #include "matgen.h"
+#include "sllld.h"
+
+#include "block.h"
+
+
 
 /* ***********************************************
 
@@ -34,75 +39,157 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
-  
-  ZZ_mat<mpz_t> A0,A; // For hpLLL 
-  ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
+  ZZ_mat<mpz_t> A; // For hpLLL 
+  ZZ_mat<mpz_t> AT;  // fpLLL  
 
   // ---------------------------------------------------------------------
+  
+    cout << "************************************************************************** " << endl; 
 
-  int n,d;
-  double delta;
+    int n,d;
+    double delta;
+    
+    int K=4; 
 
-  command_line_basis(A0, n, d, delta, argc, argv); 
+    command_line_basis(A, n, d, delta, argc, argv); 
 
-  A.resize(n,d);
-  AT.resize(d,n);
-  transpose(AT,A);
+    
+    unsigned int lovmax = 4294967295;
 
-    int start,startsec;
+    PARSE_MAIN_ARGS {
+      MATCH_MAIN_ARGID("-K",K);
+      MATCH_MAIN_ARGID("-lovmax",lovmax);
+      }
 
+
+    // Make the dimension divisible by K
+    // ---------------------------------
+
+   
+    int i,j;
+    
+    if (d%K !=0) {
+
+     
+      ZZ_mat<mpz_t> B; // For hpLLL 
+      B.resize(n+K-d%K,d+K-d%K); 
+
+      Z_NR<mpz_t> amax;
+      amax=0;
+
+      for (i=0; i<d; i++) 
+	if (A(i,i).cmp(amax) > 0) amax=A(i,i);
+	
+      
+      for  (i=0; i<n; i++) 
+	for (j=0; j<d; j++) 
+	  B(i,j)=A(i,j);
+
+      for  (i=0; i<K-d%K; i++)
+	B(n+i,d+i)=amax;
+
+      A.resize(n+K-d%K,d+K-d%K);
+      set(A,B);
+
+      AT.resize(d+K-d%K,n+K-d%K);
+      transpose(AT,A);
+    
+      n+=K-d%K;
+      d+=K-d%K;
+      
+    }
+    else { 
+
+      AT.resize(d,n);
+      transpose(AT,A);
+    }
+
+        
     Timer time;
 
-    int status;
-    
-    cout << "--------------  HLLL" << endl << endl; 
-    start=utime();
-    startsec=utimesec();
-   
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
-    //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
- 
-     
-    time.start();
-    status=B.hlll(delta);
-    time.stop();
+#ifdef _OPENMP
+    OMPTimer ptime;  
+#else 
+    Timer ptime;
+#endif 
 
-    start=utime()-start;
-    startsec=utimesec()-startsec;
+    
   
+    ZZ_mat<double> Af;
+    Af.resize(n,d);
     
-    cout << "   dimension = " << d  << endl;
-    cout << "   time A: " << start/1000 << " ms" << endl;
-    time.print(cout);
+    for (j=0; j<d; j++)
+      for (i=0; i<n; i++)
+	//Af(i,j).getData()=AR(i,j).getData(); // Affectation problématique
+	// si pas getData à gauche donne des entiers
+	Af(i,j).getData()=A(i,j).get_d();
     
+    SLattice<double, double, matrix<Z_NR<double> >, matrix<FP_NR<double> > > B(Af,TRANSFORM,DEF_REDUCTION);
+
+    ptime.start();
+
+    B.hlll(delta,K,lovmax);
+
+    ptime.stop();
+
+    ZZ_mat<double> Uf;
+    Uf.resize(d,d);
+    Uf=B.getU();
+
+    FP_NR<double> tf;
     
-    if (status ==0) {
-      Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,NO_LONG);
-      T1.isreduced(delta-0.1);
+    ZZ_mat<mpz_t> U;
+    U.resize(d,d);
+    for (j=0; j<d; j++)
+      for (i=0; i<d; i++) {
+	tf = Uf(i,j).getData();  // Pour long double ou autre, vérifier et passer par set_z ? 
+	U(i,j).set_f(tf);
       }
-    cout << endl; 
 
-    cout << "--------------  FPLLL WRAPPER" << endl << endl; 
-    transpose(AT,A0);
+    matprod_in(A,U);
+	
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(A,NO_TRANSFORM,DEF_REDUCTION);
+    T1.isreduced(delta-0.1);
 
-    start=utime();
-    startsec=utimesec();
-    time.start();
-    lllReduction(AT, delta, 0.501, LM_WRAPPER);
-    time.stop();
-    start=utime()-start;
-    startsec=utimesec()-startsec;
-  
     
-    cout << "   dimension = " << d  << endl;
-    cout << "   time B: " << start/1000 << " ms" << endl;
-    time.print(cout);
- 
-    transpose(A,AT);
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
-    T2.isreduced(delta-0.1);
 
-   
+    cout << "   dimension = " << d  << endl;
+    cout << "   nblov plll " << B.nblov  << endl;
+    cout << "   time plll: " << ptime << endl;
+    cout << "   input bit size: " << maxbitsize(A) << endl;
+    
+
+    transpose(A,AT);
+
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,TRANSFORM,DEF_REDUCTION);
+
+
+    time.start();
+
+    C.hlll(delta);
+
+    time.stop();
+
+    cout << endl; 
+    cout << "   nblov hlll " << C.nblov  << endl;
+    cout << "   time hlll: " << time << endl;
+
+    // transpose(AT,A);
+
+    // time.start();
+
+    // lllReduction(AT, delta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
+
+    // transpose(A,AT);
+
+    // Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
+    // T2.isreduced(delta-0.1);
+
+    // time.stop();
+    // cout << "   time fplll: " << time << endl;
+    
+
+    
 
   return 0;
 }
