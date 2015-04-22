@@ -45,15 +45,13 @@ class PLattice
 
   MatrixZT U;
 
-  MatrixZT L;
-
+  MatrixZT Uloc;
+  
   int n,d; 
 
   bool transf;
 
   unsigned int nblov_max;
- 
-  int lsize;
 
   int nmaxkappa;
 
@@ -69,7 +67,8 @@ class PLattice
 
   matrix<FP_NR<FT> > VR; // Difference between MatrixFT and matrix<FP_NR<FT> >  in Exp 
   vector<FP_NR<FT> > normB2; // Square norm  
-
+  vector<FP_NR<FT> > old_normB2; // For end test in sizereduce 
+ 
   FP_NR<FT> x; // For size reduction 
 
   vector<FP_NR<FT> > toR; // Some assignment in householder_r 
@@ -105,7 +104,7 @@ public:
 
   int householder();
   
-  int hsizereduce(int kappa, int fromk=0);
+  int hsizereduce();
   int qrupdate(int iend);
 
   int decrease(int kappa);
@@ -125,12 +124,10 @@ public:
 
   ZZ_mat<ZT> getU();
 
-  ZZ_mat<ZT> getL();
-
   // Not MatrixFT for the exp case 
   matrix<FP_NR<FT> > getR(); 
 
-  PLattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0, int lehmer_size=0); 
+  PLattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0); 
 
   PLattice(matrix<FP_NR<mpfr_t> > F, ZZ_mat<ZT> A, bool forU, int reduction_method);
 
