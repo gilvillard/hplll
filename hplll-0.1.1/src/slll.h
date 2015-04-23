@@ -39,7 +39,10 @@ class SLattice
   MatrixZT RZ;
 
   ZZ_mat<ZT> U;
-
+  ZZ_mat<ZT> U_even;
+  ZZ_mat<ZT> U_odd;
+  ZZ_mat<ZT> U_proper;
+  
   MatrixZT Uglob;
 
   bool transf;
@@ -62,9 +65,11 @@ class SLattice
 
   int hlll(double delta, int K, unsigned int lovmax=4294967295);
  
-  void even_hsizereduce(int S, bool refresh); // Householder is refreshed or not 
+  void even_hsizereduce(int S); // Householder is refreshed or not 
   void odd_hsizereduce(int S);
 
+  void even_updateRZ(int S); 
+  
   unsigned int setprec(unsigned int prec);
   unsigned int getprec();
 
@@ -89,7 +94,7 @@ class SLattice
 
 } // end namespace hplll
 
-#include "sllld.cc"
+#include "slll.cc"
 
 #endif 
 

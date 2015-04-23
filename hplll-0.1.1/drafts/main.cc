@@ -23,9 +23,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "hlll.h"
 #include "matgen.h"
-#include "sllld.h"
+#include "slll.h"
 
-#include "block.h"
 
 
 
@@ -113,18 +112,8 @@ int main(int argc, char *argv[])  {
     Timer ptime;
 #endif 
 
-    
-  
-    ZZ_mat<double> Af;
-    Af.resize(n,d);
-    
-    for (j=0; j<d; j++)
-      for (i=0; i<n; i++)
-	//Af(i,j).getData()=AR(i,j).getData(); // Affectation problématique
-	// si pas getData à gauche donne des entiers
-	Af(i,j).getData()=A(i,j).get_d();
-    
-    SLattice<double, double, matrix<Z_NR<double> >, matrix<FP_NR<double> > > B(Af,TRANSFORM,DEF_REDUCTION);
+    // TODO with long double and dpe_t
+    SLattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A,TRANSFORM,DEF_REDUCTION);
 
     ptime.start();
 
@@ -132,47 +121,47 @@ int main(int argc, char *argv[])  {
 
     ptime.stop();
 
-    ZZ_mat<double> Uf;
-    Uf.resize(d,d);
-    Uf=B.getU();
+    // ZZ_mat<double> Uf;
+    // Uf.resize(d,d);
+    // Uf=B.getU();
 
-    FP_NR<double> tf;
+    // FP_NR<double> tf;
     
-    ZZ_mat<mpz_t> U;
-    U.resize(d,d);
-    for (j=0; j<d; j++)
-      for (i=0; i<d; i++) {
-	tf = Uf(i,j).getData();  // Pour long double ou autre, vérifier et passer par set_z ? 
-	U(i,j).set_f(tf);
-      }
+    // ZZ_mat<mpz_t> U;
+    // U.resize(d,d);
+    // for (j=0; j<d; j++)
+    //   for (i=0; i<d; i++) {
+    // 	tf = Uf(i,j).getData();  // Pour long double ou autre, vérifier et passer par set_z ? 
+    // 	U(i,j).set_f(tf);
+    //   }
 
-    matprod_in(A,U);
+    // matprod_in(A,U);
 	
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(A,NO_TRANSFORM,DEF_REDUCTION);
-    T1.isreduced(delta-0.1);
+    // Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(A,NO_TRANSFORM,DEF_REDUCTION);
+    // T1.isreduced(delta-0.1);
 
     
 
-    cout << "   dimension = " << d  << endl;
-    cout << "   nblov plll " << B.nblov  << endl;
-    cout << "   time plll: " << ptime << endl;
-    cout << "   input bit size: " << maxbitsize(A) << endl;
+    // cout << "   dimension = " << d  << endl;
+    // cout << "   nblov plll " << B.nblov  << endl;
+    // cout << "   time plll: " << ptime << endl;
+    // cout << "   input bit size: " << maxbitsize(A) << endl;
     
 
-    transpose(A,AT);
+    // transpose(A,AT);
 
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,TRANSFORM,DEF_REDUCTION);
+    // Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,TRANSFORM,DEF_REDUCTION);
 
 
-    time.start();
+    // time.start();
 
-    C.hlll(delta);
+    // C.hlll(delta);
 
-    time.stop();
+    // time.stop();
 
-    cout << endl; 
-    cout << "   nblov hlll " << C.nblov  << endl;
-    cout << "   time hlll: " << time << endl;
+    // cout << endl; 
+    // cout << "   nblov hlll " << C.nblov  << endl;
+    // cout << "   time hlll: " << time << endl;
 
     // transpose(AT,A);
 
