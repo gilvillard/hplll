@@ -34,7 +34,7 @@ namespace hplll {
   // cas rectangles ? 
 
   template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
-  SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int K, int level, unsigned int lovmax) { 
+  SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int K, unsigned int lovmax) { 
     
     int bdim;     // Number of blocks and dimension of each block 
                   // Assume that d is a multiple of K >= 4 
@@ -76,8 +76,6 @@ namespace hplll {
     totime.clear();
     ttime.clear();
    
-
-    long condbits;
     
     int iter;
 
@@ -86,23 +84,18 @@ namespace hplll {
 
     // The input matrix is assumed to be triangular and size reduced 
     // -------------------------------------------------------------
-    
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > >  LI(getbase());
-    condbits = LI.lcond(TRIANGULAR_PROPER);
-    
-    setprec(condbits);
+    // householder initial for making triangular if needed ??
 
     time.start();
 
-    householder();
+    //householder();
 
     time.stop();
-    cout << "++++++++++++ Level: " << level << "  +++++++++++++++++++ Prec: " << mpfr_get_default_prec() << "   " << time << endl;  
+   
     qrtime+=time; 
 
 
-
-    
+   
     // ************************
     // Main loop on block swaps 
     // ************************
@@ -117,21 +110,19 @@ namespace hplll {
       
       time.start();
 
-      phouseholder(SP,condbits);
+      phouseholder(SP);
             
       time.stop();      
       restsizetime+=time;
 
-      
+    
 
       // Even block reduction  
       // --------------------
 
       setId(U);
 
-      condbits=approx_cond();
-
-      cout << endl << "******* Level: " << level << "  ****** Even approx cond " << condbits << "    " << "S = " << S << endl; 
+            
           
       cout << " Reductions: " << redtime << endl;
       //cout << " Even reductions:   " << eventime << endl;
@@ -146,10 +137,14 @@ namespace hplll {
       totime.start();
        
      
-
-      set_f(RZ,R,condbits);  // Le limiter aux blocs 
-      
-      setprec(condbits);
+     
+      //set_f(RZ,R,condbits);  // Le limiter aux blocs 
+      {
+	for (int j=0; j<d; j++)
+	  for (int i=0; i<d; i++)
+	    RZ(i,j).getData()=R(i,j).getData(); // Affectation problématique
+	// si pas getData à gauche donne des entiers
+	}
    
       time.start();
 
@@ -159,35 +154,27 @@ namespace hplll {
       
       for (k=0; k<S; k++) {   
 #ifdef _OPENMP	
-	//cout << "thread " << omp_get_thread_num() << endl; 
+	cout << "thread " << omp_get_thread_num() << endl; 
 #endif
 	// Double hence no global prec problem 
  
-	if (level ==0) {
-	  Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
-	  BR.set_nblov_max(lovmax);
-	  BR.hlll(delta);
-	  cout << endl << "even nblov " << BR.nblov << endl; 
-	  nblov+=BR.nblov;
-	  putblock(U,BR.getU(),k,k,S,0);
-	} 
-	else {
-	  mpfr_set_default_prec(condbits);
-	  SLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > BP(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
-	  BP.hlll(delta,4,level-1);
-	  cout << " ========= ICI " << endl; 
-	  //cout << endl << "even nblov " << BP.nblov << endl; 
-	  nblov+=BP.nblov;
-	  putblock(U,BP.getU(),k,k,S,0);
-	  mpfr_set_default_prec(condbits); 
+	 {
+	   cout << "+++++++++++ Even ++++++++++ " << endl;
+	   Lattice<double, double, matrix<Z_NR<double> >, matrix<FP_NR<double> > >  BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
+	   BR.set_nblov_max(lovmax);
+	   BR.hlll(delta);
+	   cout << endl << "even nblov " << BR.nblov << endl; 
+	   nblov+=BR.nblov;
+	   putblock(U,BR.getU(),k,k,S,0);
+	  
 	}
       }
-      
-      mpfr_set_default_prec(condbits); 
 
       time.stop();
       redtime+=time; 
       eventime+=time; 
+
+#pragma omp barrier
       
       stop=isId(U);
 
@@ -216,7 +203,7 @@ namespace hplll {
       bool refresh = true; // False: computes Rt 
  
 
-      even_hsizereduce(S,condbits,refresh); // U implicitely updated 
+      even_hsizereduce(S, refresh); // U implicitely updated 
       
       time.stop();
       esizetime+=time;
@@ -235,7 +222,7 @@ namespace hplll {
       
       // CHANGER LE PREC MPFR EN FONCTION DE RZ CAR A BAISSÉE
       if (refresh) 
-	phouseholder(SP,condbits);
+	phouseholder(SP);
       //else  
       //set(R,Rt);
       
@@ -250,15 +237,16 @@ namespace hplll {
       
       setId(U);
       
-      condbits=approx_cond();
-
+            
+      //set_f(RZ,R,condbits);
+      {
+	for (int j=0; j<d; j++)
+	  for (int i=0; i<d; i++)
+	    RZ(i,j).getData()=R(i,j).getData(); // Affectation problématique
+	// si pas getData à gauche donne des entiers
+      }
       
-      set_f(RZ,R,condbits);
      
-
-      setprec(condbits);
-  
-
       time.start();
 
       #ifdef _OPENMP
@@ -267,32 +255,23 @@ namespace hplll {
       for (k=0; k<S-1; k++) {
 	//cout << "+++++++++++ Odd ++++++++++ " << endl; 
 	
-	if (level ==0) {
-	  Lattice<ZT, dpe_t, MatrixZT, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
-	  //BR.set_nblov_max(lovmax);
+	{
+	  Lattice<double, double, matrix<Z_NR<double> >, matrix<FP_NR<double> > >  BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
+	  BR.set_nblov_max(lovmax);
 	  BR.hlll(delta);
-	  //cout << endl << "odd nblov " << BR.nblov << endl;
 	  nblov+=BR.nblov;
-
 	  putblock(U,BR.getU(),k,k,S,bdim);
-	} 
-	else {
-	  mpfr_set_default_prec(condbits);
-	  SLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > BP(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
-	  BP.hlll(delta,4,level-1);
-	  cout << " ========= ICI " << endl; 
-	  //cout << endl << "even nblov " << BP.nblov << endl; 
-	  nblov+=BP.nblov;
-	  putblock(U,BP.getU(),k,k,S,bdim);
-	  mpfr_set_default_prec(condbits); 
+	 
 	}
       }
-      mpfr_set_default_prec(condbits); 
+      
       
       time.stop();
       redtime += time;
       oddtime += time;
 
+#pragma omp barrier
+      
       stop=isId(U)*stop;
         
 	
@@ -317,7 +296,7 @@ namespace hplll {
       
       time.start();
       
-      odd_hsizereduce(S,condbits); // U implicitely updated 
+      odd_hsizereduce(S); // U implicitely updated 
       
       time.stop();
       osizetime+=time;
@@ -360,7 +339,7 @@ namespace hplll {
 /* -------------------------------------------------------- */
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void 
-SLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec, bool refresh)
+SLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, bool refresh)
 {
 
 
@@ -373,7 +352,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec, bool refr
 
   //PPP  
 #ifdef _OPENMP
-  #pragma omp parallel for shared (prec,refresh)
+  #pragma omp parallel for shared (refresh)
   #endif 
 
   for (k=1; k<S ; k++) {
@@ -382,8 +361,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec, bool refr
     c.clear();
     c.start();
 
-    mpfr_set_default_prec(prec);
-
+    
     int i,j;
 
    
@@ -534,7 +512,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S, int prec, bool refr
 /* -------------------------------------------------------- */
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void 
-SLattice<ZT,FT, MatrixZT, MatrixFT>::odd_hsizereduce(int S, int prec)
+SLattice<ZT,FT, MatrixZT, MatrixFT>::odd_hsizereduce(int S)
 {
 
 
@@ -548,7 +526,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::odd_hsizereduce(int S, int prec)
 
   //PPP  
   //#ifdef _OPENMP
-  //#pragma omp parallel for shared (prec)
+  //#pragma omp parallel for 
   //#endif 
 
 
@@ -558,8 +536,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::odd_hsizereduce(int S, int prec)
     c.clear();
     c.start();
 
-    mpfr_set_default_prec(prec);
-
+    
     int i,j;
 
     int dlast=0;
@@ -831,7 +808,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::householder()
 /* --------------------------------------------- */
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
-SLattice<ZT,FT, MatrixZT, MatrixFT>::phouseholder(int S, int prec)
+SLattice<ZT,FT, MatrixZT, MatrixFT>::phouseholder(int S)
 {
 
   int i,k,kappa;
@@ -890,12 +867,10 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::phouseholder(int S, int prec)
 
 
     //#ifdef _OPENMP
-    //#pragma omp parallel for shared (prec,l)
+    //#pragma omp parallel for shared (l)
     //#endif 
 
     for (lb=l+1; lb<S; lb++) {
-
-      mpfr_set_default_prec(prec);
 
       int kk; 
       int pkappa; 

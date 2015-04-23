@@ -60,17 +60,17 @@ class SLattice
 
   int nblov;
 
-  int hlll(double delta, int K, int level=0, unsigned int lovmax=4294967295);
+  int hlll(double delta, int K, unsigned int lovmax=4294967295);
  
-  void even_hsizereduce(int S, int prec, bool refresh); // Householder is refreshed or not 
-  void odd_hsizereduce(int S, int prec);
+  void even_hsizereduce(int S, bool refresh); // Householder is refreshed or not 
+  void odd_hsizereduce(int S);
 
   unsigned int setprec(unsigned int prec);
   unsigned int getprec();
 
   long  approx_cond();
   int householder();
-  int phouseholder(int S, int prec);
+  int phouseholder(int S);
 
   ZZ_mat<ZT> getU();
 
@@ -89,7 +89,7 @@ class SLattice
 
 } // end namespace hplll
 
-#include "slll.cc"
+#include "sllld.cc"
 
 #endif 
 
