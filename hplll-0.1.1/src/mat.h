@@ -473,11 +473,79 @@ inline void set(Matrix<T>& A)
    return(B);
  };
 
+  template<class T> inline  ZZ_mat<T>  getblock(matrix<FP_NR<T> > A, const int ii, const int jj, const int nbb, const int diagdec)   {
+    
+   ZZ_mat<T> B;
+   
+   int n= A.getRows();
+
+   long bdim = n/nbb;
+
+   B.resize(bdim,bdim);
+
+   long  si;
+   long sj = jj*bdim;
+
+   for (int j=0; j<bdim; j++) {
+     si = ii*bdim; 
+     for (int i=0; i<bdim; i++) {
+       B(i,j).getData()=A(si+diagdec,sj+diagdec).getData(); // TO CHECK IN GENERAL 
+       si +=1;
+     }
+     sj+=1;
+   }
+
+   return(B);
+ };
 
 // SQUARE HERE, bdim divise n 
 // Cas rectangle ???
  
  template<class T> inline  int putblock(Matrix<T>& A, Matrix<T> B, const int ii, const int jj, const int nbb, const int diagdec)   {
+    
+   
+   int n= A.getRows();
+
+   long bdim = n/nbb;
+
+   long  si;
+   long sj = jj*bdim;
+
+   for (int j=0; j<bdim; j++) {
+     si = ii*bdim; 
+     for (int i=0; i<bdim; i++) {
+       A(si+diagdec,sj+diagdec) = B(i,j);
+       si +=1;
+     }
+     sj+=1;
+   }
+
+   return(0);
+ };
+
+ template<class T> inline  int putblock(matrix<T>& A, Matrix<T> B, const int ii, const int jj, const int nbb, const int diagdec)   {
+    
+   
+   int n= A.getRows();
+
+   long bdim = n/nbb;
+
+   long  si;
+   long sj = jj*bdim;
+
+   for (int j=0; j<bdim; j++) {
+     si = ii*bdim; 
+     for (int i=0; i<bdim; i++) {
+       A(si+diagdec,sj+diagdec) = B(i,j);
+       si +=1;
+     }
+     sj+=1;
+   }
+
+   return(0);
+ };
+
+ template<class T> inline  int putblock(matrix<T>& A, matrix<T> B, const int ii, const int jj, const int nbb, const int diagdec)   {
     
    
    int n= A.getRows();
