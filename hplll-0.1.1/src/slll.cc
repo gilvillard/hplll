@@ -135,6 +135,8 @@ namespace hplll {
       // #pragma omp parallel for
       // #endif 
 
+     
+      
       // set_f RZ R
       // ----------
       for (i=0; i<d; i++)
@@ -191,59 +193,62 @@ namespace hplll {
 
        print2maple(U_proper,d,d);
 
-       print2maple(RZ,d,d);
+      
 	print2maple(Rt,d,d);
+
+	 print2maple(RZ,d,d);
 
 	// set_f RZ Rt
       // ----------
       for (i=0; i<d; i++)
 	for (j=0; j<d; j++)
 	  RZ(i,j).set_f(Rt(i,j));
-      
-//       pmatprod_in(B,U,SP);
+
+      print2maple(RZ,d,d);
+// //       pmatprod_in(B,U,SP);
       
 
-//       if (transf) pmatprod_in(Uglob,U,SP);
+// //       if (transf) pmatprod_in(Uglob,U,SP);
  
-       time.stop();    
-       prodtime+=time; 
+//        time.stop();    
+//        prodtime+=time; 
 
        
      
 
-       // Odd block loop 
-       // --------------
+//        // Odd block loop 
+//        // --------------
       
-       setId(U);
+//        setId(U);
       
-       setId(U_odd);
+//        setId(U_odd);
       
-       time.start();
+//        time.start();
 
-//       #ifdef _OPENMP
-//       #pragma omp parallel for 
-//       #endif 
-       for (k=0; k<S-1; k++) {
- 	cout << "+++++++++++ Odd ++++++++++ " << endl; 
+// //       #ifdef _OPENMP
+// //       #pragma omp parallel for 
+// //       #endif 
+//        for (k=0; k<S-1; k++) {
+//  	cout << "+++++++++++ Odd ++++++++++ " << endl; 
 	
- 	{
-	  print2maple(getblock(RZ,k,k,S,bdim),d/S,d/S);
-	Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > >  BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
-	   BR.set_nblov_max(lovmax);
-	   BR.hlll(delta);
-	   cout << endl << "odd nblov " << BR.nblov << endl; 
-	   nblov+=BR.nblov;
-	   putblock(U_odd,BR.getU(),k,k,S,bdim);	   
-	   //putblock(RZ,BR.getbase(),k,k,S,0);
- 	}
+//  	{
+// 	  print2maple(getblock(RZ,k,k,S,bdim),d/S,d/S);
+// 	Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > >  BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
+// 	   BR.set_nblov_max(lovmax);
+// 	   BR.hlll(delta);
+// 	   cout << endl << "odd nblov " << BR.nblov << endl; 
+// 	   nblov+=BR.nblov;
+// 	   putblock(U_odd,BR.getU(),k,k,S,bdim);	   
+// 	   //putblock(RZ,BR.getbase(),k,k,S,0);
+//  	}
 
-    }
+//     }
       
-       time.stop();
-       redtime += time;
-       oddtime += time;
+//        time.stop();
+//        redtime += time;
+//        oddtime += time;
 
-       print2maple(U_odd,d,d);
+//        print2maple(U_odd,d,d);
        
 // #pragma omp barrier
       
@@ -475,7 +480,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S)
       // Update of newRZ for the remaining computations in the block column 
       // Clean matrix product to do  RZ * U in newRZ
 
-      for (i=0; i<l*Sdim; i++)  {  
+      
+      for (i=0; i<(l+1)*Sdim; i++)  {  
  
 	int jj,kk;
 	
@@ -493,6 +499,13 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S)
     } // loop in the block column 
 
 
+    // Would be a new way of getting the new RZ
+    
+    // for (i=0; i<d; i++)
+    //   for (j=0; j<Sdim; j++) 
+    // 	RZ(i,k*Sdim+j)=newRZ(i,j);
+
+    
     // Last diagonal block of Householder may be required 
     if (k==(S-1)) { 
 
