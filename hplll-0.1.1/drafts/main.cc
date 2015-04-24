@@ -113,11 +113,12 @@ int main(int argc, char *argv[])  {
 #endif 
 
     // TODO with long double and dpe_t
-    SLattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A,TRANSFORM,DEF_REDUCTION);
+    SLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A,TRANSFORM,DEF_REDUCTION);
 
     ptime.start();
 
-    B.hlll(delta,K,lovmax);
+    // Régler la valeur de condbits 
+    B.hlll(delta,40, K,lovmax);
 
     ptime.stop();
 

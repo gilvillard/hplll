@@ -34,7 +34,7 @@ namespace hplll {
   // cas rectangles ? 
 
   template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
-  SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int K, unsigned int lovmax) { 
+  SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int condbits, int K,  unsigned int lovmax) { 
     
     int bdim;     // Number of blocks and dimension of each block 
                   // Assume that d is a multiple of K >= 4 
@@ -45,8 +45,6 @@ namespace hplll {
     int S;   // Number of segments and dimension of each segment  
              // Assume that d is a multiple of K >= 4 
              // K/2 and bdim >= 2 for actual segment) 
-
-    int SP=K/2;  // Mettre un seul SP et S 
 
     S=K/2;
     
@@ -82,13 +80,16 @@ namespace hplll {
     bool stop=0;
 
    
+    // *****************************
+    // Could be modified dynamically
+ 
+    setprec(condbits);
+
+
     // ************************
     // Main loop on block swaps 
     // ************************
    
-
-   
-
     totime.start();
 
     // **** Voir la terminaison avec U Identité
@@ -99,7 +100,7 @@ namespace hplll {
       
       time.start();
 
-      phouseholder(SP);
+      phouseholder(S);
             
       time.stop();      
       restsizetime+=time;
@@ -130,32 +131,25 @@ namespace hplll {
       setId(U_even);
      
       time.start();
-
-      // #ifdef _OPENMP
-      // #pragma omp parallel for
-      // #endif 
-
      
-      
-      // set_f RZ R
-      // ----------
-      for (i=0; i<d; i++)
-	for (j=0; j<d; j++)
-	  RZ(i,j).set_f(R(i,j));
+      // The integer block lattice 
 
+      set_f(RZ,R,condbits); 
 
       print2maple(RZ,d,d);
-      
-      for (k=0; k<S; k++) {   
+
+
+
+      for (k=0; k<S; k++) { 
+  
 // #ifdef _OPENMP	
 // 	cout << "thread " << omp_get_thread_num() << endl; 
 // #endif
-	// Double hence no global prec problem 
-
 	  
 	 {
 	   cout << "+++++++++++ Even ++++++++++ " << endl;
-	   Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > >  BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
+	   Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
+	   // Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > >  BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
 	   BR.set_nblov_max(lovmax);
 	   BR.hlll(delta);
 	   cout << endl << "even nblov " << BR.nblov << endl; 
@@ -184,36 +178,30 @@ namespace hplll {
 
        print2maple(U_even,d,d);
        
-       print2maple(RZ,d,d);
+      
 
 
        setId(U_proper);
        
        even_hsizereduce(S); // Uproper implicitely updated
 
+       print2maple(RZ,d,d);
+
        print2maple(U_proper,d,d);
 
       
-	print2maple(Rt,d,d);
-
-	 print2maple(RZ,d,d);
-
-	// set_f RZ Rt
-      // ----------
-      for (i=0; i<d; i++)
-	for (j=0; j<d; j++)
-	  RZ(i,j).set_f(Rt(i,j));
-
-      print2maple(RZ,d,d);
-// //       pmatprod_in(B,U,SP);
-      
-
-// //       if (transf) pmatprod_in(Uglob,U,SP);
+// //       if (transf) pmatprod_in(Uglob,U,S);
  
-//        time.stop();    
-//        prodtime+=time; 
+       time.stop();    
+       prodtime+=time; 
 
        
+      // Re-orthogonalization by blocks 
+      // ------------------------------
+
+       // Avec S-1 sous-réseaux 
+       // S-1 block de RZ Sdim + bdim 
+
      
 
 //        // Odd block loop 
@@ -260,12 +248,12 @@ namespace hplll {
       
 //       time.start();
       
-//       pmatprod_in(RZ,U,SP);  
+//       pmatprod_in(RZ,U,S);  
 
-//       pmatprod_in(B,U,SP);
+//       pmatprod_in(B,U,S);
      
 
-//       if (transf) pmatprod_in(Uglob,U,SP);
+//       if (transf) pmatprod_in(Uglob,U,S);
 
 //       time.stop();    
 //       prodtime+=time; 
@@ -277,6 +265,8 @@ namespace hplll {
 //       time.start();
       
 //       odd_hsizereduce(S); // U implicitely updated 
+
+
       
 //       time.stop();
 //       osizetime+=time;
@@ -284,9 +274,9 @@ namespace hplll {
 //       time.start();
 
 
-//       pmatprod_in(B,U,SP);
+//       pmatprod_in(B,U,S);
       
-//       if (transf) pmatprod_in(Uglob,U,SP);
+//       if (transf) pmatprod_in(Uglob,U,S);
 
 //       time.stop();    
 //       prodtime+=time; 
@@ -461,13 +451,14 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S)
 
       // Householder need to be available via RZ 
 
-      tmpR=RZloc.getR();
-      for (i=0; i<Sdim; i++)
-	for (j=0; j<Sdim; j++) {
+      // tmpR=RZloc.getR();
+
+      // for (i=0; i<Sdim; i++)
+      // 	for (j=0; j<Sdim; j++) {
 	  
-	  Rt.set(l*Sdim+i,l*Sdim+j,tmpR(i,j)); 
-       	  Rt.set(l*Sdim+i,k*Sdim+j,tmpR(i,Sdim+j));
-       	} 
+      // 	  Rt.set(l*Sdim+i,l*Sdim+j,tmpR(i,j)); 
+      //  	  Rt.set(l*Sdim+i,k*Sdim+j,tmpR(i,Sdim+j));
+      //  	} 
 	
 
       // Update of U
@@ -501,38 +492,38 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S)
 
     // Would be a new way of getting the new RZ
     
-    // for (i=0; i<d; i++)
-    //   for (j=0; j<Sdim; j++) 
-    // 	RZ(i,k*Sdim+j)=newRZ(i,j);
+    for (i=0; i<d; i++)
+      for (j=0; j<Sdim; j++) 
+    	RZ(i,k*Sdim+j)=newRZ(i,j);
 
     
     // Last diagonal block of Householder may be required 
-    if (k==(S-1)) { 
+    // if (k==(S-1)) { 
 
-      for (i=0; i<Sdim; i++)
-    	for (j=0; j<Sdim; j++) 
-    	  tmpM(i,j)=RZ(k*Sdim+i,k*Sdim+j);
+    //   for (i=0; i<Sdim; i++)
+    // 	for (j=0; j<Sdim; j++) 
+    // 	  tmpM(i,j)=RZ(k*Sdim+i,k*Sdim+j);
       
       
-      RZloc.assign(tmpM);
+    //   RZloc.assign(tmpM);
  
-      // Local size reduction 
+    //   // Local size reduction 
 
-      for (i=0; i<Sdim; i++) {
+    //   for (i=0; i<Sdim; i++) {
 
-    	RZloc.householder_r(i);
-    	RZloc.householder_v(i);
-      }
+    // 	RZloc.householder_r(i);
+    // 	RZloc.householder_v(i);
+    //   }
 
-      // 
-      tmpR=RZloc.getR();
-      for (i=0; i<Sdim; i++)
-    	for (j=0; j<Sdim; j++) {
+    //   // 
+    //   tmpR=RZloc.getR();
+    //   for (i=0; i<Sdim; i++)
+    // 	for (j=0; j<Sdim; j++) {
 	  
-    	  Rt.set(k*Sdim+i,k*Sdim+j,tmpR(i,j)); 
+    // 	  Rt.set(k*Sdim+i,k*Sdim+j,tmpR(i,j)); 
 	 
-    	} 
-    } // Last block for householder
+    // 	} 
+    // } // Last block for householder
     
     
     c.stop();
@@ -904,9 +895,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::phouseholder(int S)
     int lb;
 
 
-    //#ifdef _OPENMP
-    //#pragma omp parallel for shared (l)
-    //#endif 
+#ifdef _OPENMP
+#pragma omp parallel for shared (l)
+#endif 
 
     for (lb=l+1; lb<S; lb++) {
 

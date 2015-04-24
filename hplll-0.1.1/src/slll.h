@@ -63,7 +63,7 @@ class SLattice
 
   int nblov;
 
-  int hlll(double delta, int K, unsigned int lovmax=4294967295);
+  int hlll(double delta, int condbits, int K, unsigned int lovmax=4294967295);
  
   void even_hsizereduce(int S); // Householder is refreshed or not 
   void odd_hsizereduce(int S);

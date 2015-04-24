@@ -1565,8 +1565,6 @@ template<class ZT, class MatrixZT> void trunc(MatrixZT& B, ZZ_mat<ZT> A, long d,
 };
 
 
-//template<class ZT, class FT> void set_f(matrix<Z_NR<ZT> >& B, matrix<FP_NR<FT> > R, long condbits);
-
 //template<> void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long condbits)
 void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long condbits)
 {
@@ -1590,37 +1588,37 @@ void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long condbits)
 
   }
 
-  FP_NR<mpfr_t> bf;
 
-  Z_NR<mpz_t> tt,z;
-  tt=0;
-  z=0;
-  FP_NR<mpfr_t> rt;
+  Z_NR<mpz_t> z;
+  
+  z.set_f(minval);
 
-  Z_NR<mpz_t> mm;
-  mm=B(0,0);
-
-  for (j=0; j<d; j++) {
-    fp_norm(norm,R.getcol(j),n);
-
- 
-    for (i=0; i<n; i++) {
-
-      bf.mul_2si(R(i,j),condbits+1);  // +1
-     
-      //tt.randb(2);
-      //set_z(rt,tt);
-      //rt.mul(rt,norm);
-      //if (j>=i) bf.add(bf,rt);
-      bf.div(bf,minval);
-      B(i,j).set_f(bf);
-
+  cout << "size : " << size_in_bits(z) << endl;   
+  //if (size_in_bits(z) > condbits) { 
+  { 
+    long s= - (size_in_bits(z) - condbits);
+    
+    FP_NR<mpfr_t> bf;
+    
+    for (j=0; j<d; j++) 
+      for (i=0; i<n; i++) {
+	
+	bf.mul_2si(R(i,j),s);  
+     	B(i,j).set_f(bf);
       }
      
   }
+  /* else { */
 
+  /*   for (j=0; j<d; j++)  */
+  /*     for (i=0; i<n; i++)  */
+       
+
+  /*    	B(i,j).set_f(R(i,j)); */
+      
+
+  /* }  */
 }
-
 
 /********************************************************/
 /* ******         MAXBITSIZE        ******************* */
