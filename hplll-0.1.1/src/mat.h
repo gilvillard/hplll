@@ -1620,6 +1620,61 @@ void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long condbits)
   /* }  */
 }
 
+//template<> void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long condbits)
+void set_f(ZZ_mat<mpz_t>& B, matrix<FP_NR<mpfr_t> > R, long condbits)
+{
+
+  int n,d;
+
+  n= B.getRows();
+  d= B.getCols();
+
+  FP_NR<mpfr_t> norm,minval;
+
+  int i,j;
+
+   fp_norm(minval,R.getcol(0),n);
+
+
+  // Avant Mar 29 avr 2014 10:42:12 CEST
+  for (j=1; j<d; j++) {
+    fp_norm(norm,R.getcol(j),n);
+    if (minval.cmp(norm) > 0) minval=norm;
+
+  }
+
+
+  Z_NR<mpz_t> z;
+  
+  z.set_f(minval);
+
+  cout << "size : " << size_in_bits(z) << endl;   
+  //if (size_in_bits(z) > condbits) { 
+  { 
+    long s= - (size_in_bits(z) - condbits);
+    
+    FP_NR<mpfr_t> bf;
+    
+    for (j=0; j<d; j++) 
+      for (i=0; i<n; i++) {
+	
+	bf.mul_2si(R(i,j),s);  
+     	B(i,j).set_f(bf);
+      }
+     
+  }
+  /* else { */
+
+  /*   for (j=0; j<d; j++)  */
+  /*     for (i=0; i<n; i++)  */
+       
+
+  /*    	B(i,j).set_f(R(i,j)); */
+      
+
+  /* }  */
+}
+
 /********************************************************/
 /* ******         MAXBITSIZE        ******************* */
 /********************************************************/
