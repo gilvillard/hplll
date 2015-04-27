@@ -118,7 +118,7 @@ int main(int argc, char *argv[])  {
     ptime.start();
 
     // Régler la valeur de condbits 
-    B.hlll(delta,40, K,lovmax);
+    B.hlll(delta, 80, K,lovmax);
 
     ptime.stop();
 
@@ -138,31 +138,31 @@ int main(int argc, char *argv[])  {
 
     // matprod_in(A,U);
 	
-    // Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(A,NO_TRANSFORM,DEF_REDUCTION);
-    // T1.isreduced(delta-0.1);
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+    T1.isreduced(delta-0.1);
 
     
 
-    // cout << "   dimension = " << d  << endl;
-    // cout << "   nblov plll " << B.nblov  << endl;
-    // cout << "   time plll: " << ptime << endl;
-    // cout << "   input bit size: " << maxbitsize(A) << endl;
+    cout << "   dimension = " << d  << endl;
+    cout << "   nblov plll " << B.nblov  << endl;
+    cout << "   time plll: " << ptime << endl;
+    cout << "   input bit size: " << maxbitsize(A) << endl;
     
 
-    // transpose(A,AT);
+    transpose(A,AT);
 
-    // Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,TRANSFORM,DEF_REDUCTION);
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,TRANSFORM,DEF_REDUCTION);
 
 
-    // time.start();
+    time.start();
 
-    // C.hlll(delta);
+    C.hlll(delta);
 
-    // time.stop();
+    time.stop();
 
-    // cout << endl; 
-    // cout << "   nblov hlll " << C.nblov  << endl;
-    // cout << "   time hlll: " << time << endl;
+    cout << endl; 
+    cout << "   nblov hlll " << C.nblov  << endl;
+    cout << "   time hlll: " << time << endl;
 
     // transpose(AT,A);
 
