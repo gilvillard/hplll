@@ -37,6 +37,8 @@ class SLattice
   MatrixZT B;
 
   MatrixZT RZ;
+  MatrixZT newRZ;
+  
 
   ZZ_mat<ZT> U;
   ZZ_mat<ZT> U_even;
@@ -69,7 +71,8 @@ class SLattice
   void odd_hsizereduce(int S);
 
   void even_updateRZ(int S); 
-  
+  void odd_updateRZ(int S);
+   
   unsigned int setprec(unsigned int prec);
   unsigned int getprec();
 
