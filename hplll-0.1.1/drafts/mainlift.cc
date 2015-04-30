@@ -273,6 +273,128 @@ using namespace hplll;
 
 
 
+ /***********************************************************************************
+
+      LIFT 
+
+  **************************************************************************************/ 
+  
+  
+  template<class FT, class MatrixFT> int  
+  lift(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long shift, int lllmethod, double delta) {
+
+    int m,d;
+    int i,j;
+  
+    m=A.getRows();
+    d=A.getCols();
+
+    ZZ_mat<mpz_t> A_in;
+    A_in.resize(m+d,d);
+   
+ 
+    // **** m=1 for the moment
+    
+    for (j=0; j<d; j++)
+	A_in(0,j)=A(0,j);
+    
+    for (i=0; i<d; i++)
+      A_in(m+i,i)=1;
+
+    
+    int bitsize = maxbitsize(A,0,m,d);
+  
+    // For assigning the truncated basis at each step
+
+    
+    ZZ_mat<mpz_t> T,TT;
+    
+    T.resize(m+d,d);
+    TT.resize(d,m+d);
+ 
+    
+    ZZ_mat<mpz_t> U,UT;
+    
+    U.resize(d,d);
+    UT.resize(d,d);
+ 
+    int def = -bitsize;
+
+    //int target_def = -bitsize + alpha;
+
+    int target_def = 0;
+    
+    int found=0;
+
+    Lattice<mpz_t, FT, matrix<Z_NR<mpz_t> >, MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION);
+
+    Timer tmul,tshift,time;
+
+    tmul.clear();
+    tshift.clear();
+    time.clear();
+       
+    // Main loop on the shifts
+    // -----------------------
+    while (def < target_def) {
+
+      tshift.start();
+	
+      HPLLL_INFO("Current default: ",def);
+       
+      if ((target_def - def) <= shift) 
+	def=target_def;
+      else def+=shift;
+
+      lift_truncate(T, A_in, def, shift+2*d);
+
+      if (lllmethod == HLLL) {
+
+	Bp.assign(T);
+	
+	Bp.hlll(delta);
+
+	tmul.start();
+	matprod_in(A_in,Bp.getU());
+	tmul.stop();
+	
+	
+      }
+
+      else if (lllmethod == FPLLL) {
+
+	transpose(TT,T);
+
+	setId(UT);
+	  
+	lllReduction(TT, UT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+
+	
+	transpose(U,UT);
+	
+	tmul.start();
+	matprod_in(A_in,U);
+	tmul.stop();
+	
+	
+      } 
+
+      tshift.stop();
+      cout << "tshift: " << tshift << endl;
+      cout << "tmul: " << tmul << endl << endl; 
+      
+    } // End while 
+
+
+       
+    C=A_in;
+
+    cout << "tmul: " << tmul << endl; 
+    return found; // 0 here 
+
+        
+  };
+
 
    
 
@@ -323,9 +445,8 @@ int main(int argc, char *argv[])  {
   
      
     time.start();
-    lift_z<long, double>(C, AR,  maxbitsize(AR), 60, 60, 10, FPLLL, delta);
-			  // long confidence_gap = 60, long shift = 200, long increment = 20,
-			  // int lllmethod = FPLLL, double delta = 0.99);
+    lift<dpe_t,MatrixPE<double, dpe_t> >(C, AR, 100, FPLLL, delta);
+			
     time.stop();
 
     start=utime()-start;

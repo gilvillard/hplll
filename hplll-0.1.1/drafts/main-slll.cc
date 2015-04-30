@@ -25,7 +25,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "matgen.h"
 #include "slll.h"
 
-#include "block.h"
 
 
 
@@ -65,10 +64,12 @@ int main(int argc, char *argv[])  {
     // Make the dimension divisible by K
     // ---------------------------------
 
+   
+    int i,j;
+    
     if (d%K !=0) {
 
-      int i,j;
-
+     
       ZZ_mat<mpz_t> B; // For hpLLL 
       B.resize(n+K-d%K,d+K-d%K); 
 
@@ -102,59 +103,7 @@ int main(int argc, char *argv[])  {
       transpose(AT,A);
     }
 
-
-    //print2maple(A,n,d);
-    
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > Bin(A);
-
-    Bin.hlll(0.4);
-
-    A=Bin.getbase();
-    
-    int cond;
-
-    //print2maple(A,n,d);
- 
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(A);
-
-
-   
-    cond = L.lcond(ANY,  DEFAULT_PREC);
-
-    // cout << " cond = " << L.lcond(TRIANGULAR_PROPER) << endl; 
-    // cout << " cond = " << L.lcond(ANY, DEFAULT_PREC) << endl;
-    // cout << " cond = " << L.lcond(ANY, 10, CHECK) << endl; 
-
-    cout << " cond = " << cond << endl; 
-    cout << " prec = " << 2*cond << endl;
-    
-    L.setprec(2*cond);
-
-  
-    
-    // Truncation of the input lattice 
-    // -------------------------------
-
-    for (int j=0; j<d; j++) {
-      
-      L.hsizereduce(j);
-      L.householder_v(j);
-    }
-    
-    matrix<Z_NR<mpz_t> > RZ;
-    RZ.resize(d,d);
-
-    set_f(RZ,L.getR(),cond);
-    
-    A.resize(d,d);
-    AT.resize(d,d);
-
-    set(A,RZ);
-
-    //print2maple(A,d,d);
-    
-    mpfr_set_default_prec(cond);
-
+        
     Timer time;
 
 #ifdef _OPENMP
@@ -163,19 +112,32 @@ int main(int argc, char *argv[])  {
     Timer ptime;
 #endif 
 
-    
-
-    // //SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
-    SLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
+    // TODO with long double and dpe_t
+    SLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A,TRANSFORM,DEF_REDUCTION);
 
     ptime.start();
 
-    B.hlll(delta,K,0,lovmax);
+    // Régler la valeur de condbits 
+    B.hlll(delta, 500, K,lovmax);
 
     ptime.stop();
 
-    //print2maple(B.getU(),d,d);
-         
+    // ZZ_mat<double> Uf;
+    // Uf.resize(d,d);
+    // Uf=B.getU();
+
+    // FP_NR<double> tf;
+    
+    // ZZ_mat<mpz_t> U;
+    // U.resize(d,d);
+    // for (j=0; j<d; j++)
+    //   for (i=0; i<d; i++) {
+    // 	tf = Uf(i,j).getData();  // Pour long double ou autre, vérifier et passer par set_z ? 
+    // 	U(i,j).set_f(tf);
+    //   }
+
+    // matprod_in(A,U);
+	
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
     T1.isreduced(delta-0.1);
 
@@ -186,9 +148,10 @@ int main(int argc, char *argv[])  {
     cout << "   time plll: " << ptime << endl;
     cout << "   input bit size: " << maxbitsize(A) << endl;
     
-  
 
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,NO_TRANSFORM,DEF_REDUCTION);
+    transpose(A,AT);
+
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,TRANSFORM,DEF_REDUCTION);
 
 
     time.start();
@@ -197,23 +160,26 @@ int main(int argc, char *argv[])  {
 
     time.stop();
 
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(C.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+    T2.isreduced(delta-0.1);
+
     cout << endl; 
     cout << "   nblov hlll " << C.nblov  << endl;
     cout << "   time hlll: " << time << endl;
 
-    transpose(AT,A);
+    // transpose(AT,A);
 
-    time.start();
+    // time.start();
 
-    lllReduction(AT, delta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
+    // lllReduction(AT, delta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
 
-    transpose(A,AT);
+    // transpose(A,AT);
 
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
-    T2.isreduced(delta-0.1);
+    // Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
+    // T2.isreduced(delta-0.1);
 
-    time.stop();
-    cout << "   time fplll: " << time << endl;
+    // time.stop();
+    // cout << "   time fplll: " << time << endl;
     
 
     
