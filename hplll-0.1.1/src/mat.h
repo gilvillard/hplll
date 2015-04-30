@@ -1381,6 +1381,8 @@ void lift_truncate(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long def, long bits) {
    // Truncation 
 
    if (mmin > bits) {
+    
+     
      long s= - (mmin - bits);
 
      for (i=0; i<n; i++)
@@ -1593,7 +1595,7 @@ void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long condbits)
   
   z.set_f(minval);
 
-  cout << "size : " << size_in_bits(z) << endl;   
+  //cout << "size : " << size_in_bits(z) << endl;   
   //if (size_in_bits(z) > condbits) { 
   { 
     long s= - (size_in_bits(z) - condbits);
