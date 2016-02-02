@@ -2,7 +2,7 @@
 
 
 #include "../src/hlll.h"
-//#include "matgen.h"
+
 
 /* ***********************************************
 
@@ -18,7 +18,6 @@ int main(int argc, char *argv[])  {
   
   filebuf fb;
   iostream os(&fb);
-  fb.open ("table.txt",ios::out);
 
   ZZ_mat<mpz_t> A; // For hpLLL 
   ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
