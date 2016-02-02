@@ -26,9 +26,9 @@ int main(int argc, char *argv[])  {
 
   int k,N;
 
-  int d=120;
-  int bits=12000;
-  fb.open ("table120.txt",ios::out);
+  int d=220;
+  int bits=22000;
+  fb.open ("table220.txt",ios::out);
    
 
   N=200;
