@@ -209,9 +209,6 @@ int main(int argc, char *argv[])  {
   }
  
   
-
-
-  
   //  *****************************************************  
   cout << endl << "     " << succeed << " relations tests ok over " << nbtest << endl; 
   //  *****************************************************  

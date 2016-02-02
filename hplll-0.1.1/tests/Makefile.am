@@ -37,14 +37,14 @@ check_PROGRAMS = $(TESTS)
 
 #./relationstest ./nullspacetest 
 
-#EXTRA_PROGRAMS = gentable1 gentable2 gentable3 gentable4 gentable5 gentable6
+EXTRA_PROGRAMS = gentable1 gentable2 gentable3 gentable4 gentable5 gentable6
 
-#gentable1_SOURCES=gentable1.cc 
-#gentable2_SOURCES=gentable2.cc
-#gentable3_SOURCES=gentable3.cc
-#gentable4_SOURCES=gentable4.cc
-#gentable5_SOURCES=gentable5.cc
-#gentable6_SOURCES=gentable6.cc
+gentable1_SOURCES=gentable1.cc 
+gentable2_SOURCES=gentable2.cc
+gentable3_SOURCES=gentable3.cc
+gentable4_SOURCES=gentable4.cc
+gentable5_SOURCES=gentable5.cc
+gentable6_SOURCES=gentable6.cc
 
 #check : 
 #	./arithmetic 
