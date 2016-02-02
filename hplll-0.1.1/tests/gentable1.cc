@@ -52,25 +52,25 @@ int main(int argc, char *argv[])  {
 
   //------------
  
-  // d[k]=60;
-  // bits[k]=6000;
-  // k+=1;
+  d[k]=60;
+  bits[k]=6000;
+  k+=1;
 
-  // d[k]=80;
-  // bits[k]=8000;
-  // k+=1;
+  d[k]=80;
+  bits[k]=8000;
+  k+=1;
   
-  // d[k]=120;
-  // bits[k]=12000;
-  // k+=1;
+  d[k]=120;
+  bits[k]=12000;
+  k+=1;
 
-  // d[k]=160;
-  // bits[k]=16000;
-  // k+=1;
+  d[k]=160;
+  bits[k]=16000;
+  k+=1;
 
-  // d[k]=180;
-  // bits[k]=18000;
-  // k+=1;
+  d[k]=180;
+  bits[k]=18000;
+  k+=1;
 
   d[k]=180;
   bits[k]=d[k]*100;
@@ -155,20 +155,20 @@ int main(int argc, char *argv[])  {
 	} 
 	cout << endl; 
 
-	// cout << "--------------  FPLLL WRAPPER" << endl << endl; 
+	cout << "--------------  FPLLL WRAPPER" << endl << endl; 
     
-	// time.start();
-	// lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
-	// time.stop();
+	time.start();
+	lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
+	time.stop();
   
 
-	// os << "   fplll: " << time << endl << endl ;
-	// time.print(os);
-	// os << endl;
+	os << "   fplll: " << time << endl << endl ;
+	time.print(os);
+	os << endl;
    
-	// transpose(A,AT);
-	// Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T12(A,NO_TRANSFORM,DEF_REDUCTION); //* name
-	// T12.isreduced(delta-0.1); //* name
+	transpose(A,AT);
+	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T12(A,NO_TRANSFORM,DEF_REDUCTION); //* name
+	T12.isreduced(delta-0.1); //* name
       } 
    
     }// End on runs, k loop
