@@ -31,6 +31,7 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
  
+  int status=0;
   
   int d; 
   double delta; 
@@ -80,8 +81,11 @@ int main(int argc, char *argv[])  {
   fb.open ("416_in",ios::in);
   os >> TT ;
   fb.close();
-
+  
   difference = !matcmp(AT, TT, d+1, d);
+
+  status |= difference;
+  
   if (difference) {
     cerr << "*** Invalid matrix comparison in arithmetic test" << endl;
   }
@@ -111,6 +115,9 @@ int main(int argc, char *argv[])  {
   fb.close();
 
   difference = !matcmp(AT, TT, d+1, d);
+
+  status |= difference;
+  
   if (difference) {
     cerr << "*** Invalid matrix comparison in arithmetic test" << endl;
   }
@@ -139,6 +146,9 @@ int main(int argc, char *argv[])  {
   fb.close();
 
   difference = !matcmp(AT, TT, d+1, d);
+
+  status |= difference;
+  
   if (difference) {
     cerr << "*** Invalid matrix comparison in arithmetic test" << endl;
   }
@@ -151,5 +161,5 @@ int main(int argc, char *argv[])  {
   cout << endl << "     " << succeed << " arithmetic tests ok over " << nbtest << endl << endl; 
   //  *****************************************************  
 
-  return 0;
+  return status;
 }

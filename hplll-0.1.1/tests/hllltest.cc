@@ -32,6 +32,7 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
  
+  int status=0;
   
   int d; 
   double delta; 
@@ -97,6 +98,9 @@ int main(int argc, char *argv[])  {
   outfile.close(); */
   
   difference = !matcmp(AT, TT, d+1, d);
+
+  status |= difference;
+  
   if (difference) {
     cerr << "*** Invalid matrix comparison in hlll test" << endl;
   }
@@ -132,6 +136,9 @@ int main(int argc, char *argv[])  {
   transpose(TT,B4.getbase());
   
   difference = !matcmp(AT, TT, d+1, d);
+
+  status |= difference;
+  
   if (difference) {
     cerr << "*** Invalid matrix comparison in hlll test" << endl;
   }
@@ -167,7 +174,10 @@ int main(int argc, char *argv[])  {
   TT.resize(d,d+1);
   transpose(TT,B6.getbase());
   
-  difference = !matcmp(AT, TT, d+1, d);
+  difference = !matcmp(AT, TT, d+1, d); 
+
+  status |= difference;
+  
   if (difference) {
     cerr << "*** Invalid matrix comparison in hlll test" << endl;
   }
@@ -179,5 +189,5 @@ int main(int argc, char *argv[])  {
   //  *****************************************************  
 
 
-  return 0;
+  return status;
 }

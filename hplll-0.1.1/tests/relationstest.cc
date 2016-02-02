@@ -32,7 +32,9 @@ using namespace hplll;
 
 
 int main(int argc, char *argv[])  {
- 
+
+  int status=0;
+  
   int n;
   int r,s;
 
@@ -144,6 +146,9 @@ int main(int argc, char *argv[])  {
   
   if (nbrel==1) {
     difference = !matcmp(C, Ccheck, 1, n);
+
+    status |= difference;
+     
     if (difference) {
       cerr << "*** Invalid matrix comparison in relation test" << endl;
     }
@@ -193,6 +198,9 @@ int main(int argc, char *argv[])  {
     cerr << "*** Problem in relation test, no relation found" << endl;
   else if (nbrel==1) {
     difference = !matcmp(C, Ccheck, 1, n);
+
+    status |= difference;
+     
     if (difference) {
       cerr << "*** Invalid matrix comparison in relation test" << endl;
     }
@@ -208,5 +216,5 @@ int main(int argc, char *argv[])  {
   cout << endl << "     " << succeed << " relations tests ok over " << nbtest << endl; 
   //  *****************************************************  
 
-  return 0;
+  return status;
 }
