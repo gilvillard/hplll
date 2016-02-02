@@ -111,9 +111,13 @@ int main(int argc, char *argv[])  {
 
   int status;
 
+ 
+  
     os << endl << "FPLLL wrapper and HPLLL running times / intrel bases" << endl; 
     os <<         "----------------------------------------------------" << endl << endl;
- 
+
+    os << "On machine:  ** " << getenv("HOST") << " **  " << endl << endl;
+    
     for (int k=0; k<K; k++) { 
 
 
