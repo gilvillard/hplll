@@ -1,6 +1,6 @@
 #! /bin/sh
 
-CXXFLAGS += -O2 -Wall -L${HOME}/Soft/lib
+CXXFLAGS += -O2 -Wall -I/usr/local/include/hplll
 
 # Here with standard installation directories
 
@@ -10,8 +10,6 @@ GMP_LIBS   += -lgmp
 
 LOADLIBES +=  ${FPLLL_LIBS} ${MPFR_LIBS} ${GMP_LIBS} 
 
-INC += ${HOME}/Soft/include 
-
 
 .SUFFIXES: .o .c .cc  
 
@@ -19,7 +17,7 @@ INC += ${HOME}/Soft/include
 	g++  -o $@ -c $<   ${CXXFLAGS} ${LOADLIBES} 
  
 .cc:
-	g++  -o $@ $<   -I${INC} ${CXXFLAGS}  ${LOADLIBES} 
+	g++  -o $@ $<    ${CXXFLAGS}  ${LOADLIBES} 
 
 
  

@@ -1,5 +1,31 @@
+/* Basis quality 
 
-using namespace hplll; 
+Created Mer  3 fév 2016 15:47:55 CET
+Copyright (C) 2016      Gilles Villard
+
+This file is part of the hplll Library
+
+The hplll Library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 3 of the License, or (at your
+option) any later version.
+
+The hplll Library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the hplll Library; see the file COPYING.LESSER.  If not, see
+http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
+51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+
+
+#ifndef HPLLL_RATIO_H
+#define HPLLL_RATIO_H
+
+namespace hplll {
+
 
 // ******************************************************************************
 //
@@ -154,8 +180,13 @@ int ratio(ZZ_mat<mpz_t> B, double& lfcond,  double& av_ratio,  double& max_ratio
   // Or keep t?
   c = pow(2.0,t.get_d());
   
-  cout << "********   " << t << endl; 
   return 0;
   
 }
+
+} // end namespace hplll
+
+
+#endif
+
 

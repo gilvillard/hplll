@@ -1,8 +1,8 @@
 
 
 
-#include "../src/hlll.h"
-
+#include "hplll/hlll.h"
+#include "hplll/ratio.h"
 
 /* ***********************************************
 
@@ -12,7 +12,6 @@
 
 using namespace hplll;
 
-#include "ratio.h"
 
 int main(int argc, char *argv[])  {
   
