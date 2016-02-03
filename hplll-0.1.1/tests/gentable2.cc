@@ -103,7 +103,7 @@ int main(int argc, char *argv[])  {
 
   K=k;
 
-  double delta=0.99;
+  double delta=0.999;
 
   int run=0;
   
