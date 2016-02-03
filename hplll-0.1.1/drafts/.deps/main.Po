@@ -100,27 +100,22 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
  /usr/local/include/c++/5.3.0/bits/ostream.tcc \
  /usr/local/include/c++/5.3.0/bits/istream.tcc \
  /usr/local/include/c++/5.3.0/bits/sstream.tcc \
- /usr/local/include/c++/5.3.0/iostream \
- /Users/gvillard/Soft/with-gcc-5/include/gmp.h \
+ /usr/local/include/c++/5.3.0/iostream /usr/local/include/gmp.h \
  /usr/local/include/c++/5.3.0/cstdio \
  /usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include/stddef.h \
+ /usr/local/include/mpfr.h /usr/local/include/fplll.h \
+ /usr/local/include/fplll/fplll.h /usr/local/include/fplll/util.h \
+ /usr/local/include/fplll/matrix.h /usr/local/include/fplll/numvect.h \
+ /usr/local/include/fplll/nr.h /usr/local/include/fplll/defs.h \
+ /usr/local/include/c++/5.3.0/cstring /usr/include/string.h \
+ /usr/include/sys/_types/_rsize_t.h /usr/include/sys/_types/_errno_t.h \
+ /usr/include/strings.h /usr/local/include/c++/5.3.0/climits \
  /usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include-fixed/limits.h \
  /usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/machine/limits.h \
  /usr/include/i386/limits.h /usr/include/i386/_limits.h \
- /usr/include/sys/syslimits.h \
- /Users/gvillard/Soft/with-gcc-5/include/mpfr.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/fplll.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/util.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/matrix.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/numvect.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/nr.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/defs.h \
- /usr/local/include/c++/5.3.0/cstring /usr/include/string.h \
- /usr/include/sys/_types/_rsize_t.h /usr/include/sys/_types/_errno_t.h \
- /usr/include/strings.h /usr/local/include/c++/5.3.0/climits \
- /usr/local/include/c++/5.3.0/ctime /usr/local/include/c++/5.3.0/limits \
+ /usr/include/sys/syslimits.h /usr/local/include/c++/5.3.0/ctime \
+ /usr/local/include/c++/5.3.0/limits \
  /usr/local/include/c++/5.3.0/algorithm \
  /usr/local/include/c++/5.3.0/utility \
  /usr/local/include/c++/5.3.0/bits/stl_relops.h \
@@ -167,44 +162,32 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
  /usr/include/sys/_types/_seek_set.h /usr/include/sys/_types/_gid_t.h \
  /usr/include/sys/_types/_useconds_t.h /usr/include/sys/select.h \
  /usr/include/sys/_types/_uuid_t.h /usr/include/gethostuuid.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/fplll_config.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/dpe.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/nr_rand.inl \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/nr_Z.inl \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/nr_Z_l.inl \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/nr_Z_d.inl \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/nr_Z_mpz.inl \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/nr_FP.inl \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/nr_FP_d.inl \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/nr_FP_ld.inl \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/nr_FP_dpe.inl \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/nr_FP_dd.inl \
- /usr/local/include/qd/dd_real.h /usr/local/include/qd/qd_config.h \
- /usr/local/include/qd/fpu.h /usr/local/include/qd/dd_inline.h \
- /usr/local/include/qd/inline.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/nr_FP_qd.inl \
- /usr/local/include/qd/qd_real.h /usr/local/include/qd/qd_inline.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/nr_FP_mpfr.inl \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/nr_Z_misc.inl \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/nr_FP_misc.inl \
+ /usr/local/include/fplll/fplll_config.h /usr/local/include/fplll/dpe.h \
+ /usr/local/include/fplll/nr_rand.inl /usr/local/include/fplll/nr_Z.inl \
+ /usr/local/include/fplll/nr_Z_l.inl /usr/local/include/fplll/nr_Z_d.inl \
+ /usr/local/include/fplll/nr_Z_mpz.inl /usr/local/include/fplll/nr_FP.inl \
+ /usr/local/include/fplll/nr_FP_d.inl \
+ /usr/local/include/fplll/nr_FP_ld.inl \
+ /usr/local/include/fplll/nr_FP_dpe.inl \
+ /usr/local/include/fplll/nr_FP_dd.inl /usr/local/include/qd/dd_real.h \
+ /usr/local/include/qd/qd_config.h /usr/local/include/qd/fpu.h \
+ /usr/local/include/qd/dd_inline.h /usr/local/include/qd/inline.h \
+ /usr/local/include/fplll/nr_FP_qd.inl /usr/local/include/qd/qd_real.h \
+ /usr/local/include/qd/qd_inline.h \
+ /usr/local/include/fplll/nr_FP_mpfr.inl \
+ /usr/local/include/fplll/nr_Z_misc.inl \
+ /usr/local/include/fplll/nr_FP_misc.inl \
  /usr/local/include/c++/5.3.0/vector \
  /usr/local/include/c++/5.3.0/bits/stl_uninitialized.h \
  /usr/local/include/c++/5.3.0/bits/stl_vector.h \
  /usr/local/include/c++/5.3.0/bits/stl_bvector.h \
  /usr/local/include/c++/5.3.0/bits/vector.tcc \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/matrix.cpp \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/svpcvp.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/bkz.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/lll.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/gso.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/evaluator.h \
- /Users/gvillard/Soft/with-gcc-5/include/fplll/fplllv31.h \
- ../src/givtimer.C ../src/givtimer.h \
- /usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include/omp.h \
+ /usr/local/include/fplll/matrix.cpp /usr/local/include/fplll/svpcvp.h \
+ /usr/local/include/fplll/bkz.h /usr/local/include/fplll/lll.h \
+ /usr/local/include/fplll/gso.h /usr/local/include/fplll/evaluator.h \
+ /usr/local/include/fplll/fplllv31.h ../src/givtimer.C ../src/givtimer.h \
  ../src/ldpe.h ../src/nr-ld.cpp ../src/mat.h ../src/mixed-col.h \
- ../src/matpe.h ../src/matmixed.h ../src/hlll.cc ../src/matgen.h \
- ../src/tools.h ../src/matgen.cc ../src/matgen.h ../src/slll.h \
- ../src/hlll.h ../src/slll.cc
+ ../src/matpe.h ../src/matmixed.h ../src/hlll.cc ../src/ratio.h
 
 ../src/hlll.h:
 
@@ -460,11 +443,39 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 
 /usr/local/include/c++/5.3.0/iostream:
 
-/Users/gvillard/Soft/with-gcc-5/include/gmp.h:
+/usr/local/include/gmp.h:
 
 /usr/local/include/c++/5.3.0/cstdio:
 
 /usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include/stddef.h:
+
+/usr/local/include/mpfr.h:
+
+/usr/local/include/fplll.h:
+
+/usr/local/include/fplll/fplll.h:
+
+/usr/local/include/fplll/util.h:
+
+/usr/local/include/fplll/matrix.h:
+
+/usr/local/include/fplll/numvect.h:
+
+/usr/local/include/fplll/nr.h:
+
+/usr/local/include/fplll/defs.h:
+
+/usr/local/include/c++/5.3.0/cstring:
+
+/usr/include/string.h:
+
+/usr/include/sys/_types/_rsize_t.h:
+
+/usr/include/sys/_types/_errno_t.h:
+
+/usr/include/strings.h:
+
+/usr/local/include/c++/5.3.0/climits:
 
 /usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include-fixed/limits.h:
 
@@ -479,34 +490,6 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 /usr/include/i386/_limits.h:
 
 /usr/include/sys/syslimits.h:
-
-/Users/gvillard/Soft/with-gcc-5/include/mpfr.h:
-
-/Users/gvillard/Soft/with-gcc-5/include/fplll.h:
-
-/Users/gvillard/Soft/with-gcc-5/include/fplll/fplll.h:
-
-/Users/gvillard/Soft/with-gcc-5/include/fplll/util.h:
-
-/Users/gvillard/Soft/with-gcc-5/include/fplll/matrix.h:
-
-/Users/gvillard/Soft/with-gcc-5/include/fplll/numvect.h:
-
-/Users/gvillard/Soft/with-gcc-5/include/fplll/nr.h:
-
-/Users/gvillard/Soft/with-gcc-5/include/fplll/defs.h:
-
-/usr/local/include/c++/5.3.0/cstring:
-
-/usr/include/string.h:
-
-/usr/include/sys/_types/_rsize_t.h:
-
-/usr/include/sys/_types/_errno_t.h:
-
-/usr/include/strings.h:
-
-/usr/local/include/c++/5.3.0/climits:
 
 /usr/local/include/c++/5.3.0/ctime:
 
@@ -660,29 +643,29 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 
 /usr/include/gethostuuid.h:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/fplll_config.h:
+/usr/local/include/fplll/fplll_config.h:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/dpe.h:
+/usr/local/include/fplll/dpe.h:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/nr_rand.inl:
+/usr/local/include/fplll/nr_rand.inl:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/nr_Z.inl:
+/usr/local/include/fplll/nr_Z.inl:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/nr_Z_l.inl:
+/usr/local/include/fplll/nr_Z_l.inl:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/nr_Z_d.inl:
+/usr/local/include/fplll/nr_Z_d.inl:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/nr_Z_mpz.inl:
+/usr/local/include/fplll/nr_Z_mpz.inl:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/nr_FP.inl:
+/usr/local/include/fplll/nr_FP.inl:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/nr_FP_d.inl:
+/usr/local/include/fplll/nr_FP_d.inl:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/nr_FP_ld.inl:
+/usr/local/include/fplll/nr_FP_ld.inl:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/nr_FP_dpe.inl:
+/usr/local/include/fplll/nr_FP_dpe.inl:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/nr_FP_dd.inl:
+/usr/local/include/fplll/nr_FP_dd.inl:
 
 /usr/local/include/qd/dd_real.h:
 
@@ -694,17 +677,17 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 
 /usr/local/include/qd/inline.h:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/nr_FP_qd.inl:
+/usr/local/include/fplll/nr_FP_qd.inl:
 
 /usr/local/include/qd/qd_real.h:
 
 /usr/local/include/qd/qd_inline.h:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/nr_FP_mpfr.inl:
+/usr/local/include/fplll/nr_FP_mpfr.inl:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/nr_Z_misc.inl:
+/usr/local/include/fplll/nr_Z_misc.inl:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/nr_FP_misc.inl:
+/usr/local/include/fplll/nr_FP_misc.inl:
 
 /usr/local/include/c++/5.3.0/vector:
 
@@ -716,25 +699,23 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 
 /usr/local/include/c++/5.3.0/bits/vector.tcc:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/matrix.cpp:
+/usr/local/include/fplll/matrix.cpp:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/svpcvp.h:
+/usr/local/include/fplll/svpcvp.h:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/bkz.h:
+/usr/local/include/fplll/bkz.h:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/lll.h:
+/usr/local/include/fplll/lll.h:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/gso.h:
+/usr/local/include/fplll/gso.h:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/evaluator.h:
+/usr/local/include/fplll/evaluator.h:
 
-/Users/gvillard/Soft/with-gcc-5/include/fplll/fplllv31.h:
+/usr/local/include/fplll/fplllv31.h:
 
 ../src/givtimer.C:
 
 ../src/givtimer.h:
-
-/usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include/omp.h:
 
 ../src/ldpe.h:
 
@@ -750,16 +731,4 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 
 ../src/hlll.cc:
 
-../src/matgen.h:
-
-../src/tools.h:
-
-../src/matgen.cc:
-
-../src/matgen.h:
-
-../src/slll.h:
-
-../src/hlll.h:
-
-../src/slll.cc:
+../src/ratio.h:

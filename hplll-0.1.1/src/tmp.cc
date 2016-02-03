@@ -29,11 +29,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 namespace hplll { 
 
-template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
-Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta) { 
 
+template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) { 
+
+  
   int kappa=1,i;
-  int prevkappa=-1; // For the looping test betwenn tow indices 
+  int prevkappa=-1; // For the looping test between tow indices 
   vector<FP_NR<FT> >  prevR(d);
 
 
@@ -46,27 +48,16 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta) {
 
   FP_NR<FT> s,sn; // newt test 
 
-  unsigned int start=0;
-
   int flag_reduce=0; // No convergence in reduce 
 
 
   for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
 
-  // ICI 
-  int flagd;
-  
-  flagd=0;
-
-  while (kappa < d) 
+ 
+  while ((kappa < d) && (nblov < nblov_max)) 
     {
       
-      //ICI 
-      if (descendu[kappa]>=1) flagd=1; else flagd=0;
-
       if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
-      
-      nmaxkappa=structure[kappa]+1;    // Recomputing the structure, when ?  
       
       if (kappa == 1) { 
 	for (i=0; i<d; i++) kappamin[i]=min(kappamin[i],0);
@@ -77,30 +68,16 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta) {
       else for (i=kappa+1; i<d; i++) kappamin[i]=min(kappamin[i],kappa); // lowest visit after kappa 
 
       
-      if (chrono)  start=utime();
-      
-     
-      // ICI modif descendu 
-      if (descendu[kappa]>=1) {
 	
-	//householder_r(kappa);
-	flag_reduce=hsizereduce(kappa);  
+      if (seysen_flag < 2)
+	flag_reduce=hsizereduce(kappa);   
+      else 
+	flag_reduce=seysenreduce(kappa); 
 
-      }
-      else { 
-	
-	if (seysen_flag == 0)
-	  flag_reduce=hsizereduce(kappa);   
-	else 
-	  flag_reduce=seysenreduce(kappa); 
-	
-      }
       
-      if (chrono) tps_reduce+=utime()-start;
-      
+            
       if (flag_reduce==-1) return(-1);
       
-      if (chrono) start=utime();
 
       //newt=normB2[kappa];  // The newt test was like that in old non exp 
       //for (i=0; i<=kappa-2; i++) newt.submul(R.get(i,kappa),R.get(i,kappa));
@@ -108,16 +85,14 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta) {
       lovtest.mul(R.get(kappa-1,kappa-1),R.get(kappa-1,kappa-1));
       lovtest.mul(deltab,lovtest);
 
-
-
-      if (chrono) tps_prepare+=utime()-start;
-
-      if (chrono) start=utime();
-   
       nblov+=1;
     
-      fp_norm(s,R.getcol(kappa,kappa),nmaxkappa-kappa);
+      fp_norm(s,R.getcol(kappa,kappa),structure[kappa]+1-kappa);
+      
       s.mul(s,s);
+
+      
+      
       sn.mul(R.get(kappa-1,kappa),R.get(kappa-1,kappa));
       newt.add(s,sn);
  
@@ -128,13 +103,16 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta) {
     
       if (lovtest <= newt) {
 
-       
-
-	householder_v(kappa);   // The first part of the orthogonalization is available 
-	if (chrono) tps_householder+=utime()-start;
+	/*if (verbose) {
+	  if (((kappa) < d) && (col_kept[kappa+1] == 0)) cout << "Discovering vector " 
+							      << kappa +1 << "/" << d 
+							      << " cputime=" << utimesec() -starttot << "sec" << endl; 
+							      }*/
 
 	
+	householder_v(kappa);   // The first part of the orthogonalization is available 
 
+	
 	// Heuristique precision check : when R(kappa-1,kappa-1) increases in a 2x2 up and down  
 	// ------------------------------------------------------------------------------------
 	if (prevkappa==kappa+1) {  
@@ -150,6 +128,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta) {
 
 	}
 
+	
+
 	descendu[kappa]=0;
 	if (kappa==1) descendu[0]=0;
 	
@@ -157,6 +137,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta) {
 	prevR[kappa].abs(R.get(kappa,kappa)); 
 	
 	kappa+=1; 
+
+
+
       } // End up 
 
       // ****************
@@ -174,6 +157,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta) {
 	B.colswap(kappa-1,kappa);
 	
 	if (transf) U.colswap(kappa-1,kappa);
+	
 	Bfp.colswap(kappa-1,kappa);
 
 	structure[kappa-1]=structure[kappa];
@@ -187,31 +171,28 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta) {
 
       }
 
-    if (chrono) tps_swap+=utime()-start;    
-   
-
     } // End main LLL loop 
   
+
   return 0;
   
 };
 
 
-/* -------------------------------------------------
+/* -------------------------------------------------------------------------
    Seysen size reduction 
-   ------------------------------------------------- */
 
-// Returns -1 if no convergence in the while loop:  no decrease of the norm 
+   Assumes that Householder is available until index kappa-1
 
-// Householder fait jusqua kappa-1
+   Returns -1 if no convergence in the while loop:  no decrease of the norm
 
-// Le but serait de pouvoir intervertir directement sans rien 
-// changer d'autre que hsizereduce par seysen 
+   ------------------------------------------------------------------------- */
 
-// nmaxkappa must be initialized 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) { 
+
+  nmaxkappa=structure[kappa]+1;
 
   FP_NR<FT> approx;
   
@@ -220,6 +201,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
   FP_NR<FT> x,t,tmpfp;
   Z_NR<ZT>  xz,tmpz;
+
+  long expo,lx;
 
   vector<FP_NR<FT> > vectx(kappa);  
   
@@ -230,25 +213,17 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
   bool nonstop=1;
   bool somedone=0;
 
-  unsigned int start=0;
- 
-  int restdim=0; // Dimension qui reste dans aprÃ¨s le bloc courant
+  int restdim=0; // Remaining dimension after the current block 
 
   int nmax; // De la structure triangulaire 
 
-  //int whilemax=10000;  // pb de convergence si pas assez de prÃ©cision : ex ne baisse pas assez vite 
-  //int nbwhile=0;
 
-  // To see / cf pb précision au début de Seysen 
-  col_kept[kappa]=0;
+  //int whilemax=10000;  // Convergence problem if too low precision  
 
-  if (chrono)  start=utime();
+  // To see / prec problem 
+  //col_kept[kappa]=0;
+
   householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
-
-  if (chrono) tps_householder+=utime()-start;
-
-  // DBG à voir / cf pb prÃ©cision au début de Seysen 
-  col_kept[kappa]=0;
 
   int bdim,ld,tdig,indexdec;
 
@@ -259,8 +234,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
     w++;
 
     somedone = 0;
-
-    if (chrono) start=utime();
     
     // ----------  NOUVELLE BOUCLE, SUR LES BLOCS 
     // Kappa est la dimension de ce qu'il y a avant 
@@ -308,69 +281,87 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 	if (x.sgn() !=0) { 
 
-	  set_f(xz,x);
-	
+	  lx = x.get_si_exp(expo);
+
 	  nmax=structure[i]+1;
-
-	  if (xz == -1){
-	    somedone=1;
 	  
-	    R.addcol(kappa,i,restdim);
-	  
-	    B.addcol(kappa,i,nmax);
-	    if (transf) U.addcol(kappa,i,min(d,nmax));
-	  
-	  }
-	  /* -----------------*/
-	  else if (xz == 1){
-	    somedone=1;
+	  // Cf fplll 
+	  // Long case 
+	  if (expo == 0) {
+	    
+	    if (lx == 1) {
+	      
+	      somedone = 1;
+	      
+	      R.subcol(kappa,i,restdim);
+	      
+	      B.subcol(kappa,i,nmax);
+	      
+	      if (transf) 
+		U.subcol(kappa,i,min(d,nmax));
+	      
+	    } 
+	    else if (lx == -1) {
 
-	    R.subcol(kappa,i,restdim);
+	      somedone = 1;
+ 
+	      R.addcol(kappa,i,restdim);
+	      
+	      B.addcol(kappa,i,nmax);
+	      
+	      if (transf) 
+		U.addcol(kappa,i,min(d,nmax));
 
-	    B.subcol(kappa,i,nmax);
-	    if (transf) U.subcol(kappa,i,min(d,nmax));
+	    } 
+	    else { 
+ 
+	      somedone = 1;
+	      
+	      R.submulcol(kappa,i,x,restdim);
+	      
+	      B.addmulcol_si(kappa,i,-lx,nmax);
+	      
+	      if (transf) 
+		U.addmulcol_si(kappa,i,-lx,min(d,nmax));
 
-	  }
-	  /* --------------------*/
-	  else {   
-	    somedone=1;
+	    } 
+	    
+	  } // end expo == 0 
+	  else {  // expo <> 0 
 
+	    somedone = 1;
+
+	    set_f(xz,x);
+	    
 	    R.submulcol(kappa,i,x,restdim);
-
-	    if (chrono) start=utime();
-
 	     
-	    B.submulcol(kappa,i,xz,nmax);   // À optimiser avec _ui comme dans exp 
+	    B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
 
 	    if (transf)  
-	      U.submulcol(kappa,i,xz,min(d,nmax));
+	      U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
 
-	    if (chrono) tps_redB+=utime()-start;	 
-	  }
-	  /* ----------------*/
+	  } // end expo <> 0 
 	} // Non zero combination 
-
 
       } // end application de la transformation 
 
       indexdec+=bdim;     
       ld=ld*2;
+
     } // End loop on log blocks 
 
-    if (chrono)  tps_redB+=utime()-start;
 
     if (somedone) {
-
+     
       col_kept[kappa]=0;
 
       t.mul(approx,normB2[kappa]);
 
-      if (chrono) start=utime();
-      householder_r(kappa);  // Mise Ã  jour implicite de normB2 
-      if (chrono) tps_householder+=utime()-start;
+      householder_r(kappa);  
 
       nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ? 
 
+      
     }
     else {
       nonstop=0;
@@ -392,16 +383,17 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
    Returns -1 if no convergence in the while loop:  no decrease of the norm
 
-   nmaxkappa must be initialized 
    ------------------------------------------------------------------------- */
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
-Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) { 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) { 
+
+  nmaxkappa=structure[kappa]+1;
 
   FP_NR<FT> approx;
   
-  approx=0.01;
+  approx=0.1;
 
 
   FP_NR<FT> t,tmpfp;
@@ -412,46 +404,52 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
   int i,w=0;
 
   bool nonstop=1;
+  bool prev_nonstop = 1;
+  
   bool somedone=0;
 
-  unsigned int start=0;
-
   int nmax; // De la structure triangulaire 
-
-  if (chrono) start=utime();
   
-  householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
+  householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous
 
-  if (chrono) tps_householder+=utime()-start;
-
-
+  
+      
   // While loop for the norm decrease
   // --------------------------------
   
 
-  while (nonstop) {
+  int startposition;
+  if (fromk > 0) 
+    startposition = min(kappa-1,fromk);
+  else 
+    startposition = kappa-1;
 
+
+  somedone = 1;
+  
+  //while (nonstop) {
+  while (somedone == 1) { 
     w++;
 
     somedone = 0;
 
-    if (chrono) start=utime();
 
     // Loop through the column 
     // -----------------------
 
-    for (i=kappa-1; i>-1; i--){  
+   
+    for (i=startposition; i>-1; i--){  
 
-      x.div(R.get(i,kappa),R.get(i,i)); 
+      x.div(R.get(i,kappa),R.get(i,i));
       x.rnd(x);
-
-
+ 
+ 
       if (x.sgn() !=0) {   // Non zero combination 
                            // --------------------
 	lx = x.get_si_exp(expo);
-
+	
 	nmax=structure[i]+1;
-
+	
 	// Cf fplll 
 	// Long case 
 	if (expo == 0) {
@@ -460,10 +458,11 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 
 	    somedone = 1;
 
-	    R.subcol(kappa,i,i);
+	    
+	    R.subcol(kappa,i,i+1);
 	    
 	    B.subcol(kappa,i,nmax);
-		
+	    	    
 	    if (transf) 
 	      U.subcol(kappa,i,min(d,nmax));
 	
@@ -472,7 +471,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 
 	    somedone = 1;
  
-	    R.addcol(kappa,i,i);
+	    R.addcol(kappa,i,i+1);
 	    
 	    B.addcol(kappa,i,nmax);
 		
@@ -484,76 +483,125 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
  
 	    somedone = 1;
 
-	    R.submulcol(kappa,i,x,i);
-	   
-	    B.addmulcol_si(kappa,i,-lx,nmax);
+	    if (fast_long_flag == 1) {
+	    
+	      R.submulcol(kappa,i,x,i+1);
+	      B.addmulcol_si(kappa,i,-lx,nmax);
+	      if (transf)  
+		U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+	      
 
-
-	    if (transf) 
-	      U.addmulcol_si(kappa,i,-lx,min(d,nmax));
-	  } 
+	    } // end fast_long
+	    else {
+	      
+	      set_f(xz,x);  
+	      
+	      R.submulcol(kappa,i,x,i+1);	
+	      B.submulcol(kappa,i,xz,nmax);
+	      if (transf)  
+	     	U.submulcol(kappa,i,xz,min(d,nmax));
+	    }	      	    
+	  } // end else expo ==0 and not 1 or -1
   
 	} // end expo == 0 
 	else {  // expo <> 0 
 
 	  somedone = 1;
 
-	  set_f(xz,x);
+	  if (fast_long_flag == 1) {
+	    
+	    R.submulcol(kappa,i,x,i+1);
+	    B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+	    if (transf)  
+	      U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    
+	    } // end fast_long
+	  else {
+	   
+	    set_f(xz,x);  
 	  
-	  R.submulcol(kappa,i,x,i);
-      
-
-	  //B.submulcol(kappa,i,xz,nmax);    
-	  B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
-	 
-	  if (transf)  
-	    //U.submulcol(kappa,i,xz,min(d,nmax));
-	    U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
-
+	    R.submulcol(kappa,i,x,i+1);	
+	    B.submulcol(kappa,i,xz,nmax);
+	    if (transf)  
+	      U.submulcol(kappa,i,xz,min(d,nmax));
+	  
+	  } // end no long
+	  
 	} // end expo <> 0 
 
       } // Non zero combination 
 
     } // Loop through the column
     
-    if (chrono)  tps_redB+=utime()-start;
-
-  
+    
 
     if (somedone) {
-
+ 
       col_kept[kappa]=0;
-
+      
       t.mul(approx,normB2[kappa]);
-
-      if (chrono) start=utime();
       
       householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
+
+      nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ?
+
+      // Heuristic test
+      // The norm is not increasing for several steps
+      // This may happen exceptionnaly in correct cases with mu_ij = 1/2 exactly
+      //  (and alternates between to values 1/2 and -1/2 in floating point 
+      // Or happen when not enough precision
+      // Hence here: test of size reduction, if yes then exit if no then return -1 
+      if ((prev_nonstop ==0) && (nonstop == 0)) {
+      	
+      	  FP_NR<FT> one;
+      	  one = 1.0;
+	  
+      	  FP_NR<FT> theta;
+      	  theta = 0.0000001;
+      	  theta.mul(theta,R.get(kappa,kappa));
+	  
+      	  FP_NR<FT> mu,mu_test;
+
+      	  for (i=0; i<kappa; i++) {
+	    
+      	    mu.div(R.get(i,kappa),R.get(i,i));
+      	    mu.abs(mu);
+
+      	    mu_test.div(theta,R.get(i,i));
+      	    mu_test.add(mu_test,one);
+
+      	    if (mu.cmp(mu_test) == 1) {
+	      
+      	      cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, kappa = " << kappa  << endl;
+      	      return -1;
+      	    }
+	    
+      	  }
+      	  somedone = 0;  // Here, should be size reduced, hence ok for continuing 
+	  
+      } // End test prec 
+	    
+      prev_nonstop = nonstop;
       
-      if (chrono) tps_householder+=utime()-start;
+    }
+      
+    else 
+      nonstop=0;
 
-      nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ? 
-      //if (w > 1) cout << "----------" << endl; 
+    
+    // Heuristic test for not enough precision with respect to delta
+    // Should be done much more efficiently
+    
+    // if ((nonstop==0) && (somedone ==1))  {
+    
+     
+     
+    // } // end test 
 
-      //if ((somedone) && (nonstop==0)) compteur+=1; // somedone mais ne baisse plus 
-      // la partie _r dont on a besoin pour _v a changée ? 2ème _r nécessaire 
-      // non 
-      // mettre à colkept = 0 (les VR ne sont plus disponibles) 
-      // heuristique pour ne pas tout refaire householder_r avec rafraichissement 
-      // puis pas réduction complète et nb op ok quand descente 
+    
+  } // end while 
 
   
-      //if ((somedone) && (nonstop==1)) tmpcompt+=1;
-        
-    }
-    else {
-      nonstop=0;
-      
-    }
-  } // end while 
-   
- 
-
   return somedone;
 
 }
@@ -562,32 +610,34 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 /* ------------- */
 /* Householder R */
 /* ------------- */
-// nmaxkappa must be initialized 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
 {
+
+  nmaxkappa=structure[kappa]+1;
+
   int i,k,length; 
 
   // kappa == 0
   // ----------
   if (kappa==0) {
 
-     if (col_kept[kappa])    
+    if (col_kept[kappa]) {
      
-       R.setcol(kappa,Bfp.getcol(kappa),nmaxkappa);
-
+      R.setcol(kappa,Bfp.getcol(kappa),nmaxkappa);
+    
+    }
      else {
-        
+      
        col_kept[kappa]=1; 
 
        Bfp.setcol(kappa,B.getcol(kappa),0,nmaxkappa);
-
        R.setcol(kappa,Bfp.getcol(kappa),nmaxkappa);
-
        fp_norm_sq(normB2[kappa], R.getcol(kappa), nmaxkappa);
-     }
 
+     }
+ 
     kappamin[kappa]=kappa;
 
   }
@@ -623,24 +673,25 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
 	  scalarprod(VR(k,kappa), V.getcol(k,k), Bfp.getcol(kappa,k), length);
 	  Rkept.fmasub(0,k,Bfp.getcol(kappa,k), V.getcol(k,k), VR(k,kappa), length); // k=0
 	  
-	  for (k=1; k<kappa; k++) {
+	  for (k=1; (k<kappa) && (k<nmaxkappa) ; k++) {
 	    length--;
 	    scalarprod(VR(k,kappa), V.getcol(k,k), Rkept.getcol(k-1,k), length);
 	    Rkept.fmasub(k,k, Rkept.getcol(k-1,k), V.getcol(k,k), VR(k,kappa), length);  //  k-1 to k 
 	  }
 	}
 	else {
-	  
+
 	  k=0;
 	  
 	  Rkept.fmasub(k,k, Bfp.getcol(kappa,k), V.getcol(k,k), VR(k,kappa), length);  // k=0
 	  
-	  for (k=1; k<kappamin[kappa]; k++)  {
+	  // (k < nmax kappa) added Mer 28 mai 2014 11:15:45 CEST for the rectangular case 
+	  for (k=1; (k<kappamin[kappa]) && (k < nmaxkappa); k++)  { 
 	    length--;
 	    Rkept.fmasub(k,k, Rkept.getcol(k-1,k), V.getcol(k,k), VR(k,kappa), length);  // k-1 to k
-	  }
+	  } 
 	  
-	  for (k=kappamin[kappa]; k<kappa; k++) {
+	  for (k=kappamin[kappa]; (k<kappa)  && (k < nmaxkappa); k++) {
 	    length--;
 	    scalarprod(VR(k,kappa), V.getcol(k,k), Rkept.getcol(k-1,k), length);
 	    Rkept.fmasub(k,k, Rkept.getcol(k-1,k), V.getcol(k,k), VR(k,kappa), length);  // k-1 to k 
@@ -655,27 +706,30 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
     // -----------------------------------------------------------
     else { 
 
+      
       col_kept[kappa]=1;  
       
       Bfp.setcol(kappa,B.getcol(kappa),0,nmaxkappa);
-
+       
+       
       fp_norm_sq(normB2[kappa], Bfp.getcol(kappa), nmaxkappa);
-
+      
       // k =0 
       k=0;
       scalarprod(VR(k,kappa), V.getcol(k,k), Bfp.getcol(kappa,k), length);
       
       Rkept.fmasub(0,k, Bfp.getcol(kappa,k), V.getcol(k,k), VR(k,kappa), length); 
-      
-      for (k=1; k<kappa; k++) {
+ 
+      // (k < nmax kappa) added Mer 28 mai 2014 11:15:45 CEST for the rectangular case
+      for (k=1; (k<kappa) && (k < nmaxkappa); k++) {
 	
 	length--;
-	scalarprod(VR(k,kappa), V.getcol(k,k), Rkept.getcol(k-1,k), length);
 	
+	scalarprod(VR(k,kappa), V.getcol(k,k), Rkept.getcol(k-1,k), length);
+		
 	Rkept.fmasub(k,k, Rkept.getcol(k-1,k), V.getcol(k,k), VR(k,kappa), length);  // de k-1 à k 
       }
       
-
       length = nmaxkappa; 
 
     } // endelse recomputation 
@@ -684,31 +738,49 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
      
     // Dummy in the standard case, made special for the MatrixPE case 
    
-    for (i=0; i<kappa; i++) toR[i]=Rkept.get_non_normalized(i,i);
+    //for (i=0; i<kappa; i++) toR[i]=Rkept.get_non_normalized(i,i);
+    // GV Mer 21 mai 2014 17:11:32 CEST for the rectangular case
+
+    // Should be done more efficiently
     
-    for (i=kappa; i<nmaxkappa; i++) toR[i]=Rkept.get_non_normalized(i,kappa-1);
+    if (kappa < nmaxkappa) {
+      
+      for (i=0; i<kappa; i++) toR[i]=Rkept.get_non_normalized(i,i);
+      for (i=kappa; i<nmaxkappa; i++) toR[i]=Rkept.get_non_normalized(i,kappa-1);
+      
+      R.setcol(kappa,&toR[0],nmaxkappa);
+      
+    }
+    else {
+      
+      for (i=0; i< nmaxkappa; i++) toR[i]=Rkept.get_non_normalized(i,i);
     
-    R.setcol(kappa,&toR[0],nmaxkappa);
-    
+      R.setcol(kappa,&toR[0],nmaxkappa);
+
+      }
     
     kappamin[kappa]=kappa;
 
   } // else kappa !=0 
 
+  
  return 0;
 }
 
 /* ------------- */
 /* Householder V */
 /* ------------- */
-// nmaxkappa must be initialized 
+// nmaxkappa must be initialized e.g. through householder_r 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_v(int kappa) 
 {
-  int i;
-  FP_NR<FT> s,norm,w,tmpdpe; 
 
+ int i;
+  FP_NR<FT> s,norm,w,tmpdpe; 
+  s=0;
+  tmpdpe=0;
+ 
   //R.normalize(kappa,nmaxkappa);  // voir si nécessaire ? Rajouter en dummy si besoin aussi mpfr 
 
   w=R.get(kappa,kappa);
@@ -718,12 +790,14 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_v(int kappa)
 
     fp_norm(s,R.getcol(kappa,kappa),nmaxkappa-kappa); 
     tmpdpe.neg(s);
-    R.set(kappa,kappa,tmpdpe);  // On ne met pas à zéro, inutile, sauf pour getR 
+    R.set(kappa,kappa,tmpdpe);  // On ne met pas à zéro, inutile, sauf pour getR
+    
   }
   else {
 
     fp_norm(tmpdpe,R.getcol(kappa,kappa),nmaxkappa-kappa); // de la colonne 
     R.set(kappa,kappa,tmpdpe);
+    
     s.neg(tmpdpe); 
   }
 
@@ -733,15 +807,26 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_v(int kappa)
   s.sqrt(s);
 
   V.div(kappa,kappa+1, R.getcol(kappa,kappa+1), s, nmaxkappa-kappa-1);
-
+ 
   // vraiment utile il n'y a pas deja des 0?   --> sans doute pas 12/04/11  
   for (i=nmaxkappa; i< n; i++) V.set(i,kappa,0.0);  // V à zéro car ré-utilisé plus loin ensuite (pas R); 
-  tmpdpe.div(w,s);
-  V.set(kappa,kappa,tmpdpe); 
 
+
+  tmpdpe.div(w,s);
+    
+  V.set(kappa,kappa,tmpdpe); 
+  
   return 0; 
 }
 
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline unsigned int 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::set_nblov_max(unsigned int nb) {
+
+  nblov_max = nb;
+  return nblov_max;
+
+} 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline unsigned int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::setprec(unsigned int prec) {
@@ -794,10 +879,11 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::getprec() {
 
 template<class ZT,class FT,class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> Lattice<ZT,FT, MatrixZT, MatrixFT>::getbase()
 {
-  ZZ_mat<ZT> BB(n,d);
-  for (int i=0; i<n; i++) 
-    for (int j=0; j<d; j++) BB.Set(i,j,B(i,j)); // reprendre boucle sur les colonnes 
+   ZZ_mat<ZT> BB(n,d);
+   for (int i=0; i<n; i++) 
+     for (int j=0; j<d; j++) BB.Set(i,j,B(i,j)); // reprendre boucle sur les colonnes 
 
+  
   return BB;
 }
 
@@ -824,13 +910,13 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> La
   }
 }
 
-
+  
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline  matrix<FP_NR<FT> > Lattice<ZT,FT, MatrixZT, MatrixFT>::getR()
 {
   matrix<FP_NR<FT> >  RR(d,d);
   FP_NR<FT> tmp;
 
-  for (int i=0; i<d; i++) 
+  for (int i=0; i<min(n,d); i++) 
     for (int j=i; j<d; j++) {
       tmp=R.get(i,j);  // cf l'absence de const dans nr.cpp Set / Exp 
       RR.set(i,j,tmp); // reprendre boucle sur les colonnes 
@@ -848,11 +934,10 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline  matrix<FP_NR
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> void 
-Lattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU, int gchrono) {
+Lattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
 
   int i,j;
 
-  chrono=gchrono;
   transf=forU;
   compteur=0;
   tmpcompt=0;
@@ -865,7 +950,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU, int gchrono) {
   nbswaps=0;
   tps_redB=0;
 
-
+ 
   R.resize(n,d);
 
   Rkept.resize(n,d);
@@ -876,8 +961,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU, int gchrono) {
   toR.resize(n);
   
   V.resize(n,d);
-
-  col_kept.resize(d);
+  
+  col_kept.resize(d+1); // +1 for the discovery test 
   descendu.resize(d);
   for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
 
@@ -890,13 +975,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU, int gchrono) {
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>
-Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reduction_method, int gchrono) {
+Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reduction_method) {
 
   
   n=A.getRows();
   d=A.getCols();
 
-  init(n,d, forU, gchrono); 
+  init(n,d, forU); 
 
   int i,j;
 
@@ -906,13 +991,19 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reducti
     for (j=0; j<d; j++) 
       B(i,j)=A.Get(i,j);
 
+
   if (transf) {    // Not in init for the mixed matrix case also 
     
     U.resize(d,d);
     for (i=0; i<d; i++) U(i,i)=1;     
   }
 
+  nblov_max = 4294967295;
+  
   seysen_flag=reduction_method;
+
+  if (reduction_method == DEF_REDUCTION) fast_long_flag = 1;
+  else if  (reduction_method == NO_LONG)  fast_long_flag = 0;
 
   matrix_structure(structure, B, n,d);
 
@@ -923,12 +1014,12 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reducti
 // -----------------------------------
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>
-Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU, int reduction_method, int gchrono) {
+Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU, int reduction_method) {
 
     n=A.getRowsRT()+A.getRowsZT();
     d=A.getCols();
 
-    init(n,d, forU, gchrono); 
+    init(n,d, forU); 
     
     int i,j;
 
@@ -949,10 +1040,102 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR
       for (i=0; i<d; i++) U.set(i,i,one); 
     }
 
+    nblov_max = 4294967295;
+    
+
     seysen_flag=reduction_method;
+
+    if (reduction_method == DEF_REDUCTION) fast_long_flag = 1;
+    else if  (reduction_method == NO_LONG)  fast_long_flag = 0;
   
     matrix_structure(structure, B, A.getRowsRT(), A.getRowsZT(), d);
 }
+
+
+// ------------------------------------------------------------------
+// Assigns a basis A 
+// Assumes that the lattice has already been initialized 
+// 
+// -------------------------------------------------------------------  
+
+  
+template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(ZZ_mat<ZT> A) {
+
+  nblov = 0;
+
+  for (int i=0; i<n; i++) 
+    for (int j=0; j<d; j++) 
+      B(i,j)=A.Get(i,j);
+  
+  matrix_structure(structure, B, n,d);
+  
+  for (int i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
+  for (int j=0; j<d; j++) kappamin[j]=-1;
+
+  if (transf) {
+    
+    U.resize(d,d);
+    for (int i=0; i<d; i++) U(i,i)=1; 
+   
+  }
+  
+}
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(MatrixZT A) {
+
+  nblov = 0;
+
+  for (int i=0; i<n; i++) 
+    for (int j=0; j<d; j++) 
+      B(i,j)=A.get(i,j);
+  
+  matrix_structure(structure, B, n,d);
+  for (int i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
+  for (int j=0; j<d; j++) kappamin[j]=-1;
+
+  if (transf) {
+    
+    U.resize(d,d);
+    for (int i=0; i<d; i++) U(i,i)=1; 
+   
+  }
+}
+
+
+        
+template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::shift_assign(ZZ_mat<ZT> A, vector<int> shift, int sigma) {
+
+  nblov = 0;
+
+  for (int i=0; i<n; i++) 
+    for (int j=0; j<d; j++) 
+      B(i,j).mul_2si(A(i,j),shift[i]);
+  
+  
+  //    int ll = size_in_bits(B(0,0));
+    
+    //for (int i=0; i<n; i++)
+    //for (int j=0; j<d; j++) 
+    //	B(i,j).mul_2si(B(i,j),sigma - ll + 8);
+    
+  
+  
+
+  matrix_structure(structure, B, n,d);
+  for (int i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
+  for (int j=0; j<d; j++) kappamin[j]=-1;
+
+  if (transf) {
+    
+    U.resize(d,d);
+    for (int i=0; i<d; i++) U(i,i)=1; 
+   
+  }
+}
+
 
 // ------------------------------------------------------------------
 // Assigns a basis A with truncation 
@@ -961,12 +1144,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR
 //    if t=0 keeps evrything
 //    if t<0 puts the identity in the lower part: (n-upperdim) x d 
 //
-// Assumes that the lattiec has already been initialized 
+// Assumes that the lattice has already been initialized 
 // -------------------------------------------------------------------  
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::put(ZZ_mat<ZT> A, long upperdim, long t, long tau) {
 
+  // Cf structure, colkept, kappamin 
 
   trunc<ZT, MatrixZT>(B, A, upperdim, d, n, t, tau);
 
@@ -982,6 +1166,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::put(ZZ_mat<ZT> A, long upperdim, long t, lon
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::mixed_put(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, long t, long tau) {
 
+  // Cf structure, colkept, kappamin 
 
   mixed_trunc<matrix, FP_NR<mpfr_t>, Z_NR<ZT> >(B, A, t, tau);
 
@@ -1001,7 +1186,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::mixed_put(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::shift(ZZ_mat<ZT> A, long m, long lsigma) {
-
+  // Cf structure, colkept, kappamin 
   int i,j;
 
   for (i=0; i<m; i++)
@@ -1018,7 +1203,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::shift(ZZ_mat<ZT> A, long m, long lsigma) {
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  void 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::shiftRT(long lsigma) {
-
+  // Cf structure, colkept, kappamin 
   B.shift(lsigma); 
 
   if (transf) {
@@ -1160,9 +1345,9 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
 
   hlll(deltain);
 
-  if (nblov==d-1) cout << "Seems to be reduced (up to size-reduction)" << endl << endl;
+  if (nblov== ((unsigned int) d-1)) cout << "Seems to be reduced (up to size-reduction)" << endl << endl;
 
-  if (nblov != d-1) {
+  if (nblov != ((unsigned int) d-1)) {
     cout << endl;
     cout << "!! Does not seem to be reduced" << endl;
     cout << "     #non-trivial swaps is " << nblov-d+1 << " > " << 0 << endl << endl; 
@@ -1255,206 +1440,243 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
 
 
 //***************************************************************************
-// Condition number || |R| |R^-1| || _ F
-// Change the precision, hence initialize R (forget previous value)  
-
-// To be used with mpfr if the precision change must have some effect 
+// Upper bound on log[2] Condition number || |R| |R^-1| || _ F
+// 
+// R is not assumed to be known 
+//
 //*************************************************************************** 
 // Matrix interface () deprecated, will note work with -exp 
 //
 
-template<class ZT,class FT, class MatrixZT, class MatrixFT> inline FP_NR<FT> Lattice<ZT,FT, MatrixZT, MatrixFT>::cond() {
+//#define DEFAULT_PREC 0 
+//#define UNKNOWN_PREC 1
+//#define CHECK 1
+// PREC IF >=2 
+
+//#define TRIANGULAR_PROPER 1   
+//#define ANY 0 
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline long  
+Lattice<ZT,FT, MatrixZT, MatrixFT>::lcond(int tproper, int flagprec,  int flagheur) {
 
 
-  FP_NR<FT>  cc,c2;
+  if (flagprec == DEFAULT_PREC) {
+
+    // Default prec and triangular 
+    // ***************************
+
+    if (tproper == TRIANGULAR_PROPER) {
+
+      int i,j;
+      
+      for (j=0; j<d; j++)
+	R.setcol(j,B.getcol(j),0,j+1); 
+
+      FP_NR<FT>  tmp,ttmp;
+
+      // Size-reducedness 
+  
+      FP_NR<FT>  eta;
+      eta=0.0;
+
+      for  (j=1; j<d; j++) 
+
+	for (i=0; i<j; i++) {
+	  tmp.div(R(i,j),R(i,i));
+	  tmp.abs(tmp);
+	  if (tmp.cmp(eta) > 0) eta=tmp;
+	}
+
+      // diag quo
+        
+      FP_NR<FT>  maxquo;
+      maxquo=0.0;
+
+      for  (j=0; j<d; j++) 
+	for (i=0; i<d; i++) {
+	  tmp.div(R(j,j),R(i,i));
+	  tmp.abs(tmp);
+	  if (tmp.cmp(maxquo) > 0) maxquo=tmp;
+	}
+  
+      // Approx cond all together 
+     
+      long condb; 
  
+      condb=maxquo.exponent();
+      tmp=1.0;
+      eta.add(tmp,eta);
+      condb += (d-1) + eta.exponent();
 
-  int i,j,k;
+      Z_NR<long> dd;
+      dd=d;
+      condb += 1 + dd.exponent();
 
-  unsigned int oldprec,newprec;
-
-  oldprec=getprec();
-
-  //if (d<=20) setprec(53);  
-  //else setprec(2*d);  // ******* TO TUNE  
-
-  newprec=getprec();
-
-  if (newprec == oldprec) cout << "Warning: in function cond the change of precision has no effect" << endl; 
-
-  // Calcul direct sur R par householder 
-  // -----------------------------------
-
-  householder();
-
-  // Abs R --> ar 
-  // Do not change for the template class MatrixZT, class MatrixFT that is different e.g. double and mpfr 
-  MatrixFT aR;
-  aR.resize(d,d);
-
-  for (i=0; i<d; i++)
-    for (j=0; j<d; j++) 
-      aR(i,j).abs(R(i,j));
-
-  // Magnitude of the diagonal 
-  // -------------------------
-
-  FP_NR<FT>  mindiag,maxdiag;
-  mindiag=aR(0,0);
-  maxdiag=aR(0,0);
-
-  for (i=1; i<d; i++) {
-    if (mindiag > aR(i,i)) mindiag=aR(i,i);
-    if (maxdiag < aR(i,i)) maxdiag=aR(i,i);
-  }
-  
-  //cout << endl << "Diagonal max: " << maxdiag << "  min: " << mindiag << endl;
-  maxdiag.div(maxdiag,mindiag);
-  //cout << "Largest diagonal ratio: " << maxdiag << endl;
-
-  // Inversion 
-  // ---------
+      return condb;
 
 
-  MatrixFT iR;
-  iR.resize(d,d);
+    } // end if triangular and viewed as proper 
 
-  for (i=0; i<d; i++) iR(i,i)=1.0; 
+    // Defaut prec with no structure 
+    // *****************************
 
-  //  for (i=1; i<=n; i++) SET_D(II[i][i], 1.0);
+    else { // No structure but default prec  
 
-  // Higham p263 Method 1
+      int i,j,k;
 
-  FP_NR<FT> t,one;
-  one=1.0;
+      // Direct computation for R with householder 
+      householder();
 
-  for (j=0; j<d; j++)
-    {
+      // Do not change for the template class MatrixZT, class MatrixFT that is different e.g. double and mpfr 
+      MatrixFT aR;
+      aR.resize(d,d);
+      
+      for (i=0; i<d; i++)
+	for (j=0; j<d; j++) 
+	  aR(i,j).abs(R(i,j));
 
-      iR(j,j).div(one,aR(j,j));
+      // Inversion 
+      // ---------
 
-      for (k=j+1; k<d; k++) {
-	  t.mul(iR(j,j),R(j,k));
-	  iR(j,k).neg(t);
-        }
+      MatrixFT iR;
+      iR.resize(d,d);
 
-      for (k=j+1; k<d; k++) {
-          for (i=j+1; i<k; i++) {
-	    t.mul(iR(j,i),R(i,k)); 
-	    iR(j,k).sub(iR(j,k),t); 
+      for (i=0; i<d; i++) iR(i,i)=1.0; 
+
+      // Higham p263 Method 1
+
+      FP_NR<FT> t,one;
+      one=1.0;
+
+      for (j=0; j<d; j++) {
+	  iR(j,j).div(one,aR(j,j));
+	  for (k=j+1; k<d; k++) {
+	    t.mul(iR(j,j),R(j,k));
+	    iR(j,k).neg(t);
+	  }
+	  
+	  for (k=j+1; k<d; k++) {
+	    for (i=j+1; i<k; i++) {
+	      t.mul(iR(j,i),R(i,k)); 
+	      iR(j,k).sub(iR(j,k),t); 
             }
-	  iR(j,k).div(iR(j,k),R(k,k)); 
-        }
+	    iR(j,k).div(iR(j,k),R(k,k)); 
+	  }
+      }
 
-    }
+      // Abs iR --> iR 
+      for (i=0; i<d; i++)
+	for (j=0; j<d; j++) 
+	  iR(i,j).abs(iR(i,j));
 
-  // Abs iR --> iR 
+      // aR * iR 
+      
+      MatrixFT prod;
+      prod.resize(d,d);
+      
+      for (i=0; i<d; i++)
+	for (j=0; j<d; j++) {
+	  prod(i,j).mul(aR(i,0),iR(0,j));
+	  for (k=1; k<d ; k++) 
+	    prod(i,j).addmul(aR(i,k),iR(k,j));
+	}
 
-  for (i=0; i<d; i++)
-    for (j=0; j<d; j++) 
-      iR(i,j).abs(iR(i,j));
+      // Norm 
 
+      FP_NR<FT>  cc,c2;
+      cc=0.0; 
+      
+      for (i=0; i<d; i++)
+	for (j=0; j<d; j++) 
+	  cc.addmul(prod(i,j),prod(i,j));
 
-  // aR * iR 
+      cc.sqrt(cc); 
 
-  MatrixFT prod;
-  prod.resize(d,d);
-
-  for (i=0; i<d; i++)
-    for (j=0; j<d; j++) {
-      prod(i,j).mul(aR(i,0),iR(0,j));
-      for (k=1; k<d ; k++) 
-	prod(i,j).addmul(aR(i,k),iR(k,j));
-    }
-
-  // Norm 
-
-
-  cc=0.0; 
-
-  for (i=0; i<d; i++)
-    for (j=0; j<d; j++) 
-      cc.addmul(prod(i,j),prod(i,j));
-
-  cc.sqrt(cc); 
-
-  cout << endl;
-  cout << "Conditioning is about ";
-  cc.print();
-  cout  << endl; 
-
-  cc.log(cc);
-  c2=2.0;
-  c2.log(c2);
-  cc.div(cc,c2);
-  cout << "Digits - Log conditioning is about ";
-  cc.print();
-  cout  << endl; 
-
-
-  setprec(oldprec);
-
-  return cc;
-}
-
-
-
-//***************************************************************************
-// Version simplifiée de l'énergie
-// Change la prec donc écrase R 
-
-// Avec mpfr si le chgt de précision doit avoir un effet 
-// Matrix interface () deprecated, will note work with -exp 
-//
-
-template<class ZT,class FT, class MatrixZT, class MatrixFT> inline FP_NR<FT> Lattice<ZT,FT, MatrixZT, MatrixFT>::energy() {
-
+      return(cc.exponent());
+    } 
+    
+  } // end if default_prec 
   
-  unsigned int oldprec,newprec;
+  // Using a user defined prec, no structure 
+  // ***************************************
+  // Only through mpfr here 
 
-  oldprec=getprec();
+  else if ((flagprec >=2) && (flagheur ==0)) {
+    
+    unsigned oldprec;
+    oldprec=getprec();
 
-  if (d<=20) setprec(53);  
-  else setprec(2*d);  // ******* TO TUNE  
+    mpfr_set_default_prec(flagprec);
 
-  newprec=getprec();
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(getbase());
 
-  if (newprec == oldprec) cout << "Warning: in function energy, the change of precision has no effect" << endl; 
+    return(L.lcond(ANY, DEFAULT_PREC));
 
+    mpfr_set_default_prec(oldprec);
 
-  // Calcul direct sur R par householder 
-  // -----------------------------------
-
-  int i,k;
-
+  } // and else using the user prec, no check 
   
-  householder();
+  // Heuristic check by increasing the precision  
+  // *******************************************
+  // To tune the speed of precision increase 
 
-  FP_NR<FT>  cc;
+  else if ((flagprec >= 2) && (flagheur == CHECK)) {
 
-  FP_NR<FT> tmp,nf;
+    unsigned oldprec,prec=0;
 
-  cc=0.0;
-  
-  for (i=0; i<d; i++) {
-    tmp.abs(R(i,i)); 
-    //cout << R(i,i) << endl; 
-    tmp.log(tmp);
-    nf=0.0;
-    for (k=0; k<d-i; k++)  // multiplication par i ! 
-      nf.add(nf,tmp); 
-    cc.add(cc,nf);
+    oldprec=getprec();
+
+    bool found = false;
+
+    int cond,oldcond=0;
+
+   
+
+    while (found == false) {
+      
+      prec += flagprec;
+
+ cout << "prec = " << prec << endl;
+      mpfr_set_default_prec(prec);
+
+      Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(getbase());
+      
+      cond = L.lcond(ANY, DEFAULT_PREC);
+
+      if (cond == oldcond) 
+	found = true;
+      else 
+	oldcond = cond;
     }
+    
+    mpfr_set_default_prec(oldprec);
 
-  cout << endl;
-  cout << "Energy is about ";
-  cc.print();
-  cout  << endl; 
+    return cond; 
+
+  }  // and else using the user prec, with check
+
+  // Unknown prec 
+  // ************
+  // To tune  
+  else if (flagprec == UNKNOWN_PREC) {
+
+    long bits = maxbitsize(getbase());
+
+    unsigned oldprec;
+    oldprec=getprec();
+    
+    mpfr_set_default_prec(2*d*bits);
+    
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(getbase());
+    
+    return(L.lcond(ANY, DEFAULT_PREC));
+    
+    mpfr_set_default_prec(oldprec);
 
 
-  setprec(oldprec);
+  } // and unknown 
 
-  return cc;
+  return 0; //cc
 }
 
 
@@ -1470,6 +1692,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
 
   int i,k,kappa;
   FP_NR<FT> nrtmp,s,w; 
+  
+  nrtmp=0;
+  s=0;
+
   
 
     for (kappa=0; kappa<d; kappa++) {
@@ -1513,236 +1739,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
 
 
 
-//***************************************************************************
-// Stats for the nullspace tests 
-
-// Avec mpfr si le chgt de precision doit avoir un effet 
-// Time in input for file printing 
-
-template<class ZT,class FT, class MatrixZT, class MatrixFT> inline FP_NR<FT> Lattice<ZT,FT, MatrixZT, MatrixFT>::tnull(int time) {
-
-  FP_NR<FT>  cc,c2;
- 
-
-  int i,j,k;
-
-  int oldprec;
-
-  if (d<=20) oldprec=setprec(53);  
-  else oldprec=setprec(20*d);  // ******* A VOIR 
-
-
-  // Calcul direct sur R par householder 
-  // -----------------------------------
-
-  householder();
-
-  // Abs R --> ar 
-  MatrixFT aR;
-  aR.resize(d,d);
-
-  for (i=0; i<d; i++)
-    for (j=0; j<d; j++) 
-      aR(i,j).abs(R(i,j));
-
-  // Magnitude of the diagonal 
-  // -------------------------
-
-  FP_NR<FT>  mindiag,maxdiag;
-  mindiag=aR(0,0);
-  maxdiag=aR(0,0);
-
-  for (i=1; i<d; i++) {
-    if (mindiag > aR(i,i)) mindiag=aR(i,i);
-    if (maxdiag < aR(i,i)) maxdiag=aR(i,i);
-  }
-  
-  //  cout << endl << "Diagonal max: " << maxdiag << "  min: " << mindiag << endl;
-  maxdiag.div(maxdiag,mindiag);
-
-  c2=2.0;
-  c2.log(c2);
-  maxdiag.log(maxdiag); 
-  maxdiag.div(maxdiag,c2);
-  Z_NR<ZT> rdiag;
-  set_f(rdiag,maxdiag);
-
-  //cout << "Largest diagonal ratio: " << rdiag << endl;
-
-  // Inversion 
-  // ---------
-
-
-  MatrixFT iR;
-  iR.resize(d,d);
-
-  for (i=0; i<d; i++) iR(i,i)=1.0; 
-
-  //  for (i=1; i<=n; i++) SET_D(II[i][i], 1.0);
-
-  // Higham p263 Method 1
-
-  FP_NR<FT> t,one;
-  one=1.0;
-
-  for (j=0; j<d; j++)
-    {
-
-      iR(j,j).div(one,aR(j,j));
-
-      for (k=j+1; k<d; k++) {
-	  t.mul(iR(j,j),R(j,k));
-	  iR(j,k).neg(t);
-        }
-
-      for (k=j+1; k<d; k++) {
-          for (i=j+1; i<k; i++) {
-	    t.mul(iR(j,i),R(i,k)); 
-	    iR(j,k).sub(iR(j,k),t); 
-            }
-	  iR(j,k).div(iR(j,k),R(k,k)); 
-        }
-
-    }
-
-  // Abs iR --> iR 
-
-  for (i=0; i<d; i++)
-    for (j=0; j<d; j++) 
-      iR(i,j).abs(iR(i,j));
-
-
-  // aR * iR 
-
-  MatrixFT prod;
-  prod.resize(d,d);
-
-  for (i=0; i<d; i++)
-    for (j=0; j<d; j++) {
-      prod(i,j).mul(aR(i,0),iR(0,j));
-      for (k=1; k<d ; k++) 
-	prod(i,j).addmul(aR(i,k),iR(k,j));
-    }
-
-  // Norm 
-
-
-  cc=0.0; 
-
-  for (i=0; i<d; i++)
-    for (j=0; j<d; j++) 
-      cc.addmul(prod(i,j),prod(i,j));
-
-  cc.sqrt(cc); 
-
-  // Cond 
-  // ----
-
-  cout << endl;
-  cc.log(cc);
-  c2=2.0;
-  c2.log(c2);
-  cc.div(cc,c2);
-  cout << "**** Output file stats *****" << endl << endl;
-  //cout << "Digits - Log conditioning is about " << cc << endl << endl; 
-  Z_NR<ZT> rcond;
-  set_f(rcond,cc);
-  //cout << "Rounded log cond " << rcond << endl;
-
-  // Maxbitsize 
-  // ----------
-
-  int maxbit=0;
-
-  int nn=B.getRows();
-  int dd=B.getCols();
-
-  for (int ii=0; ii<nn ; ii++) 
-    for (int jj=0; jj<dd; jj++)
-      maxbit=max(maxbit, (int) mpz_sizeinbase(B(ii,jj).getData(),2)); 
-
-  //cout << "Max bit size " << maxbit << endl;
-
-  // b_1
-  // ---
-
-  int maxbit1=0;
-  for (int ii=0; ii<nn ; ii++) 
-    maxbit1=max(maxbit1, (int) mpz_sizeinbase(B(ii,0).getData(),2)); 
-
-  //cout << "b_1 bit size " << maxbit1 << endl;
-
-
-  // With Vol 
-
-  int kk;
-  kk=B.getCols();
-  
-  //cout << "k  " << kk << endl;
-
-  // vol 
-  FP_NR<mpfr_t> s;
-  s=R(0,0);
-  for (k=1; k<d; k++) 
-    s.mul(s,R(k,k));
-  s.abs(s);
-  //cout << " *********** " << "Vol(L) is about " << s << endl; 
-
-  cc.log(s);
-  c2=2.0;
-  c2.log(c2);
-  cc.div(cc,c2);
-
-  //cout << " *********** " << "log Vol(L) is about " << cc << endl; 
-
-  Z_NR<ZT> tmpk;
-  tmpk=kk;
-  FP_NR<mpfr_t> kkf;
-  set_z(kkf,tmpk);
-  FP_NR<mpfr_t> expected;
-  expected.div(cc,kkf);
-  //cout << " *********** " << "log Vol(L)1/k is about " << expected << endl; 
-
-  kkf.sqrt(kkf);
-  cc.log(kkf);
-  c2=2.0;
-  c2.log(c2);
-  cc.div(cc,c2);
-
-  expected.add(expected,cc);
-
-  //cout << " *********** " << "expected  " << expected << endl; 
-
-  Z_NR<ZT> rlambda;
-  set_f(rlambda,expected);
-  //cout << "Rounded expected bits  " << rlambda << endl;
-
-  Z_NR<ZT> delta;
-  delta=maxbit;
-  delta.sub(delta,rlambda);
-
-  // File editing: append to out.txt 
-  // -------------------------------
-
-  ofstream outfile; 
-
-  outfile.open ("out.txt",ios_base::app);
-  outfile << "---- " << B.getRows()-B.getCols() << " x " << B.getRows() << " / " <<
-    B.getRows()<< " x " << B.getCols() <<endl; 
-  outfile << "*l_max: " << maxbit << "    *l_b1: " << maxbit1 << "    *l_cond: " << rcond << "    *l_diag: " << rdiag << "    *l_Gauss: " << rlambda  
-	  << "    *mdelta bits: " << delta << "   Time: " << time << " sec." << endl << endl;    
-  outfile.close();
-
-  cout << "---- " << B.getRows()-B.getCols() << " x " << B.getRows() << " / " <<
-    B.getRows()<< " x " << B.getCols() <<endl; 
-  cout << "*l_max: " << maxbit << "    *l_b1: " << maxbit1 << "    *l_cond: " << rcond << "    *l_diag: " << rdiag << "    *l_Gauss: " << rlambda  
-       << "    *mdelta bits: " << delta <<  "   Time: " << time << " sec." << endl << endl;   
-
-  // Precision 
-  setprec(oldprec);
-
-  return cc;
-}
 
 } // end namespace hplll
 

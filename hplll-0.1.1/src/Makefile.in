@@ -301,7 +301,7 @@ include_hplll_HEADERS = defs.h  mat.h matpe.h  ldpe.h nr-ld.cpp  \
 	hlll.h hlll.cc decomp.h decomp.cc relations.h relations.cc  \
 	matgen.h matgen.cc decompz.h decompz.cc nullspace.h  nullspace.cc \
   	mixed-col.h  matmixed.h  lehmer.cc  l1.h  block.h  tools.h  \
-	givtimer.h givtimer.C plll.h plll.cc
+	givtimer.h givtimer.C plll.h plll.cc ratio.h 
 
 all: all-am
 
