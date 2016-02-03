@@ -141,7 +141,7 @@ CPPFLAGS =
 CXX = /usr/local/bin/g++
 CXXCPP = /usr/local/bin/g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS =  -O3 -Wall -I/Users/gvillard/Soft/with-gcc-5/include -I/Users/gvillard/Soft/with-gcc-5/include -I/Users/gvillard/Soft/with-gcc-5/include
+CXXFLAGS =  -O3 -Wall -I/usr/local/include -I/usr/local/include 
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -161,7 +161,7 @@ INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LD = /usr/bin/ld
-LDFLAGS =  -L/Users/gvillard/Soft/with-gcc-5/lib -Wl,-rpath,/Users/gvillard/Soft/with-gcc-5/lib -L/Users/gvillard/Soft/with-gcc-5/lib -Wl,-rpath,/Users/gvillard/Soft/with-gcc-5/lib -L/Users/gvillard/Soft/with-gcc-5/lib -lfplll -Wl,-rpath,/Users/gvillard/Soft/with-gcc-5/lib
+LDFLAGS =  -L/usr/local/lib -Wl,-rpath,/usr/local/lib -L/usr/local/lib -Wl,-rpath,/usr/local/lib -lfplll -Wl,-rpath,/usr/local/lib
 LIBOBJS = 
 LIBS = -lmpfr -lgmp -lmpfr -lgmp  -lfplll
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
