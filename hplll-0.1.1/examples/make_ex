@@ -3,6 +3,7 @@
 CXXFLAGS += -O2 -Wall
 
 # Here with standard installation directories
+#  otherwise modify the compilation variables
 
 FPLLL_LIBS += -lfplll
 MPFR_LIBS +=  -lmpfr
