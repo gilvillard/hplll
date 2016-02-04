@@ -23,11 +23,13 @@ int main(int argc, char *argv[])  {
   
     cout << "************************************************************************** " << endl; 
     int d=80;
-    int nbbits=800;
-    int start,startsec;
+    int nbbits=8000;
+
+    Timer time;
 
     double delta=0.999;
 
+   
     A.resize(d+1,d); 
     tmpmat.resize(d+1,d); 
     AT.resize(d,d+1);  
@@ -35,15 +37,14 @@ int main(int argc, char *argv[])  {
     transpose(A,AT);
 
     cout << "--------------  SeysenLLL" << endl << endl; 
-    start=utime();
-    startsec=utimesec();
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,SEYSEN_REDUCTION);
-    B.hlll(delta);
-    start=utime()-start;
-    startsec=utimesec()-startsec;
-  
-    // print2maple(B.getbase(),d+1,d);
 
+   
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,SEYSEN_REDUCTION);
+
+    time.start();
+    B.hlll(delta);
+    time.stop();
+    
     ratio(B.getbase(),t,u,v,w);
     
     cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
@@ -51,11 +52,7 @@ int main(int argc, char *argv[])  {
     cout << ".. Max diagonal ratio: " << v << endl;
     cout << ".. First vector quality: " << w << endl;
    
-    
-    //cout << "   bits = " << nbbits << endl;
-    //cout << "   dimension = " << d  << endl;
-    //cout << "   time A: " << start/1000 << " ms" << endl;
-    //cout << "   time A: " << startsec << " s" << endl;
+    cout << endl << "Time: " << time << endl;    
 
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
     T1.isreduced(delta);
@@ -66,12 +63,10 @@ int main(int argc, char *argv[])  {
     cout << "--------------  HLLL" << endl << endl; 
    
 
-    start=utime();
-    startsec=utimesec();
     Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,NO_TRANSFORM,DEF_REDUCTION);
+    time.start();
     C.hlll(delta);
-    start=utime()-start;
-    startsec=utimesec()-startsec;
+    time.stop();
 
     //print2maple(C.getbase(),d+1,d);
 
@@ -82,7 +77,8 @@ int main(int argc, char *argv[])  {
     cout << ".. Max diagonal ratio: " << v << endl;
     cout << ".. First vector quality: " << w << endl;
 
-    
+    cout << endl << "Time: " << time << endl;
+     
     //cout << "   bits = " << nbbits << endl;
     //cout << "   dimension = " << d  << endl;
     //cout << "   time B: " << start/1000 << " ms" << endl;
