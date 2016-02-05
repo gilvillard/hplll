@@ -1,7 +1,30 @@
+/* Integer matrix nullspace test file  
+
+Created Dim  7 avr 2013 16:54:03 CEST
+Copyright (C) 2013      Gilles Villard 
+
+This file is part of the hplll Library 
+
+The hplll Library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 3 of the License, or (at your
+option) any later version.
+
+The hplll Library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the hplll Library; see the file COPYING.LESSER.  If not, see
+http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
+51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
 #include "hlll.h"
-#include "ratio.h"
+#include "lehmer.cc"
+
+#include "tools.h"
 
 /* ***********************************************
 
@@ -13,102 +36,84 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
-  double t,u,v,w;
   
   ZZ_mat<mpz_t> A; // For hpLLL 
-  ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
+  ZZ_mat<mpz_t> C; // For Lehmer
+  ZZ_mat<mpz_t> AT;  // fpLLL  
 
   // ---------------------------------------------------------------------
   { 
   
-    cout << "************************************************************************** " << endl; 
-    int d=80;
-    int nbbits=8000;
-
-    Timer time;
-
-    double delta=0.999;
-
-   
-    A.resize(d+1,d); 
-    tmpmat.resize(d+1,d); 
-    AT.resize(d,d+1);  
-    AT.gen_intrel(nbbits);
-    transpose(A,AT);
-
-    cout << "--------------  SeysenLLL" << endl << endl; 
-
-   
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,SEYSEN_REDUCTION);
-
-    time.start();
-    B.hlll(delta);
-    time.stop();
-    
-    ratio(B.getbase(),t,u,v,w);
-    
-    cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-    cout << ".. Average diagonal ratio: " << u << endl;
-    cout << ".. Max diagonal ratio: " << v << endl;
-    cout << ".. First vector quality: " << w << endl;
-   
-    cout << endl << "Time: " << time << endl;    
-
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-    T1.isreduced(delta);
-
-    cout << endl; 
-
-    
-    cout << "--------------  HLLL" << endl << endl; 
-   
-
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,NO_TRANSFORM,DEF_REDUCTION);
-    time.start();
-    C.hlll(delta);
-    time.stop();
-
-    //print2maple(C.getbase(),d+1,d);
-
-    ratio(C.getbase(),t,u,v,w);
-    
-    cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-    cout << ".. Average diagonal ratio: " << u << endl;
-    cout << ".. Max diagonal ratio: " << v << endl;
-    cout << ".. First vector quality: " << w << endl;
-
-    cout << endl << "Time: " << time << endl;
-     
-    //cout << "   bits = " << nbbits << endl;
-    //cout << "   dimension = " << d  << endl;
-    //cout << "   time B: " << start/1000 << " ms" << endl;
-    //cout << "   time B: " << startsec << " s" << endl;
+  int d=8;
+  int nbbits=100;
+  int shift = 0;
+  double delta = 0.75;
 
 
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(C.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-    T2.isreduced(delta);
+    PARSE_MAIN_ARGS {
+      MATCH_MAIN_ARGID("-d",d);
+      MATCH_MAIN_ARGID("-bits",nbbits);
+      MATCH_MAIN_ARGID("-shift",shift);
+      MATCH_MAIN_ARGID("-delta",delta);
+      SYNTAX();
+    }
 
-    /*
-    
-    cout << endl; 
-  
-    transpose(AT,A);
+
+
+  int start;
+
  
-    start=utime();
-    startsec=utimesec();
-    lllReduction(AT, delta, 0.5, LM_FAST,FT_DEFAULT,0);
-    start=utime()-start;
-    startsec=utimesec()-startsec;
+
+  A.resize(d+1,d); 
+  AT.resize(d,d+1);  
+  AT.gen_intrel(nbbits);
+  transpose(A,AT);
+
+  //print2maple(A,d+1,d);
+
+
+  //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
+  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
+
+  start=utime();
+  //B.hlll(delta);
+  start=utime()-start;
+    
   
-    cout << "   bits = " << nbbits << endl;
-    cout << "   dimension = " << d  << endl;
-    cout << "   time C: " << start/1000 << " ms" << endl;
-    cout << "   time C: " << startsec << " s" << endl;
+  cout << "   bits = " << nbbits << endl;
+  cout << "   dimension = " << d  << endl;
+  cout << "   time hplll: " << start/1000 << " ms" << endl;
+  cout << "   nblov: " << B.nblov << endl; 
   
-    transpose(tmpmat,AT);
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T3(tmpmat,NO_TRANSFORM,DEF_REDUCTION);
-    T3.isreduced(delta);
-    */
+  start=utime();
+  //lehmer_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, 1, shift);
+  //lehmer_lll<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > (C, A, 1, shift);
+  Lehmer_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, shift, delta);
+ 
+  start=utime()-start;
+
+  cout << endl; 
+  cout << "   dimension = " << d  << endl;
+  cout << "   time lehmer: " << start/1000 << " ms" << endl;
+
+  
+  Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
+  Btest.isreduced(delta-0.1);
+
+  
+  start=utime();
+  lllReduction(AT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+  start=utime()-start;
+    
+  cout << endl; 
+  cout << "   bits = " << nbbits << endl;
+  cout << "   dimension = " << d  << endl;
+  cout << "   time fplll: " << start/1000 << " ms" << endl;
+  
+  //transpose(A,AT);
+  //Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Ctest(A,NO_TRANSFORM,DEF_REDUCTION);
+  //Ctest.isreduced(delta);
+  
 
   } 
 
