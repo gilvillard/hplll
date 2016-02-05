@@ -258,6 +258,11 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
       restdim=kappa-indexdec-bdim;
 
+      // ICI 
+      // if (kappa==7) {
+      // 	cout << "****** " << restdim << "   " << ld << endl;  
+      // }
+      
       //DBG 
       //householder_r(kappa);
 
@@ -265,7 +270,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	tmpcolR[i]=R.get(i,kappa);
 
       for (i=kappa-1-indexdec; i>=restdim; i--){
-	 
+	// ICI
+	//if (kappa==7)  cout << i << endl;
+	
 	vectx[i].div(tmpcolR[i],R.get(i,i));
 	for (k=restdim; k<i; k++) tmpcolR[k].submul(R.get(k,i),vectx[i]);
 
@@ -278,6 +285,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
       for (i=kappa-1-indexdec; i>= restdim; i--){
     
 	x=vectx[i]; 
+
 
 	if (x.sgn() !=0) { 
 
@@ -470,7 +478,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	  else if (lx == -1) {
 
 	    somedone = 1;
- 
+
+	    
 	    R.addcol(kappa,i,i+1);
 	    
 	    B.addcol(kappa,i,nmax);
