@@ -15,7 +15,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/src
 #LDADD =  -lfplll  
 
 
-TESTS = arithmetic  hllltest relationstest #relationstesthuge
+TESTS = arithmetic  hllltest relationstest 
 
 arithmetic_SOURCES=arithmetic.cc  
 
@@ -37,8 +37,9 @@ check_PROGRAMS = $(TESTS)
 
 #./relationstest ./nullspacetest 
 
-EXTRA_PROGRAMS = gentable1 gentable2 gentable3 gentable4 gentable5 gentable6
+EXTRA_PROGRAMS = relationstesthuge gentable1 gentable2 gentable3 gentable4 gentable5 gentable6
 
+relationstesthuge_SOURCES=relationstesthuge.cc
 gentable1_SOURCES=gentable1.cc 
 gentable2_SOURCES=gentable2.cc
 gentable3_SOURCES=gentable3.cc

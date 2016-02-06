@@ -132,7 +132,7 @@ AR = ar
 AUTOCONF = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing autoconf
 AUTOHEADER = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing autoheader
 AUTOMAKE = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing automake-1.15
-AWK = awk
+AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS =  -O3 -Wall
@@ -141,7 +141,7 @@ CPPFLAGS =
 CXX = /usr/local/bin/g++
 CXXCPP = /usr/local/bin/g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS =  -O3 -Wall -I/usr/local/include -I/usr/local/include  -fopenmp -ltcmalloc 
+CXXFLAGS =  -O3 -Wall -I/usr/local/include -I/usr/local/include 
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps

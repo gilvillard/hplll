@@ -89,9 +89,9 @@ build_triplet = @build@
 host_triplet = @host@
 TESTS = arithmetic$(EXEEXT) hllltest$(EXEEXT) relationstest$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
-EXTRA_PROGRAMS = gentable1$(EXEEXT) gentable2$(EXEEXT) \
-	gentable3$(EXEEXT) gentable4$(EXEEXT) gentable5$(EXEEXT) \
-	gentable6$(EXEEXT)
+EXTRA_PROGRAMS = relationstesthuge$(EXEEXT) gentable1$(EXEEXT) \
+	gentable2$(EXEEXT) gentable3$(EXEEXT) gentable4$(EXEEXT) \
+	gentable5$(EXEEXT) gentable6$(EXEEXT)
 subdir = tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/macros/fplll-check.m4 \
@@ -141,6 +141,9 @@ hllltest_LDADD = $(LDADD)
 am_relationstest_OBJECTS = relationstest.$(OBJEXT)
 relationstest_OBJECTS = $(am_relationstest_OBJECTS)
 relationstest_LDADD = $(LDADD)
+am_relationstesthuge_OBJECTS = relationstesthuge.$(OBJEXT)
+relationstesthuge_OBJECTS = $(am_relationstesthuge_OBJECTS)
+relationstesthuge_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -178,11 +181,11 @@ am__v_CXXLD_1 =
 SOURCES = $(arithmetic_SOURCES) $(gentable1_SOURCES) \
 	$(gentable2_SOURCES) $(gentable3_SOURCES) $(gentable4_SOURCES) \
 	$(gentable5_SOURCES) $(gentable6_SOURCES) $(hllltest_SOURCES) \
-	$(relationstest_SOURCES)
+	$(relationstest_SOURCES) $(relationstesthuge_SOURCES)
 DIST_SOURCES = $(arithmetic_SOURCES) $(gentable1_SOURCES) \
 	$(gentable2_SOURCES) $(gentable3_SOURCES) $(gentable4_SOURCES) \
 	$(gentable5_SOURCES) $(gentable6_SOURCES) $(hllltest_SOURCES) \
-	$(relationstest_SOURCES)
+	$(relationstest_SOURCES) $(relationstesthuge_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -543,6 +546,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/src
 arithmetic_SOURCES = arithmetic.cc  
 hllltest_SOURCES = hllltest.cc
 relationstest_SOURCES = relationstest.cc
+relationstesthuge_SOURCES = relationstesthuge.cc
 gentable1_SOURCES = gentable1.cc 
 gentable2_SOURCES = gentable2.cc
 gentable3_SOURCES = gentable3.cc
@@ -628,6 +632,10 @@ relationstest$(EXEEXT): $(relationstest_OBJECTS) $(relationstest_DEPENDENCIES) $
 	@rm -f relationstest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(relationstest_OBJECTS) $(relationstest_LDADD) $(LIBS)
 
+relationstesthuge$(EXEEXT): $(relationstesthuge_OBJECTS) $(relationstesthuge_DEPENDENCIES) $(EXTRA_relationstesthuge_DEPENDENCIES) 
+	@rm -f relationstesthuge$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(relationstesthuge_OBJECTS) $(relationstesthuge_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -643,6 +651,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gentable6.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hllltest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/relationstest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/relationstesthuge.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
