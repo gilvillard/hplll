@@ -22,6 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
+#include "ratio.h" 
 
 #ifndef HPLLL_RELATIONS_CC
 #define HPLLL_RELATIONS_CC
@@ -319,7 +320,7 @@ namespace hplll {
 
      
       if (lllmethod == HLLL) {
-	
+	 
 	B.assign(Af);
 
 	B.hlll(delta);
@@ -330,6 +331,7 @@ namespace hplll {
       }
       else if (lllmethod == FPLLL) {
 
+	cout << "ici " << endl; 
 
       	transpose(AfT,Af);
 	
