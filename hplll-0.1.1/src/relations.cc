@@ -331,26 +331,6 @@ namespace hplll {
       }
       else if (lllmethod == FPLLL) {
 
-	{
-	  // ICI 
-	  ZZ_mat<mpz_t> B; 
-	  B.resize(m+d,d);
-
-	  for (int i = 0; i<m+d; i++)
-	    for (int j = 0; j<d; j++)
-	      B(i,j)=((long) Af(i,j).get_si());
-
-	  double t,u,v,w;
-	  ratio(B,t,u,v,w);
-
-	  cout << endl << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-	  cout << ".. Average diagonal ratio: " << u << endl;
-	  cout << ".. Max diagonal ratio: " << v << endl;
-	  cout << ".. First vector quality: " << w << endl;
-
-	}
-
-
       	transpose(AfT,Af);
 	
       	setId(VfT);
@@ -359,25 +339,6 @@ namespace hplll {
 
       	transpose(Af,AfT);
 	
-{
-	  // ICI 
-	  ZZ_mat<mpz_t> B; 
-	  B.resize(m+d,d);
-
-	  for (int i = 0; i<m+d; i++)
-	    for (int j = 0; j<d; j++)
-	      B(i,j)=((long) Af(i,j).get_si());
-
-	  double t,u,v,w;
-	  ratio(B,t,u,v,w);
-
-	  cout << endl << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-	  cout << ".. Average diagonal ratio: " << u << endl;
-	  cout << ".. Max diagonal ratio: " << v << endl;
-	  cout << ".. First vector quality: " << w << endl;
-
-	}
-
       	transpose(Vf,VfT);
 	
       } 
