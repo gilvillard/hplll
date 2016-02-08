@@ -47,6 +47,8 @@ int main(int argc, char *argv[])  {
 
   command_line_basis(A, n, d, delta, argc, argv); 
 
+  cout << A << endl;
+  
   AT.resize(d,n);
   transpose(AT,A);
 
