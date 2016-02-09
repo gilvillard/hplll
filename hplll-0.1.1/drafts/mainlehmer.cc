@@ -46,8 +46,8 @@ int main(int argc, char *argv[])  {
   
   int d=8;
   int nbbits=100;
-  int shift = 0;
-  double delta = 0.75;
+  int shift = 20;
+  double delta = 0.99;
 
 
     PARSE_MAIN_ARGS {
@@ -62,43 +62,34 @@ int main(int argc, char *argv[])  {
 
   int start;
 
- 
 
   A.resize(d+1,d); 
   AT.resize(d,d+1);  
   AT.gen_intrel(nbbits);
   transpose(A,AT);
 
-  //print2maple(A,d+1,d);
-
-
-  //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
   Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
 
   start=utime();
   //B.hlll(delta);
   start=utime()-start;
     
-  
+  cout << endl; 
   cout << "   bits = " << nbbits << endl;
   cout << "   dimension = " << d  << endl;
-  cout << "   time hplll: " << start/1000 << " ms" << endl;
-  cout << "   nblov: " << B.nblov << endl; 
-  
+  cout << "   delta = " << delta  << endl;
+ 
+  cout << endl << "   time hplll: " << start/1000 << " ms" << endl;
+   
   start=utime();
-  //lehmer_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, 1, shift);
-  //lehmer_lll<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > (C, A, 1, shift);
+
+  //lehmer_f<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, shift, delta);
   Lehmer_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, shift, delta);
  
   start=utime()-start;
 
   cout << endl; 
-  cout << "   dimension = " << d  << endl;
   cout << "   time lehmer: " << start/1000 << " ms" << endl;
-
-  
-  Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
-  Btest.isreduced(delta-0.1);
 
   
   start=utime();
@@ -106,14 +97,14 @@ int main(int argc, char *argv[])  {
   start=utime()-start;
     
   cout << endl; 
-  cout << "   bits = " << nbbits << endl;
-  cout << "   dimension = " << d  << endl;
   cout << "   time fplll: " << start/1000 << " ms" << endl;
   
   //transpose(A,AT);
   //Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Ctest(A,NO_TRANSFORM,DEF_REDUCTION);
   //Ctest.isreduced(delta);
-  
+
+   Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
+  Btest.isreduced(delta-0.1);
 
   } 
 

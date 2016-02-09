@@ -187,8 +187,9 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
  /usr/local/include/fplll/gso.h /usr/local/include/fplll/evaluator.h \
  /usr/local/include/fplll/fplllv31.h ../src/givtimer.C ../src/givtimer.h \
  ../src/ldpe.h ../src/nr-ld.cpp ../src/mat.h ../src/mixed-col.h \
- ../src/matpe.h ../src/matmixed.h ../src/hlll.cc ../src/lehmer.cc \
- ../src/hlll.h ../src/ratio.h ../src/tools.h
+ ../src/matpe.h ../src/matmixed.h ../src/hlll.cc ../src/ratio.h \
+ ../src/plll.h ../src/plll.cc ../src/matgen.h ../src/tools.h \
+ ../src/matgen.cc ../src/matgen.h ../src/plll.h ../src/tools.h
 
 ../src/hlll.h:
 
@@ -732,10 +733,20 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 
 ../src/hlll.cc:
 
-../src/lehmer.cc:
-
-../src/hlll.h:
-
 ../src/ratio.h:
+
+../src/plll.h:
+
+../src/plll.cc:
+
+../src/matgen.h:
+
+../src/tools.h:
+
+../src/matgen.cc:
+
+../src/matgen.h:
+
+../src/plll.h:
 
 ../src/tools.h:

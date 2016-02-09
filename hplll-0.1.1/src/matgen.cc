@@ -54,8 +54,9 @@ namespace hplll {
     int m = 1;
     int sN,sX,h; 
     int shift =10;
+    
 
-    delta =0.75;
+    delta =0.99;
 
     int output = 0;
 
@@ -72,6 +73,7 @@ namespace hplll {
       MATCH_MAIN_ARGID("-X",sX);
       MATCH_MAIN_ARGID("-h",h);
       MATCH_MAIN_ARGID("-shift",shift);
+      
     }
 
     // Knapsack 

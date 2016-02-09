@@ -124,7 +124,8 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       
     } // End column loop for Lovasz tests 
 
-    cout << "** " << swapin << endl; 
+    //DBG 
+    //cout << "** " << swapin << endl; 
    
     tup+=time;
      
@@ -132,13 +133,13 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
     odd=(odd +1) % 2;
 
         
-  } // Main iteration loop 
+ } // Main iteration loop 
 
  
- 
-  cout << endl << "**** Size reduction: " << tsize << endl; 
-  cout << "**** Update: " << tup << endl;
-  cout << "**** Internal: " << ichrono << endl << endl << endl;
+ // DBG
+ // cout << endl << "**** Size reduction: " << tsize << endl; 
+ // cout << "**** Update: " << tup << endl;
+ // cout << "**** Internal: " << ichrono << endl << endl << endl;
 
   return 0;
   
@@ -211,7 +212,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() {
 
 
 	if (x.sgn() !=0) {   // Non zero combination 
-	  // --------------------
+	                     // --------------------
 	  lx = x.get_si_exp(expo);
 
 	 
@@ -225,7 +226,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() {
 
 	      R.subcol(j,i,i+1);
 	    
-	      B.subcol(j,i,n);
+	      B.subcol(j,i,nmax);
 
 	      //Uloc.subcol(j,i,d);
 	    
@@ -240,7 +241,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() {
  
 	      R.addcol(j,i,i+1);
 	    
-	      B.addcol(j,i,n);
+	      B.addcol(j,i,nmax);
 
 	      //Uloc.addcol(j,i,d);
 	     
@@ -253,16 +254,26 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() {
  
 	      somedone[j] = 1;
 
-	      R.submulcol(j,i,x,i+1);
+
+	      if (fast_long_flag == 1) {
 	    
-	      B.addmulcol_si(j,i,-lx,n);
-	    
-	      //Uloc.addmulcol_si(j,i,-lx,d);
-	    
-	      if (transf) 
-		U.addmulcol_si(j,i,-lx,d);
-	    
-	    } 
+		R.submulcol(j,i,x,i+1);
+		B.addmulcol_si(j,i,-lx,nmax);
+		if (transf)  
+		  U.addmulcol_si(j,i,-lx,d);
+
+	      } // end fast_long
+	      else {
+		
+		set_f(xz,x);  
+		
+		R.submulcol(j,i,x,i+1);	
+		B.submulcol(j,i,xz,nmax);
+		if (transf)  
+		  U.submulcol(j,i,xz,d);
+	      }
+
+	    } // end expo == 0 and not 1 or -1
   
 	  } // end expo == 0 
 	  else {  // expo <> 0 
@@ -270,18 +281,25 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() {
 	  
 	    somedone[j] = 1;
 
-	    set_f(xz,x);
-	  
-	    R.submulcol(j,i,x,i+1);
-	  
-	    B.submulcol(j,i,xz,n);
-	  
-	    //Uloc.submulcol(j,i,xz,d);
-	   
-	    if (transf)  
-	      U.submulcol(j,i,xz,d);
-	    //U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
-
+	    if (fast_long_flag == 1) {
+	    
+	      R.submulcol(j,i,x,i+1);
+	      B.addmulcol_si_2exp(j,i,-lx,expo,nmax);
+	      if (transf)  
+		U.addmulcol_si_2exp(j,i,-lx,expo,d);
+	      
+	    } // end fast_long
+	    else {
+	      
+	      set_f(xz,x);  
+	      
+	      R.submulcol(j,i,x,i+1);	
+	      B.submulcol(j,i,xz,nmax);
+	      if (transf)  
+		U.submulcol(j,i,xz,d);
+	      
+	    } // end no long
+ 
 	  } // end expo <> 0 
 
 	} // Non zero combination 
@@ -300,15 +318,15 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() {
     for (j=0; j<d; j++)
       old_normB2[j]=normB2[j];
 
-    // Si somedone
-    {
-      int nb=0;
-      for (int k=0; k<d; k++)
-	if (somedone[k]==1) nb+=1;
+    // DBG Si somedone
+    // {
+    //   int nb=0;
+    //   for (int k=0; k<d; k++)
+    // 	if (somedone[k]==1) nb+=1;
 
-      cout << nb << " / " << d << endl;
+    // cout << nb << " / " << d << endl;
 
-    }
+    // }
     householder();
     // for (j=0; j<d; j++) {
     //   if (somedone[j] == 1) col_kept[j]=0;
@@ -341,8 +359,9 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int
 PLattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
 {
 
+ 
   //nmaxkappa=structure[kappa]+1;
-  nmaxkappa = n;
+  nmaxkappa = nmax;
   
   int i,k,length; 
 
@@ -471,9 +490,8 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::householder_r(int kappa)
     
     R.setcol(kappa,&toR[0],nmaxkappa);
     
-    
     kappamin[kappa]=kappa;
-
+    
   } // else kappa !=0 
 
  return 0;
@@ -714,8 +732,15 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::PLattice(ZZ_mat<ZT> A, bool forU, int reduc
   
   seysen_flag=reduction_method;
 
+  if (reduction_method == DEF_REDUCTION) fast_long_flag = 1;
+  else if  (reduction_method == NO_LONG)  fast_long_flag = 0;
+  
   matrix_structure(structure, B, n,d);
 
+  nmax=structure[0];
+  for (j=1; j<d; j++)
+    if (nmax < structure[j]) nmax= structure[j]+1;
+  
   for (j=0; j<d; j++) 
     Bfp.setcol(j,B.getcol(j),0,structure[j]+1); 
 
@@ -1400,25 +1425,25 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::householder()
 
     for (kappa=0; kappa<d; kappa++) {
 
-      R.setcol(kappa,B.getcol(kappa),0,n);
+      R.setcol(kappa,B.getcol(kappa),0,nmax);
 
-      fp_norm_sq(normB2[kappa], R.getcol(kappa), n);
+      fp_norm_sq(normB2[kappa], R.getcol(kappa), nmax);
        
       for (k=0; k<kappa; k++) {
-	scalarprod(nrtmp, V.getcol(k,k), R.getcol(kappa,k), n-k);
-	R.fmasub(kappa,k,R.getcol(kappa,k), V.getcol(k,k), nrtmp, n-k); 
+	scalarprod(nrtmp, V.getcol(k,k), R.getcol(kappa,k), nmax-k);
+	R.fmasub(kappa,k,R.getcol(kappa,k), V.getcol(k,k), nrtmp, nmax-k); 
       }
 
 
       w=R.get(kappa,kappa);
 
       if (w >=0) {
-	fp_norm(s,R.getcol(kappa,kappa),n-kappa); 
+	fp_norm(s,R.getcol(kappa,kappa),nmax-kappa); 
 	nrtmp.neg(s);
 	R.set(kappa,kappa,nrtmp);    
       }
       else {
-	fp_norm(nrtmp,R.getcol(kappa,kappa),n-kappa); // de la colonne
+	fp_norm(nrtmp,R.getcol(kappa,kappa),nmax-kappa); // de la colonne
 	R.set(kappa,kappa,nrtmp);
 	s.neg(nrtmp);  
       }
@@ -1427,7 +1452,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::householder()
       s.mul(s,w);
       s.sqrt(s);
 
-      V.div(kappa,kappa+1, R.getcol(kappa,kappa+1), s, n-kappa-1);
+      V.div(kappa,kappa+1, R.getcol(kappa,kappa+1), s, nmax-kappa-1);
 
       nrtmp.div(w,s);
       V.set(kappa,kappa,nrtmp); 
@@ -1520,7 +1545,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::qrupdate(int iend) {
   
   int i;
   
-  int nmax; // De la structure triangulaire 
+  int nnmax; // De la structure triangulaire 
   
   for (kappa=1 ; kappa<d; kappa++) { 
     
@@ -1544,7 +1569,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::qrupdate(int iend) {
                            // --------------------
 	lx = x.get_si_exp(expo);
 
-	nmax=structure[i]+1;
+	nnmax=structure[i]+1;
 	
 	// Cf fplll 
 	// Long case 
@@ -1555,7 +1580,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::qrupdate(int iend) {
 	    R.subcol(kappa,i,i+1);	    
 	    Bfp.subcol(kappa,i,n);
       	    if (transf) 
-	      U.subcol(kappa,i,min(d,nmax));
+	      U.subcol(kappa,i,min(d,nnmax));
 	    
 	  } 
 	  else if (lx == -1) {
@@ -1563,7 +1588,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::qrupdate(int iend) {
 	    R.addcol(kappa,i,i+1);
 	    Bfp.addcol(kappa,i,n);
 	    if (transf) 
-	      U.addcol(kappa,i,min(d,nmax));
+	      U.addcol(kappa,i,min(d,nnmax));
 	    
 
 	  } 
@@ -1572,7 +1597,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::qrupdate(int iend) {
 	    R.submulcol(kappa,i,x,i+1);
 	    Bfp.submulcol(kappa,i,x,n);
 	    if (transf) 
-	      U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+	      U.addmulcol_si(kappa,i,-lx,min(d,nnmax));
 	    
 	  } 
   
@@ -1581,11 +1606,11 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::qrupdate(int iend) {
 
 	  set_f(xz,x);
 	  R.submulcol(kappa,i,x,i+1);
-	  //B.submulcol(kappa,i,xz,nmax);
+	  //B.submulcol(kappa,i,xz,nnmax);
 	  Bfp.submulcol(kappa,i,x,n);
 	  if (transf)  
-	    //U.submulcol(kappa,i,xz,min(d,nmax));
-	    U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    //U.submulcol(kappa,i,xz,min(d,nnmax));
+	    U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nnmax));
 	  
 	} // end expo <> 0 
       } // Non zero combination 

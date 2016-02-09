@@ -55,6 +55,7 @@ class PLattice
 
   int nmaxkappa;
 
+
   // Floating point objects concerned a possible precision change 
   // ************************************************************
 
@@ -73,7 +74,9 @@ class PLattice
 
   vector<FP_NR<FT> > toR; // Some assignment in householder_r 
 
-  vector<int> structure; 
+  vector<int> structure;
+
+  int nmax; // Max in the structure 
 
   vector<int> col_kept;
 
@@ -111,6 +114,8 @@ public:
   int seysenreduce(int kappa);
   int seysen_flag;
 
+  int fast_long_flag;
+  
   int hlll(double delta, bool verbose=false);
 
   unsigned int setprec(unsigned int prec);

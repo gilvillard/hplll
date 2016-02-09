@@ -22,7 +22,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 #include "hlll.h"
-#include "lehmer.cc"
+#include "matgen.h"
+
+#include "plll.h"
 
 #include "tools.h"
 
@@ -38,73 +40,122 @@ int main(int argc, char *argv[])  {
   
   
   ZZ_mat<mpz_t> A; // For hpLLL 
-  ZZ_mat<mpz_t> C; // For Lehmer
-  ZZ_mat<mpz_t> AT;  // fpLLL  
 
+  ZZ_mat<mpz_t> AT;  // fpLLL
+ 
   // ---------------------------------------------------------------------
   { 
   
   int d=8;
-  int nbbits=100;
-  int shift = 20;
+  int n;
+  
+  int nbbits=8;
+  double alpha;
+  int output;
+  
   double delta = 0.99;
 
+  int K=8;
 
-    PARSE_MAIN_ARGS {
+  int m=1;
+  
+  command_line_basis(A, n, d, delta, argc, argv);
+
+  char type[]="";
+    
+  PARSE_MAIN_ARGS {
+    MATCH_MAIN_ARGID("-type",type);
       MATCH_MAIN_ARGID("-d",d);
-      MATCH_MAIN_ARGID("-bits",nbbits);
-      MATCH_MAIN_ARGID("-shift",shift);
+      MATCH_MAIN_ARGID("-m",m);
       MATCH_MAIN_ARGID("-delta",delta);
+      MATCH_MAIN_ARGID("-bits",nbbits);
+      MATCH_MAIN_ARGID("-alpha",alpha);
+      MATCH_MAIN_ARGID("-output",output);
+      MATCH_MAIN_ARGID("-K",K);
       SYNTAX();
     }
 
-
-
-  int start;
-
-
-  A.resize(d+1,d); 
-  AT.resize(d,d+1);  
-  AT.gen_intrel(nbbits);
-  transpose(A,AT);
-
-  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
-
-  start=utime();
-  //B.hlll(delta);
-  start=utime()-start;
-    
-  cout << endl; 
-  cout << "   bits = " << nbbits << endl;
-  cout << "   dimension = " << d  << endl;
-  cout << "   delta = " << delta  << endl;
+  
+  int i,j;
+  
+  // Découpage rectangle de A
+  
  
-  cout << endl << "   time hplll: " << start/1000 << " ms" << endl;
+  ZZ_mat<mpz_t>  T;
+  T.resize(n,K);
+  
+  for (i=0; i<n; i++)
+    for (j=0; j<K; j++)
+      T(i,j)=A(i,j);
+
+  
+  // Réduction du premier rectangle
+  
+  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > LT(T,NO_TRANSFORM,DEF_REDUCTION);
+ 
+  Timer lt;
+  lt.start();
+  LT.hlll(delta);
+  lt.stop();
+  cout << endl << "d: " << d << "    " <<  "K: " << K << endl << endl; 
+  cout << "1er bout: " << lt << "   " <<  LT.nbswaps << endl;
+  
+  // On complète de 1
+
+  T=LT.getbase();
+  
+  ZZ_mat<mpz_t>  B;
+  B.resize(n,K+1);
+  
+  for (i=0; i<n; i++)
+    for (j=0; j<K; j++)
+      B(i,j)=T(i,j);
+
+   for (i=0; i<n; i++)
+     B(i,j)=A(i,K);
+
    
-  start=utime();
+   // Avec plll
+   // ----------
+   
+   PLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > LP(B,NO_TRANSFORM,DEF_REDUCTION);
+   
+   Timer lp;
+   lp.start();
+   LP.hlll(delta);
+   lp.stop();
+   cout << endl << "plll: " << lp << "   " <<  LP.nbswaps << endl;
 
-  //lehmer_f<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, shift, delta);
-  Lehmer_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, shift, delta);
- 
-  start=utime()-start;
 
-  cout << endl; 
-  cout << "   time lehmer: " << start/1000 << " ms" << endl;
+   // Avec hlll
+   // ----------
+   
+   Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > LB(B,NO_TRANSFORM,DEF_REDUCTION);
+   
+   Timer lb;
+   lb.start();
+   LB.hlll(delta);
+   lb.stop();
+   cout << endl << "hplll: " << lb << "   " <<  LB.nbswaps << endl;
 
-  
-  start=utime();
-  lllReduction(AT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
-  start=utime()-start;
-    
-  cout << endl; 
-  cout << "   time fplll: " << start/1000 << " ms" << endl;
-  
-  //transpose(A,AT);
-  //Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Ctest(A,NO_TRANSFORM,DEF_REDUCTION);
-  //Ctest.isreduced(delta);
+   // Avec fplll
+   // ----------
 
-   Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
-  Btest.isreduced(delta-0.1);
+   ZZ_mat<mpz_t> BT;  
+   BT.resize(K+m,n);
+   transpose(BT,B);
+   
+   Timer fp;
+   fp.start();
+   lllReduction(BT, delta, 0.501, LM_WRAPPER);
+   fp.stop();
+   cout << endl << "fplll: " << fp << endl;
+
+   
+   cout << endl;
+   
+   Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(LP.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+   Btest.isreduced(delta-0.1);
 
   } 
 
