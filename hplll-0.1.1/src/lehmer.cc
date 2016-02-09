@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 #include "hlll.h" 
-
+#include "ratio.h" 
 
 #ifndef HPLLL_LEHMER_CC
 #define HPLLL_LEHMER_CC
@@ -33,6 +33,164 @@ using namespace hplll;
 
 
 
+/* ***********************************************
+
+   Lehmer like LLL  
+
+   (d+m) x n  input matrix 
+
+   ********************************************** */
+
+
+  
+template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
+lehmer_f(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int lsigma, double delta) { 
+
+  if (lsigma==0) {
+    
+    Lattice<ZT, FT, MatrixZT, MatrixFT> B(A,NO_TRANSFORM,DEF_REDUCTION); 
+    
+    B.hlll(delta);
+    
+    C=B.getbase();
+    
+  }
+  // Non trivial shift 
+  // -----------------
+  
+  else {   // lsigma <> 0 
+
+    int i,j;
+    
+    int m=1;   // To change in parameter
+
+    int d=A.getCols();
+
+    C.resize(m+d,d);
+
+    for (i=0; i<m+d; i++)
+       for (j=0; j<d; j++)
+	 C(i,j)=A(i,j);
+    
+    int bitsize = maxbitsize(A,0,m,d);
+
+    int def = -bitsize;
+
+    ZZ_mat<double> Af;
+    Af.resize(m+d,d);
+
+    Z_NR<ZT> tz;
+
+    Lattice<double, double,  matrix<Z_NR<double> >, matrix<FP_NR<double> > > B(Af,TRANSFORM,DEF_REDUCTION);
+
+    ZZ_mat<long> U;
+    U.resize(d,d);
+    
+    ZZ_mat<double> Uf;
+    Uf.resize(d,d);
+
+    FP_NR<double> tf;
+     
+    // Main Lehmer loop on the defect
+    // ------------------------------
+    
+    while (def < 0) { 
+
+      def = min(0,def+lsigma);
+      
+      for (i=0; i<m; i++) 
+	for (j=0; j<d; j++) {
+
+	  tz.mul_2si(C(i,j),def);
+	  Af(i,j).getData()=tz.get_d();  
+	  
+	}
+
+      for (i=m; i<m+d; i++) 
+	for (j=0; j<d; j++)
+	  Af(i,j).getData()=(C(i,j)).get_d();  
+	  
+     {
+	//ICI
+
+	FP_NR<double> td;
+
+	ZZ_mat<mpz_t> Afz;
+	Afz.resize(d+1,d);
+	
+	for (i=0; i<m+d; i++) 
+	  for (j=0; j<d; j++) {
+	    td=(Af(i,j)).get_d();
+	    (Afz(i,j)).set_f(td);
+	  }
+
+	double t,u,v,w;
+	ratio(Afz,t,u,v,w);
+		
+	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+	cout << ".. Average diagonal ratio: " << u << endl;
+	cout << ".. Max diagonal ratio: " << v << endl;
+
+
+
+      }
+
+    
+      B.assign(Af);
+
+      B.hlll(delta);
+
+      Af=B.getbase();
+      
+{
+	//ICI
+
+	FP_NR<double> td;
+
+	ZZ_mat<mpz_t> Afz;
+	Afz.resize(d+1,d);
+	
+	for (i=0; i<m+d; i++) 
+	  for (j=0; j<d; j++) {
+	    td=(Af(i,j)).get_d();
+	    (Afz(i,j)).set_f(td);
+	  }
+
+	double t,u,v,w;
+	ratio(Afz,t,u,v,w);
+
+	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+	cout << ".. Average diagonal ratio: " << u << endl;
+	cout << ".. Max diagonal ratio: " << v << endl;
+
+
+
+      }
+      
+      Uf = B.getU();
+
+      for (i=0; i<d; i++) 
+	for (j=0; j<d; j++) {
+	  tf = Uf(i,j).getData(); 
+	  U(i,j).set_f(tf);  // Pour long double ou autre, vérifier et passer par set_z ? 
+	}
+
+
+      matprod_in_si(C,U);
+
+      int size_of_U = maxbitsize(U,0,d,d);
+      cout << "size of U: " << size_of_U << endl; 
+
+      
+      //print2maple(C,d+1,d);
+
+      
+    } // End Lehmer loop on the defect 
+      
+  } // End else lsigma > 0 
+    
+  return 0;
+}
 
 
 
@@ -394,7 +552,7 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
     // Main Lehmer loop 
     // ----------------
 
-    Lattice<ZT, FT, MatrixZT, MatrixFT> Ct(A,TRANSFORM,DEF_REDUCTION,0);
+    Lattice<ZT, FT, MatrixZT, MatrixFT> Ct(A,TRANSFORM,DEF_REDUCTION);
     
     int s; // max global nb current shift 
 
@@ -424,7 +582,7 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
     ZZ_mat<ZT> AT;
     AT.resize(n,m);
 
-    cout << "********** " << nbshifts << endl; 
+    //cout << "********** " << nbshifts << endl; 
     
     for (int row = m-1; row >= 0; row--) {
 
@@ -433,9 +591,24 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
 
 	current_shift[row]+=shifts[row][s];
 
+	cout << endl <<  current_shift[row] << endl; 
+	
 	// WITHOUT truncation test 
 	Ct.shift_assign(C, current_shift, shift);
 
+ {
+	// ICI
+	double t,u,v,w;
+	ratio(Ct.getbase(),t,u,v,w);
+
+	
+	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+	cout << ".. Average diagonal ratio: " << u << endl;
+	cout << ".. Max diagonal ratio: " << v << endl;
+
+
+      }
+  
 	//print2maple(Ct.getbase(),m,n);
 	
 	transpose(AT,Ct.getbase());
@@ -452,10 +625,13 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
 	transpose(U,V);
 
 	matprod_in(C,U);
-	
+
+		
 	//cout << "********************" << endl << endl;
 
-	transpose(T,AT);
+	// transpose(T,AT);
+
+	
 	//	print2maple(T,m,n);
 
 	//print2maple(C,m,n);
@@ -592,7 +768,7 @@ lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int d, int lsigma=0) {
       //cout << "Size of B " << maxbitsize(BL) << endl;
 
       current_shift+=shifts[s];
-      //cout << "current shift " << current_shift << endl; 
+      cout << "current shift " << current_shift << endl; 
 
       //print2maple(BL,d+m,n);
 
@@ -600,13 +776,27 @@ lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int d, int lsigma=0) {
 
       //print2maple(BL,d+m,n);
 
-      Bt.put(BL, d, lsigma+8); // Heuristic 
+      Bt.put(BL, d, lsigma+20); // Heuristic 
 
       //print2maple(Bt.getbase(),d+m,n);
       //print2maple(B,d+m,n);
-    
+
+      
       Bt.hlll(0.99);
 
+      {
+	// ICI
+	double t,u,v,w;
+	ratio(Bt.getbase(),t,u,v,w);
+
+	
+	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+	cout << ".. Average diagonal ratio: " << u << endl;
+	cout << ".. Max diagonal ratio: " << v << endl;
+
+
+      }
+      
       // Required multiplication update when BL has been truncated 
       matprod_in(B,Bt.getU());
       

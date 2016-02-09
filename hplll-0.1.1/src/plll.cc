@@ -301,6 +301,14 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() {
       old_normB2[j]=normB2[j];
 
     // Si somedone
+    {
+      int nb=0;
+      for (int k=0; k<d; k++)
+	if (somedone[k]==1) nb+=1;
+
+      cout << nb << " / " << d << endl;
+
+    }
     householder();
     // for (j=0; j<d; j++) {
     //   if (somedone[j] == 1) col_kept[j]=0;
