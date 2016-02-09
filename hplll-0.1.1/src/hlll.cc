@@ -20,6 +20,10 @@ along with the hplll Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#include "ratio.h"
+
+#include "plll.h"
+
 
 #ifndef HPLLL_HLLL_CC
 #define HPLLL_HLLL_CC
@@ -53,10 +57,87 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
   for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
 
- 
+  // **********
+  // int kmax=2;
+
+  // Timer time;
+
+  // time.start();
+
+  // int nb=0;
+  
+  //************
+  
   while ((kappa < d) && (nblov < nblov_max)) 
     {
-      
+
+    
+     
+      //*************************************************************
+      // if (kappa > kmax) {
+
+      // 	time.stop();
+
+      // 	cout << endl << "------------------------" << endl;
+		
+      // 	cout << endl << "nblov interv.: " << nblov-nb << "   (" << nblov << ")" << endl;
+	
+      // 	kmax = kappa;
+
+	
+      // 	cout << endl << "kmax: " << kmax << endl;
+      // 	cout << "Time hplll: " << time << endl;
+
+
+      // 	nb=nblov;
+
+      // 	//----- PLLL
+
+      // 	ZZ_mat<mpz_t>  T;
+      // 	T.resize(n,kmax+1);
+	
+      // 	for (int i=0; i<n; i++)
+      //  	  for (int j=0; j<kmax+1; j++)
+      // 	    T(i,j)=B(i,j);
+
+
+      // 	PLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > TB(T);
+
+      // 	Timer tp;
+      // 	tp.start();
+      // 	TB.hlll(0.99);
+      // 	tp.stop();
+      // 	cout << "Time p: " << tp << "   " <<  TB.nbswaps << endl;
+
+      // 	// Reprise pour le chrono de hplll 
+      // 	time.start();
+	
+
+	
+      // }
+
+      // if (((nblov%30000)==0) && (nblov > 0))   
+      // {
+      // 	ZZ_mat<mpz_t>  T;
+      // 	T.resize(n,kmax);
+	
+      // 	for (int i=0; i<n; i++)
+      // 	  for (int j=0; j<kmax; j++)
+      // 	    T(i,j)=B(i,j);
+	
+      // 	  double t,u,v,w;
+      // 	  ratio(T,t,u,v,w);
+	  
+	 
+      // 	  cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+      // 	  cout << ".. Average diagonal ratio: " << u << endl;
+      // 	  cout << endl;
+	  
+
+      // 	}
+	  
+      //*************************************************************
+	  
       if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
       
       if (kappa == 1) { 
@@ -509,7 +590,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	      B.submulcol(kappa,i,xz,nmax);
 	      if (transf)  
 	     	U.submulcol(kappa,i,xz,min(d,nmax));
-	    }	      	    
+	    }
+
+	    
 	  } // end else expo ==0 and not 1 or -1
   
 	} // end expo == 0 

@@ -97,6 +97,17 @@ lehmer_f(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int lsigma, double delta) {
     while (def < 0) { 
 
       def = min(0,def+lsigma);
+
+      // ICI 
+      int mmax=0;
+      for (j=0; j<d; j++)
+	if (mmax <  size_in_bits(C(0,j))) mmax=size_in_bits(C(0,j));
+	
+      def=lsigma-mmax;
+
+      cout << endl << "def: " << def << endl; 
+
+	
       
       for (i=0; i<m; i++) 
 	for (j=0; j<d; j++) {
@@ -126,7 +137,9 @@ lehmer_f(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int lsigma, double delta) {
 
 	double t,u,v,w;
 	ratio(Afz,t,u,v,w);
-		
+
+	cout << endl << "---------------" << endl;
+	
 	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
 	cout << ".. Average diagonal ratio: " << u << endl;
 	cout << ".. Max diagonal ratio: " << v << endl;
@@ -552,7 +565,7 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
     // Main Lehmer loop 
     // ----------------
 
-    Lattice<ZT, FT, MatrixZT, MatrixFT> Ct(A,TRANSFORM,DEF_REDUCTION);
+    Lattice<ZT, FT, MatrixZT, MatrixFT> Ct(A,TRANSFORM,NO_LONG);// DEF_REDUCTION);
     
     int s; // max global nb current shift 
 
@@ -589,62 +602,133 @@ Lehmer_lll(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int shift=0, double delta=0.99) {
      
       for (s=1; s <= nbshifts[row]; s++) {
 
-	current_shift[row]+=shifts[row][s];
-
+	// ICI 
+	int mmax=0;
+	for (j=0; j<n; j++)
+	   if (mmax <  size_in_bits(C(0,j))) mmax=size_in_bits(C(0,j));
+	
+	//	current_shift[row]+=shifts[row][s];
+	current_shift[row]=shift-mmax;
+	
 	cout << endl <<  current_shift[row] << endl; 
 	
 	// WITHOUT truncation test 
 	Ct.shift_assign(C, current_shift, shift);
-
- {
-	// ICI
-	double t,u,v,w;
-	ratio(Ct.getbase(),t,u,v,w);
-
 	
-	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-	cout << ".. Average diagonal ratio: " << u << endl;
-	cout << ".. Max diagonal ratio: " << v << endl;
-
-
-      }
-  
-	//print2maple(Ct.getbase(),m,n);
+	{
+	  // ICI
+	  double t,u,v,w;
+	  ratio(Ct.getbase(),t,u,v,w);
+	  
+	  cout << endl << "---------------" << endl;
 	
-	transpose(AT,Ct.getbase());
+	  cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+	  cout << ".. Average diagonal ratio: " << u << endl;
+	  cout << ".. Max diagonal ratio: " << v << endl;
+	  cout << endl;
+	  
 
-	for (i=0; i<n; i++) 
-	  for (j=0; j<n; j++) 
-	    V(i,j)=0;
+	}
 
-	for (i=0; i<n; i++) 
-	  V(i,i)=1;
+	{
+	  // ICI
 
-	lllReduction(AT, V, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+	  ZZ_mat<ZT> D;
+	  D.resize(m,n);
 
-	transpose(U,V);
+	  D=Ct.getbase();
+	  
+	  ZZ_mat<long> E;
+	  E.resize(12,12);
 
-	matprod_in(C,U);
+	  for (int i=0; i<12; i++)
+	    for (int j=0; j<12; j++)
+	      E(i,j)=size_in_bits(D(i,j));
 
-		
-	//cout << "********************" << endl << endl;
+	   int mmax=0;
+	  for (int i=0; i<n; i++)
+	    if (mmax <  size_in_bits(D(0,i))) mmax=size_in_bits(D(0,i));
 
-	// transpose(T,AT);
+	  cout << "max: " << mmax; 
+	  //cout << E << endl; 
 
+
+	}
+
+	// fplll
+	// -----
 	
-	//	print2maple(T,m,n);
-
-	//print2maple(C,m,n);
-
+	// transpose(AT,Ct.getbase());
 	
-	/* ** HPLLL 
+	// for (i=0; i<n; i++) 
+	//   for (j=0; j<n; j++) 
+	//     V(i,j)=0;
+
+	// for (i=0; i<n; i++) 
+	//   V(i,i)=1;
+	
+	// lllReduction(AT, V, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+	
+	// transpose(U,V);
+	
+	// matprod_in(C,U);
+	
+	// HPLLL
+	// -----
+	
 	Ct.hlll(delta);
 	  
-	//cout << "Size of transform " << maxbitsize(Ct.getU()) << endl; 
 	U = Ct.getU();
 
 	matprod_in(C,U);
-	*/
+
+	{
+	  // ICI
+
+	  ZZ_mat<ZT> D;
+	  D.resize(m,n);
+
+	  D=Ct.getbase();
+	  
+	 
+
+	  int mmax=0;
+	  for (int i=0; i<n; i++)
+	    if (mmax <  size_in_bits(D(0,i))) mmax=size_in_bits(D(0,i));
+
+	  cout << "max red: " << mmax << endl; 
+	 
+
+
+	}
+
+	{
+	  // ICI
+
+	  ZZ_mat<ZT> D;
+	  D.resize(m,n);
+
+	  D=C;
+	  
+	  ZZ_mat<long> E;
+	  E.resize(12,12);
+
+	  for (int i=0; i<12; i++)
+	    for (int j=0; j<12; j++)
+	      E(i,j)=size_in_bits(D(i,j));
+
+
+	  int mmax=0;
+	  for (int i=0; i<n; i++)
+	    if (mmax <  size_in_bits(D(0,i))) mmax=size_in_bits(D(0,i));
+
+	  cout << "max: " << mmax << endl;
+	  cout << "delta: " << mmax+current_shift[row] << endl; 
+	  //cout << endl << E << endl; 
+
+
+	}
+
 
       } // end on s - main Lehmer loop on the shifts 
     
