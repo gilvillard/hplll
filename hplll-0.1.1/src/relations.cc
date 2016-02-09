@@ -151,7 +151,6 @@ namespace hplll {
 				    confidence_gap, intern_shift, increment, lllmethod, delta);
 
       
-      
       def=new_def;
 
       matprod_in_si(A_in,U);
