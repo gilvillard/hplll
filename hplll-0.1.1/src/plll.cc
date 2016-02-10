@@ -61,10 +61,14 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
   tsize.clear();
   tup.clear();
   
-
+  ichrono.clear();
+  itime.clear();
+  
+  
   // Main iterative loop 
   // -------------------
 
+      
  for (K=0; (swapin > 0) || (odd==1); K++)  {
 
         
@@ -77,10 +81,11 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
     // Size reduction 
     // --------------  
-  
-    hsizereduce();
-     
-     
+
+    
+    hsizereduce(odd);
+    
+
     for (j=0; j<d; j++) 
       for (i=j+1; i<d; i++)
 	R.set(i,j,0.0); 
@@ -104,8 +109,9 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       sn.mul(R.get(kappa-1,kappa),R.get(kappa-1,kappa));
       newt.add(s,sn);
 
+            
       if (lovtest > newt) { // Swap, down 
-
+    
 	swapin +=1;
 
 	nbswaps+=1;
@@ -118,14 +124,17 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	if (transf) U.colswap(kappa-1,kappa);
 
       } // end swap 
-      
-
      
       
-    } // End column loop for Lovasz tests 
+    } // End column loop for Lovasz tests
 
-    //DBG 
-    //cout << "** " << swapin << endl; 
+    
+    //DBG
+    // if (odd==0) {
+    //   cout << "** " << swapin << endl; 
+    // }
+    // else 
+    //   cout << "   " << swapin << endl; 
    
     tup+=time;
      
@@ -135,6 +144,8 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
         
  } // Main iteration loop 
 
+ //DBG
+ cout << endl << "*** Chrono reduce: " << ichrono << endl; 
  
  // DBG
  // cout << endl << "**** Size reduction: " << tsize << endl; 
@@ -158,8 +169,9 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
-PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() { 
+PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int from) { 
 
+  cout << "** " << from << endl;
   
   FP_NR<FT> approx;
   
@@ -174,10 +186,13 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() {
   int i,j,w=0;
 
   bool nonstop=1;
-  vector<bool> somedone(d);
-
-
+  //vector<bool> somedone(d);
+  vector<long> somedone(d);
+  
+ 
   householder();
+ 
+    
   // for (j=0; j<d; j++) {
   //   col_kept[j]=0;
   //   householder_r(j);
@@ -188,9 +203,11 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() {
     
   // While loop for the norm decrease
   // --------------------------------
-  
+
  
   while (nonstop) {
+
+    itime.start();
     
     w++;
 
@@ -198,23 +215,27 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() {
       
       somedone[j] = 0;
 
+      //itime.start();
+ 
 
       // Loop through the column 
       // -----------------------
 
-      itime.start();
+     
    
       for (i=j-1; i>-1; i--){  
 
          
-	x.div(R.get(i,j),R.get(i,i)); 
+	x.div(R.get(i,j),R.get(i,i));
+	
 	x.rnd(x);
 
-
+	
+	
 	if (x.sgn() !=0) {   // Non zero combination 
 	                     // --------------------
 	  lx = x.get_si_exp(expo);
-
+ 
 	 
 	  // Cf fplll 
 	  // Long case 
@@ -222,10 +243,12 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() {
 
 	    if (lx == 1) {
 
-	      somedone[j] = 1;
-
+	      compteur +=1;
+	      somedone[j] += 1;
+	      
+	      
 	      R.subcol(j,i,i+1);
-	    
+
 	      B.subcol(j,i,nmax);
 
 	      //Uloc.subcol(j,i,d);
@@ -236,11 +259,13 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() {
 	    	
 	    } 
 	    else if (lx == -1) {
-	   
-	      somedone[j] = 1;
+
+	      compteur +=1;
+	      somedone[j] += 1;
+	      
  
 	      R.addcol(j,i,i+1);
-	    
+
 	      B.addcol(j,i,nmax);
 
 	      //Uloc.addcol(j,i,d);
@@ -251,14 +276,17 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() {
 	    
 	    } 
 	    else { 
- 
-	      somedone[j] = 1;
 
+	      compteur +=1;
+	      somedone[j] += 1;
+	      
 
 	      if (fast_long_flag == 1) {
 	    
 		R.submulcol(j,i,x,i+1);
-		B.addmulcol_si(j,i,-lx,nmax);
+	       		
+		B.addmulcol_si(j,i,-lx,nmax); // ICI 
+
 		if (transf)  
 		  U.addmulcol_si(j,i,-lx,d);
 
@@ -278,13 +306,17 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() {
 	  } // end expo == 0 
 	  else {  // expo <> 0 
 
-	  
-	    somedone[j] = 1;
-
-	    if (fast_long_flag == 1) {
+	    compteur +=1;
+	    somedone[j] += 1;
 	    
+ 
+	    if (fast_long_flag == 1) {
+	      
 	      R.submulcol(j,i,x,i+1);
+
+	      
 	      B.addmulcol_si_2exp(j,i,-lx,expo,nmax);
+
 	      if (transf)  
 		U.addmulcol_si_2exp(j,i,-lx,expo,d);
 	      
@@ -307,9 +339,6 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() {
       } // Loop through the column
     
     
-      itime.stop();
-      ichrono+=itime;
-
     } // End loop on the columns
 
   
@@ -319,17 +348,27 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce() {
       old_normB2[j]=normB2[j];
 
     // DBG Si somedone
-    // {
-    //   int nb=0;
-    //   for (int k=0; k<d; k++)
-    // 	if (somedone[k]==1) nb+=1;
+     // {
+     //   int nb=0;
+     //   for (int k=0; k<d; k++)
+     // 	if (somedone[k]>0) nb+=1;
 
-    // cout << nb << " / " << d << endl;
+     //   //cout << nb << " / " << d << endl;
 
-    // }
+     //   if (nb==0) cout << "****************** " << endl; 
+       
+     // }
+
+    
+    
+    itime.stop();
+    ichrono+=itime;
+
+   
     householder();
+      
     // for (j=0; j<d; j++) {
-    //   if (somedone[j] == 1) col_kept[j]=0;
+    //   if (somedone[j] >0) col_kept[j]=0;
     //   householder_r(j); 
     //   householder_v(j);
     // }
