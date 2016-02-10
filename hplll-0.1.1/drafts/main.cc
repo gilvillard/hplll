@@ -77,7 +77,27 @@ int main(int argc, char *argv[])  {
 
   
   int i,j;
+
+
+  // Lecture de A partiellement réduite
+
+  filebuf fb;
+  iostream os(&fb);
+
+  //fb.open ("in78",ios::in);
+  //n=100;  K=78; d=79;
   
+  fb.open ("in98",ios::in);
+  n=100;  K=98; d=99;
+
+  //fb.open ("in118",ios::in);
+  //n=120;  K=118; d=119;
+
+  
+  A.resize(n,d);
+  os >> A ;
+  fb.close();
+
   // Découpage rectangle de A
   
  
@@ -114,6 +134,7 @@ int main(int argc, char *argv[])  {
    for (i=0; i<n; i++)
      B(i,j)=A(i,K);
 
+ 
    
    // Avec plll
    // ----------
@@ -125,7 +146,7 @@ int main(int argc, char *argv[])  {
    LP.hlll(delta);
    lp.stop();
    cout << endl << "plll: " << lp << "   " <<  LP.nbswaps << endl;
-
+   cout << endl << "compteur: " << LP.compteur <<  endl;
 
    // Avec hlll
    // ----------
@@ -137,6 +158,7 @@ int main(int argc, char *argv[])  {
    LB.hlll(delta);
    lb.stop();
    cout << endl << "hplll: " << lb << "   " <<  LB.nbswaps << endl;
+    cout << endl << "compteur: " << LB.compteur <<  endl;
 
    // Avec fplll
    // ----------

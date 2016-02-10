@@ -532,7 +532,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
       x.div(R.get(i,kappa),R.get(i,i));
       x.rnd(x);
  
- 
+      
+	
       if (x.sgn() !=0) {   // Non zero combination 
                            // --------------------
 	lx = x.get_si_exp(expo);
@@ -545,8 +546,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
 	  if (lx == 1) {
 
+	    compteur +=1;
 	    somedone = 1;
-
+	    
 	    
 	    R.subcol(kappa,i,i+1);
 	    
@@ -558,8 +560,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	  } 
 	  else if (lx == -1) {
 
+	    compteur +=1;
 	    somedone = 1;
-
+	   
 	    
 	    R.addcol(kappa,i,i+1);
 	    
@@ -570,9 +573,11 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
 	  } 
 	  else { 
- 
-	    somedone = 1;
 
+	    compteur +=1;
+	    somedone = 1;
+	    
+ 
 	    if (fast_long_flag == 1) {
 	    
 	      R.submulcol(kappa,i,x,i+1);
@@ -598,8 +603,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	} // end expo == 0 
 	else {  // expo <> 0 
 
+	  compteur +=1;
 	  somedone = 1;
-
+	 
+ 
 	  if (fast_long_flag == 1) {
 	    
 	    R.submulcol(kappa,i,x,i+1);
