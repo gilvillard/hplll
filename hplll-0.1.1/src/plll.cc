@@ -68,10 +68,11 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
   // Main iterative loop 
   // -------------------
 
+  int endposition=d; 
       
  for (K=0; (swapin > 0) || (odd==1); K++)  {
 
-        
+           
     // Just for one sub-phase of size reduction
     setId(Uloc);
 
@@ -83,8 +84,12 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
     // --------------  
 
     
-    hsizereduce(odd);
-    
+    hsizereduce(endposition);
+
+    if (endposition >=d)
+      endposition=1;
+    else 
+      if (odd==0) endposition*=2;
 
     for (j=0; j<d; j++) 
       for (i=j+1; i<d; i++)
@@ -144,6 +149,9 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
         
  } // Main iteration loop 
 
+
+ hsizereduce(d);
+  
  //DBG
  cout << endl << "*** Chrono reduce: " << ichrono << endl; 
  
@@ -169,10 +177,9 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
-PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int from) { 
+PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int endposition) { 
 
-  cout << "** " << from << endl;
-  
+    
   FP_NR<FT> approx;
   
   approx=0.1;
@@ -204,15 +211,19 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int from) {
   // While loop for the norm decrease
   // --------------------------------
 
- 
+
+  //cout << "end " << endposition << endl; 
+    
   while (nonstop) {
 
     itime.start();
     
     w++;
-
+    
+    
     for (j=1; j<d; j++) { // loop on all the columns
-      
+
+             
       somedone[j] = 0;
 
       //itime.start();
@@ -221,9 +232,10 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int from) {
       // Loop through the column 
       // -----------------------
 
-     
-   
-      for (i=j-1; i>-1; i--){  
+      
+      //endposition=max(0,j-dec);
+            
+      for (i=j-1; i>=max(0,j-endposition); i--){  
 
          
 	x.div(R.get(i,j),R.get(i,i));
@@ -235,8 +247,8 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int from) {
 	if (x.sgn() !=0) {   // Non zero combination 
 	                     // --------------------
 	  lx = x.get_si_exp(expo);
- 
-	 
+
+	  	 
 	  // Cf fplll 
 	  // Long case 
 	  if (expo == 0) {

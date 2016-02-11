@@ -70,8 +70,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
   
   while ((kappa < d) && (nblov < nblov_max)) 
     {
-
-    
      
       //*************************************************************
       // if (kappa > kmax) {
@@ -537,7 +535,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
       if (x.sgn() !=0) {   // Non zero combination 
                            // --------------------
 	lx = x.get_si_exp(expo);
-	
+
 	nmax=structure[i]+1;
 	
 	// Cf fplll 
