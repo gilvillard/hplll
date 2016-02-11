@@ -118,7 +118,7 @@ int main(int argc, char *argv[])  {
     ptime.start();
 
     // Régler la valeur de condbits 
-    B.hlll(delta, 500, K,lovmax);
+    B.hlll(delta, 60, K, lovmax);
 
     ptime.stop();
 
