@@ -23,10 +23,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "hlll.h"
 #include "matgen.h"
+#include "slll.h"
 
-#include "plll.h"
 
-#include "tools.h"
+
 
 /* ***********************************************
 
@@ -38,149 +38,151 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
-  
   ZZ_mat<mpz_t> A; // For hpLLL 
+  ZZ_mat<mpz_t> AT;  // fpLLL  
 
-  ZZ_mat<mpz_t> AT;  // fpLLL
- 
   // ---------------------------------------------------------------------
-  { 
   
-  int d=8;
-  int n;
-  
-  int nbbits=8;
-  double alpha;
-  int output;
-  
-  double delta = 0.99;
+    cout << "************************************************************************** " << endl; 
 
-  int K=8;
-
-  int m=1;
-  
-  command_line_basis(A, n, d, delta, argc, argv);
-
-  char type[]="";
+    int n,d;
+    double delta;
     
-  PARSE_MAIN_ARGS {
-    MATCH_MAIN_ARGID("-type",type);
-      MATCH_MAIN_ARGID("-d",d);
-      MATCH_MAIN_ARGID("-m",m);
-      MATCH_MAIN_ARGID("-delta",delta);
-      MATCH_MAIN_ARGID("-bits",nbbits);
-      MATCH_MAIN_ARGID("-alpha",alpha);
-      MATCH_MAIN_ARGID("-output",output);
+    int K=4; 
+
+    command_line_basis(A, n, d, delta, argc, argv); 
+
+    
+    unsigned int lovmax = 4294967295;
+
+    PARSE_MAIN_ARGS {
       MATCH_MAIN_ARGID("-K",K);
-      SYNTAX();
+      MATCH_MAIN_ARGID("-lovmax",lovmax);
+      }
+
+
+    // Make the dimension divisible by K
+    // ---------------------------------
+
+   
+    int i,j;
+    
+    if (d%K !=0) {
+
+     
+      ZZ_mat<mpz_t> B; // For hpLLL 
+      B.resize(n+K-d%K,d+K-d%K); 
+
+      Z_NR<mpz_t> amax;
+      amax=0;
+
+      for (i=0; i<d; i++) 
+	if (A(i,i).cmp(amax) > 0) amax=A(i,i);
+	
+      
+      for  (i=0; i<n; i++) 
+	for (j=0; j<d; j++) 
+	  B(i,j)=A(i,j);
+
+      for  (i=0; i<K-d%K; i++)
+	B(n+i,d+i)=amax;
+
+      A.resize(n+K-d%K,d+K-d%K);
+      set(A,B);
+
+      AT.resize(d+K-d%K,n+K-d%K);
+      transpose(AT,A);
+    
+      n+=K-d%K;
+      d+=K-d%K;
+      
+    }
+    else { 
+
+      AT.resize(d,n);
+      transpose(AT,A);
     }
 
-  
-  int i,j;
+        
+    Timer time;
+
+#ifdef _OPENMP
+    OMPTimer ptime;  
+#else 
+    Timer ptime;
+#endif 
+
+    // TODO with long double and dpe_t
+    SLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A,TRANSFORM,DEF_REDUCTION);
+
+    ptime.start();
+
+    // Régler la valeur de condbits 
+    B.hlll(delta, 500, K,lovmax);
+
+    ptime.stop();
+
+    // ZZ_mat<double> Uf;
+    // Uf.resize(d,d);
+    // Uf=B.getU();
+
+    // FP_NR<double> tf;
+    
+    // ZZ_mat<mpz_t> U;
+    // U.resize(d,d);
+    // for (j=0; j<d; j++)
+    //   for (i=0; i<d; i++) {
+    // 	tf = Uf(i,j).getData();  // Pour long double ou autre, vérifier et passer par set_z ? 
+    // 	U(i,j).set_f(tf);
+    //   }
+
+    // matprod_in(A,U);
+	
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+    T1.isreduced(delta-0.1);
+
+    
+
+    cout << "   dimension = " << d  << endl;
+    cout << "   nblov plll " << B.nblov  << endl;
+    cout << "   time plll: " << ptime << endl;
+    cout << "   input bit size: " << maxbitsize(A) << endl;
+    
+
+    transpose(A,AT);
+
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,TRANSFORM,DEF_REDUCTION);
 
 
-  // Lecture de A partiellement réduite
+    time.start();
 
-  // filebuf fb;
-  // iostream os(&fb);
+    C.hlll(delta);
 
-  // //fb.open ("in78",ios::in);
-  // //n=100;  K=78; d=79;
-  
-  // fb.open ("in98",ios::in);
-  // n=100;  K=98; d=99;
+    time.stop();
 
-  // //fb.open ("in118",ios::in);
-  // //n=120;  K=118; d=119;
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(C.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+    T2.isreduced(delta-0.1);
 
-  
-  // A.resize(n,d);
-  // os >> A ;
-  // fb.close();
+    cout << endl; 
+    cout << "   nblov hlll " << C.nblov  << endl;
+    cout << "   time hlll: " << time << endl;
 
-  // Découpage rectangle de A
-  
- 
-  ZZ_mat<mpz_t>  T;
-  T.resize(n,K);
-  
-  for (i=0; i<n; i++)
-    for (j=0; j<K; j++)
-      T(i,j)=A(i,j);
+    // transpose(AT,A);
 
-  
-  // Réduction du premier rectangle
-  
-  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > LT(T,NO_TRANSFORM,DEF_REDUCTION);
- 
-  Timer lt;
-  lt.start();
-  LT.hlll(delta);
-  lt.stop();
-  cout << endl << "d: " << d << "    " <<  "K: " << K << endl << endl; 
-  cout << "1er bout: " << lt << "   " <<  LT.nbswaps << endl;
-  
-  // On complète de 1
+    // time.start();
 
-  T=LT.getbase();
-  
-  ZZ_mat<mpz_t>  B;
-  B.resize(n,K+1);
-  
-  for (i=0; i<n; i++)
-    for (j=0; j<K; j++)
-      B(i,j)=T(i,j);
+    // lllReduction(AT, delta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
 
-   for (i=0; i<n; i++)
-     B(i,j)=A(i,K);
+    // transpose(A,AT);
 
- 
-   
-   // Avec plll
-   // ----------
-   
-   PLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > LP(B,NO_TRANSFORM,DEF_REDUCTION);
-   
-   Timer lp;
-   lp.start();
-   LP.hlll(delta);
-   lp.stop();
-   cout << endl << "plll: " << lp << "   " <<  LP.nbswaps << endl;
-   cout << endl << "compteur: " << LP.compteur <<  endl;
+    // Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
+    // T2.isreduced(delta-0.1);
 
-   // Avec hlll
-   // ----------
-   
-   Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > LB(B,NO_TRANSFORM,DEF_REDUCTION);
-   
-   Timer lb;
-   lb.start();
-   LB.hlll(delta);
-   lb.stop();
-   cout << endl << "hplll: " << lb << "   " <<  LB.nbswaps << endl;
-    cout << endl << "compteur: " << LB.compteur <<  endl;
+    // time.stop();
+    // cout << "   time fplll: " << time << endl;
+    
 
-   // Avec fplll
-   // ----------
+    
 
-   ZZ_mat<mpz_t> BT;  
-   BT.resize(K+m,n);
-   transpose(BT,B);
-   
-   Timer fp;
-   fp.start();
-   lllReduction(BT, delta, 0.501, LM_WRAPPER);
-   fp.stop();
-   cout << endl << "fplll: " << fp << endl;
-
-   
-   cout << endl;
-   
-   Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(LP.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-   Btest.isreduced(delta-0.1);
-
-  } 
-
- 
   return 0;
 }
