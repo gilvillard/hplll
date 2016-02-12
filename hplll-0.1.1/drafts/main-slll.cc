@@ -43,8 +43,7 @@ int main(int argc, char *argv[])  {
 
   // ---------------------------------------------------------------------
   
-    cout << "************************************************************************** " << endl; 
-
+    
     int n,d;
     double delta;
     
@@ -61,48 +60,9 @@ int main(int argc, char *argv[])  {
       }
 
 
-    // Make the dimension divisible by K
-    // ---------------------------------
-
-   
-    int i,j;
-    
-    if (d%K !=0) {
-
-     
-      ZZ_mat<mpz_t> B; // For hpLLL 
-      B.resize(n+K-d%K,d+K-d%K); 
-
-      Z_NR<mpz_t> amax;
-      amax=0;
-
-      for (i=0; i<d; i++) 
-	if (A(i,i).cmp(amax) > 0) amax=A(i,i);
-	
       
-      for  (i=0; i<n; i++) 
-	for (j=0; j<d; j++) 
-	  B(i,j)=A(i,j);
-
-      for  (i=0; i<K-d%K; i++)
-	B(n+i,d+i)=amax;
-
-      A.resize(n+K-d%K,d+K-d%K);
-      set(A,B);
-
-      AT.resize(d+K-d%K,n+K-d%K);
-      transpose(AT,A);
-    
-      n+=K-d%K;
-      d+=K-d%K;
-      
-    }
-    else { 
-
-      AT.resize(d,n);
-      transpose(AT,A);
-    }
-
+    AT.resize(d,n);
+    transpose(AT,A);
         
     Timer time;
 
@@ -113,35 +73,20 @@ int main(int argc, char *argv[])  {
 #endif 
 
     // TODO with long double and dpe_t
-    SLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A,TRANSFORM,DEF_REDUCTION);
-
+    //SLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A,TRANSFORM,DEF_REDUCTION);
+    SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t>  > B(A,K,TRANSFORM,DEF_REDUCTION);
+ 
     ptime.start();
 
     // Régler la valeur de condbits 
-    B.hlll(delta, 120, K,lovmax);
+    B.hlll(delta, 53, K, lovmax);
 
     ptime.stop();
 
-    // ZZ_mat<double> Uf;
-    // Uf.resize(d,d);
-    // Uf=B.getU();
+   
 
-    // FP_NR<double> tf;
-    
-    // ZZ_mat<mpz_t> U;
-    // U.resize(d,d);
-    // for (j=0; j<d; j++)
-    //   for (i=0; i<d; i++) {
-    // 	tf = Uf(i,j).getData();  // Pour long double ou autre, vérifier et passer par set_z ? 
-    // 	U(i,j).set_f(tf);
-    //   }
-
-    // matprod_in(A,U);
-	
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-    T1.isreduced(delta-0.1);
-
-    
+    T1.isreduced(delta-0.1);    
 
     cout << "   dimension = " << d  << endl;
     cout << "   nblov plll " << B.nblov  << endl;
@@ -151,8 +96,7 @@ int main(int argc, char *argv[])  {
 
     transpose(A,AT);
 
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,TRANSFORM,DEF_REDUCTION);
-
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,NO_TRANSFORM,DEF_REDUCTION);
 
     time.start();
 
@@ -167,19 +111,14 @@ int main(int argc, char *argv[])  {
     cout << "   nblov hlll " << C.nblov  << endl;
     cout << "   time hlll: " << time << endl;
 
-    // transpose(AT,A);
+    transpose(AT,A);
 
-    // time.start();
+    time.start();
 
-    // lllReduction(AT, delta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
+    lllReduction(AT, delta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
 
-    // transpose(A,AT);
-
-    // Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
-    // T2.isreduced(delta-0.1);
-
-    // time.stop();
-    // cout << "   time fplll: " << time << endl;
+    time.stop();
+    cout << "   time fplll: " << time << endl;
     
 
     
