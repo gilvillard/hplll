@@ -57,7 +57,7 @@ AC_CHECK_LIB(mpfr, mpfr_add, , [AC_MSG_ERROR(
 
 AC_ARG_ENABLE(omp, 
    [ --enable-omp Enables OpenMP], [
-     CXXFLAGS="$CXXFLAGS  -fopenmp -ltcmalloc"
+     CXXFLAGS="$CXXFLAGS  -fopenmp"
      #CXXFLAGS="$CXXFLAGS  -fopenmp"
    ])
 

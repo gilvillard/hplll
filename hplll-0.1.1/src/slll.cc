@@ -58,7 +58,7 @@ namespace hplll {
     OMPTimer time;
     OMPTimer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,restsizetime,totime,ttime;
     
-    omp_set_num_threads(4);
+    omp_set_num_threads(8);
 #else 
     Timer time;
     Timer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,restsizetime,totime,ttime;
@@ -96,9 +96,11 @@ namespace hplll {
 
     // **** Voir la terminaison avec U Identité
     
-    //for (iter=0; iter < 12 ; iter ++){
-    for (iter=0; stop==0; iter++) {
+    //for (iter=0; iter < 1 ; iter ++){
+       for (iter=0; stop==0; iter++) {
 
+
+		  
       stop=1;
       
       time.start();
@@ -108,6 +110,8 @@ namespace hplll {
       time.stop();      
       restsizetime+=time;
 
+      //DBG
+      //cout << endl << endl << "**** En entrée " << endl << endl;
       //print2maple(getbase(),n,d);
       
 
@@ -139,7 +143,14 @@ namespace hplll {
 
       set_f(RZ,R,condbits); 
 
+      
+      // DBG
+      for (i=0; i<d; i++)
+	if (RZ(i,i).sgn() ==0) RZ(i,i)=1;
 
+            
+      
+      
       for (k=0; k<S; k++) { 
   
 // #ifdef _OPENMP	
@@ -148,8 +159,10 @@ namespace hplll {
 	  
 	 {
 	   cout << "+++++++++++ Even ++++++++++ " << endl;
+	   
 	   Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
 	   // Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > >  BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
+
 	   BR.set_nblov_max(lovmax);
 	   BR.hlll(delta);
 	   cout << endl << "even nblov " << BR.nblov << endl; 
@@ -159,6 +172,8 @@ namespace hplll {
 	}
       }
 
+      
+      
       time.stop();
       redtime+=time; 
       eventime+=time; 
@@ -185,9 +200,11 @@ namespace hplll {
 	
        pmatprod_in(B,U_even,S);
 
+       
        stop= (stop &&  isId(U_even));
        //print2maple(getbase(),n,d);
 
+      
 	
        // print2maple(U_even,d,d);
        
@@ -199,10 +216,13 @@ namespace hplll {
        even_hsizereduce(S); // Uproper implicitely updated
        // Both RZ and newRZ are equal 
        
+
+      
       
        pmatprod_in(B,U_proper,S);
        //print2maple(getbase(),n,d);
 
+             
        stop= (stop &&  isId(U_proper));
        
 // //       if (transf) pmatprod_in(Uglob,U,S);
@@ -258,16 +278,24 @@ namespace hplll {
 	   ZZ_mat<mpz_t> TTR;
 	   TTR.resize(Sdim,Sdim);
 
+	   
 	   set_f(TTR,TTB,condbits); 
-
+	   
+	   
+	   
 	   for (i=0; i<Sdim; i++) 
 	     for (j=0; j<Sdim; j++)
 	       newRZ(k*Sdim+bdim+i,k*Sdim+bdim+j)=TTR(i,j);
+
+	   // DBG
+	   for (i=0; i<d; i++)
+	     if (newRZ(i,i).sgn() ==0) newRZ(i,i)=1;
+	   
 	   
 	 } // End parallel re-orthogonalization
        } 
 
-
+       
 	 // Odd block loop 
 	 // --------------
 
@@ -386,7 +414,8 @@ namespace hplll {
 
 
   /* -------------------------------------------------------- */
-  /* Update above diagonal for the even phase                  */
+  /* Update above diagonal after the even phase               */
+  /*   since only diagonal blocks have been computed          */
   /* -------------------------------------------------------- */
 
   template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void 

@@ -89,7 +89,7 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
     if (endposition >=d)
       endposition=1;
     else 
-      if (odd==0) endposition*=2;
+      if ((K%2)==0) endposition*=2;
 
     for (j=0; j<d; j++) 
       for (i=j+1; i<d; i++)
