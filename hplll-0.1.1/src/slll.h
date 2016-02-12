@@ -87,7 +87,7 @@ class SLattice
   // Not MatrixFT for the exp case 
   matrix<FP_NR<FT> > getR(); 
 
-  SLattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0); 
+  SLattice(ZZ_mat<ZT> A, int K, bool forU=false, int reduction_method=0); 
 
   void init(int n, int d, bool forU);
 

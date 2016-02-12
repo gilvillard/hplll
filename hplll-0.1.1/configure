@@ -16843,7 +16843,7 @@ fi
 # Check whether --enable-omp was given.
 if test "${enable_omp+set}" = set; then :
   enableval=$enable_omp;
-     CXXFLAGS="$CXXFLAGS  -fopenmp -ltcmalloc"
+     CXXFLAGS="$CXXFLAGS  -fopenmp"
      #CXXFLAGS="$CXXFLAGS  -fopenmp"
 
 fi
