@@ -25,6 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "matgen.h"
 
 #include "plll.h"
+#include "slll.h"
 
 #include "tools.h"
 
@@ -148,6 +149,14 @@ int main(int argc, char *argv[])  {
    cout << endl << "plll: " << lp << "   " <<  LP.nbswaps << endl;
    cout << endl << "compteur: " << LP.compteur <<  endl;
 
+   // SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t>  > LP(B,TRANSFORM,DEF_REDUCTION);
+ 
+   // Timer lp;
+   // lp.start();
+   // LP.hlll(delta,53,4,10000);
+   // lp.stop();
+   // cout << endl << "slll: " << lp << endl;
+   
    // Avec hlll
    // ----------
    
@@ -157,8 +166,10 @@ int main(int argc, char *argv[])  {
    lb.start();
    LB.hlll(delta);
    lb.stop();
+
+  
    cout << endl << "hplll: " << lb << "   " <<  LB.nbswaps << endl;
-    cout << endl << "compteur: " << LB.compteur <<  endl;
+   cout << endl << "compteur: " << LB.compteur <<  endl;
 
    // Avec fplll
    // ----------
