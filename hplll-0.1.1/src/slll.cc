@@ -58,7 +58,7 @@ namespace hplll {
     OMPTimer time;
     OMPTimer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,restsizetime,totime,ttime;
     
-    omp_set_num_threads(8);
+    omp_set_num_threads(4);
 #else 
     Timer time;
     Timer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,restsizetime,totime,ttime;
@@ -97,16 +97,17 @@ namespace hplll {
     // **** Voir la terminaison avec U Identité
     
     //for (iter=0; iter < 1 ; iter ++){
-       for (iter=0; stop==0; iter++) {
+      for (iter=0; stop==0; iter++) {
 
 
-		  
+      //print2maple(B,n,d);
+      
       stop=1;
       
       time.start();
 
       phouseholder(S);
-            
+
       time.stop();      
       restsizetime+=time;
 
@@ -141,9 +142,10 @@ namespace hplll {
      
       // The integer block lattice 
 
+
       set_f(RZ,R,condbits); 
 
-      
+            
       // DBG
       for (i=0; i<d; i++)
 	if (RZ(i,i).sgn() ==0) RZ(i,i)=1;
@@ -160,6 +162,7 @@ namespace hplll {
 	 {
 	   cout << "+++++++++++ Even ++++++++++ " << endl;
 	   
+	  
 	   Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
 	   // Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > >  BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
 
@@ -1190,24 +1193,54 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>
-SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, bool forU, int reduction_method) {
+SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int K, bool forU, int reduction_method) {
 
-  
+
+  int i,j;
 
   n=A.getRows();
   d=A.getCols();
 
+        
+  if (d%K !=0) {
+
+      B.resize(n+K-d%K,d+K-d%K);
+
+      Z_NR<mpz_t> tabs,amax;
+      amax=0;
+
+      for (i=0; i<n; i++)
+	for (j=0; j<d; j++) {
+
+	  tabs.abs(A(i,j)); 
+       	  if (tabs.cmp(amax) > 0) amax=A(i,j);
+	}
+      
+      for  (i=0; i<n; i++)
+        for (j=0; j<d; j++)
+          B(i,j)=A(i,j);
+
+      for  (i=0; i<K-d%K; i++)
+        B(n+i,d+i)=amax;
+
+      n+=K-d%K;
+      d+=K-d%K;
+
+     
+    }
+  else {
+    
+    B.resize(n,d);  // Not in init for the mixed matrix case also 
+
+    for (i=0; i<n; i++) 
+      for (j=0; j<d; j++) 
+	B(i,j)=A.Get(i,j);
+    
+  }
+  
   init(n,d, forU); 
 
-  int i,j;
-
-  B.resize(n,d);  // Not in init for the mixed matrix case also 
-
-  for (i=0; i<n; i++) 
-    for (j=0; j<d; j++) 
-      B(i,j)=A.Get(i,j);
-
- }
+}
 
 
 
