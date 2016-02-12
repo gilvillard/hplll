@@ -108,6 +108,8 @@ namespace hplll {
 
       phouseholder(S);
 
+      
+      
       time.stop();      
       restsizetime+=time;
 
