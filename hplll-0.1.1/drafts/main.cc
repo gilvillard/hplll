@@ -163,7 +163,6 @@ int main(int argc, char *argv[])  {
   
    SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t>  > LP(TT.getbase(),4,TRANSFORM,DEF_REDUCTION);
  
-   
    lp.start();
    LP.hlll(delta,53,4,100000);
    lp.stop();
