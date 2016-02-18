@@ -144,7 +144,6 @@ namespace hplll {
      
       // The integer block lattice 
 
-
       set_f(RZ,R,condbits); 
 
             
@@ -152,9 +151,7 @@ namespace hplll {
       for (i=0; i<d; i++)
 	if (RZ(i,i).sgn() ==0) RZ(i,i)=1;
 
-            
-      
-      
+          
       for (k=0; k<S; k++) { 
   
 // #ifdef _OPENMP	
@@ -208,8 +205,6 @@ namespace hplll {
        
        stop= (stop &&  isId(U_even));
        //print2maple(getbase(),n,d);
-
-      
 	
        // print2maple(U_even,d,d);
        
@@ -217,13 +212,15 @@ namespace hplll {
 
 
        setId(U_proper);
-       
+
+       // Les blocs diagonaux ne devraient pas avoir à être ré-orthogonalisés 
        even_hsizereduce(S); // Uproper implicitely updated
+       // !!!!! eventuellement que au-dessus de diag pour odd 
        // Both RZ and newRZ are equal 
        
 
-      
-      
+       // Si on l'applique à B autant ne pas le faire 3 fois R flottant, RZ et B ?
+       
        pmatprod_in(B,U_proper,S);
        //print2maple(getbase(),n,d);
 
@@ -236,9 +233,10 @@ namespace hplll {
        prodtime+=time; 
 
        
-      // Re-orthogonalization by blocks
+      // Re-orthogonalization by blocks  !!! should be available from the even lll reductions or the size reduce? 
       // ------------------------------
-
+      // Orthogonalisation partielle diagonale, permet les prochains appels à LLL mais pas un
+       //prochain size reduce global 
 
 //        time.start();
 
@@ -286,7 +284,8 @@ namespace hplll {
 	   
 	   set_f(TTR,TTB,condbits); 
 	   
-	   
+	   //DBG
+	   cout << endl << endl << "**************************************" << d << "  " << Sdim << "   "  << k*Sdim+bdim+Sdim << endl << endl;
 	   
 	   for (i=0; i<Sdim; i++) 
 	     for (j=0; j<Sdim; j++)
@@ -313,13 +312,19 @@ namespace hplll {
 	
 //        time.start();
 
+       
+
+       
+       
 #ifdef _OPENMP
 #pragma omp parallel for 
-#endif 
+#endif
+
+      
+       
        for (k=0; k<S-1; k++) {
 
 	 cout << "+++++++++++ Odd ++++++++++ " << endl; 
-	
 	
 	  Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > >  BR(getblock(newRZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
 	  BR.set_nblov_max(lovmax);
@@ -327,26 +332,22 @@ namespace hplll {
 	  cout << endl << "odd nblov " << BR.nblov << endl; 
 	  nblov+=BR.nblov;
 	  putblock(U_odd,BR.getU(),k,k,S,bdim);	   
-	  //putblock(RZ,BR.getbase(),k,k,S,bdim); Not here: RZ and the orthogonalization were different 
+	  //putblock(RZ,BR.getbase(),k,k,S,bdim); Not here: RZ and the orthogonalization were different
+
+	  
  	}
-
-
-       odd_updateRZ(S);
-
-       //print2maple(RZ,d,d);
        
+       //odd_updateRZ(S); 
+
+              
        pmatprod_in(B,U_odd,S);
-       //print2maple(getbase(),n,d);
+       
        
       stop= (stop &&  isId(U_odd));
 
-      cout << "!!!!!!!!   " << stop << endl; 
-//        time.stop();
-//        redtime += time;
-//        oddtime += time;
+      cout << "!!!!!!!!   " << stop << endl;
 
-//        print2maple(U_odd,d,d);
-       
+      
 // #pragma omp barrier
       
 //       stop=isId(U)*stop;
@@ -357,7 +358,7 @@ namespace hplll {
       
 //       time.start();
       
-//       pmatprod_in(RZ,U,S);  
+      //pmatprod_in(RZ,U_odd,S);  
 
 //       pmatprod_in(B,U,S);
      
@@ -373,11 +374,16 @@ namespace hplll {
       
 //       time.start();
 
-       // setId(U_proper);
-       
-       // odd_hsizereduce(S); // U implicitely updated 
+       setId(U_proper);
+       // ICI
 
-       // pmatprod_in(B,U_proper,S);
+       phouseholder(S);
+      set_f(RZ,R,condbits);
+      
+             
+       odd_hsizereduce(S); // U implicitely updated 
+
+        pmatprod_in(B,U_proper,S);
        // print2maple(getbase(),n,d);
 
       
@@ -759,8 +765,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::odd_hsizereduce(int S)
       RZloc.assign(tmpM);
 
       // ICI
-      cout << "* A ** " << k << "   " << l << endl;
-      print2maple(tmpM,Sdim,2*Sdim-dlast);
+      //cout << "* A ** " << k << "   " << l << endl;
+      //print2maple(tmpM,Sdim,2*Sdim-dlast);
 		  
       // Local size reduction 
 
@@ -770,7 +776,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::odd_hsizereduce(int S)
 	RZloc.householder_v(i);
       }
 
-
+      // DBG 
+      //print2maple(tmpM,Sdim,2*Sdim-dlast);
+ 
       for (i=Sdim; i<2*Sdim-dlast; i++) {
 
 	RZloc.hsizereduce(i,Sdim-1);
@@ -833,8 +841,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::odd_hsizereduce(int S)
     RZlocf.assign(tmpM);
 
     // ICI
-    cout << "* B ** " << k << "   " << l << endl;
-    print2maple(tmpM,Sdim,bdim+Sdim-dlast);
+    //cout << "* B ** " << k << "   " << l << endl;
+    //print2maple(tmpM,Sdim,bdim+Sdim-dlast);
       
     // Local size reduction 
     
@@ -843,7 +851,10 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::odd_hsizereduce(int S)
       RZlocf.householder_r(i);
       RZlocf.householder_v(i);
     }
-    
+
+    // DBG 
+    //print2maple(tmpM,Sdim,bdim+Sdim-dlast);
+      
     for (i=bdim; i<bdim+Sdim-dlast; i++) {
 
       RZlocf.hsizereduce(i,bdim-1);
