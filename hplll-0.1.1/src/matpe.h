@@ -1347,16 +1347,14 @@ void set_f(matrix<Z_NR<mpz_t> >& B, MatrixPE<double, dpe_t> R, long condbits)
 
   int i,j;
 
+
    fp_norm(minval,R.getcol(0),n);
 
-   
-   
   // Avant Mar 29 avr 2014 10:42:12 CEST
   for (j=1; j<d; j++) {
     
     fp_norm(norm,R.getcol(j),n);
     if (minval.cmp(norm) > 0) minval=norm;
-
   }
 
 

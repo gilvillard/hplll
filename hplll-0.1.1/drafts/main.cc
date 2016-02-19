@@ -82,22 +82,22 @@ int main(int argc, char *argv[])  {
 
   // Lecture de A partiellement réduite
 
-  // filebuf fb;
-  // iostream os(&fb);
+  filebuf fb;
+  iostream os(&fb);
 
-  // //fb.open ("in78",ios::in);
-  // //n=100;  K=78; d=79;
+  //fb.open ("in78",ios::in);
+  //n=100;  K=78; d=79;
   
-  // //fb.open ("in98",ios::in);
-  // //n=100;  K=98; d=99;
+  //fb.open ("in98",ios::in);
+  //n=100;  K=98; d=99;
 
-  // fb.open ("in118",ios::in);
-  // n=120;  K=118; d=119;
+  fb.open ("in118",ios::in);
+  n=120;  K=118; d=119;
 
   
-  // A.resize(n,d);
-  // os >> A ;
-  // fb.close();
+  A.resize(n,d);
+  os >> A ;
+  fb.close();
 
   // Découpage rectangle de A
   
@@ -161,10 +161,10 @@ int main(int argc, char *argv[])  {
    lp0.stop();
    
   
-   SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t>  > LP(TT.getbase(),4,TRANSFORM,DEF_REDUCTION);
+   SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t>  > LP(TT.getbase(),8,TRANSFORM,DEF_REDUCTION);
  
    lp.start();
-   LP.hlll(delta,53,4,100000);
+   LP.hlll(delta,53,8,100000);
    lp.stop();
    cout << endl << "hsize: " << lp0  << endl;
    cout << endl << "slll: " << lp  << endl;
