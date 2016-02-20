@@ -49,7 +49,7 @@ class SLattice
 
   bool transf;
 
-  int n,d; 
+  int norigin,n,dorigin,d; 
 
 
   // Floating point objects concerned a possible precision change 

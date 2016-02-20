@@ -80,8 +80,7 @@ namespace hplll {
 
     bool stop=0;
 
-    print2maple(getbase(),n,d);   
-
+   
     // *****************************
     // Could be modified dynamically
  
@@ -96,8 +95,8 @@ namespace hplll {
 
     // **** Voir la terminaison avec U Identité
     
-    //for (iter=0; iter < 1 ; iter ++){
-      for (iter=0; stop==0; iter++) {
+    //for (iter=0; iter < 2 ; iter ++){
+    for (iter=0; stop==0; iter++) {
 
 
       //print2maple(B,n,d);
@@ -124,15 +123,11 @@ namespace hplll {
      
       // The integer block lattice 
 
-      cout << "ici " << endl;   
- 
       set_f(RZ,R,condbits); 
-
-      cout << "ici " << endl;             
+            
       // DBG
       for (i=0; i<d; i++)
 	if (RZ(i,i).sgn() ==0) RZ(i,i)=1;
-
           
       time.start();
 
@@ -231,82 +226,72 @@ namespace hplll {
 
        time.start();
 
-#ifdef _OPENMP
-#pragma omp parallel for 
-#endif 
-       for (k=0; k<S-1; k++) {
+// #ifdef _OPENMP
+// #pragma omp parallel for 
+// #endif 
+//        for (k=0; k<S-1; k++) {
 
-	 int i,j;
+// 	 int i,j;
 	 
-	 cout << "+++++++++++ Re-ortho ++++++++++ " << endl; 
+// 	 cout << "+++++++++++ Re-ortho ++++++++++ " << endl; 
 	 
-	 {
-	   ZZ_mat<mpz_t> TR;
-	   TR.resize(2*Sdim,Sdim+bdim);
-	   for (i=0; i<2*Sdim; i++) 
-	     for (j=0; j<Sdim+bdim; j++)
-	       TR(i,j)=RZ(k*Sdim+i,k*Sdim+j);
+// 	 {
+// 	   ZZ_mat<mpz_t> TR;
+// 	   TR.resize(2*Sdim,Sdim+bdim);
+// 	   for (i=0; i<2*Sdim; i++) 
+// 	     for (j=0; j<Sdim+bdim; j++)
+// 	       TR(i,j)=RZ(k*Sdim+i,k*Sdim+j);
 
 	  
-	   Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(TR);
+// 	   Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(TR);
 	   
-	   for (j=0; j<Sdim+bdim; j++) {
-	     T.householder_r(j);
-	     T.householder_v(j);
-	   } 
+// 	   for (j=0; j<Sdim+bdim; j++) {
+// 	     T.householder_r(j);
+// 	     T.householder_v(j);
+// 	   } 
 
-	   matrix<FP_NR<mpfr_t> > TB;
-	   TB.resize(Sdim+bdim,Sdim+bdim);
+// 	   matrix<FP_NR<mpfr_t> > TB;
+// 	   TB.resize(Sdim+bdim,Sdim+bdim);
 
-	   TB=T.getR();
+// 	   TB=T.getR();
 
 	 
 	  
-	   matrix<FP_NR<mpfr_t> > TTB;
-	   TTB.resize(Sdim,Sdim);
+// 	   matrix<FP_NR<mpfr_t> > TTB;
+// 	   TTB.resize(Sdim,Sdim);
 
-	   for (i=0; i<Sdim; i++) 
-	     for (j=0; j<Sdim; j++)
-	       TTB(i,j)=TB(bdim+i,bdim+j);
+// 	   for (i=0; i<Sdim; i++) 
+// 	     for (j=0; j<Sdim; j++)
+// 	       TTB(i,j)=TB(bdim+i,bdim+j);
 
-	   ZZ_mat<mpz_t> TTR;
-	   TTR.resize(Sdim,Sdim);
+// 	   ZZ_mat<mpz_t> TTR;
+// 	   TTR.resize(Sdim,Sdim);
 
 	   
-	   set_f(TTR,TTB,condbits); 
+// 	   set_f(TTR,TTB,condbits); 
 	   
-	   //DBG
-	   cout << endl << endl << "**************************************" << d << "  " << Sdim << "   "  << k*Sdim+bdim+Sdim << endl << endl;
+// 	   //DBG
+// 	   cout << endl << endl << "**************************************" << d << "  " << Sdim << "   "  << k*Sdim+bdim+Sdim << endl << endl;
 	   
-	   for (i=0; i<Sdim; i++) 
-	     for (j=0; j<Sdim; j++)
-	       newRZ(k*Sdim+bdim+i,k*Sdim+bdim+j)=TTR(i,j);
+// 	   for (i=0; i<Sdim; i++) 
+// 	     for (j=0; j<Sdim; j++)
+// 	       newRZ(k*Sdim+bdim+i,k*Sdim+bdim+j)=TTR(i,j);
 
-	   // DBG
-	   for (i=0; i<d; i++)
-	     if (newRZ(i,i).sgn() ==0) newRZ(i,i)=1;
+// 	   // DBG
+// 	   for (i=0; i<d; i++)
+// 	     if (newRZ(i,i).sgn() ==0) newRZ(i,i)=1;
 	   
 	   
-	 } // End parallel re-orthogonalization
-       } 
+// 	 } // End parallel re-orthogonalization
+//        } 
 
-       // {//ICI 
-       // 	 cout << endl;
-       // 	 for (i=0; i<d; i++)
-       // 	   cout << "   " << newRZ(i,i);
-       // 	 cout << endl; 
-       // } 
 
-       // phouseholder(S);
+       phouseholder(S);
+       set_f(RZ,R,condbits);
 
-       // set_f(newRZ,R,condbits);
-
-       // {//ICI 
-       // 	 cout << endl  << endl;
-       // 	 for (i=0; i<d; i++)
-       // 	   cout << "   " << newRZ(i,i);
-       // 	 cout << endl; 
-       // } 
+       // DBG
+       for (i=0; i<d; i++)
+	 if (RZ(i,i).sgn() ==0) RZ(i,i)=1;
 
        time.stop();
        orthotime+=time;
@@ -335,13 +320,13 @@ namespace hplll {
 
 	 cout << "+++++++++++ Odd ++++++++++ " << endl; 
 	
-	  Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > >  BR(getblock(newRZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
+	  Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > >  BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
 	  BR.set_nblov_max(lovmax);
 	  BR.hlll(delta);
 	  cout << endl << "odd nblov " << BR.nblov << endl; 
 	  nblov+=BR.nblov;
 	  putblock(U_odd,BR.getU(),k,k,S,bdim);	   
-	  //putblock(RZ,BR.getbase(),k,k,S,bdim); Not here: RZ and the orthogonalization were different
+	  //putblock(RZ,BR.getbase(),k,k,S,bdim); //Not here: RZ and the orthogonalization were different
 
 	  
  	}
@@ -374,7 +359,7 @@ namespace hplll {
       
 //       time.start();
       
-      //pmatprod_in(RZ,U_odd,S);  
+      pmatprod_in(RZ,U_odd,S);  
 
 //       pmatprod_in(B,U,S);
      
@@ -395,14 +380,14 @@ namespace hplll {
 
        time.start();
 
-       phouseholder(S);
+       //phouseholder(S);
        
 
        time.stop();      
        qrtime+=time;
        
        
-       set_f(RZ,R,condbits);
+       //set_f(RZ,R,condbits);
       
        time.start();
       
@@ -1064,13 +1049,15 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::phouseholder(int S)
       s.mul(s,w);
       s.sqrt(s);
 
-      // ICI 
       // Zero test 
-      if (s.cmp(0.1) <0) { cout << "kappa " << kappa << "  w  " << w << "  s  " << s << endl; s=1.0;}  
-      V.div(kappa,kappa+1, R.getcol(kappa,kappa+1), s, n-kappa-1);
+      if (s.sgn() <=0) 
+	V.set(kappa,kappa,1.0); 
+      else { 
+	V.div(kappa,kappa+1, R.getcol(kappa,kappa+1), s, n-kappa-1);
 
-      nrtmp.div(w,s);
-      V.set(kappa,kappa,nrtmp); 
+	nrtmp.div(w,s);
+	V.set(kappa,kappa,nrtmp); 
+      }
 
       for(i=kappa+1; i<d; i++)  R.set(i,kappa,0.0); 
        
@@ -1117,11 +1104,13 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::phouseholder(int S)
 
 template<class ZT,class FT,class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> SLattice<ZT,FT, MatrixZT, MatrixFT>::getbase()
 {
-  ZZ_mat<ZT> BB(n,d);
-  for (int i=0; i<n; i++) 
-    for (int j=0; j<d; j++) BB.Set(i,j,B(i,j)); // reprendre boucle sur les colonnes 
+  ZZ_mat<ZT> BB(norigin,dorigin);
+  for (int i=0; i<norigin; i++) 
+    for (int j=0; j<dorigin; j++) BB.Set(i,j,B(i,j)); // reprendre boucle sur les colonnes 
 
   return BB;
+
+
 }
 
 
@@ -1239,23 +1228,47 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int K, bool forU, in
 
   int i,j;
 
+  norigin=A.getRows();
   n=A.getRows();
+  dorigin=A.getCols();
   d=A.getCols();
 
         
   if (d%K !=0) {
+
+
+    // B.resize(n+K-d%K,d+K-d%K);
+
+
+    //   for  (i=0; i<K-d%K; i++)
+    //     B(i,i)=1;
+
+    //   for  (i=0; i<n; i++)
+    //     for (j=0; j<d; j++)
+    //       B(i+K-d%K,j+K-d%K)=A(i,j);      
+
+    //   n+=K-d%K;
+    //   d+=K-d%K;
+
 
       B.resize(n+K-d%K,d+K-d%K);
 
       Z_NR<mpz_t> tabs,amax;
       amax=0;
 
-      for  (i=0; i<K-d%K; i++)
-        B(i,i)=1;
+      for (i=0; i<n; i++)
+      	for (j=0; j<d; j++) {
 
+      	  tabs.abs(A(i,j)); 
+       	  if (tabs.cmp(amax) > 0) amax=A(i,j);
+      	}
+      
       for  (i=0; i<n; i++)
         for (j=0; j<d; j++)
-          B(i+K-d%K,j+K-d%K)=A(i,j);      
+          B(i,j)=A(i,j);
+
+      for  (i=0; i<K-d%K; i++)
+        B(n+i,d+i)=amax;
 
       n+=K-d%K;
       d+=K-d%K;
