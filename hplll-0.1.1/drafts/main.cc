@@ -187,7 +187,7 @@ int main(int argc, char *argv[])  {
    // ----------
 
    ZZ_mat<mpz_t> BT;  
-   BT.resize(K+m,n);
+   BT.resize(K+1,n);
    transpose(BT,B);
    
    Timer fp;
