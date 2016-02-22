@@ -137,7 +137,6 @@ namespace hplll {
 #pragma omp parallel for 
 #endif
 
-
       for (k=0; k<S; k++) { 
   	 {
 	   
@@ -147,13 +146,15 @@ namespace hplll {
 
 	   BR.set_nblov_max(lovmax);
 	   BR.hlll(delta);
-	   cout << endl << "nblov (" << k << "): " << BR.nblov << endl; 
-	   nblov+=BR.nblov;
+	   cout << endl << "Swaps (" << 2*k << "): " << BR.nbswaps << endl; 
+	   swapstab[2*k]+=BR.nbswaps;
+	   nbswaps+=BR.nbswaps;
 	   putblock(RZ,BR.getbase(),k,k,S,0);
 	   putblock(U_even,BR.getU(),k,k,S,0);
 	}
       }
       
+
       time.stop();
       redtime+=time; 
       eventime+=time; 
@@ -321,8 +322,9 @@ namespace hplll {
 	  Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > >  BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
 	  BR.set_nblov_max(lovmax);
 	  BR.hlll(delta);
-	  cout << endl << "nblov (" << k << "): " << BR.nblov << endl;
-	  nblov+=BR.nblov;
+	  cout << endl << "Swaps (" << 2*k+1 << "): " << BR.nbswaps << endl;
+	  swapstab[2*k+1]+=BR.nbswaps;
+	  nbswaps+=BR.nbswaps;
 	  putblock(U_odd,BR.getU(),k,k,S,bdim);	   
 	  //putblock(RZ,BR.getbase(),k,k,S,bdim); //Not here: RZ and the orthogonalization were different
 
@@ -423,6 +425,7 @@ namespace hplll {
       cout << " Even size reds: " << esizetime  << endl;
       cout << " Odd size reds: " << osizetime  << endl;
       cout << " Total time:  " << totime << endl;  
+      cout << endl << "Swaps: " << swapstab << endl; 
     
     return 0;
     
@@ -1191,7 +1194,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
 
   transf = forU;
 
-  nblov=0;
+  nbswaps=0;
 
   R.resize(n,d);
 
@@ -1280,6 +1283,10 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int K, bool forU, in
     
   }
   
+  swapstab.resize(K-1);
+  for (i=0; i<K-1; i++) 
+    swapstab[i]=0;
+
   init(n,d, forU); 
 
 }
