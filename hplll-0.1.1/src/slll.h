@@ -62,8 +62,9 @@ class SLattice
   MatrixFT V;
 
  public:
-
-  int nblov;
+  
+  int nbswaps;
+  vector<int> swapstab; 
 
   int hlll(double delta, int condbits, int K, unsigned int lovmax=4294967295);
  

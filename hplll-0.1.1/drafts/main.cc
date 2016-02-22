@@ -60,6 +60,8 @@ int main(int argc, char *argv[])  {
 
   int m=1;
   
+  int lovmax=1000000;
+
   command_line_basis(A, n, d, delta, argc, argv);
 
   char type[]="";
@@ -71,6 +73,7 @@ int main(int argc, char *argv[])  {
       MATCH_MAIN_ARGID("-delta",delta);
       MATCH_MAIN_ARGID("-bits",nbbits);
       MATCH_MAIN_ARGID("-alpha",alpha);
+      MATCH_MAIN_ARGID("-lovmax",lovmax);
       MATCH_MAIN_ARGID("-output",output);
       MATCH_MAIN_ARGID("-K",K);
       SYNTAX();
@@ -82,22 +85,22 @@ int main(int argc, char *argv[])  {
 
   // Lecture de A partiellement réduite
 
-  filebuf fb;
-  iostream os(&fb);
+  // filebuf fb;
+  // iostream os(&fb);
 
-  //fb.open ("in78",ios::in);
-  //n=100;  K=78; d=79;
+  // //fb.open ("in78",ios::in);
+  // //n=100;  K=78; d=79;
   
-  //fb.open ("in98",ios::in);
-  //n=100;  K=98; d=99;
+  // //fb.open ("in98",ios::in);
+  // //n=100;  K=98; d=99;
 
-  fb.open ("in118",ios::in);
-  n=120;  K=118; d=119;
+  // fb.open ("in118",ios::in);
+  // n=120;  K=118; d=119;
 
   
-  A.resize(n,d);
-  os >> A ;
-  fb.close();
+  // A.resize(n,d);
+  // os >> A ;
+  // fb.close();
 
   // Découpage rectangle de A
   
@@ -164,7 +167,7 @@ int main(int argc, char *argv[])  {
    SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t>  > LP(TT.getbase(),8,TRANSFORM,DEF_REDUCTION);
  
    lp.start();
-   LP.hlll(delta,53,8,100000);
+   LP.hlll(delta,53,8,lovmax);
    lp.stop();
    cout << endl << "hsize: " << lp0  << endl;
    cout << endl << "slll: " << lp  << endl;
