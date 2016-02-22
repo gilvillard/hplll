@@ -48,7 +48,7 @@ namespace hplll {
 
     S=K/2;
     
-    int Sdim = d/S;
+    //int Sdim = d/S;
 
     int i,k;    // block or segment loop 
    
@@ -131,14 +131,15 @@ namespace hplll {
           
       time.start();
 
+      cout << endl <<  "--- Even reductions" << endl;
+
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif
+
+
       for (k=0; k<S; k++) { 
-  
-// #ifdef _OPENMP	
-// 	cout << "thread " << omp_get_thread_num() << endl; 
-// #endif
-	  
-	 {
-	   cout << "+++++++++++ Even ++++++++++ " << endl;
+  	 {
 	   
 	  
 	   Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
@@ -146,7 +147,7 @@ namespace hplll {
 
 	   BR.set_nblov_max(lovmax);
 	   BR.hlll(delta);
-	   cout << endl << "even nblov " << BR.nblov << endl; 
+	   cout << endl << "nblov (" << k << "): " << BR.nblov << endl; 
 	   nblov+=BR.nblov;
 	   putblock(RZ,BR.getbase(),k,k,S,0);
 	   putblock(U_even,BR.getU(),k,k,S,0);
@@ -309,21 +310,18 @@ namespace hplll {
 	
        time.start();
 
-    
+       cout << endl <<  "--- Odd reductions" << endl;
+
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif
-
-      
-       
+             
        for (k=0; k<S-1; k++) {
-
-	 cout << "+++++++++++ Odd ++++++++++ " << endl; 
 	
 	  Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > >  BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
 	  BR.set_nblov_max(lovmax);
 	  BR.hlll(delta);
-	  cout << endl << "odd nblov " << BR.nblov << endl; 
+	  cout << endl << "nblov (" << k << "): " << BR.nblov << endl;
 	  nblov+=BR.nblov;
 	  putblock(U_odd,BR.getU(),k,k,S,bdim);	   
 	  //putblock(RZ,BR.getbase(),k,k,S,bdim); //Not here: RZ and the orthogonalization were different
@@ -346,9 +344,6 @@ namespace hplll {
 
       stop= (stop &&  isId(U_odd));
 
-      cout << "!!!!!!!!   " << stop << endl;
-
-      
 // #pragma omp barrier
       
 //       stop=isId(U)*stop;
