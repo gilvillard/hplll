@@ -100,9 +100,11 @@ int main(int argc, char *argv[])  {
   //fb.open ("in98",ios::in);
   //n=100;  K=98; d=99;
 
-  fb.open ("in118",ios::in);
-  n=120;  K=118; d=119;
+  //fb.open ("in118",ios::in);
+  //n=120;  K=118; d=119;
 
+  fb.open ("in138",ios::in);
+  n=140;  K=138; d=139;
   
   A.resize(n,d);
   os >> A ;
@@ -144,9 +146,7 @@ int main(int argc, char *argv[])  {
    for (i=0; i<n; i++)
      B(i,j)=A(i,K);
 
- 
-cout << B << endl; 
-   
+    
    // Avec plll
    // ----------
    
