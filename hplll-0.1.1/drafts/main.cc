@@ -91,22 +91,22 @@ int main(int argc, char *argv[])  {
 
   // Lecture de A partiellement réduite
 
-  // filebuf fb;
-  // iostream os(&fb);
+  filebuf fb;
+  iostream os(&fb);
 
-  // //fb.open ("in78",ios::in);
-  // //n=100;  K=78; d=79;
+  //fb.open ("in78",ios::in);
+  //n=100;  K=78; d=79;
   
-  // //fb.open ("in98",ios::in);
-  // //n=100;  K=98; d=99;
+  //fb.open ("in98",ios::in);
+  //n=100;  K=98; d=99;
 
-  // fb.open ("in118",ios::in);
-  // n=120;  K=118; d=119;
+  fb.open ("in118",ios::in);
+  n=120;  K=118; d=119;
 
   
-  // A.resize(n,d);
-  // os >> A ;
-  // fb.close();
+  A.resize(n,d);
+  os >> A ;
+  fb.close();
 
   // Découpage rectangle de A
   
