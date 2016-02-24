@@ -31,28 +31,24 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 namespace hplll { 
 
 
-  // cas rectangles ? 
-
   template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
   SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int condbits, int K,  unsigned int lovmax) { 
     
-    int bdim;     // Number of blocks and dimension of each block 
+    int bdim;     // Dimension of each block 
                   // Assume that d is a multiple of K >= 4 
-                  // K/2 and bdim >= 2 for actual segment) 
+                  // bdim >= 2 for actual segment 
     
     bdim = d/K;
     
-    int S;   // Number of segments and dimension of each segment  
+    int S;   // Number of segments  
              // Assume that d is a multiple of K >= 4 
-             // K/2 and bdim >= 2 for actual segment) 
+             // S >= 2 for actual segment) 
 
     S=K/2;
-    
-    //int Sdim = d/S;
-
-    int i,k;    // block or segment loop 
    
-    
+
+    int i,k;    
+   
         
 #ifdef _OPENMP
     OMPTimer time;
