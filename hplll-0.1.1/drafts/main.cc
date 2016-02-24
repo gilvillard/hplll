@@ -103,8 +103,14 @@ int main(int argc, char *argv[])  {
   //fb.open ("in118",ios::in);
   //n=120;  K=118; d=119;
 
-  fb.open ("in138",ios::in);
-  n=140;  K=138; d=139;
+  // fb.open ("in138",ios::in);
+  // n=140;  K=138; d=139;
+
+  // fb.open ("in158",ios::in);
+  // n=160;  K=158; d=159;
+
+  fb.open ("in178",ios::in);
+  n=180;  K=178; d=179;
   
   A.resize(n,d);
   os >> A ;
