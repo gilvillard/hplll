@@ -145,6 +145,7 @@ int main(int argc, char *argv[])  {
      B(i,j)=A(i,K);
 
  
+cout << B << endl; 
    
    // Avec plll
    // ----------
