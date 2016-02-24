@@ -62,6 +62,10 @@ int main(int argc, char *argv[])  {
   
   int lovmax=1000000;
 
+  int S=4;
+
+  int nbthreads=4;
+
   command_line_basis(A, n, d, delta, argc, argv);
 
   char type[]="";
@@ -75,6 +79,8 @@ int main(int argc, char *argv[])  {
       MATCH_MAIN_ARGID("-alpha",alpha);
       MATCH_MAIN_ARGID("-lovmax",lovmax);
       MATCH_MAIN_ARGID("-output",output);
+      MATCH_MAIN_ARGID("-segment",S);
+      MATCH_MAIN_ARGID("-threads",nbthreads);
       MATCH_MAIN_ARGID("-K",K);
       SYNTAX();
     }
@@ -164,10 +170,10 @@ int main(int argc, char *argv[])  {
    lp0.stop();
    
   
-   SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t>  > LP(TT.getbase(),8,TRANSFORM,DEF_REDUCTION);
+   SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t>  > LP(TT.getbase(),S,TRANSFORM,DEF_REDUCTION);
  
    lp.start();
-   LP.hlll(delta,53,8,lovmax);
+   LP.hlll(delta,53,S,nbthreads,lovmax);
    lp.stop();
    cout << endl << "hsize: " << lp0  << endl;
    cout << endl << "slll: " << lp  << endl;

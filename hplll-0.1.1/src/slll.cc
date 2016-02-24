@@ -31,21 +31,19 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 namespace hplll { 
 
 
+  // S >= 2 parallel segments, hence K=2*S blocks (divisibility of the dimension) 
+
   template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
-  SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int condbits, int K,  unsigned int lovmax) { 
-    
+  SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int condbits, int S, int nbthreads, unsigned int lovmax) { 
+   
+    int K=2*S;
+ 
     int bdim;     // Dimension of each block 
                   // Assume that d is a multiple of K >= 4 
                   // bdim >= 2 for actual segment 
     
     bdim = d/K;
     
-    int S;   // Number of segments  
-             // Assume that d is a multiple of K >= 4 
-             // S >= 2 for actual segment) 
-
-    S=K/2;
-   
 
     int i,k;    
    
@@ -54,7 +52,7 @@ namespace hplll {
     OMPTimer time;
     OMPTimer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,orthotime,totime;
     
-    omp_set_num_threads(4);
+    omp_set_num_threads(nbthreads);
 #else 
     Timer time;
     Timer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,restsizetime,totime;
@@ -1217,8 +1215,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>
-SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int K, bool forU, int reduction_method) {
+SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int S, bool forU, int reduction_method) {
 
+  int K=2*S;
 
   int i,j;
 

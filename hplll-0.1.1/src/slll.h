@@ -66,7 +66,7 @@ class SLattice
   int nbswaps;
   vector<int> swapstab; 
 
-  int hlll(double delta, int condbits, int K, unsigned int lovmax=4294967295);
+  int hlll(double delta, int condbits, int S, int nbthreads, unsigned int lovmax=4294967295);
  
   void even_hsizereduce(int S); // Householder is refreshed or not 
   void odd_hsizereduce(int S);
@@ -88,7 +88,7 @@ class SLattice
   // Not MatrixFT for the exp case 
   matrix<FP_NR<FT> > getR(); 
 
-  SLattice(ZZ_mat<ZT> A, int K, bool forU=false, int reduction_method=0); 
+  SLattice(ZZ_mat<ZT> A, int S, bool forU=false, int reduction_method=0); 
 
   void init(int n, int d, bool forU);
 
