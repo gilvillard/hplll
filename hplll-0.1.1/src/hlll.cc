@@ -31,8 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 // MPFR setprec : isreduced and cond are re-initializing the floating point matrices 
 
-namespace hplll { 
-
+namespace hplll {   
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) { 
@@ -634,6 +633,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
     if (somedone) {
  
+     
+
       col_kept[kappa]=0;
       
       t.mul(approx,normB2[kappa]);
