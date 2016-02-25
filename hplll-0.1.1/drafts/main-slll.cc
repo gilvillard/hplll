@@ -23,10 +23,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "hlll.h"
 #include "matgen.h"
+
+#include "plll.h"
 #include "slll.h"
 
-
-
+#include "tools.h"
 
 /* ***********************************************
 
@@ -38,90 +39,187 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
-  ZZ_mat<mpz_t> A; // For hpLLL 
-  ZZ_mat<mpz_t> AT;  // fpLLL  
-
-  // ---------------------------------------------------------------------
   
-    
-    int n,d;
-    double delta;
-    
-    int K=4; 
+  ZZ_mat<mpz_t> A; // For hpLLL 
 
-    command_line_basis(A, n, d, delta, argc, argv); 
-
-    
-    unsigned int lovmax = 4294967295;
-
-    PARSE_MAIN_ARGS {
-      MATCH_MAIN_ARGID("-K",K);
-      MATCH_MAIN_ARGID("-lovmax",lovmax);
-      }
-
-
-      
-    AT.resize(d,n);
-    transpose(AT,A);
-        
-    Timer time;
-
-#ifdef _OPENMP
-    OMPTimer ptime;  
-#else 
-    Timer ptime;
-#endif 
-
-    // TODO with long double and dpe_t
-    //SLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A,TRANSFORM,DEF_REDUCTION);
-    SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t>  > B(A,K,TRANSFORM,DEF_REDUCTION);
+  ZZ_mat<mpz_t> AT;  // fpLLL
  
-    ptime.start();
+  // ---------------------------------------------------------------------
+  { 
+  
+  int d=8;
+  int n;
+  
+  int nbbits=8;
+  double alpha;
+  int output;
+  
+  double delta = 0.99;
 
-    // Régler la valeur de condbits 
-    B.hlll(delta, 53, K, lovmax);
+  int K=8;
 
-    ptime.stop();
+  int m=1;
+  
+  int lovmax=1000000;
+
+  int S=4;
+
+  int nbthreads=4;
+
+  command_line_basis(A, n, d, delta, argc, argv);
+
+  char type[]="";
+    
+  PARSE_MAIN_ARGS {
+    MATCH_MAIN_ARGID("-type",type);
+      MATCH_MAIN_ARGID("-d",d);
+      MATCH_MAIN_ARGID("-m",m);
+      MATCH_MAIN_ARGID("-delta",delta);
+      MATCH_MAIN_ARGID("-bits",nbbits);
+      MATCH_MAIN_ARGID("-alpha",alpha);
+      MATCH_MAIN_ARGID("-lovmax",lovmax);
+      MATCH_MAIN_ARGID("-output",output);
+      MATCH_MAIN_ARGID("-segment",S);
+      MATCH_MAIN_ARGID("-threads",nbthreads);
+      MATCH_MAIN_ARGID("-K",K);
+      SYNTAX();
+    }
+
+  
+  int i,j;
+
+
+  // Lecture de A partiellement réduite
+
+  filebuf fb;
+  iostream os(&fb);
+
+  //fb.open ("in78",ios::in);
+  //n=100;  K=78; d=79;
+  
+  //fb.open ("in98",ios::in);
+  //n=100;  K=98; d=99;
+
+  //fb.open ("in118",ios::in);
+  //n=120;  K=118; d=119;
+
+  // fb.open ("in138",ios::in);
+  // n=140;  K=138; d=139;
+
+  fb.open ("in158",ios::in);
+  n=160;  K=158; d=159;
+
+  // fb.open ("in178",ios::in);
+  // n=180;  K=178; d=179;
+  
+  A.resize(n,d);
+  os >> A ;
+  fb.close();
+
+  // Découpage rectangle de A
+  
+ 
+  ZZ_mat<mpz_t>  T;
+  T.resize(n,K);
+  
+  for (i=0; i<n; i++)
+    for (j=0; j<K; j++)
+      T(i,j)=A(i,j);
+
+  
+  // Réduction du premier rectangle
+  
+  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > LT(T,NO_TRANSFORM,DEF_REDUCTION);
+ 
+  Timer lt;
+  lt.start();
+  LT.hlll(delta);
+  lt.stop();
+  cout << endl << "d: " << d << "    " <<  "K: " << K << endl << endl; 
+  cout << "1er bout: " << lt << "   " <<  LT.nbswaps << endl;
+  
+  // On complète de 1
+
+  T=LT.getbase();
+  
+  ZZ_mat<mpz_t>  B;
+  B.resize(n,K+1);
+  
+  for (i=0; i<n; i++)
+    for (j=0; j<K; j++)
+      B(i,j)=T(i,j);
+
+   for (i=0; i<n; i++)
+     B(i,j)=A(i,K);
+
+    
+   // Avec plll
+   // ----------
+   
+   // PLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > LP(B,NO_TRANSFORM,DEF_REDUCTION);
+   
+   // Timer lp;
+   // lp.start();
+   // LP.hlll(delta);
+   // lp.stop();
+   // cout << endl << "plll: " << lp << "   " <<  LP.nbswaps << endl;
+   // cout << endl << "compteur: " << LP.compteur <<  endl;
+
+   Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > TT(B,NO_TRANSFORM,DEF_REDUCTION);
+
+   Timer lp0,lp;
 
    
 
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-    T1.isreduced(delta-0.1);    
+   lp0.start();
+   TT.householder();
+   TT.hsizereduce(K);
+   lp0.stop();
+   
+  
+   SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t>  > LP(TT.getbase(),S,TRANSFORM,DEF_REDUCTION);
+ 
+   lp.start();
+   LP.hlll(delta,53,S,nbthreads,lovmax);
+   lp.stop();
+   cout << endl << "hsize: " << lp0  << endl;
+   cout << endl << "slll: " << lp  << endl;
 
-    cout << "   dimension = " << d  << endl;
-    cout << "   nblov plll " << B.nblov  << endl;
-    cout << "   time plll: " << ptime << endl;
-    cout << "   input bit size: " << maxbitsize(A) << endl;
-    
+   // Avec hlll
+   // ----------
+   
+   Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > LB(B,NO_TRANSFORM,DEF_REDUCTION);
+   
+   Timer lb;
+   lb.start();
+   LB.hlll(delta);
+   lb.stop();
 
-    transpose(A,AT);
+  
+   cout << endl << "hplll: " << lb << "   " <<  LB.nbswaps << endl;
+   cout << endl << "compteur: " << LB.compteur <<  endl;
 
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A,NO_TRANSFORM,DEF_REDUCTION);
+   // Avec fplll
+   // ----------
 
-    time.start();
+   ZZ_mat<mpz_t> BT;  
+   BT.resize(K+1,n);
+   transpose(BT,B);
+   
+   Timer fp;
+   fp.start();
+   lllReduction(BT, delta, 0.501, LM_WRAPPER);
+   fp.stop();
+   cout << endl << "fplll: " << fp << endl;
 
-    C.hlll(delta);
+   
+   cout << endl;
+   
+   Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(LP.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+   Btest.isreduced(delta-0.1);
 
-    time.stop();
+  } 
 
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(C.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-    T2.isreduced(delta-0.1);
-
-    cout << endl; 
-    cout << "   nblov hlll " << C.nblov  << endl;
-    cout << "   time hlll: " << time << endl;
-
-    transpose(AT,A);
-
-    time.start();
-
-    lllReduction(AT, delta, 0.51, LM_WRAPPER,FT_DEFAULT,0);
-
-    time.stop();
-    cout << "   time fplll: " << time << endl;
-    
-
-    
-
+ 
   return 0;
 }
