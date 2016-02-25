@@ -1018,6 +1018,89 @@ template<class T> void matprod_in(matrix<T>& C, matrix<T> U)
  
 };
 
+
+ // Product by a block diagonal matrix with S blocks on a 
+ // multiple of S number t of threads 
+ // The column dimension is divisible by 2*S, may not be divisible by t 
+ //   (row dim may not be divisible) 
+
+ template<class T> void pmaprod_diag_even(matrix<T>& C, Matrix<T> U, int S, int t)  // S blocks  
+{
+
+  int m,n;
+
+  m= C.getRows();
+  n= C.getCols();
+
+  int nbr=t/S;
+  int dr=ceil(m/nbr+1);
+  int dc=n/S;
+
+  int l;
+
+  int k;
+
+  //#ifdef _OPENMP
+  //#pragma omp parallel for shared(C)
+  //#endif
+
+  for (k=0; k<t; k++)  {
+
+    int i,j; 
+
+    int Sm=0;
+    
+    cout << "    " << k/S << "    " << k%S << endl; 
+
+    int decr=k/S;
+    int decc=k%S;
+    
+    // Dim of row blocks 
+    if (k/S == (nbr-1)) Sm=m%nbr;
+    else Sm=dr;
+
+    cout << " dims:   " << Sm << endl << endl; 
+
+    matrix<T> tmat;
+    tmat.resize(Sm,dc);
+
+    for (i=0; i<Sm; i++) 
+      for (j=0; j<dc; j++) 
+	tmat(i,j)= C(decr*dr+i, decc*dc+j);
+
+    print2maple(tmat,Sm,dc);
+
+    }
+
+ 
+
+  for (l=0; l<S; l++) { 
+
+    int Sm=0;
+
+    matrix<T> tmat;
+    tmat.resize(Sm,n);
+    
+    int i,j;
+
+    for (i=0; i<Sm; i++) 
+      for (j=0; j<n; j++) 
+	tmat.set(i,j,C(l*Sm+i,j));
+
+    matprod_in(tmat,U);
+
+    for (i=0; i<Sm; i++) 
+      for (j=0; j<n; j++) 
+	C.set(l*Sm+i,j,tmat(i,j));
+
+
+  } // On the parallel blocks 
+
+ 
+};
+
+
+
 template<class T> void matprod_in(matrix<T>& C, Matrix<T> U) 
 {
 
@@ -1104,6 +1187,7 @@ cout << "Matrix([";
   cout << "]);" << endl;
 
 };
+
 
 // From fplll llldiff 
 // Up to the sign eg for relation tests

@@ -76,8 +76,6 @@ namespace hplll {
 
     bool stop=0;
 
-   
-   
     // See what to do with this ? 
 
     setprec(condbits);
@@ -90,7 +88,8 @@ namespace hplll {
    
     totime.start();
 
-    for (iter=0; stop==0; iter++) {
+    //for (iter=0; stop==0; iter++) {
+    for (iter=0; iter < 4; iter++) {
 
       stop=1;
       
@@ -161,10 +160,10 @@ namespace hplll {
 
       even_updateRZ(S);
       
-
       chrono.start();
                 
       pmatprod_in(B,U_even,S);
+      
       
       chrono.stop();
       special+=chrono;  
@@ -175,7 +174,7 @@ namespace hplll {
        stop= (stop &&  isId(U_even));
        //print2maple(getbase(),n,d);
 	
-       // print2maple(U_even,d,d);
+       
        
        // print2maple(RZ,d,d);
 
@@ -475,7 +474,9 @@ namespace hplll {
   }
 
 
-   /* -------------------------------------------------------- */
+
+
+  /* -------------------------------------------------------- */
   /* Update above diagonal for the odd phase                  */
   /* -------------------------------------------------------- */
 
