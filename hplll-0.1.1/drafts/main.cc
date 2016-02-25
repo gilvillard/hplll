@@ -98,9 +98,9 @@ int main(int argc, char *argv[])  {
     cout << "   time B: " << start/1000 << " ms" << endl;
     time.print(cout);
  
-    // transpose(A,AT);
-    // Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
-    // T2.isreduced(delta-0.1);
+    transpose(A,AT);
+    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
+    T2.isreduced(delta-0.1);
 
    
 
