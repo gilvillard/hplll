@@ -132,7 +132,7 @@ AR = ar
 AUTOCONF = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing autoconf
 AUTOHEADER = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing autoheader
 AUTOMAKE = ${SHELL} /Users/gvillard/Soft/hplll-0.1.1/missing automake-1.15
-AWK = gawk
+AWK = awk
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS =  -O3 -Wall
