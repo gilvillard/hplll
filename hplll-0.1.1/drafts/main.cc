@@ -16,8 +16,8 @@ using namespace hplll;
 
 int main() {
 
-  int d=8;  // Divisible par 2S 
-  int S=2;
+  int d=32;  // Divisible par S 
+  int S=4;
   int Sdim=d/S;
 
   int nbbits=10;
@@ -29,7 +29,11 @@ int main() {
 
   matrix<Z_NR<mpz_t> > C;
   C.resize(d,d);
-  set(C,B);
+ 
+
+  Matrix<Z_NR<mpz_t> > resB,resC;
+  resB.resize(d,d);
+  resC.resize(d,d);
 
   Matrix<Z_NR<mpz_t> > U;
   U.resize(d,d);
@@ -46,7 +50,7 @@ int main() {
     int dec=k*Sdim;
 
     for (i=0; i<Sdim; i++) 
-      for (j=0; j<Sdim; j++) 
+      for (j=0; j<d-dec; j++) 
 	(U(dec+i,dec+j)).randb(nbbits);
 
   }
@@ -55,20 +59,19 @@ int main() {
   // les deux calculs 
 
   print2maple(B,d,d);
+ 
   print2maple(U,d,d);
 
   pmatprod_in(B,U,S);
 
-  pmaprod_diag_even(C,U,S,6);
+  pmatprod(C,U,S,3*S); 
 
-  // Comparaison 
 
-  Matrix<Z_NR<mpz_t> > resB,resC;
-  resB.resize(d,d);
-  resC.resize(d,d);
   set(resB,B);
   set(resC,C);
+  
 
+  // Comparaison 
 
   if (matcmp(resB,resC,d,d) ==1) cout << endl << "***** Ok " << endl; 
   else cout << endl << "***** Error" << endl; 
