@@ -498,6 +498,221 @@ inline void set(Matrix<T>& A)
    return(B);
  };
 
+
+  // ****************************************************
+  // Get 
+  // Block i,j for nbr row blocks and nbc column blocks
+  //   numbers greater than the dimensions 
+  // ****************************************************
+
+  template<class T> inline  matrix<Z_NR<T> >  getblock(matrix<Z_NR<T> > A, const int ii, const int jj, 
+						const int nbr, const int nbc, const int diagdec)   {
+    
+    matrix<Z_NR<T> > B;
+   
+
+    int m= A.getRows();
+    int n= A.getCols();
+
+    // Block dimensions
+
+    int dr; 
+    int decr;
+
+    if ((m%nbr)==0) {
+      dr=m/nbr;
+      decr=ii*dr;
+    }
+
+    else { 
+     
+      dr=m/nbr;
+
+      int rem;
+      rem=m-dr*nbr;
+
+      if (ii<rem) {
+	dr+=1; 
+	decr=ii*dr;
+      }
+      else 
+	decr=rem*(dr+1)+dr*(ii-rem);
+    } 
+
+    int dc; 
+    int decc;
+
+    if ((n%nbc)==0) {
+      dc=n/nbc;
+      decc=jj*dc;
+    }
+
+    else { 
+     
+      dc=n/nbc;
+
+      int rem;
+      rem=n-dc*nbc;
+
+      if (jj<rem) {
+	dc+=1; 
+	decc=jj*dc;
+      }
+      else 
+	decc=rem*(dc+1)+dc*(jj-rem);
+    } 
+
+    B.resize(dr,dc);
+
+    for (int i=0; i<dr; i++) 
+     for (int j=0; j<dc; j++) 
+       B(i,j)=A(decr+i,decc+j); 
+
+   return(B);
+ };
+
+
+  template<class T> inline  Matrix<Z_NR<T> >  getblock(Matrix<Z_NR<T> > A, const int ii, const int jj, 
+						const int nbr, const int nbc, const int diagdec)   {
+    
+    Matrix<Z_NR<T> > B;
+   
+
+    int m= A.getRows();
+    int n= A.getCols();
+
+    // Block dimensions
+
+    int dr; 
+    int decr;
+
+    if ((m%nbr)==0) {
+      dr=m/nbr;
+      decr=ii*dr;
+    }
+
+    else { 
+     
+      dr=m/nbr;
+
+      int rem;
+      rem=m-dr*nbr;
+
+      if (ii<rem) {
+	dr+=1; 
+	decr=ii*dr;
+      }
+      else 
+	decr=rem*(dr+1)+dr*(ii-rem);
+    } 
+
+    int dc; 
+    int decc;
+
+    if ((n%nbc)==0) {
+      dc=n/nbc;
+      decc=jj*dc;
+    }
+
+    else { 
+     
+      dc=n/nbc;
+
+      int rem;
+      rem=n-dc*nbc;
+
+      if (jj<rem) {
+	dc+=1; 
+	decc=jj*dc;
+      }
+      else 
+	decc=rem*(dc+1)+dc*(jj-rem);
+    } 
+
+    B.resize(dr,dc);
+
+    for (int i=0; i<dr; i++) 
+     for (int j=0; j<dc; j++) 
+       B(i,j)=A(decr+i,decc+j); 
+
+   return(B);
+ };
+
+
+  // ****************************************************
+  // Put 
+  // Block i,j for nbr row blocks and nbc column blocks
+  //   numbers greater than the dimensions 
+  // ****************************************************
+
+  template<class T> inline  int  putblock(matrix<Z_NR<T> >& B, matrix<Z_NR<T> > A, const int ii, const int jj, 
+						const int nbr, const int nbc, const int diagdec)   {
+    
+
+    int m= B.getRows();
+    int n= B.getCols();
+
+    // Block dimensions
+
+    int dr; 
+    int decr;
+
+   
+    if ((m%nbr)==0) {
+      dr=m/nbr;
+      decr=ii*dr;
+    }
+
+    else { 
+     
+      dr=m/nbr;
+
+      int rem;
+      rem=m-dr*nbr;
+
+      if (ii<rem) {
+	dr+=1; 
+	decr=ii*dr;
+      }
+      else 
+	decr=rem*(dr+1)+dr*(ii-rem);
+    } 
+
+    int dc; 
+    int decc;
+
+    if ((n%nbc)==0) {
+      dc=n/nbc;
+      decc=jj*dc;
+    }
+
+    else { 
+     
+      dc=n/nbc;
+
+      int rem;
+      rem=n-dc*nbc;
+
+      if (jj<rem) {
+	dc+=1; 
+	decc=jj*dc;
+      }
+      else 
+	decc=rem*(dc+1)+dc*(jj-rem);
+    } 
+
+   
+    for (int i=0; i<dr; i++) 
+      for (int j=0; j<dc; j++) 
+	B(decr+i,decc+j)=A(i,j); 
+       
+
+   return(0);
+ };
+
+ 
+
+
 // SQUARE HERE, bdim divise n 
 // Cas rectangle ???
  
@@ -1027,79 +1242,90 @@ template<class T> void matprod_in(matrix<T>& C, matrix<T> U)
  template<class T> void pmaprod_diag_even(matrix<T>& C, Matrix<T> U, int S, int t)  // S blocks  
 {
 
-  int m,n;
-
-  m= C.getRows();
-  n= C.getCols();
-
-  int nbr=t/S;
-  int dr=ceil(m/nbr+1);
-  int dc=n/S;
-
-  int l;
-
   int k;
 
-  //#ifdef _OPENMP
-  //#pragma omp parallel for shared(C)
-  //#endif
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
 
   for (k=0; k<t; k++)  {
 
-    int i,j; 
+    matrix<T> Cb;
+    Cb=getblock(C, k/S,k%S, t/S,S, 0);
 
-    int Sm=0;
-    
-    cout << "    " << k/S << "    " << k%S << endl; 
+    Matrix<T> Ub;
+    Ub=getblock(U, k%S,k%S, S,S, 0);
 
-    int decr=k/S;
-    int decc=k%S;
-    
-    // Dim of row blocks 
-    if (k/S == (nbr-1)) Sm=m%nbr;
-    else Sm=dr;
+    matprod_in(Cb,Ub);
 
-    cout << " dims:   " << Sm << endl << endl; 
+    putblock(C,Cb, k/S,k%S, t/S,S, 0);
 
-    matrix<T> tmat;
-    tmat.resize(Sm,dc);
-
-    for (i=0; i<Sm; i++) 
-      for (j=0; j<dc; j++) 
-	tmat(i,j)= C(decr*dr+i, decc*dc+j);
-
-    print2maple(tmat,Sm,dc);
-
-    }
-
- 
-
-  for (l=0; l<S; l++) { 
-
-    int Sm=0;
-
-    matrix<T> tmat;
-    tmat.resize(Sm,n);
-    
-    int i,j;
-
-    for (i=0; i<Sm; i++) 
-      for (j=0; j<n; j++) 
-	tmat.set(i,j,C(l*Sm+i,j));
-
-    matprod_in(tmat,U);
-
-    for (i=0; i<Sm; i++) 
-      for (j=0; j<n; j++) 
-	C.set(l*Sm+i,j,tmat(i,j));
-
-
-  } // On the parallel blocks 
+  } // On the parallel blocks, k 
 
  
 };
 
 
+ // Product by a block matrix with SxS blocks (square) on a 
+ // multiple of S number t of threads 
+ // The column dimension is divisible by S (not really required), may not be divisible by t 
+ //   (row dim may not be divisible) 
+
+ template<class T> void pmatprod(matrix<T>& C, Matrix<T> U, int S, int t)  // S blocks  
+{
+
+  int m,n,k;
+
+  m= C.getRows();
+  n= C.getCols();
+  
+  matrix<T> L;
+  L.resize(m,n*S);
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+
+  for (k=0; k<t; k++)  {
+
+    // Blocks in C, t/S by rows and S by columns 
+    int I,J;
+
+    I=k/S;
+    J=k%S;
+
+    // U in S row slices 
+
+    // Times a slice of row J in U 
+
+    matrix<T> Cb;
+    Cb=getblock(C, I,J, t/S,S, 0);
+
+    Matrix<T> Ub;
+    Ub=getblock(U, J,0, S,1, 0);
+
+    matprod_in(Cb,Ub);
+
+    // Stored in the J copy in L 
+
+    putblock(L,Cb, I,J, t/S,S, 0);
+
+  } // On the parallel blocks, k 
+  
+  // Addition of the S copies mxn in L into C  
+
+  for (int i=0; i<m; i++)
+    for (int j=0; j<n; j++)
+      C(i,j)=L(i,j);
+
+  for (k=1; k<S; k++)
+    for (int i=0; i<m; i++)
+      for (int j=0; j<n; j++)
+	C(i,j).add(C(i,j),L(i,j+k*n));
+ 
+};
+
+ // Dimensions may change in C 
 
 template<class T> void matprod_in(matrix<T>& C, Matrix<T> U) 
 {
@@ -1109,19 +1335,22 @@ template<class T> void matprod_in(matrix<T>& C, Matrix<T> U)
   m= C.getRows();
   n= C.getCols();
 
+  int nU=U.GetNumCols();
+
   Matrix<T> tmat;
-  tmat.resize(m,n);
+  tmat.resize(m,nU);
 
   for (i=0; i<m; i++) 
-    for (j=0; j<n; j++) {
+    for (j=0; j<nU; j++) {
       tmat(i,j).mul(C(i,0),U(0,j));
       for (k=1; k<n; k++) {
 	tmat(i,j).addmul(C(i,k),U(k,j));
       }
     }
 
+  C.resize(m,nU);
   for (i=0; i<m; i++) 
-    for (j=0; j<n; j++)
+    for (j=0; j<nU; j++)
       C(i,j)=tmat(i,j);
 };
 
@@ -1153,6 +1382,7 @@ template<class T> void matprod(Matrix<T>& B, Matrix<T> U)
   }
 
 };
+
 
 template<class T> void transpose(Matrix<T>& B, Matrix<T> A) 
 {

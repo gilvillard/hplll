@@ -189,7 +189,9 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
  /usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include/omp.h \
  ../src/ldpe.h ../src/nr-ld.cpp ../src/mat.h ../src/mixed-col.h \
  ../src/matpe.h ../src/matmixed.h ../src/hlll.cc ../src/ratio.h \
- ../src/plll.h ../src/plll.cc
+ ../src/plll.h ../src/plll.cc ../src/matgen.h ../src/tools.h \
+ ../src/matgen.cc ../src/matgen.h ../src/plll.h ../src/slll.h \
+ ../src/hlll.h ../src/slll.cc ../src/tools.h
 
 ../src/hlll.h:
 
@@ -740,3 +742,21 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 ../src/plll.h:
 
 ../src/plll.cc:
+
+../src/matgen.h:
+
+../src/tools.h:
+
+../src/matgen.cc:
+
+../src/matgen.h:
+
+../src/plll.h:
+
+../src/slll.h:
+
+../src/hlll.h:
+
+../src/slll.cc:
+
+../src/tools.h:
