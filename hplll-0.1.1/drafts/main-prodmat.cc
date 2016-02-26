@@ -16,8 +16,8 @@ using namespace hplll;
 
 int main() {
 
-  int d=64;  // Divisible par 2S 
-  int S=4;
+  int d=63;  // Divisible par S 
+  int S=7;
   int Sdim=d/S;
 
   int nbbits=10;
@@ -50,7 +50,7 @@ int main() {
     int dec=k*Sdim;
 
     for (i=0; i<Sdim; i++) 
-      for (j=0; j<Sdim; j++) 
+      for (j=0; j<d-dec; j++) 
 	(U(dec+i,dec+j)).randb(nbbits);
 
   }
@@ -64,7 +64,7 @@ int main() {
 
   pmatprod_in(B,U,S);
 
-  pmaprod_diag_even(C,U,S,5*S); 
+  pmatprod(C,U,S,S); 
 
 
   set(resB,B);

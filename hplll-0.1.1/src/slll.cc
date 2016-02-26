@@ -88,9 +88,8 @@ namespace hplll {
    
     totime.start();
 
-    //for (iter=0; stop==0; iter++) {
-    for (iter=0; iter < 4; iter++) {
-
+    for (iter=0; stop==0; iter++) {
+    
       stop=1;
       
       time.start();
@@ -160,17 +159,14 @@ namespace hplll {
 
       even_updateRZ(S);
       
-      chrono.start();
-                
-      pmatprod_in(B,U_even,S);
+                    
+      //pmatprod_in(B,U_even,S);
+      // Put an if nbthreads > S
+      pmaprod_diag_even(B,U_even,S,nbthreads);
       
+      time.stop();
+      prodtime+=time;
       
-      chrono.stop();
-      special+=chrono;  
-
-       time.stop();
-       prodtime+=time;
-       
        stop= (stop &&  isId(U_even));
        //print2maple(getbase(),n,d);
 	
@@ -197,85 +193,24 @@ namespace hplll {
        
        time.start();
 
+       chrono.start();
+
        pmatprod_in(B,U_proper,S);
+
+       chrono.stop();
+      special+=chrono;  
+
 
        time.stop();
        prodtime+=time;
              
        stop= (stop &&  isId(U_proper));
        
-// //       if (transf) pmatprod_in(Uglob,U,S);
+       //  if (transf) pmatprod_in(Uglob,U,S);
  
-       //time.stop();    
-       //prodtime+=time; 
-
-       
-      // Re-orthogonalization by blocks  !!! should be available from the even lll reductions or the size reduce? 
-      // ------------------------------
-      // Orthogonalisation partielle diagonale, permet les prochains appels à LLL mais pas un
-       //prochain size reduce global 
+      // Re-orthogonalization 
 
        time.start();
-
-// #ifdef _OPENMP
-// #pragma omp parallel for 
-// #endif 
-//        for (k=0; k<S-1; k++) {
-
-// 	 int i,j;
-	 
-// 	 cout << "+++++++++++ Re-ortho ++++++++++ " << endl; 
-	 
-// 	 {
-// 	   ZZ_mat<mpz_t> TR;
-// 	   TR.resize(2*Sdim,Sdim+bdim);
-// 	   for (i=0; i<2*Sdim; i++) 
-// 	     for (j=0; j<Sdim+bdim; j++)
-// 	       TR(i,j)=RZ(k*Sdim+i,k*Sdim+j);
-
-	  
-// 	   Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(TR);
-	   
-// 	   for (j=0; j<Sdim+bdim; j++) {
-// 	     T.householder_r(j);
-// 	     T.householder_v(j);
-// 	   } 
-
-// 	   matrix<FP_NR<mpfr_t> > TB;
-// 	   TB.resize(Sdim+bdim,Sdim+bdim);
-
-// 	   TB=T.getR();
-
-	 
-	  
-// 	   matrix<FP_NR<mpfr_t> > TTB;
-// 	   TTB.resize(Sdim,Sdim);
-
-// 	   for (i=0; i<Sdim; i++) 
-// 	     for (j=0; j<Sdim; j++)
-// 	       TTB(i,j)=TB(bdim+i,bdim+j);
-
-// 	   ZZ_mat<mpz_t> TTR;
-// 	   TTR.resize(Sdim,Sdim);
-
-	   
-// 	   set_f(TTR,TTB,condbits); 
-	   
-// 	   //DBG
-// 	   cout << endl << endl << "**************************************" << d << "  " << Sdim << "   "  << k*Sdim+bdim+Sdim << endl << endl;
-	   
-// 	   for (i=0; i<Sdim; i++) 
-// 	     for (j=0; j<Sdim; j++)
-// 	       newRZ(k*Sdim+bdim+i,k*Sdim+bdim+j)=TTR(i,j);
-
-// 	   // DBG
-// 	   for (i=0; i<d; i++)
-// 	     if (newRZ(i,i).sgn() ==0) newRZ(i,i)=1;
-	   
-	   
-// 	 } // End parallel re-orthogonalization
-//        } 
-
 
        phouseholder(S);
        set_f(RZ,R,condbits);
