@@ -195,7 +195,8 @@ namespace hplll {
 
        chrono.start();
 
-       pmatprod_in(B,U_proper,S);
+       //pmatprod_in(B,U_proper,S);
+       pmatprod(B,U_proper,S,nbthreads);
 
        chrono.stop();
       special+=chrono;  

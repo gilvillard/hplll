@@ -1282,8 +1282,10 @@ template<class T> void matprod_in(matrix<T>& C, matrix<T> U)
   matrix<T> L;
   L.resize(m,n*S);
 
+  
+
 #ifdef _OPENMP
-#pragma omp parallel for
+#pragma omp parallel for shared(C,L,t,S)
 #endif
 
   for (k=0; k<t; k++)  {
@@ -1300,17 +1302,24 @@ template<class T> void matprod_in(matrix<T>& C, matrix<T> U)
 
     matrix<T> Cb;
     Cb=getblock(C, I,J, t/S,S, 0);
+   
 
     Matrix<T> Ub;
     Ub=getblock(U, J,0, S,1, 0);
+   
 
     matprod_in(Cb,Ub);
 
     // Stored in the J copy in L 
 
     putblock(L,Cb, I,J, t/S,S, 0);
+   
 
   } // On the parallel blocks, k 
+
+#ifdef _OPENMP
+#pragma omp  barrier 
+#endif
   
   // Addition of the S copies mxn in L into C  
 
