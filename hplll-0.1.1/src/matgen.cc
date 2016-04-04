@@ -242,128 +242,186 @@ namespace hplll {
 
 
 
-/* ***********************************************
+  /* ***********************************************
 
-          GENERATION   
+     GENERATION   
 
-   ********************************************** */
+     ********************************************** */
 
-/* Using the defaulft mpfr precision */
+  /* Using the defaulft mpfr precision */
 
-/* A row real vector for one relation */
-template<class RT> int gen3r2s(matrix<FP_NR<RT> >& B, int n, int r, int s) {
+  /* A row real vector for one relation */
+  template<class RT> int gen3r2s(matrix<FP_NR<RT> >& B, int n, int r, int s) {
 
-  B.resize(1,n); 
+    B.resize(1,n); 
 
-  FP_NR<RT> l2,l3; 
+    FP_NR<RT> l2,l3; 
 
-  FP_NR<RT> rr,ss;
+    FP_NR<RT> rr,ss;
  
-  l2=2.0;
-  l2.log(l2);
-  ss=((double) s);   
-  l2.div(l2,ss);
-  l2.exponential(l2);
+    l2=2.0;
+    l2.log(l2);
+    ss=((double) s);   
+    l2.div(l2,ss);
+    l2.exponential(l2);
 
-  l3=3.0;
-  rr=((double) r);  
-  l3.log(l3);
-  l3.div(l3,rr);
-  l3.exponential(l3);
+    l3=3.0;
+    rr=((double) r);  
+    l3.log(l3);
+    l3.div(l3,rr);
+    l3.exponential(l3);
 
-  FP_NR<RT> alpha,beta;
+    FP_NR<RT> alpha,beta;
 
-  alpha.sub(l3,l2);
-  alpha.log(alpha);
+    alpha.sub(l3,l2);
+    alpha.log(alpha);
 
-  beta=0.0;
-  B(0,0)=1.0;
-  for (int i=1; i<n; i++) {
-    beta.add(beta,alpha);
-    B(0,i).exponential(beta);
+    beta=0.0;
+    B(0,0)=1.0;
+    for (int i=1; i<n; i++) {
+      beta.add(beta,alpha);
+      B(0,i).exponential(beta);
+    }
+
+    return 0;
   }
 
-  return 0;
-}
 
+  /* Two row vectors for a simultaneaous relation */
+  template<class RT> int gen3r2s7t5u(matrix<FP_NR<RT> >& B, int n, int r, int s, int t, int u) {
 
-/* Two row vectors for a simultaneaous relation */
-template<class RT> int gen3r2s7t5u(matrix<FP_NR<RT> >& B, int n, int r, int s, int t, int u) {
+    B.resize(2,n); 
 
-  B.resize(2,n); 
+    FP_NR<RT> l2,l3; 
 
-  FP_NR<RT> l2,l3; 
+    FP_NR<RT> rr,ss,tt,uu;
 
-  FP_NR<RT> rr,ss,tt,uu;
-
-  // First vector 
-  // ************
+    // First vector 
+    // ************
  
-  l2=2.0;
-  l2.log(l2);
-  ss=((double) s);   
-  l2.div(l2,ss);
-  l2.exponential(l2);
+    l2=2.0;
+    l2.log(l2);
+    ss=((double) s);   
+    l2.div(l2,ss);
+    l2.exponential(l2);
 
-  l3=3.0;
-  rr=((double) r);  
-  l3.log(l3);
-  l3.div(l3,rr);
-  l3.exponential(l3);
+    l3=3.0;
+    rr=((double) r);  
+    l3.log(l3);
+    l3.div(l3,rr);
+    l3.exponential(l3);
 
-  FP_NR<RT> alpha,beta;
+    FP_NR<RT> alpha,beta;
 
-  alpha.sub(l3,l2);
+    alpha.sub(l3,l2);
 
-  if (alpha  < 0) 
-    alpha.abs(alpha);
+    if (alpha  < 0) 
+      alpha.abs(alpha);
   
 
-  alpha.log(alpha);
+    alpha.log(alpha);
 
-  beta=0.0;
-  B(0,0)=1.0;
-  for (int i=1; i<n; i++) {
-    beta.add(beta,alpha);
-    B(0,i).exponential(beta);
-    if ((i%2) > 0) B(0,i).neg(B(0,i));
-  }
+    beta=0.0;
+    B(0,0)=1.0;
+    for (int i=1; i<n; i++) {
+      beta.add(beta,alpha);
+      B(0,i).exponential(beta);
+      if ((i%2) > 0) B(0,i).neg(B(0,i));
+    }
 
-  // Second vector 
-  // ************
+    // Second vector 
+    // ************
  
-  l2=5.0;
-  l2.log(l2);
-  uu=((double) u);   
-  l2.div(l2,uu);
-  l2.exponential(l2);
+    l2=5.0;
+    l2.log(l2);
+    uu=((double) u);   
+    l2.div(l2,uu);
+    l2.exponential(l2);
 
-  l3=7.0;
-  tt=((double) t);  
-  l3.log(l3);
-  l3.div(l3,tt);
-  l3.exponential(l3);
+    l3=7.0;
+    tt=((double) t);  
+    l3.log(l3);
+    l3.div(l3,tt);
+    l3.exponential(l3);
 
-  alpha.sub(l3,l2);
+    alpha.sub(l3,l2);
 
-  if (alpha  < 0) 
-    alpha.abs(alpha);
+    if (alpha  < 0) 
+      alpha.abs(alpha);
   
 
-  alpha.log(alpha);
+    alpha.log(alpha);
 
-  beta=0.0;
-  B(1,0)=1.0;
-  for (int i=1; i<n; i++) {
-    beta.add(beta,alpha);
-    B(1,i).exponential(beta);
-    if ((i%2) > 0) B(1,i).neg(B(1,i));
+    beta=0.0;
+    B(1,0)=1.0;
+    for (int i=1; i<n; i++) {
+      beta.add(beta,alpha);
+      B(1,i).exponential(beta);
+      if ((i%2) > 0) B(1,i).neg(B(1,i));
+    }
+
+    return 0;
   }
 
-  return 0;
-}
+  
+  // When testing prec and Seysen
+  int genalpha(ZZ_mat<mpz_t>& B, int n, double alpha) {
 
+    int i,j;
+    
+    FP_NR<double> a0,ta;
+    a0=alpha;
+    
+    B.resize(n,n);
 
+    // Diagonal entries, decreasing powers of alpha
+    // --------------------------------------------
+    
+    ta=a0;
+    
+    for (i=n-1; i>=0; i--) {  
+      B(i,i).set_f(ta);
+      ta.mul(ta,a0);
+    }
+
+    // Upper triangular entries, random less than the diagonal 
+    // -------------------------------------------------------
+
+    Z_NR<mpz_t> zrdm;
+    
+    FP_NR<mpfr_t> diagf,frdm, p49,p50;
+
+    p49=1.0;
+    p49.mul_2si(p49,49);
+    
+    p50=1.0;
+    p50.mul_2si(p50,50);
+   
+    for (i=0; i<n; i++) {
+
+      diagf.set_z(B(i,i));
+		 
+      for (j=i+1; j<n; j++) {
+
+	zrdm.randb(50);
+	
+	frdm.set_z(zrdm);
+	frdm.sub(frdm,p49);
+	frdm.div(frdm,p50);	
+
+	frdm.mul(frdm,diagf);
+	
+	B(i,j).set_f(frdm);
+
+      }
+
+    }
+
+        
+    return 0;
+  }
+  
+  
 } // end namespace hplll
 
 #endif 

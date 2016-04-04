@@ -147,8 +147,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
       
 	
-      if (seysen_flag < 2)
-	flag_reduce=hsizereduce(kappa);   
+      if (seysen_flag < 2) 
+	flag_reduce=hsizereduce(kappa);
       else 
 	flag_reduce=seysenreduce(kappa); 
 

@@ -30,24 +30,27 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 namespace hplll { 
 
-/* ***********************************************
+  /* ***********************************************
 
-          GENERATION   
+     GENERATION   
 
-   ********************************************** */
+     ********************************************** */
 
-/* Using the defaulft mpfr precision */
-/* A row vector  */
-
-// One real vector for a relation 
-template<class RT> int gen3r2s(matrix<FP_NR<RT> >& B, int n, int r, int s); 
-
-// Two real vector for a simultaneous relation 
-template<class RT> int gen3r2s7t5u(matrix<FP_NR<RT> >& B, int n, int r, int s, int t, int u);
-
-
- void command_line_basis(ZZ_mat<mpz_t>& A, int& n, int& d, double &delta, int argc, char *argv[]);
-
+  /* Using the defaulft mpfr precision */
+  /* A row vector  */
+  
+  // One real vector for a relation 
+  template<class RT> int gen3r2s(matrix<FP_NR<RT> >& B, int n, int r, int s); 
+  
+  // Two real vector for a simultaneous relation 
+  template<class RT> int gen3r2s7t5u(matrix<FP_NR<RT> >& B, int n, int r, int s, int t, int u);
+  
+  // When testing prec and Seysen
+  int genalpha(ZZ_mat<mpz_t>& B, int n, double alpha);
+  
+  
+  void command_line_basis(ZZ_mat<mpz_t>& A, int& n, int& d, double &delta, int argc, char *argv[]);
+  
 } // end namespace hplll
 
 
