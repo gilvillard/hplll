@@ -46,7 +46,7 @@ namespace hplll {
   template<class RT> int gen3r2s7t5u(matrix<FP_NR<RT> >& B, int n, int r, int s, int t, int u);
   
   // When testing prec and Seysen
-  int genalpha(ZZ_mat<mpz_t>& B, int n, double alpha);
+  template<class ZT> int genalpha(ZZ_mat<ZT>& B, int n, double alpha); 
   
   
   void command_line_basis(ZZ_mat<mpz_t>& A, int& n, int& d, double &delta, int argc, char *argv[]);
