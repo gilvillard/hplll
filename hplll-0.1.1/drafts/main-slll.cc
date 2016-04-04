@@ -169,7 +169,6 @@ int main(int argc, char *argv[])  {
 
    Timer lp0,lp;
 
-   
 
    lp0.start();
    TT.householder();
