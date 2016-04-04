@@ -576,7 +576,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	    
  
 	    if (fast_long_flag == 1) {
-	    
+	      
 	      R.submulcol(kappa,i,x,i+1);
 	      B.addmulcol_si(kappa,i,-lx,nmax);
 	      if (transf)  

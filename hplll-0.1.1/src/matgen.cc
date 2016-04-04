@@ -365,7 +365,7 @@ namespace hplll {
 
   
   // When testing prec and Seysen
-  int genalpha(ZZ_mat<mpz_t>& B, int n, double alpha) {
+  template<class ZT> int genalpha(ZZ_mat<ZT>& B, int n, double alpha) {
 
     int i,j;
     
@@ -387,7 +387,7 @@ namespace hplll {
     // Upper triangular entries, random less than the diagonal 
     // -------------------------------------------------------
 
-    Z_NR<mpz_t> zrdm;
+    Z_NR<ZT> zrdm;
     
     FP_NR<mpfr_t> diagf,frdm, p49,p50;
 
