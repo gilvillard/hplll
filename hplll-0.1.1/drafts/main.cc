@@ -73,7 +73,7 @@ int main(int argc, char *argv[])  {
    
   //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
   //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
-  Lattice<ZT, double, matrix<Z_NR<ZT> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM,SEYSEN_REDUCTION);
+  Lattice<ZT, double, matrix<Z_NR<ZT> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
   
   time.start();
   status=B.hlll(delta);
