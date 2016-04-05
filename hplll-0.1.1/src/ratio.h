@@ -37,7 +37,7 @@ namespace hplll {
 // ******************************************************************************
 
 
-int ratio(ZZ_mat<mpz_t> B, double& lfcond,  double& av_ratio,  double& max_ratio, double& c) {
+template<class ZT> int ratio(ZZ_mat<ZT> B, double& lfcond,  double& av_ratio,  double& max_ratio, double& c) {
 
   int i,j,k;
 
@@ -47,7 +47,7 @@ int ratio(ZZ_mat<mpz_t> B, double& lfcond,  double& av_ratio,  double& max_ratio
   
   mpfr_set_default_prec(2*d);
   
-  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(B);
+  Lattice<ZT, mpfr_t, matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > L(B);
 
   L.householder();
 

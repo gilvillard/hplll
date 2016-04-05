@@ -106,25 +106,25 @@ inline void Z_NR<__int128_t>::operator=(long a) {
 
 template<> template<>
 inline void Z_NR<__int128_t>::set_f(const FP_NR<double>& a) {
-  data = static_cast<__int128_t>(a.get_si());
+  data = static_cast<__int128_t>(a.getData());
 }
 
 
 template<> template<>
 inline void Z_NR<__int128_t>::set_f(const FP_NR<long double>& a) {
-  data = static_cast<__int128_t>(a.get_si());
+  data = static_cast<__int128_t>(a.getData());
 }
 
 
 template<> template<>
 inline void Z_NR<__int128_t>::set_f(const FP_NR<dpe_t>& a) {
-  data = static_cast<__int128_t>(a.get_si());
+  data = static_cast<__int128_t>(a.get_d());
 }
 
 
 template<> template<>
 inline void Z_NR<__int128_t>::set_f(const FP_NR<mpfr_t>& a) {
-  data = static_cast<__int128_t>(a.get_si());
+  data = static_cast<__int128_t>(a.get_d());
 }
   
 template<> template<>
@@ -135,6 +135,11 @@ inline void FP_NR<mpfr_t>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
 template<> template<>
 inline void FP_NR<double>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
   data=static_cast<double>(a.getData());
+}
+
+template<> template<>
+inline void FP_NR<long double>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
+  data=static_cast<long double>(a.getData());
 }
 
 /* template<> */
@@ -228,10 +233,10 @@ inline void Z_NR<__int128_t>::sub(const Z_NR<__int128_t>& a, const Z_NR<__int128
 /*   data = -a.data; */
 /* } */
 
-/* template<> */
-/* inline void Z_NR<long>::mul(const Z_NR<long>& a, const Z_NR<long>& b) { */
-/*   data = a.data * b.data; */
-/* } */
+template<>
+inline void Z_NR<__int128_t>::mul(const Z_NR<__int128_t>& a, const Z_NR<__int128_t>& b) {
+  data = a.data * b.data;
+}
 
 template<>
 inline void Z_NR<__int128_t>::mul_si(const Z_NR<__int128_t>& a, long b) {
