@@ -900,10 +900,10 @@ cout << "Matrix([";
  for (int i=0;i<n;i++) {
     cout << "[";
     for (int j=0;j<d-1;j++) {
-      (B.get(i,j)).print();
+      cout << (B.get(i,j)); 
       cout << ", ";
     }
-    (B.get(i,d-1)).print();
+    cout << B.get(i,d-1); 
     if (i<n-1) cout << "  ],\n"; else  cout << "  ]\n";
  }
   cout << "]);" << endl;
