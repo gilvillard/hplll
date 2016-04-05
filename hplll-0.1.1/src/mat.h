@@ -205,6 +205,14 @@ public:
 
  }
 
+   // Assumed to replace the whole column 
+  inline void setcol(int j, Z_NR<__int128_t>* b, int beg, int l) {
+
+    for (int i=beg; i<beg+l; i++) 
+      set_z(M[j][i],b[i]);
+
+ }
+
   // Assumed to replace the whole column  
   inline void setcol(int j, Z_NR<double>* b, int beg, int l) {
 
