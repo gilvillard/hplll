@@ -59,7 +59,7 @@ int main(int argc, char *argv[])  {
   
   genalpha<ZT>(A0,d,alpha);
 
-  print2maple(A0,6,6);
+  print2maple(A0,d,d);
   
   A.resize(d,d);
   AT.resize(d,d);
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])  {
   cout << endl; 
   cout << endl;
  
-  //cout <<  B.getbase() << endl;
+  cout <<  B.getbase() << endl;
 
   cout << endl; 
   cout << endl;
