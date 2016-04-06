@@ -1417,18 +1417,18 @@ template<class T> void transpose(Matrix<T>& B, Matrix<T> A)
 };
 
 template<class T> void print2maple(Matrix<T> B, int n, int d) 
-{
+  { cout << "**** " << endl; 
   // Stockage en lignes 
 cout << "Matrix([";
  for (int i=0;i<n;i++) {
     cout << "[";
     for (int j=0;j<d-1;j++) {
       //B[i][j].print();
-      cout << B[i][j];
+      cout << B(i,j);
       cout << ", ";
     }
     //B[i][d-1].print();
-    cout << B[i][d-1];
+    cout << B(i,d-1);
     if (i<n-1) cout << "  ],\n"; else  cout << "  ]\n";
  }
   cout << "]);" << endl;
