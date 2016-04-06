@@ -37,7 +37,7 @@ using namespace hplll;
 int main(int argc, char *argv[])  {
   
   //typedef   __int128_t  ZT;
-  typedef   mpz_t  ZT;
+  typedef   long  ZT;
   
   ZZ_mat<ZT> A0,A; // For hpLLL 
   ZZ_mat<ZT> AT;  // fpLLL  
@@ -99,7 +99,16 @@ int main(int argc, char *argv[])  {
   cout << endl << "Nb swaps: " << B.nbswaps << endl;
   
   cout << endl; 
+  cout << endl;
+ 
+  cout <<  B.getbase() << endl;
 
+  cout << endl; 
+  cout << endl;
+ 
+  
+
+    
   if (status ==0) {
     Lattice<ZT, mpfr_t, matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,NO_LONG);
     T1.isreduced(delta-0.1);
