@@ -74,6 +74,7 @@ int main(int argc, char *argv[])  {
    
   //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
   //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
+  
   Lattice<ZT, double, matrix<Z_NR<ZT> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM,SEYSEN_REDUCTION);
   
   time.start();
@@ -87,8 +88,6 @@ int main(int argc, char *argv[])  {
   cout << "   time A: " << start/1000 << " ms" << endl;
   time.print(cout);
     
-    
- 
   ratio<ZT>(B.getbase(),t,u,v,w);
   
   cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
@@ -101,7 +100,7 @@ int main(int argc, char *argv[])  {
   cout << endl; 
   cout << endl;
  
-  cout <<  B.getbase() << endl;
+  //cout <<  B.getbase() << endl;
 
   cout << endl; 
   cout << endl;
