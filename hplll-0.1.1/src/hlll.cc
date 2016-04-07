@@ -291,6 +291,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
   bool nonstop=1;
   bool somedone=0;
 
+  vector<bool> bounded(kappa);
+  
   int restdim=0; // Remaining dimension after the current block 
 
   int nmax; // De la structure triangulaire 
@@ -312,6 +314,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
     w++;
 
     somedone = 0;
+    
     
     // ----------  NOUVELLE BOUCLE, SUR LES BLOCS 
     // Kappa est la dimension de ce qu'il y a avant 
@@ -352,12 +355,24 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	//if (kappa==7)  cout << i << endl;
 	
 	vectx[i].div(tmpcolR[i],R.get(i,i));
+
+	// ICI
+	{
+	  FP_NR<FT>  qq;
+	  qq.div(tmpcolR[i],R.get(i,i));
+	  qq.abs(qq);
+	  if (qq.cmp(0.501) == 1) bounded[i]=0; else bounded[i]=1;
+
+	}
+	
 	for (k=restdim; k<i; k++) tmpcolR[k].submul(R.get(k,i),vectx[i]);
 
 	vectx[i].rnd(vectx[i]);
 
       } // end calcul de la transfo 
 
+
+      
       // Et on applique la transformation  
       // --------------------------------
       for (i=kappa-1-indexdec; i>= restdim; i--){
@@ -366,7 +381,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 
 	if (x.sgn() !=0) { 
-
+	//IICI if (bounded[i]==0) {
+	  
 	  lx = x.get_si_exp(expo);
 
 	  nmax=structure[i]+1;
@@ -445,9 +461,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
       householder_r(kappa);  
 
-      nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ? 
+      // IICI 
+      nonstop = (normB2[kappa] < t);  // ne baisse quasiment  plus ? 
 
-      
+     
     }
     else {
       nonstop=0;
