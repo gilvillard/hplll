@@ -417,7 +417,11 @@ namespace hplll {
 
     }
 
-        
+
+    for (i=0; i<n; i++) 
+      for (j=0; j<i; j++) 
+	B(i,j)=0;
+	
     return 0;
   }
   
