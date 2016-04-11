@@ -106,25 +106,28 @@ inline void Z_NR<__int128_t>::operator=(long a) {
 
 template<> template<>
 inline void Z_NR<__int128_t>::set_f(const FP_NR<double>& a) {
-  data = static_cast<__int128_t>(a.getData());
+  data = a.get_si();
+  //data = static_cast<__int128_t>(a.getData());
 }
 
 
 template<> template<>
 inline void Z_NR<__int128_t>::set_f(const FP_NR<long double>& a) {
-  data = static_cast<__int128_t>(a.getData());
+  data = a.get_si();
+  //data = static_cast<__int128_t>(a.getData());
 }
 
 
 template<> template<>
 inline void Z_NR<__int128_t>::set_f(const FP_NR<dpe_t>& a) {
-  data = static_cast<__int128_t>(a.get_d());
+  data = a.get_si();
+  //data = static_cast<__int128_t>(a.get_d());
 }
 
 
 template<> template<>
 inline void Z_NR<__int128_t>::set_f(const FP_NR<mpfr_t>& a) {
-  data = static_cast<__int128_t>(a.get_d());
+  data = a.get_si();
 }
   
 template<> template<>
@@ -307,7 +310,7 @@ inline void Z_NR<__int128_t>::randb(int bits) {
   mpz_t temp;
   mpz_init(temp);
   mpz_urandomb(temp, RandGen::getGMPState(), bits);
-  data = mpz_get_si(temp);
+  data = mpz_get_si(temp); 
   mpz_clear(temp);
 }
 
