@@ -405,12 +405,15 @@ namespace hplll {
 
 	zrdm.randb(50);
 	
+	
 	frdm.set_z(zrdm);
+
 	frdm.sub(frdm,p49);
 	frdm.div(frdm,p50);	
 
 	frdm.mul(frdm,diagf);
-	
+
+			
 	B(i,j).set_f(frdm);
 
       }
