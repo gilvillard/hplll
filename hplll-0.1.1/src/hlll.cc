@@ -270,6 +270,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) { 
 
+  // À FAIRE : À la main pour Seysen, à mettre en automatique 
+  fast_long_flag = 1;
+    
   nmaxkappa=structure[kappa]+1;
 
   FP_NR<FT> approx;
@@ -302,12 +305,12 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
   // To see / prec problem 
   //col_kept[kappa]=0;
-
+  
   householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
 
   int bdim,ld,tdig,indexdec;
 
- 
+    
   while (nonstop) {  // LOOP COLUMN CONVERGENCE
 
     
@@ -315,13 +318,11 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
     somedone = 0;
     
-    
-    // ----------  NOUVELLE BOUCLE, SUR LES BLOCS 
-    // Kappa est la dimension de ce qu'il y a avant 
-     
-    //DBG          cout << "********** kappa  : " << kappa << endl; 
-
     ld=1; indexdec=0; // Décalage d'indice
+  
+    
+  
+	  
     while (ld <=kappa) {
 
       tdig=(kappa/ld)%2;
@@ -331,32 +332,24 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
       // Boucle sur la partie de la colonne correspond au bloc 
       // -----------------------------------------------------
 
-      // vectxz rouding of vectx
-      //  column -  (prev col) * vectxz (xz rÃ©-utilisÃ©) 
+      // vectxz rounding of vectx
+      //  column -  (prev col) * vectxz (xz ré-utilisé) 
       // On peut travailler sur place en remontant dans la colonne kappa de R 
 
-      // On calcule vectx et on arrondit au fur et Ã  mesure
+      // On calcule vectx et on arrondit au fur et à mesure
 
       restdim=kappa-indexdec-bdim;
 
-      // ICI 
-      // if (kappa==7) {
-      // 	cout << "****** " << restdim << "   " << ld << endl;  
-      // }
-      
-      //DBG 
-      //householder_r(kappa);
-
+         
+		       
       for (i=kappa-1-indexdec; i>=restdim; i--) 
 	tmpcolR[i]=R.get(i,kappa);
 
       for (i=kappa-1-indexdec; i>=restdim; i--){
-	// ICI
-	//if (kappa==7)  cout << i << endl;
 	
 	vectx[i].div(tmpcolR[i],R.get(i,i));
 
-	// ICI
+	// ICI nouveau test de convergence, avril 2016 ? 
 	{
 	  FP_NR<FT>  qq;
 	  qq.div(tmpcolR[i],R.get(i,i));
@@ -366,23 +359,23 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	}
 	
 	for (k=restdim; k<i; k++) tmpcolR[k].submul(R.get(k,i),vectx[i]);
-
+	
 	vectx[i].rnd(vectx[i]);
 
+	 
       } // end calcul de la transfo 
+       
 
-
-      
       // Et on applique la transformation  
       // --------------------------------
       for (i=kappa-1-indexdec; i>= restdim; i--){
     
 	x=vectx[i]; 
 
-
-	if (x.sgn() !=0) { 
-	//IICI if (bounded[i]==0) {
-	  
+	//if (x.sgn() !=0) { 
+	if (bounded[i]==0) {
+	 
+			    
 	  lx = x.get_si_exp(expo);
 
 	  nmax=structure[i]+1;
@@ -418,30 +411,54 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	    else { 
  
 	      somedone = 1;
-	      
-	      R.submulcol(kappa,i,x,restdim);
-	      
-	      B.addmulcol_si(kappa,i,-lx,nmax);
-	      
-	      if (transf) 
-		U.addmulcol_si(kappa,i,-lx,min(d,nmax));
 
+	      // **** À FAIRE Le mettre pour Seysen 
+	      if (fast_long_flag == 1) {
+	      
+	       	R.submulcol(kappa,i,x,restdim);
+	       	B.addmulcol_si(kappa,i,-lx,nmax);
+	       	if (transf)  
+	       	  U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+
+	      } // end fast_long
+	      else {
+		
+	       	set_f(xz,x);  
+	      
+	       	R.submulcol(kappa,i,x,restdim);	
+	       	B.submulcol(kappa,i,xz,nmax);
+	       	if (transf)  
+	       	  U.submulcol(kappa,i,xz,min(d,nmax));
+	      }	      
 	    } 
 	    
 	  } // end expo == 0 
 	  else {  // expo <> 0 
 
 	    somedone = 1;
-
-	    set_f(xz,x);
 	    
-	    R.submulcol(kappa,i,x,restdim);
-	     
-	    B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+	    // **** À FAIRE Le mettre pour Seysen 
+	    if (fast_long_flag == 1) {
+	    
+	      R.submulcol(kappa,i,x,restdim);
+	      B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+	      if (transf)  
+		U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    
+	    } // end fast_long
+	    else {
+	   
+	      set_f(xz,x);  
+	  
+	      R.submulcol(kappa,i,x,restdim);	
+	      B.submulcol(kappa,i,xz,nmax);
+	      if (transf)  
+		U.submulcol(kappa,i,xz,min(d,nmax));
+	  
+	    } // end no long
 
-	    if (transf)  
-	      U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
 
+	    
 	  } // end expo <> 0 
 	} // Non zero combination 
 
@@ -452,6 +469,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
     } // End loop on log blocks 
 
+    
 
     if (somedone) {
      
@@ -462,12 +480,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
       householder_r(kappa);  
 
       // IICI 
-      nonstop = (normB2[kappa] < t);  // ne baisse quasiment  plus ? 
-
+      //nonstop = (normB2[kappa] < t);  // ne baisse quasiment  plus ? 
      
     }
     else {
+      
       nonstop=0;
+     
      }
 
   } // end while 

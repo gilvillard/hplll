@@ -77,15 +77,15 @@ int main(int argc, char *argv[])  {
 
   start=utime()-start;
   startsec=utimesec()-startsec;
-    
-  cout << "   dimension = " << d  << endl;
+
+  int dd=410;
+  
+  cout << "   dimensions = " << d  << ", " << dd << endl;
   cout << "   time A: " << start/1000 << " ms" << endl;
   time.print(cout);
 
   
-  //ratio<ZT>(B.getbase(),t,u,v,w);
-
-  int dd=300;
+  //ratio<ZT>(A,t,u,v,w);
 
   ZZ_mat<ZT> TB; // For hpLLL
   TB.resize(d,d);
