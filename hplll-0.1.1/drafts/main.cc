@@ -36,8 +36,8 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
-  typedef   __int128_t  ZT;
-  //typedef   long  ZT;
+  //typedef   __int128_t  ZT;
+  typedef   long  ZT;
 
  
   ZZ_mat<ZT> A0,A; // For hpLLL 
@@ -79,7 +79,8 @@ int main(int argc, char *argv[])  {
   //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
   //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
   
-  Lattice<ZT, long double, matrix<Z_NR<ZT> >, matrix<FP_NR<long double> > > B(A0,NO_TRANSFORM,SEYSEN_REDUCTION);
+  //Lattice<ZT, long double, matrix<Z_NR<ZT> >, matrix<FP_NR<long double> > > B(A0,NO_TRANSFORM,SEYSEN_REDUCTION);
+  Lattice<ZT, long double, matrix<Z_NR<ZT> >, matrix<FP_NR<long double> > > B(A0,NO_TRANSFORM);
   
   time.start();
   status=B.hlll(delta);
@@ -121,7 +122,7 @@ int main(int argc, char *argv[])  {
   // time.start();
   // //lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
   // //lllReduction(AT, delta, 0.501, LM_FAST, FT_DEFAULT, 0, LLL_VERBOSE);
-  // //lllReduction(AT, delta, 0.501, LM_FAST); 
+  // lllReduction(AT, delta, 0.501, LM_PROVED, FT_DD, 0, LLL_VERBOSE); 
   // time.stop();
   // start=utime()-start;
   // startsec=utimesec()-startsec;
@@ -132,18 +133,11 @@ int main(int argc, char *argv[])  {
  
   // transpose(A,AT);
   // Lattice<ZT, mpfr_t, matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
-  // //T2.isreduced(delta-0.1);
+  // T2.isreduced(delta-0.1);
 
-  // // Car ne fonctionne pas avec long
- 
-  // T=A;
-  
-  // for (int i=0; i<d; i++)
-  //   for (int j=0; j<d; j++)
-  //     RA(i,j)=T(i,j).getData();
-      
-  // //ratio(RA,t,u,v,w);
-  
+
+  // ratio<ZT>(A,t,u,v,w);
+
   // cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
   // cout << ".. Average diagonal ratio: " << u << endl;
   // cout << ".. Max diagonal ratio: " << v << endl;
