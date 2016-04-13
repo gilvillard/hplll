@@ -36,9 +36,9 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
-  //typedef   __int128_t  ZT;
-  typedef   long  ZT;
-
+  typedef   __int128_t  ZT;
+  //typedef   long  ZT;
+  //typedef   mpz_t ZT;
  
   ZZ_mat<ZT> A0,A; // For hpLLL 
   ZZ_mat<ZT> AT;  // fpLLL  
@@ -80,7 +80,8 @@ int main(int argc, char *argv[])  {
   //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
   
   //Lattice<ZT, long double, matrix<Z_NR<ZT> >, matrix<FP_NR<long double> > > B(A0,NO_TRANSFORM,SEYSEN_REDUCTION);
-  Lattice<ZT, long double, matrix<Z_NR<ZT> >, matrix<FP_NR<long double> > > B(A0,NO_TRANSFORM);
+  Lattice<ZT, double, matrix<Z_NR<ZT> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
+  //Lattice<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM,SEYSEN_REDUCTION);
   
   time.start();
   status=B.hlll(delta);
@@ -122,7 +123,7 @@ int main(int argc, char *argv[])  {
   // time.start();
   // //lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
   // //lllReduction(AT, delta, 0.501, LM_FAST, FT_DEFAULT, 0, LLL_VERBOSE);
-  // lllReduction(AT, delta, 0.501, LM_PROVED, FT_DD, 0, LLL_VERBOSE); 
+  // lllReduction(AT, delta, 0.501, LM_HEURISTIC, FT_DPE, 0, LLL_VERBOSE); 
   // time.stop();
   // start=utime()-start;
   // startsec=utimesec()-startsec;
