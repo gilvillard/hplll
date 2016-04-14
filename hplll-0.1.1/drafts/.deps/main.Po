@@ -186,10 +186,12 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
  /usr/local/include/fplll/bkz.h /usr/local/include/fplll/lll.h \
  /usr/local/include/fplll/gso.h /usr/local/include/fplll/evaluator.h \
  /usr/local/include/fplll/fplllv31.h ../src/givtimer.C ../src/givtimer.h \
+ /usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include/omp.h \
  ../src/ldpe.h ../src/nr-ld.cpp ../src/mat.h ../src/mixed-col.h \
  ../src/matpe.h ../src/matmixed.h ../src/hlll.cc ../src/ratio.h \
  ../src/plll.h ../src/plll.cc ../src/matgen.h ../src/tools.h \
- ../src/matgen.cc ../src/matgen.h ../src/ratio.h ../src/nr_Z_l128.h
+ ../src/matgen.cc ../src/matgen.h ../src/plll.h ../src/slll.h \
+ ../src/hlll.h ../src/slll.cc ../src/tools.h
 
 ../src/hlll.h:
 
@@ -719,6 +721,8 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 
 ../src/givtimer.h:
 
+/usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include/omp.h:
+
 ../src/ldpe.h:
 
 ../src/nr-ld.cpp:
@@ -747,6 +751,12 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 
 ../src/matgen.h:
 
-../src/ratio.h:
+../src/plll.h:
 
-../src/nr_Z_l128.h:
+../src/slll.h:
+
+../src/hlll.h:
+
+../src/slll.cc:
+
+../src/tools.h:

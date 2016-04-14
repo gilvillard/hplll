@@ -24,7 +24,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "plll.h"
 
-
 #ifndef HPLLL_HLLL_CC
 #define HPLLL_HLLL_CC
 
@@ -69,72 +68,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
   
   while ((kappa < d) && (nblov < nblov_max)) 
     {
-     
-      //*************************************************************
-      // if (kappa > kmax) {
 
-      // 	time.stop();
-
-      // 	cout << endl << "------------------------" << endl;
-		
-      // 	cout << endl << "nblov interv.: " << nblov-nb << "   (" << nblov << ")" << endl;
-	
-      // 	kmax = kappa;
-
-	
-      // 	cout << endl << "kmax: " << kmax << endl;
-      // 	cout << "Time hplll: " << time << endl;
-
-
-      // 	nb=nblov;
-
-      // 	//----- PLLL
-
-      // 	ZZ_mat<mpz_t>  T;
-      // 	T.resize(n,kmax+1);
-	
-      // 	for (int i=0; i<n; i++)
-      //  	  for (int j=0; j<kmax+1; j++)
-      // 	    T(i,j)=B(i,j);
-
-
-      // 	PLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > TB(T);
-
-      // 	Timer tp;
-      // 	tp.start();
-      // 	TB.hlll(0.99);
-      // 	tp.stop();
-      // 	cout << "Time p: " << tp << "   " <<  TB.nbswaps << endl;
-
-      // 	// Reprise pour le chrono de hplll 
-      // 	time.start();
-	
-
-	
-      // }
-
-      // if (((nblov%30000)==0) && (nblov > 0))   
-      // {
-      // 	ZZ_mat<mpz_t>  T;
-      // 	T.resize(n,kmax);
-	
-      // 	for (int i=0; i<n; i++)
-      // 	  for (int j=0; j<kmax; j++)
-      // 	    T(i,j)=B(i,j);
-	
-      // 	  double t,u,v,w;
-      // 	  ratio(T,t,u,v,w);
-	  
-	 
-      // 	  cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-      // 	  cout << ".. Average diagonal ratio: " << u << endl;
-      // 	  cout << endl;
-	  
-
-      // 	}
-	  
-      //*************************************************************
-	  
+      	  
       if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
       
       if (kappa == 1) { 
@@ -145,13 +80,12 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       } 
       else for (i=kappa+1; i<d; i++) kappamin[i]=min(kappamin[i],kappa); // lowest visit after kappa 
 
-      
-	
-      if (seysen_flag < 2) 
-	flag_reduce=hsizereduce(kappa);
-      else 
-	flag_reduce=seysenreduce(kappa); 
+       
 
+      if (seysen_flag < 2) 
+      	flag_reduce=hsizereduce(kappa);
+      else 
+      	  flag_reduce=seysenreduce(kappa); 
       
             
       if (flag_reduce==-1) return(-1);
@@ -270,16 +204,16 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) { 
 
-  // À FAIRE : À la main pour Seysen, à mettre en automatique 
+  // À FAIRE : À la main ici pour Seysen, à mettre en automatique 
   fast_long_flag = 1;
     
   nmaxkappa=structure[kappa]+1;
 
   FP_NR<FT> approx;
-  
   approx=0.01;
-
-
+   
+  FP_NR<FT>  qq;
+  
   FP_NR<FT> x,t,tmpfp;
   Z_NR<ZT>  xz,tmpz;
 
@@ -288,7 +222,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
   vector<FP_NR<FT> > vectx(kappa);  
   
   vector<FP_NR<FT> > tmpcolR(kappa);  
-
+ 
   int i,k,w=0;
 
   bool nonstop=1;
@@ -309,23 +243,23 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
   householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
 
   int bdim,ld,tdig,indexdec;
-
-    
+  
   while (nonstop) {  // LOOP COLUMN CONVERGENCE
 
     
     w++;
 
     somedone = 0;
+
+    //compteur += 1;
     
     ld=1; indexdec=0; // Décalage d'indice
-  
-    
-  
-	  
-    while (ld <=kappa) {
+ 
 
+    while (ld <=kappa) {
+      
       tdig=(kappa/ld)%2;
+      
       if (tdig==0) bdim =0; else bdim = ld;
 
       // -----------------------------------------------------
@@ -340,28 +274,25 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
       restdim=kappa-indexdec-bdim;
 
-         
 		       
       for (i=kappa-1-indexdec; i>=restdim; i--) 
 	tmpcolR[i]=R.get(i,kappa);
 
+	
       for (i=kappa-1-indexdec; i>=restdim; i--){
 	
 	vectx[i].div(tmpcolR[i],R.get(i,i));
-
-	// ICI nouveau test de convergence, avril 2016 ? 
-	{
-	  FP_NR<FT>  qq;
-	  qq.div(tmpcolR[i],R.get(i,i));
-	  qq.abs(qq);
-	  if (qq.cmp(0.501) == 1) bounded[i]=0; else bounded[i]=1;
-
-	}
 	
-	for (k=restdim; k<i; k++) tmpcolR[k].submul(R.get(k,i),vectx[i]);
-	
-	vectx[i].rnd(vectx[i]);
+ 
+	qq.abs(vectx[i]);
+	if (qq.cmp(0.501) == 1) bounded[i]=0; else bounded[i]=1;
 
+	
+	
+	// Faire une opération vectorielle 
+	for (k=restdim; k<i; k++) 
+	  tmpcolR[k].submul(R.get(k,i),vectx[i]);
+	
 	 
       } // end calcul de la transfo 
        
@@ -369,13 +300,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
       // Et on applique la transformation  
       // --------------------------------
       for (i=kappa-1-indexdec; i>= restdim; i--){
-    
+
+	vectx[i].rnd(vectx[i]);
 	x=vectx[i]; 
 
 	//if (x.sgn() !=0) { 
 	if (bounded[i]==0) {
-	 
-			    
+	  
 	  lx = x.get_si_exp(expo);
 
 	  nmax=structure[i]+1;
@@ -385,6 +316,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	  if (expo == 0) {
 	    
 	    if (lx == 1) {
+
+	      //compteur +=1;
 	      
 	      somedone = 1;
 	      
@@ -398,6 +331,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	    } 
 	    else if (lx == -1) {
 
+	      //compteur +=1;
+	      
 	      somedone = 1;
  
 	      R.addcol(kappa,i,restdim);
@@ -409,17 +344,19 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 	    } 
 	    else { 
- 
+
+	      //compteur +=1;
+	      
 	      somedone = 1;
 
-	      // **** À FAIRE Le mettre pour Seysen 
+	      
 	      if (fast_long_flag == 1) {
 	      
 	       	R.submulcol(kappa,i,x,restdim);
 	       	B.addmulcol_si(kappa,i,-lx,nmax);
 	       	if (transf)  
 	       	  U.addmulcol_si(kappa,i,-lx,min(d,nmax));
-
+		
 	      } // end fast_long
 	      else {
 		
@@ -435,6 +372,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	  } // end expo == 0 
 	  else {  // expo <> 0 
 
+	    //compteur +=1;
+	      
 	    somedone = 1;
 	    
 	    // **** À FAIRE Le mettre pour Seysen 
@@ -472,7 +411,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
     
 
     if (somedone) {
+       
+      compteur+=1;
      
+      
       col_kept[kappa]=0;
 
       t.mul(approx,normB2[kappa]);
@@ -546,22 +488,23 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
   else 
     startposition = kappa-1;
 
-
-  somedone = 1;
+    somedone = 1;
   
   //while (nonstop) {
   while (somedone == 1) { 
     w++;
-
+    
     somedone = 0;
 
+    //compteur +=1;
 
     // Loop through the column 
     // -----------------------
 
    
     for (i=startposition; i>-1; i--){  
-
+    
+  
       x.div(R.get(i,kappa),R.get(i,i));
       x.rnd(x);
  
@@ -571,6 +514,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
                            // --------------------
 	lx = x.get_si_exp(expo);
 
+		  
 	nmax=structure[i]+1;
 	
 	// Cf fplll 
@@ -579,7 +523,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
 	  if (lx == 1) {
 
-	    compteur +=1;
+	    //compteur +=1;
 	    somedone = 1;
 	    
 	    
@@ -593,7 +537,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	  } 
 	  else if (lx == -1) {
 
-	    compteur +=1;
+	    //compteur +=1;
 	    somedone = 1;
 	   
 	    
@@ -607,7 +551,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	  } 
 	  else { 
 
-	    compteur +=1;
+	    //compteur +=1;
 	    somedone = 1;
 	    
  
@@ -622,9 +566,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	    } // end fast_long
 	    else {
 	      
-	      set_f(xz,x);  
+	      set_f(xz,x);
+
+	      R.submulcol(kappa,i,x,i+1);
 	      
-	      R.submulcol(kappa,i,x,i+1);	
 	      B.submulcol(kappa,i,xz,nmax);
 	      if (transf)  
 	     	U.submulcol(kappa,i,xz,min(d,nmax));
@@ -636,7 +581,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	} // end expo == 0 
 	else {  // expo <> 0 
 
-	  compteur +=1;
+	  //compteur +=1;
 	  somedone = 1;
 	 
  
@@ -668,9 +613,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
     
 
     if (somedone) {
- 
-     
 
+      
+      compteur+=1;
+      
       col_kept[kappa]=0;
       
       t.mul(approx,normB2[kappa]);
