@@ -50,12 +50,16 @@ namespace hplll {
         
 #ifdef _OPENMP
     OMPTimer time,chrono,special;
-    OMPTimer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,orthotime,totime;
+    OMPTimer redtime,eventime,oddtime,qrtime,
+      prodtime1, prodtime2, prodtime3, prodtime4, prodtime5, prodtime6,
+      esizetime,osizetime,orthotime,totime;
     
     omp_set_num_threads(nbthreads);
 #else 
     Timer time,chrono,special;
-    Timer redtime,eventime,oddtime,qrtime,prodtime,esizetime,osizetime,restsizetime,totime;
+    Timer redtime,eventime,oddtime,qrtime,
+      prodtime1, prodtime2, prodtime3, prodtime4, prodtime5, prodtime6,
+      esizetime,osizetime,restsizetime,totime;
 #endif 
     
     time.clear();
@@ -65,7 +69,12 @@ namespace hplll {
     eventime.clear();
     oddtime.clear();
     qrtime.clear();
-    prodtime.clear();
+    prodtime1.clear();
+    prodtime2.clear();
+    prodtime3.clear();
+    prodtime4.clear();
+    prodtime5.clear();
+    prodtime6.clear();
     esizetime.clear();
     orthotime.clear();
     osizetime.clear();
@@ -165,7 +174,7 @@ namespace hplll {
       pmaprod_diag_even(B,U_even,S,nbthreads);
       
       time.stop();
-      prodtime+=time;
+      prodtime1+=time;
       
        stop= (stop &&  isId(U_even));
        //print2maple(getbase(),n,d);
@@ -203,7 +212,7 @@ namespace hplll {
 
 
        time.stop();
-       prodtime+=time;
+       prodtime2+=time;
              
        stop= (stop &&  isId(U_proper));
        
@@ -269,7 +278,7 @@ namespace hplll {
        pmatprod_in(RZ,U_odd,S);   
 
        time.stop();
-       prodtime+=time;
+       prodtime3+=time;
 
        stop= (stop &&  isId(U_odd));
 
@@ -326,7 +335,7 @@ namespace hplll {
        pmatprod_in(B,U_proper,S);
        
        time.stop();
-       prodtime+=time;
+       prodtime4+=time;
        
 
        // if (transf) pmatprod_in(Uglob,U,S);
@@ -342,7 +351,10 @@ namespace hplll {
       cout << " Reductions: " << redtime << endl;
       cout << "   Even reductions: " << eventime << endl;
       cout << "   Odd reductions: " << oddtime << endl;
-      cout << " Products: " << prodtime << endl;
+      cout << " Products: " << prodtime1 << endl;
+      cout << "           " << prodtime2 << endl;
+      cout << "           " << prodtime3 << endl;
+      cout << "           " << prodtime4 << endl;
       cout << " Even size reds: " << esizetime  << endl;
       cout << " Odd size reds: " << osizetime  << endl;
       cout << " Total time:  " << totime << endl;  
