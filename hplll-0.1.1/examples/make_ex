@@ -4,7 +4,7 @@ CXXFLAGS += -O2 -Wall
 
 
 
-# If non standar installation directories 
+# If non standard installation directories 
 # TODO: setenv LD_LIBRARY_PATH ${HOME}/Soft/lib
 
 #PREFIX = ${HOME}/Soft
@@ -29,7 +29,7 @@ LOADLIBES +=  ${FPLLL_LIBS} ${MPFR_LIBS} ${GMP_LIBS}
 	g++  -o $@ -c $<   ${CXXFLAGS}
  
 .cc:
-	g++  -o $@ $<   ${CXXFLAGS}  ${LOADLIBES} 
+	g++  -o $@ $<   ${CXXFLAGS}  ${LDFLAGS} ${LOADLIBES} 
 
 
  
