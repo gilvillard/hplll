@@ -24,6 +24,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "hlll.h"
 #include "matgen.h"
 
+#include "plll.h"
+#include "slll.h"
+
+#include "tools.h"
+
 /* ***********************************************
 
           MAIN   
@@ -35,74 +40,26 @@ using namespace hplll;
 int main(int argc, char *argv[])  {
   
   
-  ZZ_mat<mpz_t> A0,A; // For hpLLL 
-  ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
+  ZZ_mat<mpz_t> A; // For hpLLL 
+  
+  int n;
+  int d=8;
+  
+  double delta = 0.99;
 
-  // ---------------------------------------------------------------------
+  command_line_basis(A, n, d, delta, argc, argv);
 
-  int n,d;
-  double delta;
+  //Timer lt;
+  //lt.start();
 
-  command_line_basis(A0, n, d, delta, argc, argv); 
 
-  A.resize(n,d);
-  AT.resize(d,n);
-  transpose(AT,A);
-
-    int start,startsec;
-
-    Timer time;
-
-    int status;
-    
-    cout << "--------------  HLLL" << endl << endl; 
-    start=utime();
-    startsec=utimesec();
+  PLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > LP(A,NO_TRANSFORM,DEF_REDUCTION);
    
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
-    //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
- 
-     
-    time.start();
-    status=B.hlll(delta);
-    time.stop();
-
-    start=utime()-start;
-    startsec=utimesec()-startsec;
   
-    
-    cout << "   dimension = " << d  << endl;
-    cout << "   time A: " << start/1000 << " ms" << endl;
-    time.print(cout);
-    
-    
-    if (status ==0) {
-      Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,NO_LONG);
-      T1.isreduced(delta-0.1);
-      }
-    cout << endl; 
+  LP.hlll(delta);
 
-    cout << "--------------  FPLLL WRAPPER" << endl << endl; 
-    transpose(AT,A0);
-
-    start=utime();
-    startsec=utimesec();
-    time.start();
-    lllReduction(AT, delta, 0.501, LM_WRAPPER);
-    time.stop();
-    start=utime()-start;
-    startsec=utimesec()-startsec;
-  
-    
-    cout << "   dimension = " << d  << endl;
-    cout << "   time B: " << start/1000 << " ms" << endl;
-    time.print(cout);
- 
-    transpose(A,AT);
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
-    T2.isreduced(delta-0.1);
+  LP.seysenreduce(0,d-1); 
 
    
-
   return 0;
 }
