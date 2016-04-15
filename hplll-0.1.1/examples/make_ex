@@ -1,7 +1,16 @@
 #! /bin/sh
 
+CXXFLAGS += -O2 -Wall 
 
-CXXFLAGS += -O2 -Wall
+
+
+# If non standar installation directories 
+# TODO: setenv LD_LIBRARY_PATH ${HOME}/Soft/lib
+
+#PREFIX = ${HOME}/Soft
+
+#CXXFLAGS += -O2 -Wall -I${PREFIX}/include
+#LDFLAGS += -L${PREFIX}/lib
 
 # Here with standard installation directories
 #  otherwise modify the compilation variables

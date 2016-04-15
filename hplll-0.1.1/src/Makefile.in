@@ -297,7 +297,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = gnu
 include_hpllldir = $(includedir)/hplll
-include_hplll_HEADERS = defs.h  mat.h matpe.h  ldpe.h nr-ld.cpp  \
+include_hplll_HEADERS = hplll.h defs.h  mat.h matpe.h  ldpe.h nr-ld.cpp  \
 	hlll.h hlll.cc decomp.h decomp.cc relations.h relations.cc  \
 	matgen.h matgen.cc decompz.h decompz.cc nullspace.h  nullspace.cc \
   	mixed-col.h  matmixed.h  lehmer.cc  l1.h  block.h  tools.h  \
@@ -503,7 +503,8 @@ info: info-am
 info-am:
 
 install-data-am: install-include_hplllHEADERS
-
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
 install-dvi: install-dvi-am
 
 install-dvi-am:
@@ -547,22 +548,23 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-include_hplllHEADERS
-
-.MAKE: install-am install-strip
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
+.MAKE: install-am install-data-am install-strip uninstall-am
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-am clean clean-generic \
 	clean-libtool cscopelist-am ctags ctags-am distclean \
 	distclean-generic distclean-libtool distclean-tags distdir dvi \
 	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-include_hplllHEADERS install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am tags tags-am uninstall uninstall-am \
-	uninstall-include_hplllHEADERS
+	install-data install-data-am install-data-hook install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-include_hplllHEADERS install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-hook uninstall-include_hplllHEADERS
 
 .PRECIOUS: Makefile
 
@@ -576,6 +578,16 @@ uninstall-am: uninstall-include_hplllHEADERS
 #libhplll_la_LIBADD= -lgmp -lmpfr -lfplll
 
 #libhplll_la_LDFLAGS=-no-undefined -version-info 1:0:1
+
+install-data-hook:
+	echo "#include <hplll/hplll.h>" > "$(srcdir)/hplll.h.root"
+	echo "using namespace hplll;" >> "$(srcdir)/hplll.h.root"
+	$(INSTALL) -m 644 "$(srcdir)/hplll.h.root" "${DESTDIR}$(includedir)/hplll.h"
+	rm -f "$(srcdir)/hplll.h.root"
+
+uninstall-hook:
+	(test -d "${DESTDIR}$(includedir)/hplll" && rmdir "${DESTDIR}$(includedir)/hplll") || true
+	rm -f "${DESTDIR}$(includedir)/hplll.h"
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
