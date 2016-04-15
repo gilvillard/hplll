@@ -148,12 +148,213 @@ namespace hplll {
   
   };
   
-  
+  // Non recursive and/or parallel after some level ? 
+  //
+
   template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
-  PLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce() { 
+  PLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int beg, int end) { 
 
     householder();
 
+    long bsize=end-beg+1;
+
+    // Separation of the highest power of 2
+    //-------------------------------------
+
+    Z_NR<long> bs;
+    bs=bsize;
+
+    long h;
+    h =bs.exponent()-1;
+    h = 1 << h;
+
+
+    int mid; 
+    if (h==bsize) mid = beg+ bsize/2 -1;
+    else mid=beg+ h-1;
+
+
+    // Recursive calls 
+    // ---------------
+
+    if (bsize > 2) {
+ 
+      seysenreduce(beg, mid); 
+
+      seysenreduce(mid+1, end); 
+    } 
+
+
+    // End of the reduction 
+    // --------------------
+
+    if (bsize >= 2) {
+
+
+      int c,i,k;
+
+      FP_NR<FT>  qq;
+      vector<FP_NR<FT> > vectx(d);  
+      vector<FP_NR<FT> > tmpcolR(d);  
+      
+      vector<bool> bounded(d);    
+
+
+      FP_NR<FT> x;
+      Z_NR<ZT>  xz;
+
+      long expo,lx;
+
+      // Une seule boucle par paquets de colonnes ? 
+
+      // Parallel ? 
+      // Loop on c columns from index mid+1 to end 
+      // -----------------------------------------
+
+      cout << endl << endl << "*** rest " << mid+1 << "  " << end <<  endl;
+
+      for (c=mid+1; c<=end; c++)  {
+
+	cout << "Bout " << c <<  "  " << beg << "-" << mid << endl;
+
+	for (i=mid; i>=beg; i--) { 
+	 
+	  tmpcolR[i]=R.get(i,c);
+	
+	  vectx[i].div(tmpcolR[i],R.get(i,i));
+ 
+	  qq.abs(vectx[i]);
+	  if (qq.cmp(0.501) == 1) bounded[i]=0; else bounded[i]=1;
+	
+	  // Faire une opération vectorielle 
+
+	  /// !!!!!!!!!!  VERIFIER CETTE BOUCLE  !!!!!!!!!!!!!
+	  for (k=mid; k<i; k++) 
+	    tmpcolR[k].submul(R.get(k,i),vectx[i]);
+
+	} // end calcul de la transfo pour la colonne c
+
+      } // Loop on k columns: compute the transformation
+
+
+      // Parallel ? 
+      // The reduction itself  
+      // Loop on c columns from index mid+1 to end
+      // -----------------------------------------
+
+      for (c=mid+1; c<=end; c++)  {
+
+	// nmax pour la hauteur ????????
+
+	for (i=mid; i>=beg; i--) { 
+
+
+	  vectx[i].rnd(vectx[i]);
+	  x=vectx[i]; 
+
+	  //if (x.sgn() !=0) { 
+	  if (bounded[i]==0) {
+	  
+	    lx = x.get_si_exp(expo);
+
+	    nmax=structure[i]+1;
+	  
+	    // Cf fplll 
+	    // Long case 
+	    if (expo == 0) {
+	    
+	      if (lx == 1) {
+
+		//compteur +=1;
+	      
+		somedone = 1;
+	      
+		R.subcol(kappa,i,restdim);
+	      
+		B.subcol(kappa,i,nmax);
+	      
+		if (transf) 
+		  U.subcol(kappa,i,min(d,nmax));
+	      
+	      } 
+	      else if (lx == -1) {
+
+		//compteur +=1;
+	      
+		somedone = 1;
+ 
+		R.addcol(kappa,i,restdim);
+	      
+		B.addcol(kappa,i,nmax);
+	      
+		if (transf) 
+		  U.addcol(kappa,i,min(d,nmax));
+
+	      } 
+	      else { 
+
+		//compteur +=1;
+	      
+		somedone = 1;
+
+	      
+		if (fast_long_flag == 1) {
+	      
+		  R.submulcol(kappa,i,x,restdim);
+		  B.addmulcol_si(kappa,i,-lx,nmax);
+		  if (transf)  
+		    U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+		
+		} // end fast_long
+		else {
+		
+		  set_f(xz,x);  
+	      
+		  R.submulcol(kappa,i,x,restdim);	
+		  B.submulcol(kappa,i,xz,nmax);
+		  if (transf)  
+		    U.submulcol(kappa,i,xz,min(d,nmax));
+		}	      
+	      } 
+	    
+	    } // end expo == 0 
+	    else {  // expo <> 0 
+
+	      //compteur +=1;
+	      
+	      somedone = 1;
+	    
+	      // **** À FAIRE Le mettre pour Seysen 
+	      if (fast_long_flag == 1) {
+	    
+		R.submulcol(kappa,i,x,restdim);
+		B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+		if (transf)  
+		  U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    
+	      } // end fast_long
+	      else {
+	   
+		set_f(xz,x);  
+	  
+		R.submulcol(kappa,i,x,restdim);	
+		B.submulcol(kappa,i,xz,nmax);
+		if (transf)  
+		  U.submulcol(kappa,i,xz,min(d,nmax));
+	  
+	      } // end no long
+
+
+	    
+	    } // end expo <> 0 
+	  } // Non zero combination 
+
+
+	}   // end application de la transformation
+
+      } // End reduction loop c columns 
+
+    } // End total reduction 
 
     return 0;
     

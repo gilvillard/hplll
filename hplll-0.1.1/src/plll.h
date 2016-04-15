@@ -108,7 +108,7 @@ public:
   int householder();
   
   int hsizereduce(int fromk=0);
-  int seysenreduce();
+  int seysenreduce(int beg, int end);
   
   int qrupdate(int iend);
 
