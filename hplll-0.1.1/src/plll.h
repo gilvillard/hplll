@@ -108,6 +108,8 @@ public:
   int householder();
   
   int hsizereduce(int fromk=0);
+  int seysenreduce();
+  
   int qrupdate(int iend);
 
   int decrease(int kappa);
