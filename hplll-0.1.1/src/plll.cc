@@ -31,140 +31,134 @@ namespace hplll {
 
 
 
-template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
-PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) { 
+  template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
+  PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) { 
 
   
-  int kappa=0,i,j,K;
+    int kappa=0,i,j,K;
   
-  vector<FP_NR<FT> >  prevR(d);
+    vector<FP_NR<FT> >  prevR(d);
 
 
-  FP_NR<FT> newt; //testaccu;
+    FP_NR<FT> newt; //testaccu;
 
-  FP_NR<FT> deltab,lovtest;
-  deltab=delta;   // TO SEE 
+    FP_NR<FT> deltab,lovtest;
+    deltab=delta;   // TO SEE 
 
-  FP_NR<FT> tmpswap;
+    FP_NR<FT> tmpswap;
 
-  FP_NR<FT> s,sn; // newt test 
+    FP_NR<FT> s,sn; // newt test 
 
-  for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
+    for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
 
 
-  int odd=0;
+    int odd=0;
 
-  int swapin=1;
+    int swapin=1;
 
-  Timer time, tsize,tup;
-  time.clear();
-  tsize.clear();
-  tup.clear();
+    Timer time, tsize,tup;
+    time.clear();
+    tsize.clear();
+    tup.clear();
   
-  ichrono.clear();
-  itime.clear();
+    ichrono.clear();
+    itime.clear();
   
   
-  // Main iterative loop 
-  // -------------------
+    // Main iterative loop 
+    // -------------------
 
-  int endposition=d; 
+    int endposition=d; 
       
- for (K=0; (swapin > 0) || (odd==1); K++)  {
+    for (K=0; (swapin > 0) || (odd==1); K++)  {
 
            
-    // Just for one sub-phase of size reduction
-    setId(Uloc);
+      // Just for one sub-phase of size reduction
+      setId(Uloc);
 
-    if (odd==0) swapin = 0; 
+      if (odd==0) swapin = 0; 
     
-    time.start();
+      time.start();
 
-    // Size reduction 
-    // --------------  
+      // Size reduction 
+      // --------------  
 
     
-    hsizereduce(endposition);
+      hsizereduce(endposition);
 
-    if (endposition >=d)
-      endposition=1;
-    else 
-      if ((K%2)==0) endposition*=2;
+      if (endposition >=d)
+	endposition=1;
+      else 
+	if ((K%2)==0) endposition*=2;
 
-    for (j=0; j<d; j++) 
-      for (i=j+1; i<d; i++)
-	R.set(i,j,0.0); 
+      for (j=0; j<d; j++) 
+	for (i=j+1; i<d; i++)
+	  R.set(i,j,0.0); 
 
    
-    time.stop();
-    tsize+=time;
+      time.stop();
+      tsize+=time;
   
-    // Lovasz tests 
-    // ------------
+      // Lovasz tests 
+      // ------------
 
-    for (kappa=1+odd; kappa<d; kappa+=2) {
+      for (kappa=1+odd; kappa<d; kappa+=2) {
 
-      lovtest.mul(R.get(kappa-1,kappa-1),R.get(kappa-1,kappa-1));
-      lovtest.mul(deltab,lovtest);
+	lovtest.mul(R.get(kappa-1,kappa-1),R.get(kappa-1,kappa-1));
+	lovtest.mul(deltab,lovtest);
     
       
-      nblov+=1;
+	nblov+=1;
     
-      s.mul(R.get(kappa,kappa),R.get(kappa,kappa));
-      sn.mul(R.get(kappa-1,kappa),R.get(kappa-1,kappa));
-      newt.add(s,sn);
+	s.mul(R.get(kappa,kappa),R.get(kappa,kappa));
+	sn.mul(R.get(kappa-1,kappa),R.get(kappa-1,kappa));
+	newt.add(s,sn);
 
             
-      if (lovtest > newt) { // Swap, down 
+	if (lovtest > newt) { // Swap, down 
     
-	swapin +=1;
+	  swapin +=1;
 
-	nbswaps+=1;
+	  nbswaps+=1;
        
 
-	B.colswap(kappa-1,kappa);
+	  B.colswap(kappa-1,kappa);
 
-	Uloc.colswap(kappa-1,kappa);
+	  Uloc.colswap(kappa-1,kappa);
 	
-	if (transf) U.colswap(kappa-1,kappa);
+	  if (transf) U.colswap(kappa-1,kappa);
 
-      } // end swap 
+	} // end swap 
      
       
-    } // End column loop for Lovasz tests
+      } // End column loop for Lovasz tests
 
-    
-    //DBG
-    // if (odd==0) {
-    //   cout << "** " << swapin << endl; 
-    // }
-    // else 
-    //   cout << "   " << swapin << endl; 
-   
-    tup+=time;
+      tup+=time;
      
 
-    odd=(odd +1) % 2;
+      odd=(odd +1) % 2;
+    
+    
+    } // Main iteration loop 
 
-        
- } // Main iteration loop 
 
-
- hsizereduce(d);
+    hsizereduce(d);
   
- //DBG
- cout << endl << "*** Chrono reduce: " << ichrono << endl; 
- 
- // DBG
- // cout << endl << "**** Size reduction: " << tsize << endl; 
- // cout << "**** Update: " << tup << endl;
- // cout << "**** Internal: " << ichrono << endl << endl << endl;
-
-  return 0;
+    return 0;
   
-};
+  };
+  
+  
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
+  PLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce() { 
+
+    householder();
 
 
+    return 0;
+    
+  } 
+  
 
 /* -------------------------------------------------------------------------
    Size reduction 
@@ -176,8 +170,8 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
    ------------------------------------------------------------------------- */
 
 
-template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
-PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int endposition) { 
+    template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
+      PLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int endposition) { 
 
     
   FP_NR<FT> approx;
