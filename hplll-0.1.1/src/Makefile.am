@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS = gnu
 
 include_hpllldir=$(includedir)/hplll
 
-include_hplll_HEADERS=  defs.h  mat.h matpe.h  ldpe.h nr-ld.cpp  \
+include_hplll_HEADERS=  hplll.h defs.h  mat.h matpe.h  ldpe.h nr-ld.cpp  \
 	hlll.h hlll.cc decomp.h decomp.cc relations.h relations.cc  \
 	matgen.h matgen.cc decompz.h decompz.cc nullspace.h  nullspace.cc \
   	mixed-col.h  matmixed.h  lehmer.cc  l1.h  block.h  tools.h  \
@@ -17,5 +17,15 @@ include_hplll_HEADERS=  defs.h  mat.h matpe.h  ldpe.h nr-ld.cpp  \
 #libhplll_la_LIBADD= -lgmp -lmpfr -lfplll
 
 #libhplll_la_LDFLAGS=-no-undefined -version-info 1:0:1
+
+install-data-hook:
+	echo "#include <hplll/hplll.h>" > "$(srcdir)/hplll.h.root"
+	echo "using namespace hplll;" >> "$(srcdir)/hplll.h.root"
+	$(INSTALL) -m 644 "$(srcdir)/hplll.h.root" "${DESTDIR}$(includedir)/hplll.h"
+	rm -f "$(srcdir)/hplll.h.root"
+
+uninstall-hook:
+	(test -d "${DESTDIR}$(includedir)/hplll" && rmdir "${DESTDIR}$(includedir)/hplll") || true
+	rm -f "${DESTDIR}$(includedir)/hplll.h"
 
 

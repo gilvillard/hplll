@@ -1,10 +1,6 @@
-#include "hplll/hlll.h"
 
+#include "hplll.h"
 
-using namespace std;
-using namespace fplll;
-
-using namespace hplll; 
 
 int main(void) {
 
