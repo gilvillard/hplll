@@ -52,20 +52,25 @@ int main(int argc, char *argv[])  {
   //Timer lt;
   //lt.start();
 
+
+  
+  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
+  B.hlll(delta);
+   
   // Seysen usual
   // ------------
-  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,SEYSEN_REDUCTION);
+  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(B.getbase(),NO_TRANSFORM,SEYSEN_REDUCTION);
    
   Timer tusual;
 
   tusual.start();
   
-  B.hlll(delta);
+  C.hlll(delta);
 
   tusual.stop();
   
   double t,u,v,w;
-  ratio<mpz_t>(B.getbase(),t,u,v,w);
+  ratio<mpz_t>(C.getbase(),t,u,v,w);
 
   cout << endl << ".. LLL Seysen, log 2 Frobenius norm cond: " << t << endl;
   cout << endl << "   Time usual: " << tusual << endl;
@@ -74,15 +79,23 @@ int main(int argc, char *argv[])  {
   // ----------
   
   cout << endl; 
-  PLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > LP(A,NO_TRANSFORM,DEF_REDUCTION);
+  PLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > LP(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
 
   Timer tnew;
  
   
   tnew.start();
 
-  LP.hlll(0.99); 
+  int  somedone=1;
+      
+  while (somedone ==1) {
     
+    LP.householder();
+    
+    somedone=LP.seysenreduce(0,d-1);
+    
+  }
+      
   tnew.stop();
   
   ratio<mpz_t>(LP.getbase(),t,u,v,w);
