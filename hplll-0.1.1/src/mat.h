@@ -2070,10 +2070,13 @@ template<class T> inline void matrix_structure(vector<int>& structure, matrix<T>
   int i,k;
   structure.resize(d);
 
+ 
+  
   // Bottom zeros 
   for (k=0; k<d; k++) {
     for (i=n-1; (i>=0) && (B(i,k)==0); i--) { } 
-    structure[k]=i; 
+    structure[k]=i;
+    
   }
   // Make it triangular for limiting changes during the computation 
   for (k=1; k<d; k++)   structure[k]=max(structure[k-1],structure[k]);

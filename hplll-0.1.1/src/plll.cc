@@ -36,7 +36,9 @@ namespace hplll {
 
   
     int kappa=0,i,j,K;
-  
+
+    int somedone;
+    
     vector<FP_NR<FT> >  prevR(d);
 
 
@@ -68,7 +70,7 @@ namespace hplll {
     // Main iterative loop 
     // -------------------
 
-    int endposition=d; 
+    //int endposition=d; 
       
     for (K=0; (swapin > 0) || (odd==1); K++)  {
 
@@ -83,13 +85,23 @@ namespace hplll {
       // Size reduction 
       // --------------  
 
+      somedone=1;
+      
+      while (somedone ==1) {
     
-      hsizereduce(endposition);
+       	householder();
+	
+       	somedone=seysenreduce(0,d-1);
 
-      if (endposition >=d)
-	endposition=1;
-      else 
-	if ((K%2)==0) endposition*=2;
+	for (i=0; i<d; i++) col_kept[i]=0; 
+      }
+    
+      // hsizereduce(endposition);
+
+      // if (endposition >=d)
+      // 	endposition=1;
+      // else 
+      // 	if ((K%2)==0) endposition*=2;
 
       for (j=0; j<d; j++) 
 	for (i=j+1; i<d; i++)
@@ -154,8 +166,18 @@ namespace hplll {
   template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
   PLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int beg, int end) { 
 
-    householder();
+    int somedone=0;
 
+    // À FAIRE : À la main ici pour Seysen, à mettre en automatique 
+    fast_long_flag = 1;
+
+    // Non sinon chaque fois récursivement   
+    //householder();
+
+    //print2maple(getbase(),d+1,d);
+    //print2maple(getR(),d,d);
+    //cout << "nmax: " << nmax << endl; 
+    
     long bsize=end-beg+1;
 
     // Separation of the highest power of 2
@@ -178,25 +200,27 @@ namespace hplll {
     // ---------------
 
     if (bsize > 2) {
- 
+      
+      //cout << endl << endl << "RECURSIVE " << beg << " - " << mid << "   and   " <<  mid+1 << " - " << end << endl;
+
       seysenreduce(beg, mid); 
 
       seysenreduce(mid+1, end); 
     } 
 
 
-    // End of the reduction 
-    // --------------------
+    // Rest of the reduction 
+    // ---------------------
 
     if (bsize >= 2) {
-
 
       int c,i,k;
 
       FP_NR<FT>  qq;
       vector<FP_NR<FT> > vectx(d);  
       vector<FP_NR<FT> > tmpcolR(d);  
-      
+      vector<FP_NR<FT> > tR(mid-beg+1);
+       
       vector<bool> bounded(d);    
 
 
@@ -207,34 +231,37 @@ namespace hplll {
 
       // Une seule boucle par paquets de colonnes ? 
 
-      // Parallel ? 
+      // Parallel ?
+      // Computation of the transformation 
       // Loop on c columns from index mid+1 to end 
       // -----------------------------------------
 
-      cout << endl << endl << "*** rest " << mid+1 << "  " << end <<  endl;
+      //cout << endl << endl << "*** rest " << mid+1 << "  " << end <<  endl;
 
       for (c=mid+1; c<=end; c++)  {
 
-	cout << "Bout " << c <<  "  " << beg << "-" << mid << endl;
+	//cout << "Colonne " << c+1 <<  "  " << beg+1 << "-" << mid+1 << endl;
+
+	for (i=mid; i>=beg; i--) 
+	  //tmpcolR[i]=R.get(i,c);
+	  tR[i-beg]=R.get(i,c);
 
 	for (i=mid; i>=beg; i--) { 
 	 
-	  tmpcolR[i]=R.get(i,c);
-	
-	  vectx[i].div(tmpcolR[i],R.get(i,i));
+	  //vectx[i].div(tmpcolR[i],R.get(i,i));
+	  vectx[i].div(tR[i-beg],R.get(i,i));
  
 	  qq.abs(vectx[i]);
 	  if (qq.cmp(0.501) == 1) bounded[i]=0; else bounded[i]=1;
 	
 	  // Faire une opération vectorielle 
-
-	  /// !!!!!!!!!!  VERIFIER CETTE BOUCLE  !!!!!!!!!!!!!
-	  for (k=mid; k<i; k++) 
-	    tmpcolR[k].submul(R.get(k,i),vectx[i]);
+	  for (k=beg; k<i; k++) 
+	    //tmpcolR[k].submul(R.get(k,i),vectx[i]);
+	    tR[k-beg].submul(R.get(k,i),vectx[i]);
 
 	} // end calcul de la transfo pour la colonne c
 
-      } // Loop on k columns: compute the transformation
+	//      } // Loop on k columns: compute the transformation
 
 
       // Parallel ? 
@@ -242,12 +269,11 @@ namespace hplll {
       // Loop on c columns from index mid+1 to end
       // -----------------------------------------
 
-      for (c=mid+1; c<=end; c++)  {
+      //for (c=mid+1; c<=end; c++)  {
 
-	// nmax pour la hauteur ????????
+	// nmax pour la hauteur / vérifier 
 
 	for (i=mid; i>=beg; i--) { 
-
 
 	  vectx[i].rnd(vectx[i]);
 	  x=vectx[i]; 
@@ -257,8 +283,7 @@ namespace hplll {
 	  
 	    lx = x.get_si_exp(expo);
 
-	    nmax=structure[i]+1;
-	  
+
 	    // Cf fplll 
 	    // Long case 
 	    if (expo == 0) {
@@ -269,12 +294,12 @@ namespace hplll {
 	      
 		somedone = 1;
 	      
-		R.subcol(kappa,i,restdim);
+		R.subcol(c,i,beg);
 	      
-		B.subcol(kappa,i,nmax);
+		B.subcol(c,i,nmax);
 	      
 		if (transf) 
-		  U.subcol(kappa,i,min(d,nmax));
+		  U.subcol(c,i,min(d,nmax));
 	      
 	      } 
 	      else if (lx == -1) {
@@ -283,12 +308,12 @@ namespace hplll {
 	      
 		somedone = 1;
  
-		R.addcol(kappa,i,restdim);
+		R.addcol(c,i,beg);
 	      
-		B.addcol(kappa,i,nmax);
+		B.addcol(c,i,nmax);
 	      
 		if (transf) 
-		  U.addcol(kappa,i,min(d,nmax));
+		  U.addcol(c,i,min(d,nmax));
 
 	      } 
 	      else { 
@@ -300,20 +325,20 @@ namespace hplll {
 	      
 		if (fast_long_flag == 1) {
 	      
-		  R.submulcol(kappa,i,x,restdim);
-		  B.addmulcol_si(kappa,i,-lx,nmax);
+		  R.submulcol(c,i,x,beg);
+		  B.addmulcol_si(c,i,-lx,nmax);
 		  if (transf)  
-		    U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+		    U.addmulcol_si(c,i,-lx,min(d,nmax));
 		
 		} // end fast_long
 		else {
 		
 		  set_f(xz,x);  
 	      
-		  R.submulcol(kappa,i,x,restdim);	
-		  B.submulcol(kappa,i,xz,nmax);
+		  R.submulcol(c,i,x,beg);	
+		  B.submulcol(c,i,xz,nmax);
 		  if (transf)  
-		    U.submulcol(kappa,i,xz,min(d,nmax));
+		    U.submulcol(c,i,xz,min(d,nmax));
 		}	      
 	      } 
 	    
@@ -327,36 +352,36 @@ namespace hplll {
 	      // **** À FAIRE Le mettre pour Seysen 
 	      if (fast_long_flag == 1) {
 	    
-		R.submulcol(kappa,i,x,restdim);
-		B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+		R.submulcol(c,i,x,beg);
+		B.addmulcol_si_2exp(c,i,-lx,expo,nmax);
 		if (transf)  
-		  U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+		  U.addmulcol_si_2exp(c,i,-lx,expo,min(d,nmax));
 	    
 	      } // end fast_long
 	      else {
 	   
 		set_f(xz,x);  
 	  
-		R.submulcol(kappa,i,x,restdim);	
-		B.submulcol(kappa,i,xz,nmax);
+		R.submulcol(c,i,x,beg);	
+		B.submulcol(c,i,xz,nmax);
 		if (transf)  
-		  U.submulcol(kappa,i,xz,min(d,nmax));
+		  U.submulcol(c,i,xz,min(d,nmax));
 	  
 	      } // end no long
-
-
 	    
-	    } // end expo <> 0 
+	    } // end expo <> 0
+	    
 	  } // Non zero combination 
 
-
+	  
+	  
 	}   // end application de la transformation
 
       } // End reduction loop c columns 
 
     } // End total reduction 
 
-    return 0;
+    return somedone;
     
   } 
   
@@ -984,8 +1009,14 @@ PLattice<ZT,FT, MatrixZT, MatrixFT>::PLattice(ZZ_mat<ZT> A, bool forU, int reduc
   matrix_structure(structure, B, n,d);
 
   nmax=structure[0];
+  
   for (j=1; j<d; j++)
-    if (nmax < structure[j]) nmax= structure[j]+1;
+    if (nmax < structure[j]) {
+      nmax= structure[j];
+     
+    }
+
+  nmax+=1;
   
   for (j=0; j<d; j++) 
     Bfp.setcol(j,B.getcol(j),0,structure[j]+1); 
