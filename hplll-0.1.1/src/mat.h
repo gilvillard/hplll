@@ -1417,7 +1417,7 @@ template<class T> void transpose(Matrix<T>& B, Matrix<T> A)
 };
 
 template<class T> void print2maple(Matrix<T> B, int n, int d) 
-  { cout << "**** " << endl; 
+  { 
   // Stockage en lignes 
 cout << "Matrix([";
  for (int i=0;i<n;i++) {

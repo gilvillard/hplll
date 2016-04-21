@@ -1209,7 +1209,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int S, bool forU, in
       	for (j=0; j<d; j++) {
 
       	  tabs.abs(A(i,j)); 
-       	  if (tabs.cmp(amax) > 0) amax=A(i,j);
+       	  if (tabs.cmp(amax) > 0) amax=tabs;
       	}
       
       for  (i=0; i<n; i++)
