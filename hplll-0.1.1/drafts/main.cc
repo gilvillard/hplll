@@ -183,8 +183,8 @@ int main(int argc, char *argv[])  {
  
    lp.start();
 
-   S=4;
-   nbthreads=4;
+   S=6;
+   nbthreads=6;
 
   
    LP.hlll(0.99,S,nbthreads,lovmax);
