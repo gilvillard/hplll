@@ -153,6 +153,10 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
       }
     }
 
+#ifdef _OPENMP
+#pragma omp barrier 
+#endif
+    
     time.stop();
     redtime+=time;
     eventime+=time; 
