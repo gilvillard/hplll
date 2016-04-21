@@ -150,6 +150,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 	nbswaps+=BR.nbswaps;
 	
 	putblock(U_even,BR.getU(),k,k,S,0);
+
+
       }
     }
 

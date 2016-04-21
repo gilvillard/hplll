@@ -178,15 +178,14 @@ int main(int argc, char *argv[])  {
    lp0.stop();
   
    
-   // Mettre S 
+   S=6;
+   nbthreads=6;
+
+   
    SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t>  > LP(TT.getbase(),S,NO_TRANSFORM,DEF_REDUCTION);
  
    lp.start();
 
-   S=6;
-   nbthreads=6;
-
-  
    LP.hlll(0.99,S,nbthreads,lovmax);
 
    lp.stop();
