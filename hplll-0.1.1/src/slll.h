@@ -1,7 +1,7 @@
-/* OpenMP LLL 
+/* Householder LLL 
 
-Created Mer  9 avr 2014 14:07:39 CEST 
-Copyright (C) 2014  Gilles Villard 
+Created Mar 18 jan 2011 18:08:24 CET  
+Copyright (C) 2011, 2012, 2013      Gilles Villard 
 
 This file is part of the hplll Library 
 
@@ -28,77 +28,109 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 namespace hplll { 
 
+// MatrixFT pour  matrix<FP_NR<FT> > 
+// MatrixZT pour  matrix<Z_NR<ZT> >
 
 template<class ZT, class FT, class MatrixZT, class MatrixFT>
 class SLattice
 {
+
  protected:
 
   MatrixZT B;
 
   MatrixZT RZ;
-  MatrixZT newRZ;
-  
 
-  ZZ_mat<ZT> U;
+  MatrixZT U;
+  
   ZZ_mat<ZT> U_even;
   ZZ_mat<ZT> U_odd;
-  ZZ_mat<ZT> U_proper;
-  
-  MatrixZT Uglob;
-
-  bool transf;
 
   int norigin,n,dorigin,d; 
 
+  bool transf;
+
+  unsigned int nblov_max;
+
+  
+  int nmaxkappa;
 
   // Floating point objects concerned a possible precision change 
   // ************************************************************
 
   MatrixFT R; 
+  MatrixFT Rkept; 
 
-  MatrixFT Rt; 
+  MatrixFT V; 
 
-  MatrixFT V;
+  MatrixFT Bfp; // floating point B 
 
- public:
-  
-  int nbswaps;
-  vector<int> swapstab; 
+  matrix<FP_NR<FT> > VR; // Difference between MatrixFT and matrix<FP_NR<FT> >  in Exp 
+  vector<FP_NR<FT> > normB2; // Square norm  
 
-  int hlll(double delta, int condbits, int S, int nbthreads, unsigned int lovmax=4294967295);
+  FP_NR<FT> x; // For size reduction 
+
+  vector<FP_NR<FT> > toR; // Some assignment in householder_r 
+
+  vector<int> structure; 
+
+  vector<int> col_kept;
+
+  vector<int> kappamin;
  
-  void even_hsizereduce(int S); // Householder is refreshed or not 
-  void odd_hsizereduce(int S);
+  vector<int> descendu;
 
-  void even_updateRZ(int S); 
-  void odd_updateRZ(int S);
-   
-  unsigned int setprec(unsigned int prec);
-  unsigned int getprec();
+public:
 
-  long  approx_cond();
+
+  // Timings 
+  // ******* 
+  unsigned int tps_reduce;
+  unsigned int tps_householder;
+  unsigned int tps_prepare;
+  unsigned int tps_swap;
+  unsigned int nblov,nbswaps;
+  unsigned int tps_redB;
+
+  vector<int> swapstab;
+  
+  int compteur;   // while counting 
+  int tmpcompt;   // Debug or test counting 
+
+  int householder_r(int kappa); 
+  int householder_v(int kappa); 
+
   int householder();
-  int phouseholder(int S);
+  
+  int hsizereduce(int kappa, int fromk=0);
+  
+  int seysenreduce(int kappa);
+  int seysen_flag;
 
-  ZZ_mat<ZT> getU();
+  int fast_long_flag;
+
+  int hlll(double delta, int S, int nbthreads, unsigned int lovmax=4294967295);
+   
+  unsigned int set_nblov_max(unsigned int nb); 
 
   ZZ_mat<ZT> getbase();
+
+  ZZ_mat<ZT> getU();
 
   // Not MatrixFT for the exp case 
   matrix<FP_NR<FT> > getR(); 
 
   SLattice(ZZ_mat<ZT> A, int S, bool forU=false, int reduction_method=0); 
 
-  void init(int n, int d, bool forU);
+  void init(int n, int d, bool forU=false);
 
-  //~SLattice();
+  //~Lattice();
 };
-
 
 } // end namespace hplll
 
+
 #include "slll.cc"
 
-#endif 
 
+#endif
