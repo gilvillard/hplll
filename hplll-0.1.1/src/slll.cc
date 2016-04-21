@@ -1016,8 +1016,8 @@ template<class ZT,class FT,class MatrixZT, class MatrixFT> inline ZZ_mat<ZT>
 SLattice<ZT,FT, MatrixZT, MatrixFT>::getbase()
 {
    ZZ_mat<ZT> BB(norigin,dorigin);
-   for (int i=0; i<n; i++) 
-     for (int j=0; j<d; j++) BB.Set(i,j,B(i,j)); // reprendre boucle sur les colonnes 
+   for (int i=0; i<norigin; i++) 
+     for (int j=0; j<dorigin; j++) BB.Set(i,j,B(i,j)); // reprendre boucle sur les colonnes 
 
    return BB;
 }
