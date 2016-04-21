@@ -89,7 +89,7 @@ int main(int argc, char *argv[])  {
   int i,j;
 
 
-  // Lecture de A partiellement réduite
+  // ** Lecture de A partiellement réduite
 
   //filebuf fb;
   //iostream os(&fb);
