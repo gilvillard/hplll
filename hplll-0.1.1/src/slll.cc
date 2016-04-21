@@ -157,7 +157,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     redtime+=time;
     eventime+=time; 
 
-    cout << "ICI " << endl;
+   
     
     // Update after the block even reductions
     // **************************************
@@ -169,6 +169,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     
     pmatprod(S,0); 
 
+     cout << "ICI " << endl;
+     
     time.stop();
     prodtime1+=time;
     
