@@ -82,7 +82,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
   int iter;
   
   bool stop=0;
-  
+
+  int condbits=53;
      
   // ************************************
   //   
@@ -90,31 +91,39 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
   //
   // ************************************
 
-  
+  // Computed through size reduction afterwards
+  householder(); 
+
   for (iter=0; stop==0; iter++) {
-    //for (iter=0; iter < 4; iter++) {
-	 
+  //for (iter=0; iter < 1; iter++) {
+
+	    
     stop=1;
        
 
     // col_kept ??
 
-    householder(); 
-
+    
     // The integer block lattice: truncation of the floating point R
-    // 0 triangulaire ici car householder global 
-    set_f(RZ,R,53);
+    // 0 triangulaire ici car householder global
+
+ 
+    set_f(RZ,R,condbits);
+ 
     
     for (i=1; i<d; i++)
       for (j=0;j<i;j++)
 	RZ(i,j)=0;
-            
+
+    
+    
     // In case one column is badly conditioned 
     // Make this clean, how?
  
     for (i=0; i<d; i++)
       if (RZ(i,i).sgn() ==0) RZ(i,i)=1;
 
+   
     
     // Even reductions
     // ***************
@@ -157,7 +166,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
         
     time.start();
     
-    matprod_in(B,U_even);
+    pmatprod(S,0); 
 
     time.stop();
     prodtime1+=time;
@@ -191,7 +200,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
     setId(U_odd);
     
-    set_f(RZ,R,53);
+    set_f(RZ,R,condbits);
 
     // Forcer les zéros si pas mis dans householder_v par ex 
     for (i=1; i<d; i++)
@@ -237,7 +246,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
     time.start();
     
-    matprod_in(B,U_odd);
+    //matprod_in(B,U_odd);
+    pmatprod(S,1);
     
     time.stop();
     prodtime2+=time;
@@ -1267,8 +1277,101 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::householder()
     return 0; 
 }
 
+/* --------------------------------------------- */
+/*   Matrix products after block reductions      */
+/* --------------------------------------------- */
+
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
+  SLattice<ZT,FT, MatrixZT, MatrixFT>::pmatprod(int S, int dec)
+  {
+    
+    
+    int b;
+    
+    int sdim=d/S; 
+    
+    // Even case (one could make with only one U)
+    // ------------------------------------------
+    
+    if (dec==0) {
+
+      // Column blocks of B, diag blocks of U_even
+      //   simple matrix products 
+
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif
+      
+      for (b=0; b<S; b++) {
+
+	int i,j,k;
+	
+	int shift = b*sdim;
+	  
+	MatrixZT tmat;
+	tmat.resize(n,sdim);
+
+	for (i=0; i<n; i++) {
+	  for (j=shift; j<shift+sdim; j++) {
+	    
+	    tmat(i,j-shift).mul(B(i,shift),U_even(shift,j));
+	    
+	    for (k=shift+1; k < shift+sdim; k++) {
+	      tmat(i,j-shift).addmul(B(i,k),U_even(k,j));
+	    }
+	  }
+	  for (j=shift; j<shift+sdim; j++)
+	    B(i,j)= tmat(i,j-shift);
+	} // On rows 
+	
+	
+      } // Block parallel loop 
+
+    }
+    // Odd case
+    // --------
+    else {
+
+      // Column blocks of B, diag blocks of U_even
+      //   simple matrix products 
+
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif
+      
+      for (b=0; b<S-1; b++) {
+	
+	int i,j,k;
+	
+	int shift = b*sdim+(sdim/2);
+	  
+	MatrixZT tmat;
+	tmat.resize(n,sdim);
+
+	for (i=0; i<n; i++) {
+	  for (j=shift; j<shift+sdim; j++) {
+	    
+	    tmat(i,j-shift).mul(B(i,shift),U_odd(shift,j));
+	    
+	    for (k=shift+1; k < shift+sdim; k++) {
+	      tmat(i,j-shift).addmul(B(i,k),U_odd(k,j));
+	    }
+	  }
+	  for (j=shift; j<shift+sdim; j++)
+	    B(i,j)= tmat(i,j-shift);
+	} // On rows 
+	
+	
+      } // Block parallel loop 
 
 
+    } 
+
+      
+    
+    return 0; 
+    
+  }
 
 } // end namespace hplll
 
