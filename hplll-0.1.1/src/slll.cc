@@ -166,10 +166,12 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
         
     time.start();
+
+    cout << "ICI " << d << "  " << S <<  endl;
     
     pmatprod(S,0); 
 
-     cout << "ICI " << endl;
+     cout << "LA " << endl;
      
     time.stop();
     prodtime1+=time;
