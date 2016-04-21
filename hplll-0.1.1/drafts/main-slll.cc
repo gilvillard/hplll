@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "hlll.h"
 #include "matgen.h"
 
-#include "plll.h"
+//#include "plll.h"
 #include "slll.h"
 
 #include "tools.h"
@@ -89,13 +89,13 @@ int main(int argc, char *argv[])  {
   int i,j;
 
 
-  // Lecture de A partiellement réduite
+  // ** Lecture de A partiellement réduite
 
   filebuf fb;
   iostream os(&fb);
 
-  //fb.open ("in78",ios::in);
-  //n=100;  K=78; d=79;
+  fb.open ("in78",ios::in);
+  n=100;  K=78; d=79;
   
   //fb.open ("in98",ios::in);
   //n=100;  K=98; d=99;
@@ -103,14 +103,14 @@ int main(int argc, char *argv[])  {
   //fb.open ("in118",ios::in);
   //n=120;  K=118; d=119;
 
-  // fb.open ("in138",ios::in);
-  // n=140;  K=138; d=139;
+  //fb.open ("in138",ios::in);
+  //n=140;  K=138; d=139;
 
   //fb.open ("in158",ios::in);
   //n=160;  K=158; d=159;
 
-  fb.open ("in178",ios::in);
-  n=180;  K=178; d=179;
+  //fb.open ("in178",ios::in);
+  //n=180;  K=178; d=179;
   
   A.resize(n,d);
   os >> A ;
@@ -165,6 +165,8 @@ int main(int argc, char *argv[])  {
    // cout << endl << "plll: " << lp << "   " <<  LP.nbswaps << endl;
    // cout << endl << "compteur: " << LP.compteur <<  endl;
 
+   //print2maple(B,n,K+1); 
+	     
    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > TT(B,NO_TRANSFORM,DEF_REDUCTION);
 
    Timer lp0,lp;
@@ -174,12 +176,18 @@ int main(int argc, char *argv[])  {
    TT.householder();
    TT.hsizereduce(K);
    lp0.stop();
-   
   
-   SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t>  > LP(TT.getbase(),S,TRANSFORM,DEF_REDUCTION);
- 
+   
+   S=4;
+   nbthreads=4;
+
+
    lp.start();
-   LP.hlll(delta,53,S,nbthreads,lovmax);
+   
+   SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t>  > LP(TT.getbase(),S,NO_TRANSFORM,DEF_REDUCTION);
+ 
+   LP.hlll(0.99,S,nbthreads,lovmax);
+
    lp.stop();
    cout << endl << "hsize: " << lp0  << endl;
    cout << endl << "slll: " << lp  << endl;

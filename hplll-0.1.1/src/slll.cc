@@ -130,7 +130,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
     setId(U_even); // Pas nécessaire pour even sans doute 
     
-    cout << endl <<  "--- Even reductions" << endl;
+    //cout << endl <<  "--- Even reductions" << endl;
     time.start();
     
 #ifdef _OPENMP
@@ -145,12 +145,13 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 	BR.set_nblov_max(lovmax);
 	BR.hlll(delta);
 	
-	cout << endl << "Swaps (" << 2*k << "): " << BR.nbswaps << endl; 
+	//cout << endl << "Swaps (" << 2*k << "): " << BR.nbswaps << endl; 
 	swapstab[2*k]+=BR.nbswaps;
 	nbswaps+=BR.nbswaps;
 	
 	putblock(U_even,BR.getU(),k,k,S,0);
 
+	//cout << "Nb threads: " << omp_get_num_threads() << endl; 
 
       }
     }
@@ -221,7 +222,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     
     time.start();
 
-    cout << endl <<  "--- Odd reductions" << endl;
+    //cout << endl <<  "--- Odd reductions" << endl;
     
 #ifdef _OPENMP
 #pragma omp parallel for 
@@ -234,7 +235,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
       
       BR.set_nblov_max(lovmax);
       BR.hlll(delta);
-      cout << endl << "Swaps (" << 2*k+1 << "): " << BR.nbswaps << endl;
+      //cout << endl << "Swaps (" << 2*k+1 << "): " << BR.nbswaps << endl;
       swapstab[2*k+1]+=BR.nbswaps;
       nbswaps+=BR.nbswaps;
       
@@ -289,21 +290,21 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
   totime.stop();
   
-  cout << endl;
-  //cout << " Householder: " << qrtime << endl;
-  //cout << " Re-ortho: " << orthotime  << endl;
-  cout << " Reductions: " << redtime << endl;
-  cout << "   Even reductions: " << eventime << endl;
-  cout << "   Odd reductions: " << oddtime << endl;
-  cout << " Products: " << prodtime1 << endl;
-  cout << "           " << prodtime2 << endl;
-  //cout << "           " << prodtime3 << endl;
-  //cout << "           " << prodtime4 << endl;
-  cout << " Even size reds: " << esizetime  << endl;
-  cout << " Odd size reds: " << osizetime  << endl;
-  cout << " Total time:  " << totime << endl;  
-  //cout << endl << " Special chrono:" << special << endl << endl;
-  cout << endl << "Swaps: " << swapstab << endl;
+  // cout << endl;
+  // //cout << " Householder: " << qrtime << endl;
+  // //cout << " Re-ortho: " << orthotime  << endl;
+  // cout << " Reductions: " << redtime << endl;
+  // cout << "   Even reductions: " << eventime << endl;
+  // cout << "   Odd reductions: " << oddtime << endl;
+  // cout << " Products: " << prodtime1 << endl;
+  // cout << "           " << prodtime2 << endl;
+  // //cout << "           " << prodtime3 << endl;
+  // //cout << "           " << prodtime4 << endl;
+  // cout << " Even size reds: " << esizetime  << endl;
+  // cout << " Odd size reds: " << osizetime  << endl;
+  // cout << " Total time:  " << totime << endl;  
+  // //cout << endl << " Special chrono:" << special << endl << endl;
+  // cout << endl << "Swaps: " << swapstab << endl;
   
       
   return 0;
@@ -1219,8 +1220,11 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int S, bool forU, in
 
   matrix_structure(structure, B, n,d);
 
+  for (i=1; i<d; i++)
+    structure[i]=max(structure[i-1],structure[i]);
+  
   for (i=0; i<d; i++)
-    structure[i]=n-1;
+    structure[i]=structure[d-1];
 
   swapstab.resize(K-1);
   for (i=0; i<K-1; i++) 
