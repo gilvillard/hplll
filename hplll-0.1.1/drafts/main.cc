@@ -91,8 +91,8 @@ int main(int argc, char *argv[])  {
 
   // Lecture de A partiellement réduite
 
-  filebuf fb;
-  iostream os(&fb);
+  //filebuf fb;
+  //iostream os(&fb);
 
   //fb.open ("in78",ios::in);
   //n=100;  K=78; d=79;
@@ -106,15 +106,15 @@ int main(int argc, char *argv[])  {
   //fb.open ("in138",ios::in);
   //n=140;  K=138; d=139;
 
-  fb.open ("in158",ios::in);
-  n=160;  K=158; d=159;
+  //fb.open ("in158",ios::in);
+  //n=160;  K=158; d=159;
 
   //fb.open ("in178",ios::in);
   //n=180;  K=178; d=179;
   
-  A.resize(n,d);
-  os >> A ;
-  fb.close();
+  //A.resize(n,d);
+  //os >> A ;
+  //fb.close();
 
   // Découpage rectangle de A
   
@@ -182,7 +182,11 @@ int main(int argc, char *argv[])  {
    SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t>  > LP(TT.getbase(),S,NO_TRANSFORM,DEF_REDUCTION);
  
    lp.start();
-   
+
+   S=4;
+   nbthreads=4;
+
+  
    LP.hlll(0.99,S,nbthreads,lovmax);
 
    lp.stop();

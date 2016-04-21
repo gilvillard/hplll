@@ -110,6 +110,11 @@ public:
   int fast_long_flag;
 
   int hlll(double delta, int S, int nbthreads, unsigned int lovmax=4294967295);
+
+  // Parallel
+  // --------
+
+  int pmatprod(int S, int dec);
    
   unsigned int set_nblov_max(unsigned int nb); 
 
