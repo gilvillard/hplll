@@ -51,7 +51,7 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta) {
 
   ZZ_mat<ZT> B;
     
-  int d1=30;
+  int d1=80;
 
   // Initial reduction
   // -----------------
