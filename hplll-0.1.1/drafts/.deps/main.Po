@@ -190,7 +190,7 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
  ../src/ldpe.h ../src/nr-ld.cpp ../src/mat.h ../src/mixed-col.h \
  ../src/matpe.h ../src/matmixed.h ../src/hlll.cc ../src/ratio.h \
  ../src/matgen.h ../src/tools.h ../src/matgen.cc ../src/matgen.h \
- ../src/slll.h ../src/hlll.h ../src/slll.cc ../src/tools.h
+ ../src/slll.h ../src/hlll.h ../src/slll.cc
 
 ../src/hlll.h:
 
@@ -751,5 +751,3 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 ../src/hlll.h:
 
 ../src/slll.cc:
-
-../src/tools.h:
