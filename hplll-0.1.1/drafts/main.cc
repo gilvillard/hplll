@@ -73,12 +73,15 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta) {
   
   C=L.getbase();
 
+  cout << "Initial  time: " << tinit << endl;
   
   // Rest of the reductions, one dimension at a time
   // -----------------------------------------------
   
   for (k = d1+1; k<=d; k++) {    // Real dims (not indices) 
 
+    cout << "kappa = " << k << endl;
+    
     B.resize(n,k);
 
     for (i=0; i<n; i++)
