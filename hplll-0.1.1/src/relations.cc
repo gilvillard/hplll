@@ -22,8 +22,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
-#include "ratio.h" 
-
 #ifndef HPLLL_RELATIONS_CC
 #define HPLLL_RELATIONS_CC
 
@@ -635,7 +633,7 @@ namespace hplll {
     } // End while 
 
 
-        // Relation bound
+    // Relation bound
     // --------------
 
     unsigned oldprec;

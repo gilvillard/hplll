@@ -31,6 +31,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "matmixed.h"
 
 
+
+
 namespace hplll { 
 
 // MatrixFT pour  matrix<FP_NR<FT> > 
@@ -126,13 +128,13 @@ public:
   // Not MatrixFT for the exp case 
   matrix<FP_NR<FT> > getR(); 
 
-  Lattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0); 
+  Lattice(ZZ_mat<ZT> A, bool forU=false, int reduction_method=0, int long_flag = 1); 
 
   Lattice(matrix<FP_NR<mpfr_t> > F, ZZ_mat<ZT> A, bool forU, int reduction_method);
 
-  Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU=false, int reduction_method=0);
+  //Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU=false, int reduction_method=0);
 
-  Lattice(ZZ_mat<ZT> A, long t, long sigma, bool forU, int reduction_method); 
+  //Lattice(ZZ_mat<ZT> A, long t, long sigma, bool forU, int reduction_method); 
 
   void init(int n, int d, bool forU=false);
 
