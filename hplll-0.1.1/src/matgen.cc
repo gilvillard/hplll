@@ -27,6 +27,76 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 namespace hplll {
 
+  /* ************************************************
+  
+        When testing prec and Seysen
+
+    ********************************************** */
+  
+  template<class ZT> int genalpha(ZZ_mat<ZT>& B, int n, double alpha) {
+
+    int i,j;
+    
+    FP_NR<double> a0,ta;
+    a0=alpha;
+    
+    B.resize(n,n);
+
+    // Diagonal entries, decreasing powers of alpha
+    // --------------------------------------------
+    
+    ta=a0;
+    
+    for (i=n-1; i>=0; i--) {  
+      B(i,i).set_f(ta);
+      ta.mul(ta,a0);
+    }
+
+    // Upper triangular entries, random less than the diagonal 
+    // -------------------------------------------------------
+
+    Z_NR<ZT> zrdm;
+    
+    FP_NR<mpfr_t> diagf,frdm, p49,p50;
+
+    p49=1.0;
+    p49.mul_2si(p49,49);
+    
+    p50=1.0;
+    p50.mul_2si(p50,50);
+   
+    for (i=0; i<n; i++) {
+
+      diagf.set_z(B(i,i));
+		 
+      for (j=i+1; j<n; j++) {
+
+	zrdm.randb(50);
+	
+	
+	frdm.set_z(zrdm);
+
+	frdm.sub(frdm,p49);
+	frdm.div(frdm,p50);	
+
+	frdm.mul(frdm,diagf);
+
+			
+	B(i,j).set_f(frdm);
+
+      }
+
+    }
+
+
+    for (i=0; i<n; i++) 
+      for (j=0; j<i; j++) 
+	B(i,j)=0;
+	
+    return 0;
+  }
+
+  
 /* ***********************************************
 
           BASIS GENERATION FROM THE COMMAND LINE    
@@ -46,7 +116,8 @@ namespace hplll {
     char copp[]="c";
     char unif[]="u";
     char dec[]="dec";
-    
+    char al[]="al";
+     
     int nbbits=10;
     double alpha=1.4;
     int q;
@@ -149,7 +220,7 @@ namespace hplll {
     } 
 
     // Coppersmith PKC 14 BCFPNRZ 
-    // -----
+    // --------------------------
     else if (strcmp(type,copp) ==0) {
 
       int ddelta=3;
@@ -216,6 +287,15 @@ namespace hplll {
       for (int i=0; i<d/2; i++)
 	for (int j=0; j<d; j++)
 	  A(i+d/2,j)=AT(j,i);
+    }
+
+    // "alpha" basis (used initially for testing Seysen) reduction 
+    // -----------------------------------------------------------
+    else if (strcmp(type,al) ==0) {
+
+      genalpha<mpz_t>(A,d,1.1);
+      n=d;
+      
     } 
 
     // -------------------------------
@@ -364,69 +444,6 @@ namespace hplll {
   }
 
   
-  // When testing prec and Seysen
-  template<class ZT> int genalpha(ZZ_mat<ZT>& B, int n, double alpha) {
-
-    int i,j;
-    
-    FP_NR<double> a0,ta;
-    a0=alpha;
-    
-    B.resize(n,n);
-
-    // Diagonal entries, decreasing powers of alpha
-    // --------------------------------------------
-    
-    ta=a0;
-    
-    for (i=n-1; i>=0; i--) {  
-      B(i,i).set_f(ta);
-      ta.mul(ta,a0);
-    }
-
-    // Upper triangular entries, random less than the diagonal 
-    // -------------------------------------------------------
-
-    Z_NR<ZT> zrdm;
-    
-    FP_NR<mpfr_t> diagf,frdm, p49,p50;
-
-    p49=1.0;
-    p49.mul_2si(p49,49);
-    
-    p50=1.0;
-    p50.mul_2si(p50,50);
-   
-    for (i=0; i<n; i++) {
-
-      diagf.set_z(B(i,i));
-		 
-      for (j=i+1; j<n; j++) {
-
-	zrdm.randb(50);
-	
-	
-	frdm.set_z(zrdm);
-
-	frdm.sub(frdm,p49);
-	frdm.div(frdm,p50);	
-
-	frdm.mul(frdm,diagf);
-
-			
-	B(i,j).set_f(frdm);
-
-      }
-
-    }
-
-
-    for (i=0; i<n; i++) 
-      for (j=0; j<i; j++) 
-	B(i,j)=0;
-	
-    return 0;
-  }
   
   
 } // end namespace hplll

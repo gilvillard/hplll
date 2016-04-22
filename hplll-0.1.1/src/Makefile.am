@@ -3,10 +3,16 @@ AUTOMAKE_OPTIONS = gnu
 include_hpllldir=$(includedir)/hplll
 
 include_hplll_HEADERS=  hplll.h defs.h  mat.h matpe.h  ldpe.h nr-ld.cpp  \
-	hlll.h hlll.cc decomp.h decomp.cc relations.h relations.cc  \
-	matgen.h matgen.cc decompz.h decompz.cc nullspace.h  nullspace.cc \
-  	mixed-col.h  matmixed.h  lehmer.cc  l1.h  block.h  tools.h  \
-	givtimer.h givtimer.C plll.h plll.cc ratio.h nr_Z_l128.h
+	hlll.h hlll.cc relations.h relations.cc  \
+	matgen.h matgen.cc  \
+  	mixed-col.h  matmixed.h  tools.h  \
+	givtimer.h givtimer.C ratio.h nr_Z_l128.h
+
+#include_hplll_HEADERS=  hplll.h defs.h  mat.h matpe.h  ldpe.h nr-ld.cpp  \
+	#hlll.h hlll.cc decomp.h decomp.cc relations.h relations.cc  \
+	#matgen.h matgen.cc decompz.h decompz.cc nullspace.h  nullspace.cc \
+  	#mixed-col.h  matmixed.h  lehmer.cc  l1.h  block.h  tools.h  \
+	#givtimer.h givtimer.C plll.h plll.cc ratio.h nr_Z_l128.h
 
 #EXTRA_DIST=README.html
 

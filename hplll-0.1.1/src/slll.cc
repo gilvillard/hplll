@@ -68,7 +68,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
   esizetime.clear();
   osizetime.clear();
   totime.clear();
-
+ 
     
   totime.start();
   
@@ -325,9 +325,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) { 
 
-  // À FAIRE : À la main ici pour Seysen, à mettre en automatique 
-  fast_long_flag = 1;
-    
+      
   nmaxkappa=structure[kappa]+1;
 
   FP_NR<FT> approx;
@@ -1132,7 +1130,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>
-SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int S, bool forU, int reduction_method) {
+SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int S, bool forU, int reduction_method,  int long_flag) {
 
   // Resizing for dimension divisible by K
   // -------------------------------------
@@ -1215,8 +1213,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int S, bool forU, in
   
   seysen_flag=reduction_method;
 
-  if (reduction_method == DEF_REDUCTION) fast_long_flag = 1;
-  else if  (reduction_method == NO_LONG)  fast_long_flag = 0;
+  fast_long_flag = long_flag;
+  
 
   matrix_structure(structure, B, n,d);
 

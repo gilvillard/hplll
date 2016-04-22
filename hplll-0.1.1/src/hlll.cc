@@ -82,10 +82,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
        
 
-      if (seysen_flag < 2) 
+      if (seysen_flag < 1) 
       	flag_reduce=hsizereduce(kappa);
       else 
-      	  flag_reduce=seysenreduce(kappa); 
+	flag_reduce=seysenreduce(kappa); 
       
             
       if (flag_reduce==-1) return(-1);
@@ -115,6 +115,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
     
       if (lovtest <= newt) {
 
+	
 	/*if (verbose) {
 	  if (((kappa) < d) && (col_kept[kappa+1] == 0)) cout << "Discovering vector " 
 							      << kappa +1 << "/" << d 
@@ -204,9 +205,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) { 
 
-  // À FAIRE : À la main ici pour Seysen, à mettre en automatique 
-  fast_long_flag = 1;
-    
+  // IICI 
+  cout << "seysen " << endl;
+      
   nmaxkappa=structure[kappa]+1;
 
   FP_NR<FT> approx;
@@ -351,6 +352,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 	      
 	      if (fast_long_flag == 1) {
+
+		 // IICI 
+	      cout << "fast " << endl;
 	      
 	       	R.submulcol(kappa,i,x,restdim);
 	       	B.addmulcol_si(kappa,i,-lx,nmax);
@@ -378,7 +382,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	    
 	    // **** À FAIRE Le mettre pour Seysen 
 	    if (fast_long_flag == 1) {
-	    
+
+	     
+	      
 	      R.submulcol(kappa,i,x,restdim);
 	      B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
 	      if (transf)  
@@ -453,6 +459,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) { 
 
+  // IICI 
+  cout << "red " << endl;
+  
   nmaxkappa=structure[kappa]+1;
 
   FP_NR<FT> approx;
@@ -556,7 +565,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	    
  
 	    if (fast_long_flag == 1) {
-	      
+
+	      // IICI 
+	      cout << "fast " << endl;
+  
 	      R.submulcol(kappa,i,x,i+1);
 	      B.addmulcol_si(kappa,i,-lx,nmax);
 	      if (transf)  
@@ -1055,7 +1067,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
 
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT>
-Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reduction_method) {
+Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reduction_method, int long_flag) {
 
   
   n=A.getRows();
@@ -1082,9 +1094,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reducti
   
   seysen_flag=reduction_method;
 
-  if (reduction_method == DEF_REDUCTION) fast_long_flag = 1;
-  else if  (reduction_method == NO_LONG)  fast_long_flag = 0;
-
+  fast_long_flag = long_flag;
+    
   matrix_structure(structure, B, n,d);
 
  }
@@ -1093,43 +1104,44 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reducti
 // With mixed matrix from mixed matrix 
 // -----------------------------------
 
-template<class ZT,class FT, class MatrixZT, class MatrixFT>
-Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU, int reduction_method) {
+// template<class ZT,class FT, class MatrixZT, class MatrixFT>
+// Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU, int reduction_method) {
 
-    n=A.getRowsRT()+A.getRowsZT();
-    d=A.getCols();
+//     n=A.getRowsRT()+A.getRowsZT();
+//     d=A.getCols();
 
-    init(n,d, forU); 
+//     init(n,d, forU); 
     
-    int i,j;
+//     int i,j;
 
-    B.resize(A.getRowsRT(), A.getRowsZT(), d);
+//     B.resize(A.getRowsRT(), A.getRowsZT(), d);
 
-    for (i=0; i<A.getRowsRT(); i++) 
-      for (j=0; j<d; j++) 
-	B.setRT(i,j,A.getRT(i,j));
+//     for (i=0; i<A.getRowsRT(); i++) 
+//       for (j=0; j<d; j++) 
+// 	B.setRT(i,j,A.getRT(i,j));
 
-    for (i=0; i<A.getRowsZT(); i++) 
-      for (j=0; j<d; j++) 
-	B.setZT(i,j,A.getZT(i,j));
+//     for (i=0; i<A.getRowsZT(); i++) 
+//       for (j=0; j<d; j++) 
+// 	B.setZT(i,j,A.getZT(i,j));
     
-    if (transf) {    // Not in init for the mixed matrix case also 
-      Z_NR<ZT> one;
-      one=1;
-      U.resize(0,d,d);
-      for (i=0; i<d; i++) U.set(i,i,one); 
-    }
+//     if (transf) {    // Not in init for the mixed matrix case also 
+//       Z_NR<ZT> one;
+//       one=1;
+//       U.resize(0,d,d);
+//       for (i=0; i<d; i++) U.set(i,i,one); 
+//     }
 
-    nblov_max = 4294967295;
+//     nblov_max = 4294967295;
     
 
-    seysen_flag=reduction_method;
+//     // CHECK this with base constructor changed 
+//     seysen_flag=reduction_method;
 
-    if (reduction_method == DEF_REDUCTION) fast_long_flag = 1;
-    else if  (reduction_method == NO_LONG)  fast_long_flag = 0;
+//     if (reduction_method == DEF_REDUCTION) fast_long_flag = 1;
+//     else if  (reduction_method == NO_LONG)  fast_long_flag = 0;
   
-    matrix_structure(structure, B, A.getRowsRT(), A.getRowsZT(), d);
-}
+//     matrix_structure(structure, B, A.getRowsRT(), A.getRowsZT(), d);
+// }
 
 
 // ------------------------------------------------------------------

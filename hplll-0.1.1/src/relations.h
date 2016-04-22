@@ -27,12 +27,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define HPLLL_RELATIONS_H
 
 #include "hlll.h" 
-#include "matmixed.h"
-
-#include "lehmer.cc"
-
-#include "decomp.h"
-#include "decompz.h"
 
 namespace hplll { 
 
