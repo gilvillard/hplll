@@ -205,9 +205,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) { 
 
-  // IICI 
-  cout << "seysen " << endl;
-      
+        
   nmaxkappa=structure[kappa]+1;
 
   FP_NR<FT> approx;
@@ -352,9 +350,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 	      
 	      if (fast_long_flag == 1) {
-
-		 // IICI 
-	      cout << "fast " << endl;
 	      
 	       	R.submulcol(kappa,i,x,restdim);
 	       	B.addmulcol_si(kappa,i,-lx,nmax);
@@ -426,9 +421,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
       t.mul(approx,normB2[kappa]);
 
       householder_r(kappa);  
-
-      // IICI 
-      //nonstop = (normB2[kappa] < t);  // ne baisse quasiment  plus ? 
      
     }
     else {
@@ -459,8 +451,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) { 
 
-  // IICI 
-  cout << "red " << endl;
   
   nmaxkappa=structure[kappa]+1;
 
@@ -565,9 +555,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	    
  
 	    if (fast_long_flag == 1) {
-
-	      // IICI 
-	      cout << "fast " << endl;
   
 	      R.submulcol(kappa,i,x,i+1);
 	      B.addmulcol_si(kappa,i,-lx,nmax);

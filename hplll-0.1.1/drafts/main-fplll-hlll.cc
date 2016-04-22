@@ -1,4 +1,4 @@
-/* Integer matrix nullspace test file  
+/* 
 
 Created Dim  7 avr 2013 16:54:03 CEST
 Copyright (C) 2013      Gilles Villard 
@@ -21,8 +21,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
-#include "hlll.h"
-#include "matgen.h"
+#include "hplll.h"
+
 
 /* ***********************************************
 
@@ -49,15 +49,13 @@ int main(int argc, char *argv[])  {
   AT.resize(d,n);
   transpose(AT,A);
 
-    int start,startsec;
 
     Timer time;
 
     int status;
     
     cout << "--------------  HLLL" << endl << endl; 
-    start=utime();
-    startsec=utimesec();
+    
    
     Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
     //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
@@ -67,12 +65,9 @@ int main(int argc, char *argv[])  {
     status=B.hlll(delta);
     time.stop();
 
-    start=utime()-start;
-    startsec=utimesec()-startsec;
-  
     
-    cout << "   dimension = " << d  << endl;
-    cout << "   time A: " << start/1000 << " ms" << endl;
+    cout << "   dimension = " << d  << endl << endl;
+    
     time.print(cout);
     
     
@@ -85,17 +80,16 @@ int main(int argc, char *argv[])  {
     cout << "--------------  FPLLL WRAPPER" << endl << endl; 
     transpose(AT,A0);
 
-    start=utime();
-    startsec=utimesec();
+   
     time.start();
+
     lllReduction(AT, delta, 0.501, LM_WRAPPER);
+
     time.stop();
-    start=utime()-start;
-    startsec=utimesec()-startsec;
   
     
-    cout << "   dimension = " << d  << endl;
-    cout << "   time B: " << start/1000 << " ms" << endl;
+    cout << "   dimension = " << d  << endl << endl;
+   
     time.print(cout);
  
     transpose(A,AT);

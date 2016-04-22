@@ -87,7 +87,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS = arithmetic$(EXEEXT) hllltest$(EXEEXT) relationstest$(EXEEXT)
+TESTS = arithmetic$(EXEEXT) hllltest$(EXEEXT) relationstest$(EXEEXT) \
+	matint128$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 EXTRA_PROGRAMS = relationstesthuge$(EXEEXT) gentable1$(EXEEXT) \
 	gentable2$(EXEEXT) gentable3$(EXEEXT) gentable4$(EXEEXT) \
@@ -109,7 +110,7 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_1 = arithmetic$(EXEEXT) hllltest$(EXEEXT) \
-	relationstest$(EXEEXT)
+	relationstest$(EXEEXT) matint128$(EXEEXT)
 am_arithmetic_OBJECTS = arithmetic.$(OBJEXT)
 arithmetic_OBJECTS = $(am_arithmetic_OBJECTS)
 arithmetic_LDADD = $(LDADD)
@@ -138,6 +139,9 @@ gentable6_LDADD = $(LDADD)
 am_hllltest_OBJECTS = hllltest.$(OBJEXT)
 hllltest_OBJECTS = $(am_hllltest_OBJECTS)
 hllltest_LDADD = $(LDADD)
+am_matint128_OBJECTS = matint128.$(OBJEXT)
+matint128_OBJECTS = $(am_matint128_OBJECTS)
+matint128_LDADD = $(LDADD)
 am_relationstest_OBJECTS = relationstest.$(OBJEXT)
 relationstest_OBJECTS = $(am_relationstest_OBJECTS)
 relationstest_LDADD = $(LDADD)
@@ -181,11 +185,13 @@ am__v_CXXLD_1 =
 SOURCES = $(arithmetic_SOURCES) $(gentable1_SOURCES) \
 	$(gentable2_SOURCES) $(gentable3_SOURCES) $(gentable4_SOURCES) \
 	$(gentable5_SOURCES) $(gentable6_SOURCES) $(hllltest_SOURCES) \
-	$(relationstest_SOURCES) $(relationstesthuge_SOURCES)
+	$(matint128_SOURCES) $(relationstest_SOURCES) \
+	$(relationstesthuge_SOURCES)
 DIST_SOURCES = $(arithmetic_SOURCES) $(gentable1_SOURCES) \
 	$(gentable2_SOURCES) $(gentable3_SOURCES) $(gentable4_SOURCES) \
 	$(gentable5_SOURCES) $(gentable6_SOURCES) $(hllltest_SOURCES) \
-	$(relationstest_SOURCES) $(relationstesthuge_SOURCES)
+	$(matint128_SOURCES) $(relationstest_SOURCES) \
+	$(relationstesthuge_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -546,6 +552,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/src
 arithmetic_SOURCES = arithmetic.cc  
 hllltest_SOURCES = hllltest.cc
 relationstest_SOURCES = relationstest.cc
+matint128_SOURCES = matint128.cc
 relationstesthuge_SOURCES = relationstesthuge.cc
 gentable1_SOURCES = gentable1.cc 
 gentable2_SOURCES = gentable2.cc
@@ -628,6 +635,10 @@ hllltest$(EXEEXT): $(hllltest_OBJECTS) $(hllltest_DEPENDENCIES) $(EXTRA_hllltest
 	@rm -f hllltest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(hllltest_OBJECTS) $(hllltest_LDADD) $(LIBS)
 
+matint128$(EXEEXT): $(matint128_OBJECTS) $(matint128_DEPENDENCIES) $(EXTRA_matint128_DEPENDENCIES) 
+	@rm -f matint128$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(matint128_OBJECTS) $(matint128_LDADD) $(LIBS)
+
 relationstest$(EXEEXT): $(relationstest_OBJECTS) $(relationstest_DEPENDENCIES) $(EXTRA_relationstest_DEPENDENCIES) 
 	@rm -f relationstest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(relationstest_OBJECTS) $(relationstest_LDADD) $(LIBS)
@@ -650,6 +661,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gentable5.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gentable6.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hllltest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matint128.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/relationstest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/relationstesthuge.Po@am__quote@
 
@@ -890,6 +902,13 @@ hllltest.log: hllltest$(EXEEXT)
 relationstest.log: relationstest$(EXEEXT)
 	@p='relationstest$(EXEEXT)'; \
 	b='relationstest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+matint128.log: matint128$(EXEEXT)
+	@p='matint128$(EXEEXT)'; \
+	b='matint128'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
