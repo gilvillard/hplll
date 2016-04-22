@@ -35,6 +35,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "givtimer.C"
 
+#include "nr_Z_l128.h"
+
 #ifndef __CYGWIN__
 #define HPLLL_WITH_LONG_DOUBLE
 #endif

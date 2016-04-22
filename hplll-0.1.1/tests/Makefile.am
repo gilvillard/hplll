@@ -2,7 +2,7 @@
 AUTOMAKE_OPTIONS = gnu
 
 EXTRA_DIST= 416_in 2_in 3_in C1_out  C2_out C3_in C3_out  \
-             C_huge_in C_huge_out 
+             C_huge_in C_huge_out matint128
 
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
@@ -15,13 +15,15 @@ AM_CPPFLAGS = -I$(top_srcdir)/src
 #LDADD =  -lfplll  
 
 
-TESTS = arithmetic  hllltest relationstest 
+TESTS = arithmetic  hllltest relationstest matint128
 
 arithmetic_SOURCES=arithmetic.cc  
 
 hllltest_SOURCES=hllltest.cc
 
 relationstest_SOURCES=relationstest.cc
+
+matint128_SOURCES=matint128.cc
 
 check_PROGRAMS = $(TESTS)
 
