@@ -106,6 +106,7 @@ public:
   
   int decrease(int kappa);
   int seysenreduce(int kappa);
+  int newseysenreduce(int kappa);
   int seysen_flag;
 
   int fast_long_flag;

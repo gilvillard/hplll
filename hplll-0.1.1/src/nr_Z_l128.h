@@ -427,7 +427,6 @@ __int128_t value= x.getData();
 /* } */
 
 
-
 FPLLL_END_NAMESPACE
 
 #endif
