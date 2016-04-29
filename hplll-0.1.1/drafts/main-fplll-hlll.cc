@@ -1,7 +1,7 @@
 /* 
 
 Created Dim  7 avr 2013 16:54:03 CEST
-Copyright (C) 2013      Gilles Villard 
+Copyright (C) 2013-2016      Gilles Villard 
 
 This file is part of the hplll Library 
 
@@ -96,6 +96,7 @@ int main(int argc, char *argv[])  {
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
     T2.isreduced(delta-0.1);
 
+   
    
 
   return 0;
