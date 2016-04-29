@@ -22,6 +22,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "ratio.h"
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #ifndef HPLLL_HLLL_CC
 #define HPLLL_HLLL_CC
 
@@ -88,7 +92,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       if (seysen_flag < 1) 
       	flag_reduce=hsizereduce(kappa);
       else 
-	flag_reduce=newseysenreduce(kappa); 
+	flag_reduce=seysenreduce(kappa); 
       
             
       if (flag_reduce==-1) return(-1);
@@ -219,7 +223,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::newseysenreduce(int kappa) {
    
   FP_NR<FT>  qq;
   
-  FP_NR<FT> x,t,tmpfp;
+  FP_NR<FT> t,tmpfp;
   Z_NR<ZT>  xz,tmpz;
 
   long expo,lx;
@@ -259,8 +263,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::newseysenreduce(int kappa) {
 
     somedone = 0;
 
-    //compteur += 1;
-    
     ld=1; indexdec=0; // Décalage d'indice
  
 
@@ -282,40 +284,48 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::newseysenreduce(int kappa) {
 
       restdim=kappa-indexdec-bdim;
 
+      for (i=kappa-1-indexdec; i>=restdim; i--) 
+	tmpcolR[i]=R.get(i,kappa);
 
-
-      //for (i=kappa-1-indexdec; i>=restdim; i--) 
-      //tmpcolR[i]=R.get(i,kappa);
-
-      // Bien meilleur en dpe 
-      tR.setcol(1,R.getcol(kappa,restdim), bdim);
+      // À mettre Bien meilleur en dpe 
+      //tR.setcol(1,R.getcol(kappa,restdim), bdim);
 
 
       for (i=kappa-1-indexdec; i>=restdim; i--){
 	
-	//vectx[i].div(tmpcolR[i],R.get(i,i));
+	vectx[i].div(tmpcolR[i],R.get(i,i));
 
-	// dpe 
-	vectx[i].div(tR.get(i-restdim,1),R.get(i,i));
+	// À mettre dpe 
+	//vectx[i].div(tR.get(i-restdim,1),R.get(i,i));
 	
- 
 	qq.abs(vectx[i]);
 	if (qq.cmp(0.501) == 1) bounded[i]=0; else bounded[i]=1;
 
-	//Faire une opération vectorielle 
-	//for (int k=restdim; k<i; k++) 
-	//tmpcolR[k].submul(R.get(k,i),vectx[i]);
+	// Faire une opération vectorielle 
+	for (int k=restdim; k<i; k++) 
+	  tmpcolR[k].submul(R.get(k,i),vectx[i]);
 
-	// dpe
-	tR.setcol(0,R.getcol(i,restdim), i-restdim); // i-restdim longueur ? 
-	tR.submulcol(1,0,vectx[i],i-restdim);	
+	// À mettre dpe
+	//tR.setcol(0,R.getcol(i,restdim), i-restdim); // i-restdim longueur ? 
+	//tR.submulcol(1,0,vectx[i],i-restdim);	
 	 
       } // end calcul de la transfo 
        
 
       // Et on applique la transformation  
       // --------------------------------
-      for (i=kappa-1-indexdec; i>= restdim; i--){
+
+#pragma omp parallel sections num_threads(2)
+   {
+
+#pragma omp section
+     
+     { // Update of R
+       // -----------
+
+       FP_NR<FT> x;
+	 
+       for (i=kappa-1-indexdec; i>= restdim; i--){
 
 	vectx[i].rnd(vectx[i]);
 	x=vectx[i]; 
@@ -333,13 +343,11 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::newseysenreduce(int kappa) {
 	    
 	    if (lx == 1) {
 
-	      //compteur +=1;
-	      
 	      somedone = 1;
 	      
 	      R.subcol(kappa,i,restdim);
 	      
-	      B.subcol(kappa,i,nmax);
+	      //B.subcol(kappa,i,nmax);
 	      
 	      if (transf) 
 		U.subcol(kappa,i,min(d,nmax));
@@ -347,13 +355,11 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::newseysenreduce(int kappa) {
 	    } 
 	    else if (lx == -1) {
 
-	      //compteur +=1;
-	      
 	      somedone = 1;
  
 	      R.addcol(kappa,i,restdim);
 	      
-	      B.addcol(kappa,i,nmax);
+	      //B.addcol(kappa,i,nmax);
 	      
 	      if (transf) 
 		U.addcol(kappa,i,min(d,nmax));
@@ -361,15 +367,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::newseysenreduce(int kappa) {
 	    } 
 	    else { 
 
-	      //compteur +=1;
-	      
 	      somedone = 1;
 
 	      
 	      if (fast_long_flag == 1) {
 	      
 	       	R.submulcol(kappa,i,x,restdim);
-	       	B.addmulcol_si(kappa,i,-lx,nmax);
+	       	//B.addmulcol_si(kappa,i,-lx,nmax);
 	       	if (transf)  
 	       	  U.addmulcol_si(kappa,i,-lx,min(d,nmax));
 		
@@ -379,7 +383,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::newseysenreduce(int kappa) {
 	       	set_f(xz,x);  
 	      
 	       	R.submulcol(kappa,i,x,restdim);	
-	       	B.submulcol(kappa,i,xz,nmax);
+	       	//B.submulcol(kappa,i,xz,nmax);
 	       	if (transf)  
 	       	  U.submulcol(kappa,i,xz,min(d,nmax));
 	      }	      
@@ -388,8 +392,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::newseysenreduce(int kappa) {
 	  } // end expo == 0 
 	  else {  // expo <> 0 
 
-	    //compteur +=1;
-	      
 	    somedone = 1;
 	    
 	    // **** À FAIRE Le mettre pour Seysen 
@@ -398,7 +400,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::newseysenreduce(int kappa) {
 	     
 	      
 	      R.submulcol(kappa,i,x,restdim);
-	      B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+	      //B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
 	      if (transf)  
 		U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
 	    
@@ -408,7 +410,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::newseysenreduce(int kappa) {
 	      set_f(xz,x);  
 	  
 	      R.submulcol(kappa,i,x,restdim);	
-	      B.submulcol(kappa,i,xz,nmax);
+	      //B.submulcol(kappa,i,xz,nmax);
 	      if (transf)  
 		U.submulcol(kappa,i,xz,min(d,nmax));
 	  
@@ -419,7 +421,115 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::newseysenreduce(int kappa) {
 	  } // end expo <> 0 
 	} // Non zero combination 
 
-      } // end application de la transformation 
+      } // end application de la transformation
+
+     } // End pragma update of R 
+
+#pragma omp section
+     
+     { // Update of B
+     //   // -----------
+
+     //   for (i=kappa-1-indexdec; i>= restdim; i--){
+
+     // 	vectx[i].rnd(vectx[i]);
+     // 	x=vectx[i]; 
+
+     // 	//if (x.sgn() !=0) { 
+     // 	if (bounded[i]==0) {
+	  
+     // 	  lx = x.get_si_exp(expo);
+
+     // 	  nmax=structure[i]+1;
+	  
+     // 	  // Cf fplll 
+     // 	  // Long case 
+     // 	  if (expo == 0) {
+	    
+     // 	    if (lx == 1) {
+
+     // 	      somedone = 1;
+	      
+     // 	      //R.subcol(kappa,i,restdim);
+	      
+     // 	      B.subcol(kappa,i,nmax);
+	      
+     // 	      if (transf) 
+     // 		U.subcol(kappa,i,min(d,nmax));
+	      
+     // 	    } 
+     // 	    else if (lx == -1) {
+
+     // 	      somedone = 1;
+ 
+     // 	      //R.addcol(kappa,i,restdim);
+	      
+     // 	      B.addcol(kappa,i,nmax);
+	      
+     // 	      if (transf) 
+     // 		U.addcol(kappa,i,min(d,nmax));
+
+     // 	    } 
+     // 	    else { 
+
+     // 	      somedone = 1;
+
+	      
+     // 	      if (fast_long_flag == 1) {
+	      
+     // 	       	//R.submulcol(kappa,i,x,restdim);
+     // 	       	B.addmulcol_si(kappa,i,-lx,nmax);
+     // 	       	if (transf)  
+     // 	       	  U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+		
+     // 	      } // end fast_long
+     // 	      else {
+		
+     // 	       	set_f(xz,x);  
+	      
+     // 	       	//R.submulcol(kappa,i,x,restdim);	
+     // 	       	B.submulcol(kappa,i,xz,nmax);
+     // 	       	if (transf)  
+     // 	       	  U.submulcol(kappa,i,xz,min(d,nmax));
+     // 	      }	      
+     // 	    } 
+	    
+     // 	  } // end expo == 0 
+     // 	  else {  // expo <> 0 
+
+     // 	    somedone = 1;
+	    
+     // 	    // **** À FAIRE Le mettre pour Seysen 
+     // 	    if (fast_long_flag == 1) {
+
+	     
+	      
+     // 	      //R.submulcol(kappa,i,x,restdim);
+     // 	      B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+     // 	      if (transf)  
+     // 		U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    
+     // 	    } // end fast_long
+     // 	    else {
+	   
+     // 	      set_f(xz,x);  
+	  
+     // 	      //R.submulcol(kappa,i,x,restdim);	
+     // 	      B.submulcol(kappa,i,xz,nmax);
+     // 	      if (transf)  
+     // 		U.submulcol(kappa,i,xz,min(d,nmax));
+	  
+     // 	    } // end no long
+	    
+     // 	  } // end expo <> 0 
+     // 	} // Non zero combination 
+
+     //  } // end application de la transformation
+
+     } // End pragma update of B 
+
+     
+   } // End pragma parallel application of transformation 
 
       indexdec+=bdim;     
       ld=ld*2;
@@ -430,9 +540,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::newseysenreduce(int kappa) {
 
     if (somedone) {
        
-      compteur+=1;
-     
-      
+            
       col_kept[kappa]=0;
 
       t.mul(approx,normB2[kappa]);
@@ -512,8 +620,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
     somedone = 0;
 
-    //compteur += 1;
-    
+        
     ld=1; indexdec=0; // Décalage d'indice
  
 
@@ -539,21 +646,26 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
       for (i=kappa-1-indexdec; i>=restdim; i--) 
 	tmpcolR[i]=R.get(i,kappa);
 
-	
+      compteur =0;
+      
       for (i=kappa-1-indexdec; i>=restdim; i--){
 	
 	vectx[i].div(tmpcolR[i],R.get(i,i));
 	
  
 	qq.abs(vectx[i]);
-	if (qq.cmp(0.501) == 1) bounded[i]=0; else bounded[i]=1;
+	if (qq.cmp(0.501) == 1) {
+	  bounded[i]=0;
+	  compteur +=1;
+	}
+	else bounded[i]=1;
 
+	//if (compteur > 20) cout << "***** " << compteur << "  " << kappa << endl; 
 	
 	
 	// Faire une opération vectorielle 
 	for (k=restdim; k<i; k++) 
 	  tmpcolR[k].submul(R.get(k,i),vectx[i]);
-	
 	 
       } // end calcul de la transfo 
        
@@ -578,8 +690,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	    
 	    if (lx == 1) {
 
-	      //compteur +=1;
-	      
+	      	      
 	      somedone = 1;
 	      
 	      R.subcol(kappa,i,restdim);
@@ -592,7 +703,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	    } 
 	    else if (lx == -1) {
 
-	      //compteur +=1;
+	      
 	      
 	      somedone = 1;
  
@@ -606,7 +717,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	    } 
 	    else { 
 
-	      //compteur +=1;
+	      
 	      
 	      somedone = 1;
 
@@ -633,8 +744,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	  } // end expo == 0 
 	  else {  // expo <> 0 
 
-	    //compteur +=1;
-	      
 	    somedone = 1;
 	    
 	    // **** À FAIRE Le mettre pour Seysen 
@@ -675,9 +784,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
     if (somedone) {
        
-      compteur+=1;
-     
-      
       col_kept[kappa]=0;
 
       t.mul(approx,normB2[kappa]);
@@ -757,7 +863,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
     
     somedone = 0;
 
-    //compteur +=1;
 
     // Loop through the column 
     // -----------------------
@@ -784,7 +889,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
 	  if (lx == 1) {
 
-	    //compteur +=1;
+	    
 	    somedone = 1;
 	    
 	    
@@ -798,7 +903,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	  } 
 	  else if (lx == -1) {
 
-	    //compteur +=1;
+	    
 	    somedone = 1;
 	   
 	    
@@ -812,7 +917,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	  } 
 	  else { 
 
-	    //compteur +=1;
+	    
 	    somedone = 1;
 	    
  
@@ -842,7 +947,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	} // end expo == 0 
 	else {  // expo <> 0 
 
-	  //compteur +=1;
+	  
 	  somedone = 1;
 	 
  
@@ -875,8 +980,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
     if (somedone) {
 
-      
-      compteur+=1;
       
       col_kept[kappa]=0;
       

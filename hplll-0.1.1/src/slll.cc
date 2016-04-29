@@ -140,7 +140,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     for (k=0; k<S; k++) { 
       {
 	
-	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
+	//Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
+	Lattice<ZT,FT, MatrixZT, MatrixFT>  BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
+
 	
 	BR.set_nblov_max(lovmax);
 	BR.hlll(delta);
@@ -231,7 +233,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     for (k=0; k<S-1; k++) {
 
       
-      Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
+      //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
+
+      Lattice<ZT,FT, MatrixZT, MatrixFT> BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
       
       BR.set_nblov_max(lovmax);
       BR.hlll(delta);
@@ -1164,7 +1168,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int S, bool forU, in
 
       B.resize(n+K-d%K,d+K-d%K);
 
-      Z_NR<mpz_t> tabs,amax;
+      Z_NR<ZT> tabs,amax;
       amax=0;
 
       for (i=0; i<n; i++)

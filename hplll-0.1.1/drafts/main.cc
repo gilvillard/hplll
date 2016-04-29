@@ -1,7 +1,7 @@
-/* 
+/* Integer matrix nullspace test file  
 
 Created Dim  7 avr 2013 16:54:03 CEST
-Copyright (C) 2013-2016      Gilles Villard 
+Copyright (C) 2013      Gilles Villard 
 
 This file is part of the hplll Library 
 
@@ -34,70 +34,119 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
-  
-  ZZ_mat<mpz_t> A0,A; // For hpLLL 
-  ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
-
-  // ---------------------------------------------------------------------
-
-  int n,d;
-  double delta;
-
-  command_line_basis(A0, n, d, delta, argc, argv); 
-
-  A.resize(n,d);
-  AT.resize(d,n);
-  transpose(AT,A);
-
-
-    Timer time;
-
-    int status;
-    
-    cout << "--------------  HLLL" << endl << endl; 
-    
-   
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
-    //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
+  //typedef   __int128_t  ZT;
+  typedef   long  ZT;
+  //typedef   mpz_t ZT;
  
-     
-    time.start();
-    status=B.hlll(delta);
-    time.stop();
+  ZZ_mat<ZT> A0,A; // For hpLLL 
+  ZZ_mat<ZT> AT;  // fpLLL  
 
-    
-    cout << "   dimension = " << d  << endl << endl;
-    
-    time.print(cout);
-    
-    
-    if (status ==0) {
-      Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION,NO_LONG);
-      T1.isreduced(delta-0.1);
-      }
-    cout << endl; 
+  // --------------------------------------------------------------------
 
-    cout << "--------------  FPLLL WRAPPER" << endl << endl; 
-    transpose(AT,A0);
-
-   
-    time.start();
-
-    lllReduction(AT, delta, 0.501, LM_WRAPPER);
-
-    time.stop();
+  int d=8;
+  double alpha=1.1;
   
+  double delta=0.99;
+
+  PARSE_MAIN_ARGS {
+    MATCH_MAIN_ARGID("-d",d);
+    MATCH_MAIN_ARGID("-alpha",alpha);
+  } 
+
+  double t,u,v,w;
+  
+  
+  genalpha<ZT>(A0,d,alpha);
+
+  //print2maple(A0,d,d); 
+  
+  A.resize(d,d);
+  AT.resize(d,d);
+
+  
+  int start,startsec;
+
+  Timer time;
+
+  int status;
     
-    cout << "   dimension = " << d  << endl << endl;
+  cout << "--------------  HLLL" << endl << endl; 
+  start=utime();
+  startsec=utimesec();
    
-    time.print(cout);
+  //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
+  //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
+  
+  //Lattice<ZT, long double, matrix<Z_NR<ZT> >, matrix<FP_NR<long double> > > B(A0,NO_TRANSFORM,SEYSEN_REDUCTION);
+  Lattice<ZT, double, matrix<Z_NR<ZT> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM,SEYSEN_REDUCTION);
+  //Lattice<ZT, double, matrix<Z_NR<ZT> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
+  //Lattice<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM,SEYSEN_REDUCTION);
+  
+  time.start();
+  status=B.hlll(delta);
+  time.stop();
+
+  start=utime()-start;
+  startsec=utimesec()-startsec;
+    
+  cout << "   dimension = " << d  << endl;
+  cout << "   time A: " << start/1000 << " ms" << endl;
+  time.print(cout);
+    
+  ratio<ZT>(B.getbase(),t,u,v,w);
+  
+  cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+  cout << ".. Average diagonal ratio: " << u << endl;
+  cout << ".. Max diagonal ratio: " << v << endl;
+  cout << ".. First vector quality: " << w << endl;
+
+  cout << endl << "Nb swaps: " << B.nbswaps << endl;
+
+  cout << endl << "Compteur: " << B.compteur << endl;
+  
+  cout << endl; 
+  cout << endl;
+
+    
+  if (status ==0) {
+    Lattice<ZT, mpfr_t, matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,NO_LONG);
+    T1.isreduced(delta-0.1);
+  }
+
+      
+  
+  // cout << "--------------  FPLLL WRAPPER" << endl << endl;
+    
+  // transpose(AT,A0);
+
+  // start=utime();
+  // startsec=utimesec();
+  // time.start();
+  // //lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
+  // //lllReduction(AT, delta, 0.501, LM_FAST, FT_DEFAULT, 0, LLL_VERBOSE);
+  // lllReduction(AT, delta, 0.501, LM_HEURISTIC, FT_DPE, 0, LLL_VERBOSE); 
+  // time.stop();
+  // start=utime()-start;
+  // startsec=utimesec()-startsec;
+    
+  // cout << "   dimension = " << d  << endl;
+  // cout << "   time B: " << start/1000 << " ms" << endl;
+  // time.print(cout);
  
-    transpose(A,AT);
-    Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
-    T2.isreduced(delta-0.1);
+  // transpose(A,AT);
+  // Lattice<ZT, mpfr_t, matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
+  // T2.isreduced(delta-0.1);
 
-   
-   
 
+  // ratio<ZT>(A,t,u,v,w);
+
+  // cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+  // cout << ".. Average diagonal ratio: " << u << endl;
+  // cout << ".. Max diagonal ratio: " << v << endl;
+  // cout << ".. First vector quality: " << w << endl;
+      
+  // cout << endl;
+
+ 
   return 0;
 }
