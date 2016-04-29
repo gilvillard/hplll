@@ -52,7 +52,7 @@ int main(int argc, char *argv[])  {
 
   //------------
  
-  d[k]=140;
+  d[k]=120;
   bits[k]=10000;
   k+=1;
 
