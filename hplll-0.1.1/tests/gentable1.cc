@@ -52,8 +52,8 @@ int main(int argc, char *argv[])  {
 
   //------------
  
-  d[k]=160;
-  bits[k]=16000;
+  d[k]=140;
+  bits[k]=10000;
   k+=1;
 
   d[k]=180;
