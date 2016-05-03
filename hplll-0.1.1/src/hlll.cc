@@ -34,6 +34,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 namespace hplll {   
 
+
+  
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) { 
 
@@ -42,8 +44,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
   int prevkappa=-1; // For the looping test between tow indices 
   vector<FP_NR<FT> >  prevR(d);
 
-  Timer cpu;
-  cpu.clear();
+  Timer cpu_discovered;
+  cpu_discovered.clear();
 
 
   FP_NR<FT> newt; //testaccu;
@@ -71,7 +73,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
   
   //************
   
-  cpu.start();
+  cpu_discovered.start();
 
   while ((kappa < d) && (nblov < nblov_max)) 
     {
@@ -87,14 +89,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       } 
       else for (i=kappa+1; i<d; i++) kappamin[i]=min(kappamin[i],kappa); // lowest visit after kappa 
 
-       
-
+      
       if (seysen_flag < 1) 
       	flag_reduce=hsizereduce(kappa);
-      else 
-	flag_reduce=seysenreduce(kappa); 
-      
-            
+      else
+	flag_reduce=seysenreduce(kappa);
+
+                  
       if (flag_reduce==-1) return(-1);
       
 
@@ -123,12 +124,14 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       if (lovtest <= newt) {
 
 	
-	// ICI TESTS
-	// if (((kappa) < d) && (col_kept[kappa+1] == 0)) {
-	//   cpu.stop();
-	//   cout << "Discovering vector " << kappa +1 << "/" << d << "   " << cpu << endl;
-	//   cpu.start(); 
-	// } 
+	// Cpu time, new kappa discovered
+	// ------------------------------
+	
+	if (((kappa) < d) && (col_kept[kappa+1] == 0)) {
+	  cpu_discovered.stop();
+	  if (verboseDepth > 0) cout << "Discovering vector " << kappa +1 << "/" << d << "   " << cpu_discovered << endl;
+	  cpu_discovered.start(); 
+	} 
 							      
 	
 	householder_v(kappa);   // The first part of the orthogonalization is available 
@@ -197,367 +200,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
   return 0;
   
-};
-
-
-/* -------------------------------------------------------------------------
-   Seysen size reduction 
-
-   Assumes that Householder is available until index kappa-1
-
-   Returns -1 if no convergence in the while loop:  no decrease of the norm
-
-   EXPERIMENTAL SEYSEN 
-
-   ------------------------------------------------------------------------- */
-
-
-template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
-Lattice<ZT,FT, MatrixZT, MatrixFT>::newseysenreduce(int kappa) { 
-
-        
-  nmaxkappa=structure[kappa]+1;
-
-  FP_NR<FT> approx;
-  approx=0.01;
-   
-  FP_NR<FT>  qq;
-  
-  FP_NR<FT> t,tmpfp;
-  Z_NR<ZT>  xz,tmpz;
-
-  long expo,lx;
-
-  vector<FP_NR<FT> > vectx(kappa);  
-  
-  vector<FP_NR<FT> > tmpcolR(kappa);  
- 
-  MatrixFT tR; 
-  tR.resize(kappa,2); 
-
-  int i,w=0;
-
-  bool nonstop=1;
-  bool somedone=0;
-
-  vector<bool> bounded(kappa);
-  
-  int restdim=0; // Remaining dimension after the current block 
-
-  int nmax; // De la structure triangulaire 
-
-
-  //int whilemax=10000;  // Convergence problem if too low precision  
-
-  // To see / prec problem 
-  //col_kept[kappa]=0;
-  
-  householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
-
-  int bdim,ld,tdig,indexdec;
-  
-  while (nonstop) {  // LOOP COLUMN CONVERGENCE
-
-    
-    w++;
-
-    somedone = 0;
-
-    ld=1; indexdec=0; // Décalage d'indice
- 
-
-    while (ld <=kappa) {
-      
-      tdig=(kappa/ld)%2;
-      
-      if (tdig==0) bdim =0; else bdim = ld;
-
-      // -----------------------------------------------------
-      // Boucle sur la partie de la colonne correspond au bloc 
-      // -----------------------------------------------------
-
-      // vectxz rounding of vectx
-      //  column -  (prev col) * vectxz (xz ré-utilisé) 
-      // On peut travailler sur place en remontant dans la colonne kappa de R 
-
-      // On calcule vectx et on arrondit au fur et à mesure
-
-      restdim=kappa-indexdec-bdim;
-
-      for (i=kappa-1-indexdec; i>=restdim; i--) 
-	tmpcolR[i]=R.get(i,kappa);
-
-      // À mettre Bien meilleur en dpe 
-      //tR.setcol(1,R.getcol(kappa,restdim), bdim);
-
-
-      for (i=kappa-1-indexdec; i>=restdim; i--){
-	
-	vectx[i].div(tmpcolR[i],R.get(i,i));
-
-	// À mettre dpe 
-	//vectx[i].div(tR.get(i-restdim,1),R.get(i,i));
-	
-	qq.abs(vectx[i]);
-	if (qq.cmp(0.501) == 1) bounded[i]=0; else bounded[i]=1;
-
-	// Faire une opération vectorielle 
-	for (int k=restdim; k<i; k++) 
-	  tmpcolR[k].submul(R.get(k,i),vectx[i]);
-
-	// À mettre dpe
-	//tR.setcol(0,R.getcol(i,restdim), i-restdim); // i-restdim longueur ? 
-	//tR.submulcol(1,0,vectx[i],i-restdim);	
-	 
-      } // end calcul de la transfo 
-       
-
-      // Et on applique la transformation  
-      // --------------------------------
-
-#pragma omp parallel sections num_threads(2)
-   {
-
-#pragma omp section
-     
-     { // Update of R
-       // -----------
-
-       FP_NR<FT> x;
-	 
-       for (i=kappa-1-indexdec; i>= restdim; i--){
-
-	vectx[i].rnd(vectx[i]);
-	x=vectx[i]; 
-
-	//if (x.sgn() !=0) { 
-	if (bounded[i]==0) {
-	  
-	  lx = x.get_si_exp(expo);
-
-	  nmax=structure[i]+1;
-	  
-	  // Cf fplll 
-	  // Long case 
-	  if (expo == 0) {
-	    
-	    if (lx == 1) {
-
-	      somedone = 1;
-	      
-	      R.subcol(kappa,i,restdim);
-	      
-	      //B.subcol(kappa,i,nmax);
-	      
-	      if (transf) 
-		U.subcol(kappa,i,min(d,nmax));
-	      
-	    } 
-	    else if (lx == -1) {
-
-	      somedone = 1;
- 
-	      R.addcol(kappa,i,restdim);
-	      
-	      //B.addcol(kappa,i,nmax);
-	      
-	      if (transf) 
-		U.addcol(kappa,i,min(d,nmax));
-
-	    } 
-	    else { 
-
-	      somedone = 1;
-
-	      
-	      if (fast_long_flag == 1) {
-	      
-	       	R.submulcol(kappa,i,x,restdim);
-	       	//B.addmulcol_si(kappa,i,-lx,nmax);
-	       	if (transf)  
-	       	  U.addmulcol_si(kappa,i,-lx,min(d,nmax));
-		
-	      } // end fast_long
-	      else {
-		
-	       	set_f(xz,x);  
-	      
-	       	R.submulcol(kappa,i,x,restdim);	
-	       	//B.submulcol(kappa,i,xz,nmax);
-	       	if (transf)  
-	       	  U.submulcol(kappa,i,xz,min(d,nmax));
-	      }	      
-	    } 
-	    
-	  } // end expo == 0 
-	  else {  // expo <> 0 
-
-	    somedone = 1;
-	    
-	    // **** À FAIRE Le mettre pour Seysen 
-	    if (fast_long_flag == 1) {
-
-	     
-	      
-	      R.submulcol(kappa,i,x,restdim);
-	      //B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
-	      if (transf)  
-		U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
-	    
-	    } // end fast_long
-	    else {
-	   
-	      set_f(xz,x);  
-	  
-	      R.submulcol(kappa,i,x,restdim);	
-	      //B.submulcol(kappa,i,xz,nmax);
-	      if (transf)  
-		U.submulcol(kappa,i,xz,min(d,nmax));
-	  
-	    } // end no long
-
-
-	    
-	  } // end expo <> 0 
-	} // Non zero combination 
-
-      } // end application de la transformation
-
-     } // End pragma update of R 
-
-#pragma omp section
-     
-     { // Update of B
-     //   // -----------
-
-     //   for (i=kappa-1-indexdec; i>= restdim; i--){
-
-     // 	vectx[i].rnd(vectx[i]);
-     // 	x=vectx[i]; 
-
-     // 	//if (x.sgn() !=0) { 
-     // 	if (bounded[i]==0) {
-	  
-     // 	  lx = x.get_si_exp(expo);
-
-     // 	  nmax=structure[i]+1;
-	  
-     // 	  // Cf fplll 
-     // 	  // Long case 
-     // 	  if (expo == 0) {
-	    
-     // 	    if (lx == 1) {
-
-     // 	      somedone = 1;
-	      
-     // 	      //R.subcol(kappa,i,restdim);
-	      
-     // 	      B.subcol(kappa,i,nmax);
-	      
-     // 	      if (transf) 
-     // 		U.subcol(kappa,i,min(d,nmax));
-	      
-     // 	    } 
-     // 	    else if (lx == -1) {
-
-     // 	      somedone = 1;
- 
-     // 	      //R.addcol(kappa,i,restdim);
-	      
-     // 	      B.addcol(kappa,i,nmax);
-	      
-     // 	      if (transf) 
-     // 		U.addcol(kappa,i,min(d,nmax));
-
-     // 	    } 
-     // 	    else { 
-
-     // 	      somedone = 1;
-
-	      
-     // 	      if (fast_long_flag == 1) {
-	      
-     // 	       	//R.submulcol(kappa,i,x,restdim);
-     // 	       	B.addmulcol_si(kappa,i,-lx,nmax);
-     // 	       	if (transf)  
-     // 	       	  U.addmulcol_si(kappa,i,-lx,min(d,nmax));
-		
-     // 	      } // end fast_long
-     // 	      else {
-		
-     // 	       	set_f(xz,x);  
-	      
-     // 	       	//R.submulcol(kappa,i,x,restdim);	
-     // 	       	B.submulcol(kappa,i,xz,nmax);
-     // 	       	if (transf)  
-     // 	       	  U.submulcol(kappa,i,xz,min(d,nmax));
-     // 	      }	      
-     // 	    } 
-	    
-     // 	  } // end expo == 0 
-     // 	  else {  // expo <> 0 
-
-     // 	    somedone = 1;
-	    
-     // 	    // **** À FAIRE Le mettre pour Seysen 
-     // 	    if (fast_long_flag == 1) {
-
-	     
-	      
-     // 	      //R.submulcol(kappa,i,x,restdim);
-     // 	      B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
-     // 	      if (transf)  
-     // 		U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
-	    
-     // 	    } // end fast_long
-     // 	    else {
-	   
-     // 	      set_f(xz,x);  
-	  
-     // 	      //R.submulcol(kappa,i,x,restdim);	
-     // 	      B.submulcol(kappa,i,xz,nmax);
-     // 	      if (transf)  
-     // 		U.submulcol(kappa,i,xz,min(d,nmax));
-	  
-     // 	    } // end no long
-	    
-     // 	  } // end expo <> 0 
-     // 	} // Non zero combination 
-
-     //  } // end application de la transformation
-
-     } // End pragma update of B 
-
-     
-   } // End pragma parallel application of transformation 
-
-      indexdec+=bdim;     
-      ld=ld*2;
-
-    } // End loop on log blocks 
-
-    
-
-    if (somedone) {
-       
-            
-      col_kept[kappa]=0;
-
-      t.mul(approx,normB2[kappa]);
-
-      householder_r(kappa);  
-     
-    }
-    else {
-      
-      nonstop=0;
-     
-     }
-
-  } // end while 
-
-  return somedone;
-
 };
 
 
@@ -1713,6 +1355,8 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
     if (s < delta) delta=s;
   }
   cout << endl;
+  cout << "n = "<< n << endl;
+  cout << "d = "<< d << endl;
   cout << "(Householder) delta is about "; 
   delta.print(); 
   cout << endl;
@@ -2180,6 +1824,510 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
    
     return 0; 
 }
+
+
+  
+  template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::hlllp(double delta, int dthreshold, int compt) { 
+
+  
+  int kappa=1,i;
+  int prevkappa=-1; // For the looping test between tow indices 
+  vector<FP_NR<FT> >  prevR(d);
+
+  Timer cpu;
+  cpu.clear();
+
+  Timer tsize;
+  tsize.clear();
+
+  FP_NR<FT> newt; //testaccu;
+
+  FP_NR<FT> deltab,lovtest;
+  deltab=delta;   // TO SEE 
+
+  FP_NR<FT> tmpswap;
+
+  FP_NR<FT> s,sn; // newt test 
+
+  int flag_reduce=0; // No convergence in reduce 
+
+
+  for (i=0; i<d; i++) {col_kept[i]=0; descendu[i]=0;}
+
+  // **********
+  // int kmax=2;
+
+  // Timer time;
+
+  // time.start();
+
+  // int nb=0;
+  
+  //************
+  
+  cpu.start();
+
+  while ((kappa < d) && (nblov < nblov_max)) 
+    {
+
+      	  
+      if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
+      
+      if (kappa == 1) { 
+	for (i=0; i<d; i++) kappamin[i]=min(kappamin[i],0);
+	householder_r(0);  
+	householder_v(0);
+	
+      } 
+      else for (i=kappa+1; i<d; i++) kappamin[i]=min(kappamin[i],kappa); // lowest visit after kappa 
+
+      Timer debg;       
+      debg.clear();
+
+     
+      
+      debg.start();
+      if (seysen_flag < 1) 
+      	flag_reduce=hsizereduce(kappa);
+      else {
+	if (kappa > dthreshold) flag_reduce=newseysenreduce(kappa,dthreshold,compt);
+	else  flag_reduce=seysenreduce(kappa);
+      }
+      debg.stop();
+      if (kappa > dthreshold) tsize +=debg;
+     
+            
+      if (flag_reduce==-1) return(-1);
+      
+
+      //newt=normB2[kappa];  // The newt test was like that in old non exp 
+      //for (i=0; i<=kappa-2; i++) newt.submul(R.get(i,kappa),R.get(i,kappa));
+
+      lovtest.mul(R.get(kappa-1,kappa-1),R.get(kappa-1,kappa-1));
+      lovtest.mul(deltab,lovtest);
+
+      nblov+=1;
+    
+      fp_norm(s,R.getcol(kappa,kappa),structure[kappa]+1-kappa);
+      
+      s.mul(s,s);
+
+      
+      
+      sn.mul(R.get(kappa-1,kappa),R.get(kappa-1,kappa));
+      newt.add(s,sn);
+ 
+
+      // ****************
+      //   UP    UP    UP 
+      // ****************
+    
+      if (lovtest <= newt) {
+
+	
+	// ICI TESTS
+	// if (((kappa) < d) && (col_kept[kappa+1] == 0)) {
+	//   cpu.stop();
+	//   cout << "Discovering vector " << kappa +1 << "/" << d << "   " << cpu << endl;
+	//   cpu.start(); 
+	// } 
+							      
+	
+	householder_v(kappa);   // The first part of the orthogonalization is available 
+
+	
+	// Heuristique precision check : when R(kappa-1,kappa-1) increases in a 2x2 up and down  
+	// ------------------------------------------------------------------------------------
+	if (prevkappa==kappa+1) {  
+	  FP_NR<FT> t;
+	  t.abs(R.get(kappa,kappa));
+       
+	  if (t > prevR[kappa]) {
+	
+	    cout << " **** #tests = " << nblov << " **** Anomaly: the norm increases for kappa = " << kappa << endl;
+	 
+	    return -1;
+	  }
+
+	}
+
+	
+
+	descendu[kappa]=0;
+	if (kappa==1) descendu[0]=0;
+	
+	prevkappa=kappa; 
+	prevR[kappa].abs(R.get(kappa,kappa)); 
+	
+	kappa+=1; 
+
+
+
+      } // End up 
+
+      // ****************
+      //   DOWN   DOWN 
+      // ****************
+
+      else {
+
+	if (kappa==1) descendu[0]=0 ;
+	else descendu[kappa-1]=descendu[kappa]+1;
+	descendu[kappa]=0;
+
+	nbswaps+=1;
+       
+	B.colswap(kappa-1,kappa);
+	
+	if (transf) U.colswap(kappa-1,kappa);
+	
+	Bfp.colswap(kappa-1,kappa);
+
+	structure[kappa-1]=structure[kappa];
+
+	VR.colswap(kappa-1,kappa);
+ 
+	tmpswap=normB2[kappa];  normB2[kappa]=normB2[kappa-1]; normB2[kappa-1]=tmpswap;
+
+	prevkappa=kappa; 
+	kappa=max(kappa-1,1);  
+
+      }
+
+    } // End main LLL loop 
+
+  // DBG
+  cout << "--------------------------------------------------" << endl; 
+  cout << endl << "*** tsize: " << endl;
+  tsize.print(cout);
+  cout << endl;
+  cout << "--------------------------------------------------" << endl; 
+   
+  return 0;
+  
+};
+
+
+/* -------------------------------------------------------------------------
+   Seysen size reduction 
+
+   Assumes that Householder is available until index kappa-1
+
+   Returns -1 if no convergence in the while loop:  no decrease of the norm
+
+   EXPERIMENTAL SEYSEN 
+
+   ------------------------------------------------------------------------- */
+
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::newseysenreduce(int kappa, int dthreshold, int compt) { 
+
+  //OMPTimer dbg;
+  //dbg.clear();
+  
+  FP_NR<FT>  qq;
+  
+  vector<FP_NR<FT> > vectx(kappa);  
+  
+  vector<FP_NR<FT> > tmpcolR(kappa);  
+ 
+  MatrixFT tR; 
+  tR.resize(kappa,2); 
+
+  int i,w=0;
+
+  bool nonstop=1;
+  bool somedone=0;
+
+  vector<bool> bounded(kappa);
+  
+  int restdim=0; // Remaining dimension after the current block 
+
+  
+  householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
+
+  int bdim,ld,tdig,indexdec;
+  
+  while (nonstop) {  // LOOP COLUMN CONVERGENCE
+
+    
+    w++;
+
+    somedone = 0;
+
+    ld=1; indexdec=0; // Décalage d'indice
+ 
+
+    while (ld <=kappa) {
+      
+      tdig=(kappa/ld)%2;
+      
+      if (tdig==0) bdim =0; else bdim = ld;
+
+      // -----------------------------------------------------
+      // Boucle sur la partie de la colonne correspond au bloc 
+      // -----------------------------------------------------
+
+      // vectxz rounding of vectx
+      //  column -  (prev col) * vectxz (xz ré-utilisé) 
+      // On peut travailler sur place en remontant dans la colonne kappa de R 
+
+      // On calcule vectx et on arrondit au fur et à mesure
+
+      restdim=kappa-indexdec-bdim;
+
+      for (i=kappa-1-indexdec; i>=restdim; i--) 
+	tmpcolR[i]=R.get(i,kappa);
+
+      // À mettre Bien meilleur en dpe 
+      //tR.setcol(1,R.getcol(kappa,restdim), bdim);
+
+      compteur =0;
+      
+      for (i=kappa-1-indexdec; i>=restdim; i--){
+	
+	vectx[i].div(tmpcolR[i],R.get(i,i));
+
+	// À mettre dpe 
+	//vectx[i].div(tR.get(i-restdim,1),R.get(i,i));
+	
+	qq.abs(vectx[i]);
+	if (qq.cmp(0.501) == 1) {
+	  bounded[i]=0;
+	  somedone = 1;
+	  compteur +=1;
+	}
+	else bounded[i]=1;
+
+	// Faire une opération vectorielle 
+	for (int k=restdim; k<i; k++) 
+	  tmpcolR[k].submul(R.get(k,i),vectx[i]);
+
+	// À mettre dpe
+	//tR.setcol(0,R.getcol(i,restdim), i-restdim); // i-restdim longueur ? 
+	//tR.submulcol(1,0,vectx[i],i-restdim);	
+	 
+      } // end calcul de la transfo 
+       
+
+      // Et on applique la transformation  
+      // --------------------------------
+
+      int nthreads=1;
+
+     
+      if ((restdim > dthreshold) && (compteur > compt))  
+	nthreads=2;
+      
+      //dbg.start();
+      //#pragma omp parallel sections num_threads(nthreads)
+      {
+
+	//#pragma omp section
+     
+	{ // Update of R
+	  // -----------
+
+	  FP_NR<FT> x;
+	  Z_NR<ZT>  xz;
+	  long expo,lx;
+	
+	  for (int i=kappa-1-indexdec; i>= restdim; i--){
+
+	    x.rnd(vectx[i]);
+	 
+	    if (bounded[i]==0) {
+	  
+	      lx = x.get_si_exp(expo);
+	      
+	      // Cf fplll 
+	      // Long case 
+	      if (expo == 0) {
+	    
+		if (lx == 1) {
+
+		  R.subcol(kappa,i,restdim);
+	      
+		} 
+		else if (lx == -1) {
+
+		  R.addcol(kappa,i,restdim);
+		  
+		} 
+		else { 
+
+		  if (fast_long_flag == 1) {
+	      
+		    R.submulcol(kappa,i,x,restdim);
+		  		
+		  } // end fast_long
+		  else {
+	      
+		    R.submulcol(kappa,i,x,restdim);	
+		  }	      
+		} 
+	    
+	      } // end expo == 0 
+	      else {  // expo <> 0 
+
+	  
+		if (fast_long_flag == 1) {
+
+		  R.submulcol(kappa,i,x,restdim);
+		 
+	    
+		} // end fast_long
+		else {
+	   
+		  set_f(xz,x);  
+	  
+		  R.submulcol(kappa,i,x,restdim);	
+		  
+	  
+		} // end no long
+	    
+	      } // end expo <> 0
+	      
+	    } // Non zero combination, if on the column
+	    
+	  } // end application de la transformation, i loop on all the columns 
+
+	} // End pragma update of R 
+	
+	//#pragma omp section
+     
+	{ // Update of B
+	  // -----------
+
+	  FP_NR<FT> x;
+	  Z_NR<ZT>  xz;
+	  long expo,lx;
+	  int nmax; // De la structure triangulaire
+	
+	  for (int i=kappa-1-indexdec; i>= restdim; i--){
+
+	    x.rnd(vectx[i]);
+
+	 
+	    if (bounded[i]==0) {
+	  
+	      lx = x.get_si_exp(expo);
+	      
+	      nmax=structure[i]+1;
+	  
+	      // Cf fplll 
+	      // Long case 
+	      if (expo == 0) {
+	    
+		if (lx == 1) {
+
+		  // R.subcol(kappa,i,restdim);
+	      
+		  B.subcol(kappa,i,nmax);
+	      
+		  if (transf) 
+		    U.subcol(kappa,i,min(d,nmax));
+	      
+		} 
+		else if (lx == -1) {
+
+		  // R.addcol(kappa,i,restdim);
+	      
+		  B.addcol(kappa,i,nmax);
+	      
+		  if (transf) 
+		    U.addcol(kappa,i,min(d,nmax));
+
+		} 
+		else { 
+
+		  if (fast_long_flag == 1) {
+	      
+		    // R.submulcol(kappa,i,x,restdim);
+		    B.addmulcol_si(kappa,i,-lx,nmax);
+		    if (transf)  
+		      U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+		
+		  } // end fast_long
+		  else {
+		
+		    set_f(xz,x);  
+	      
+		    //  R.submulcol(kappa,i,x,restdim);	
+		    B.submulcol(kappa,i,xz,nmax);
+		    if (transf)  
+		      U.submulcol(kappa,i,xz,min(d,nmax));
+		  }	      
+		} 
+	    
+	      } // end expo == 0 
+	      else {  // expo <> 0 
+
+	  
+		if (fast_long_flag == 1) {
+
+		  // R.submulcol(kappa,i,x,restdim);
+		  B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+		  if (transf)  
+		    U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    
+		} // end fast_long
+		else {
+	   
+		  set_f(xz,x);  
+	  
+		  // R.submulcol(kappa,i,x,restdim);	
+		  B.submulcol(kappa,i,xz,nmax);
+		  if (transf)  
+		    U.submulcol(kappa,i,xz,min(d,nmax));
+	  
+		} // end no long
+	    
+	      } // end expo <> 0
+	      
+	    } // Non zero combination, if on the column
+	    
+	  } // end application de la transformation, i loop on all the columns 
+
+
+	  
+	} // End pragma update of B 
+
+     
+      } // End pragma parallel application of transformation
+
+      //dbg.stop();
+      if (nthreads ==2) {
+	cout << "-----------------" << endl;
+	//cout << dbg << endl;
+	
+      }
+
+      indexdec+=bdim;     
+      ld=ld*2;
+
+    } // End loop on log blocks 
+
+    
+    if (somedone) {
+       
+            
+      col_kept[kappa]=0;
+
+      householder_r(kappa);  
+     
+    }
+    else 
+      nonstop=0;
+     
+
+  } // end while 
+  
+  return somedone;
+
+};
 
 
 

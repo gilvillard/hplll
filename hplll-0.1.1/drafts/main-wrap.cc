@@ -96,13 +96,27 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta) {
 
     //Lattice<ZT, FT,  MatrixZT, MatrixFT>  L(B,NO_TRANSFORM,DEF_REDUCTION);
 
+    // DBG
+    cout << endl << endl << "**********  " << k << "     " << n << "   " << d << endl << endl;
+    
     SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t>  > L(B,4,NO_TRANSFORM,DEF_REDUCTION);
 
-    time.start();
     
-    L.householder();
-    L.hsizereduce(k-1);
+    time.start();
 
+    // Size reduction of the last column
+    // ---------------------------------
+    
+    L.householder_r(0);
+    L.householder_v(0);
+    
+    for (i=1; i<k-1; i++) {
+       L.householder_r(i);
+       L.householder_v(i);
+    }
+    
+    L.hsizereduce(k-1);
+        
     time.stop();
     cout << "    size reduction: " << time << endl;
  
