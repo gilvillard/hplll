@@ -35,8 +35,8 @@ using namespace hplll;
 int main(int argc, char *argv[])  {
   
   //typedef   __int128_t  ZT;
-  typedef   long  ZT;
-  //typedef   mpz_t ZT;
+  //typedef   long  ZT;
+  typedef   mpz_t ZT;
  
   ZZ_mat<ZT> A0,A; // For hpLLL 
   ZZ_mat<ZT> AT;  // fpLLL  

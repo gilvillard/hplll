@@ -24,6 +24,11 @@ include_hplll_HEADERS=  hplll.h defs.h  mat.h matpe.h  ldpe.h nr-ld.cpp  \
 
 #libhplll_la_LDFLAGS=-no-undefined -version-info 1:0:1
 
+bin_PROGRAMS=isreduced hplll
+
+isreduced_SOURCES=isreduced.cc
+hplll_SOURCES=hplll.cc
+
 install-data-hook:
 	echo "#include <hplll/hplll.h>" > "$(srcdir)/hplll.h.root"
 	echo "using namespace hplll;" >> "$(srcdir)/hplll.h.root"

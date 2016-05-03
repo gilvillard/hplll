@@ -35,6 +35,7 @@ using namespace hplll;
 int main(int argc, char *argv[])  {
   
   
+  
   ZZ_mat<mpz_t> A0,A; // For hpLLL 
   ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
 
@@ -47,8 +48,11 @@ int main(int argc, char *argv[])  {
 
   A.resize(n,d);
   AT.resize(d,n);
-  transpose(AT,A);
+  
 
+  transpose(AT,A0);
+
+  
 
     Timer time;
 
@@ -60,19 +64,21 @@ int main(int argc, char *argv[])  {
     Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
     //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
  
-     
+    verboseDepth = 1;
     time.start();
     status=B.hlll(delta);
     time.stop();
 
     
     cout << "   dimension = " << d  << endl << endl;
-    
+
     time.print(cout);
-    
-    
+
+    cout << B.getbase() << endl; 
+      
     if (status ==0) {
       Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION,NO_LONG);
+      verboseDepth = 0;
       T1.isreduced(delta-0.1);
       }
     cout << endl; 
@@ -83,7 +89,7 @@ int main(int argc, char *argv[])  {
    
     time.start();
 
-    lllReduction(AT, delta, 0.501, LM_WRAPPER);
+    lllReduction(AT, delta, 0.501, LM_WRAPPER, FT_DEFAULT,0,LLL_VERBOSE);
 
     time.stop();
   

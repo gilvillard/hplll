@@ -106,12 +106,13 @@ public:
   
   int decrease(int kappa);
   int seysenreduce(int kappa);
-  int newseysenreduce(int kappa);
+  int newseysenreduce(int kappa, int dthreshold, int compt);
   int seysen_flag;
 
   int fast_long_flag;
 
   int hlll(double delta, bool verbose=false);
+  int hlllp(double delta, int dthreshold, int compt);
    
   void assignL(ZZ_mat<mpz_t> L_in);
 

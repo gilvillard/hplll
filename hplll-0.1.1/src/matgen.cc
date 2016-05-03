@@ -112,6 +112,7 @@ namespace hplll {
     char block[]="rb";
     char ajtai[]="a";
     char ntru[]="n";
+    char ntru2[]="n2"; // Shi bai May 3rd 2016
     char line[]="cin";
     char copp[]="c";
     char unif[]="u";
@@ -277,7 +278,7 @@ namespace hplll {
       A.resize(d,d); 
       AT.resize(d,d);  
       AT.gen_ntrulike(nbbits,q);
-      
+
       transpose(A,AT);
 
       for (int i=0; i<d/2; i++)
@@ -289,6 +290,38 @@ namespace hplll {
 	  A(i+d/2,j)=AT(j,i);
     }
 
+    // NTRU2 like 
+    // ---------
+    else if (strcmp(type,ntru2) ==0) {
+      d=2*d;
+      n=d;
+      A.resize(d,d); 
+      AT.resize(d,d);  
+      AT.gen_ntrulike(nbbits,q);
+
+      // acyclic
+      int k=0;
+      for (int i=0; i<d/2; i++) {
+        for (int j=0; j<d/2; j++) {
+          k=(i+j)%(d/2);
+          AT(i,k+d/2)=AT(0,j+d/2);
+        }
+        for (int j=0; j<i; j++)
+          AT(i,d/2+j).neg(AT(i,d/2+j));
+      }
+      
+      transpose(A,AT);
+
+      for (int i=0; i<d/2; i++)
+        for (int j=0; j<d; j++)
+          A(i,j)=AT(j,i+d/2);
+      for (int i=0; i<d/2; i++)
+        for (int j=0; j<d; j++)
+          A(i+d/2,j)=AT(j,i);
+      //cout << A << endl;
+      
+    }
+
     // "alpha" basis (used initially for testing Seysen) reduction 
     // -----------------------------------------------------------
     else if (strcmp(type,al) ==0) {
@@ -298,14 +331,19 @@ namespace hplll {
       
     } 
 
-    // -------------------------------
+    // -----------------------------------------
+    // From fplll format, hence ** transposes **
+    // -----------------------------------------
+    
     else if (strcmp(type,line) ==0) {
       
-      n=d;
-      A.resize(d,d); 
-      AT.resize(d,d); 
+           
+      AT.read(cin);
 
-      cin >> AT ;
+      d=AT.getRows();
+      n=AT.getCols();
+
+      A.resize(n,d);
       
       transpose(A,AT);
     }

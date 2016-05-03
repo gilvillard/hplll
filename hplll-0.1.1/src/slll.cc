@@ -107,16 +107,14 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     // The integer block lattice: truncation of the floating point R
     // 0 triangulaire ici car householder global
 
- 
     set_f(RZ,R,condbits);
- 
+   
     
     for (i=1; i<d; i++)
       for (j=0;j<i;j++)
 	RZ(i,j)=0;
 
-    
-    
+        
     // In case one column is badly conditioned 
     // Make this clean, how?
  
@@ -293,6 +291,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
 
   totime.stop();
+  
+  
   
   // cout << endl;
   // //cout << " Householder: " << qrtime << endl;
