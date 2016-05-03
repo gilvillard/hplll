@@ -61,8 +61,8 @@ int main(int argc, char *argv[])  {
     cout << "--------------  HLLL" << endl << endl; 
     
    
-    Lattice<mpz_t, ldpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<long double, ldpe_t> > B(A0,NO_TRANSFORM,SEYSEN_REDUCTION);
-    //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
+    //Lattice<mpz_t, ldpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<long double, ldpe_t> > B(A0,NO_TRANSFORM,SEYSEN_REDUCTION);
+    Lattice<mpz_t, long double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<long double> > > B(A0,NO_TRANSFORM,SEYSEN_REDUCTION);
  
     verboseDepth = 1;
     time.start();
