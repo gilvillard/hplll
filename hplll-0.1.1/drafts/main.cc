@@ -74,7 +74,7 @@ int main(int argc, char *argv[])  {
 
     time.print(cout);
 
-    cout << B.getbase() << endl; 
+   
       
     if (status ==0) {
       Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION,NO_LONG);
