@@ -79,8 +79,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
   while ((kappa < d) && (nblov < nblov_max)) 
     {
 
-      	  
-      if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
+      if (verboseDepth > 0) {
+	if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
+      }
       
       if (kappa == 1) { 
 	for (i=0; i<d; i++) kappamin[i]=min(kappamin[i],0);
@@ -130,12 +131,15 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	
 	if (((kappa) < d) && (col_kept[kappa+1] == 0)) {
 	  cpu_discovered.stop();
+
+	  cpu_tot+=cpu_discovered;
+	  
 	  if (verboseDepth > 0) {
 	    cout << "Discovering vector " << kappa +1 << "/" << d << endl;
-	    cout << "     Phase: " << cpu_discovered << endl;
+	    cout << "     Phase-: " << cpu_discovered << endl;
 	    cout << "     Total: " << cpu_tot << endl;
 	  }
-	  cpu_tot+=cpu_discovered;
+	  
 	  cpu_discovered.start(); 
 	} 
 							      

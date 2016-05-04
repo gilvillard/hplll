@@ -47,6 +47,7 @@ namespace hplll {
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
 SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, unsigned int lovmax) { 
 
+ 
   int i,j,k;
 
 #ifdef _OPENMP
@@ -83,6 +84,10 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
   
   bool stop=0;
 
+  vector<int> lovtests(S);
+  int phase_tests;
+  
+  
   int condbits=53;
      
   // ************************************
@@ -92,8 +97,11 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
   // ************************************
 
   // Computed through size reduction afterwards
+
+    
   householder(); 
 
+    
   for (iter=0; stop==0; iter++) {
   //for (iter=0; iter < 1; iter++) {
 
@@ -107,9 +115,11 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     // The integer block lattice: truncation of the floating point R
     // 0 triangulaire ici car householder global
 
-    set_f(RZ,R,condbits);
-   
     
+    
+    set_f(RZ,R,condbits);
+
+        
     for (i=1; i<d; i++)
       for (j=0;j<i;j++)
 	RZ(i,j)=0;
@@ -127,6 +137,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     // ***************
 
     setId(U_even); // Pas nécessaire pour even sans doute 
+    phase_tests=0;
     
     //cout << endl <<  "--- Even reductions" << endl;
     time.start();
@@ -139,7 +150,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
       {
 	
 	//Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
-	Lattice<ZT,FT, MatrixZT, MatrixFT>  BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
+	Lattice<ZT,FT, MatrixZT, MatrixFT>  BR(getblock(RZ,k,k,S,0),TRANSFORM,seysen_flag);
 
 	
 	BR.set_nblov_max(lovmax);
@@ -151,6 +162,15 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 	
 	putblock(U_even,BR.getU(),k,k,S,0);
 
+	lovtests[k]=BR.nblov;
+	
+	// if (isId(BR.getU()))
+	//   cout << "ok " << endl;
+	// else {
+	//   cout << "*** NO *** " << k << endl;
+	//   cout << "    nblov: " << BR.nblov << endl;
+	//   //print2maple(BR.getU(),2*bdim,2*bdim);
+	// } 
 	//cout << "Nb threads: " << omp_get_num_threads() << endl; 
 
       }
@@ -159,7 +179,12 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 #ifdef _OPENMP
 #pragma omp barrier 
 #endif
-    
+
+    for (k=0; k<S; k++) phase_tests+=lovtests[k];
+
+    //DBG
+    //cout << "**** Even: " << phase_tests << "  vs " << S*(2*bdim-1) << endl; 
+      
     time.stop();
     redtime+=time;
     eventime+=time; 
@@ -168,9 +193,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     // Update after the block even reductions
     // **************************************
 
-    stop= (stop &&  isId(U_even));
-
-        
+    //stop= (stop &&  isId(U_even));
+    stop = (stop && ( phase_tests == (S*(2*bdim-1)) ));
+    
     time.start();
 
     
@@ -194,8 +219,12 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     householder_v(0);
     
     for (i=1; i<d; i++) {
+
+      if (seysen_flag < 1) 
+      	hsizereduce(i);
+      else 
+	seysenreduce(i);
       
-      hsizereduce(i);
       householder_v(i);
 
     }
@@ -208,9 +237,12 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     // **************
 
     setId(U_odd);
+
+    phase_tests=0;
     
     set_f(RZ,R,condbits);
 
+        
     // Forcer les zéros si pas mis dans householder_v par ex 
     for (i=1; i<d; i++)
       for (j=0;j<i;j++)
@@ -233,7 +265,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
       
       //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
 
-      Lattice<ZT,FT, MatrixZT, MatrixFT> BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
+      Lattice<ZT,FT, MatrixZT, MatrixFT> BR(getblock(RZ,k,k,S,bdim),TRANSFORM,seysen_flag);
       
       BR.set_nblov_max(lovmax);
       BR.hlll(delta);
@@ -241,10 +273,17 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
       swapstab[2*k+1]+=BR.nbswaps;
       nbswaps+=BR.nbswaps;
       
-      putblock(U_odd,BR.getU(),k,k,S,bdim);	   
+      putblock(U_odd,BR.getU(),k,k,S,bdim);
+
+      lovtests[k]=BR.nblov;
       	  
     }
-       
+
+    for (k=0; k<S-1; k++) phase_tests+=lovtests[k];
+
+    //DBG
+    //cout << "**** Odd: " << phase_tests << "  vs " << (S-1)*(2*bdim-1) << endl; 
+      
     
     time.stop();
     redtime+=time; 
@@ -253,8 +292,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     // Update after the block odd reductions
     // *************************************
 
-    stop = (stop &&  isId(U_odd));
-
+    //stop = (stop &&  isId(U_odd));
+    stop = (stop && ( phase_tests == ((S-1)*(2*bdim-1)) ));
+ 
     time.start();
     
     //matprod_in(B,U_odd);
@@ -278,8 +318,12 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     householder_v(0);
     
     for (i=1; i<d; i++) {
+
+      if (seysen_flag < 1) 
+      	hsizereduce(i);
+      else 
+	seysenreduce(i);
       
-      hsizereduce(i);
       householder_v(i);
 
     }
@@ -289,7 +333,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     
   } // End odd-even iter until reduced  
 
-
+    
   totime.stop();
   
   
@@ -1179,6 +1223,11 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int S, bool forU, in
        	  if (tabs.cmp(amax) > 0) amax=tabs;
 	 
       	}
+
+      Z_NR<ZT> tz;
+      tz=d;
+      
+      amax.mul(amax,tz);
       
       for  (i=0; i<n; i++)
         for (j=0; j<d; j++)
