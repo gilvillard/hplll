@@ -44,9 +44,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
   int prevkappa=-1; // For the looping test between tow indices 
   vector<FP_NR<FT> >  prevR(d);
 
-  Timer cpu_discovered;
+  Timer cpu_discovered,cpu_tot;
   cpu_discovered.clear();
-
+  cpu_tot.clear();
+ 
 
   FP_NR<FT> newt; //testaccu;
 
@@ -129,7 +130,12 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	
 	if (((kappa) < d) && (col_kept[kappa+1] == 0)) {
 	  cpu_discovered.stop();
-	  if (verboseDepth > 0) cout << "Discovering vector " << kappa +1 << "/" << d << "   " << cpu_discovered << endl;
+	  if (verboseDepth > 0) {
+	    cout << "Discovering vector " << kappa +1 << "/" << d << endl;
+	    cout << "     Phase: " << cpu_discovered << endl;
+	    cout << "     Total: " << cpu_tot << endl;
+	  }
+	  cpu_tot+=cpu_discovered;
 	  cpu_discovered.start(); 
 	} 
 							      
