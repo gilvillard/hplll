@@ -211,7 +211,7 @@ int main(int argc, char *argv[])  {
   
   //int lovmax=1000000;
 
-  int S=4;
+  int S=4;  // Rajouter à commandline 
 
   int nbthreads=4;
 
