@@ -103,18 +103,18 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
  /usr/local/include/c++/5.3.0/iostream /usr/local/include/gmp.h \
  /usr/local/include/c++/5.3.0/cstdio \
  /usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include/stddef.h \
- /usr/local/include/mpfr.h /usr/local/include/fplll.h \
- /usr/local/include/fplll/fplll.h /usr/local/include/fplll/util.h \
- /usr/local/include/fplll/matrix.h /usr/local/include/fplll/numvect.h \
- /usr/local/include/fplll/nr.h /usr/local/include/fplll/defs.h \
- /usr/local/include/c++/5.3.0/cstring /usr/include/string.h \
- /usr/include/sys/_types/_rsize_t.h /usr/include/sys/_types/_errno_t.h \
- /usr/include/strings.h /usr/local/include/c++/5.3.0/climits \
  /usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include-fixed/limits.h \
  /usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/machine/limits.h \
  /usr/include/i386/limits.h /usr/include/i386/_limits.h \
- /usr/include/sys/syslimits.h /usr/local/include/c++/5.3.0/ctime \
+ /usr/include/sys/syslimits.h /usr/local/include/mpfr.h \
+ /usr/local/include/fplll.h /usr/local/include/fplll/fplll.h \
+ /usr/local/include/fplll/util.h /usr/local/include/fplll/matrix.h \
+ /usr/local/include/fplll/numvect.h /usr/local/include/fplll/nr.h \
+ /usr/local/include/fplll/defs.h /usr/local/include/c++/5.3.0/cstring \
+ /usr/include/string.h /usr/include/sys/_types/_rsize_t.h \
+ /usr/include/sys/_types/_errno_t.h /usr/include/strings.h \
+ /usr/local/include/c++/5.3.0/climits /usr/local/include/c++/5.3.0/ctime \
  /usr/local/include/c++/5.3.0/limits \
  /usr/local/include/c++/5.3.0/algorithm \
  /usr/local/include/c++/5.3.0/utility \
@@ -186,6 +186,7 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
  /usr/local/include/fplll/bkz.h /usr/local/include/fplll/lll.h \
  /usr/local/include/fplll/gso.h /usr/local/include/fplll/evaluator.h \
  /usr/local/include/fplll/fplllv31.h ../src/givtimer.C ../src/givtimer.h \
+ /usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include/omp.h \
  ../src/nr_Z_l128.h ../src/ldpe.h ../src/nr-ld.cpp ../src/mat.h \
  ../src/mixed-col.h ../src/matpe.h ../src/matmixed.h ../src/hlll.cc \
  ../src/ratio.h ../src/matgen.h ../src/tools.h ../src/matgen.cc \
@@ -451,6 +452,20 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 
 /usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include/stddef.h:
 
+/usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include-fixed/limits.h:
+
+/usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include-fixed/syslimits.h:
+
+/usr/include/limits.h:
+
+/usr/include/machine/limits.h:
+
+/usr/include/i386/limits.h:
+
+/usr/include/i386/_limits.h:
+
+/usr/include/sys/syslimits.h:
+
 /usr/local/include/mpfr.h:
 
 /usr/local/include/fplll.h:
@@ -478,20 +493,6 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 /usr/include/strings.h:
 
 /usr/local/include/c++/5.3.0/climits:
-
-/usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include-fixed/limits.h:
-
-/usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include-fixed/syslimits.h:
-
-/usr/include/limits.h:
-
-/usr/include/machine/limits.h:
-
-/usr/include/i386/limits.h:
-
-/usr/include/i386/_limits.h:
-
-/usr/include/sys/syslimits.h:
 
 /usr/local/include/c++/5.3.0/ctime:
 
@@ -718,6 +719,8 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 ../src/givtimer.C:
 
 ../src/givtimer.h:
+
+/usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include/omp.h:
 
 ../src/nr_Z_l128.h:
 
