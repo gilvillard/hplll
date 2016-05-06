@@ -52,6 +52,8 @@ class Lattice
 
   bool transf;
 
+  int kappa_max;
+
   unsigned int nblov_max;
 
   

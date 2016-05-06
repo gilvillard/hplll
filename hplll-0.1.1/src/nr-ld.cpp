@@ -583,6 +583,10 @@ template<> inline void FP_NR<ldpe_t>::mul(const FP_NR<ldpe_t>& a, const FP_NR<ld
 {
   ldpe_mul(data, ldpe_ncref(a.data), ldpe_ncref(b.data));
 }
+template<> inline void FP_NR<ldpe_t>::mul_2si(const FP_NR<ldpe_t>& a, long b)
+{
+  ldpe_mul_2si(data, ldpe_ncref(a.data),b);
+}
 template<> inline void FP_NR<ldpe_t>::mul_2ui(const FP_NR<ldpe_t>& a, unsigned int b)
 {
   ldpe_mul_2exp(data, ldpe_ncref(a.data),b);

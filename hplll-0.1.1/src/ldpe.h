@@ -382,6 +382,14 @@ ldpe_div_ui (ldpe_t x, ldpe_t y, unsigned long z)
 
 /* x <- y * 2^e */
 LDPE_INLINE void
+ldpe_mul_2si (ldpe_t x, const ldpe_t y, long e)
+{
+  LDPE_MANT(x) = LDPE_MANT(y);
+  LDPE_EXP(x) = LDPE_EXP(y) + (LDPE_EXP_T) e;
+}
+
+/* x <- y * 2^e */
+LDPE_INLINE void
 ldpe_mul_2exp (ldpe_t x, ldpe_t y, unsigned long e)
 {
  LDPE_MANT(x) = LDPE_MANT(y);
