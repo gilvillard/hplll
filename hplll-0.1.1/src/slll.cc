@@ -98,12 +98,18 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
   // Computed through size reduction afterwards
 
-    
-  householder(); 
+  
+  householder(dorigin); 
 
+  FP_NR<FT> afmax;
+  afmax.set_z(amax);
+
+  for (i=dorigin; i < d; i++) 
+    R.set(i,i,afmax);
+  
     
   for (iter=0; stop==0; iter++) {
-  //for (iter=0; iter < 1; iter++) {
+    //  for (iter=0; iter < 1; iter++) {
 
 	    
     stop=1;
@@ -114,12 +120,10 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     
     // The integer block lattice: truncation of the floating point R
     // 0 triangulaire ici car householder global
-
-    
-    
+   
+   
     set_f(RZ,R,condbits);
-
-        
+   
     for (i=1; i<d; i++)
       for (j=0;j<i;j++)
 	RZ(i,j)=0;
@@ -130,8 +134,6 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
  
     for (i=0; i<d; i++)
       if (RZ(i,i).sgn() ==0) RZ(i,i)=1;
-
-   
     
     // Even reductions
     // ***************
@@ -149,7 +151,6 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     for (k=0; k<S; k++) { 
       {
 	
-	//Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
 	Lattice<ZT,FT, MatrixZT, MatrixFT>  BR(getblock(RZ,k,k,S,0),TRANSFORM,seysen_flag);
 
 	
@@ -205,12 +206,14 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     time.stop();
     prodtime1+=time;
     
+    
+
     // Even size reduction
     // *******************
     
     time.start();
     
-    for (i=0; i<d; i++) {
+    for (i=0; i<dorigin; i++) {
       col_kept[i]=0;
       descendu[i]=0;
     }
@@ -218,7 +221,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     householder_r(0);
     householder_v(0);
     
-    for (i=1; i<d; i++) {
+    for (i=1; i<dorigin; i++) {
 
       if (seysen_flag < 1) 
       	hsizereduce(i);
@@ -229,8 +232,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
     }
 
-    time.stop();
-    esizetime+=time;
+    for (i=dorigin; i < d; i++) 
+      R.set(i,i,afmax);
+    
 
     
     // Odd reductions
@@ -240,9 +244,11 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
     phase_tests=0;
     
+    
     set_f(RZ,R,condbits);
 
-        
+    
+
     // Forcer les zéros si pas mis dans householder_v par ex 
     for (i=1; i<d; i++)
       for (j=0;j<i;j++)
@@ -251,6 +257,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     // DBG
     for (i=0; i<d; i++)
       if (RZ(i,i).sgn() ==0) RZ(i,i)=1;
+    
     
     time.start();
 
@@ -261,9 +268,6 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 #endif
     
     for (k=0; k<S-1; k++) {
-
-      
-      //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
 
       Lattice<ZT,FT, MatrixZT, MatrixFT> BR(getblock(RZ,k,k,S,bdim),TRANSFORM,seysen_flag);
       
@@ -284,6 +288,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     //DBG
     //cout << "**** Odd: " << phase_tests << "  vs " << (S-1)*(2*bdim-1) << endl; 
       
+   
     
     time.stop();
     redtime+=time; 
@@ -309,7 +314,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     
     time.start();
     
-    for (i=0; i<d; i++) {
+    for (i=0; i<dorigin; i++) {
       col_kept[i]=0;
       descendu[i]=0;
     }
@@ -317,7 +322,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     householder_r(0);
     householder_v(0);
     
-    for (i=1; i<d; i++) {
+    for (i=1; i<dorigin; i++) {
 
       if (seysen_flag < 1) 
       	hsizereduce(i);
@@ -327,6 +332,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
       householder_v(i);
 
     }
+
+    for (i=dorigin; i < d; i++) 
+      R.set(i,i,afmax);
 
     time.stop();
     osizetime+=time;
@@ -1212,7 +1220,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int S, bool forU, in
 
       B.resize(n+K-d%K,d+K-d%K);
 
-      Z_NR<ZT> tabs,amax;
+      Z_NR<ZT> tabs;
       amax=0;
 
       for (i=0; i<n; i++)
@@ -1290,7 +1298,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int S, bool forU, in
 /* --------------------------------------------- */
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
-SLattice<ZT,FT, MatrixZT, MatrixFT>::householder()
+SLattice<ZT,FT, MatrixZT, MatrixFT>::householder(int dmax)
 {
 
   int i,k,kappa;
@@ -1299,20 +1307,23 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::householder()
   nrtmp=0;
   s=0;
 
-  
+  int dk;
 
-    for (kappa=0; kappa<d; kappa++) {
+  if (dmax !=0) dk=dmax;
+  else dk=d; 
+
+  for (kappa=0; kappa<dk; kappa++) {
 
       R.setcol(kappa,B.getcol(kappa),0,n);
-
+      
       for (k=0; k<kappa; k++) {
 	scalarprod(nrtmp, V.getcol(k,k), R.getcol(kappa,k), n-k);
 	R.fmasub(kappa,k,R.getcol(kappa,k), V.getcol(k,k), nrtmp, n-k); 
       }
 
-
+      
       w=R.get(kappa,kappa);
-
+      
       if (w >=0) {
 	fp_norm(s,R.getcol(kappa,kappa),n-kappa); 
 	nrtmp.neg(s);

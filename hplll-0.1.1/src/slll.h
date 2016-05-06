@@ -55,6 +55,8 @@ class SLattice
   
   int nmaxkappa;
 
+  Z_NR<ZT> amax; // Value used for completing and divisibility of the dimension 
+
   // Floating point objects concerned a possible precision change 
   // ************************************************************
 
@@ -100,7 +102,7 @@ public:
   int householder_r(int kappa); 
   int householder_v(int kappa); 
 
-  int householder();
+  int householder(int dmax=0);
   
   int hsizereduce(int kappa, int fromk=0);
   

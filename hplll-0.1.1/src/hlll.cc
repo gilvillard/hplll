@@ -76,7 +76,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
   
   cpu_discovered.start();
 
-  while ((kappa < d) && (nblov < nblov_max)) 
+  while ((kappa < kappa_max) && (nblov < nblov_max)) 
     {
 
       if (verboseDepth > 0) {
@@ -1093,6 +1093,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reducti
     U.resize(d,d);
     for (i=0; i<d; i++) U(i,i)=1;     
   }
+
+  kappa_max = d;
 
   nblov_max = 4294967295;
   
