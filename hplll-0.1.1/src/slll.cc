@@ -102,7 +102,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
   householder(dorigin); 
 
   FP_NR<FT> afmax;
-  afmax.set_z(amax);
+  set_z(afmax,amax);
 
   for (i=dorigin; i < d; i++) 
     R.set(i,i,afmax);

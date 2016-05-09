@@ -54,7 +54,7 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
 
   ZZ_mat<ZT> B;
     
-  int d1=min(d,40);
+  int d1=min(d,20);
 
   // Initial reduction
   // -----------------
@@ -97,11 +97,9 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
     for (i=0; i<n; i++)
       B.Set(i,k-1,A(i,k-1));
 
-    if (verboseDepth > 0) {
+    if (verboseDepth > 0) 
       cout << "Discovering+ vector " << k  << "/" << d << endl;
-      //cout << "     Phase: " << cpu_discovered << endl;
-      //cout << "     Total: " << cpu_tot << endl;
-    }
+     
 	    
     
 
@@ -134,9 +132,8 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
     // Reduction with the last column 
     // ------------------------------
 
-    SLattice<mpz_t, ldpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<long double, ldpe_t>  > L(LR.getbase(),4,NO_TRANSFORM,reduction_method);
-
- 
+    SLattice<ZT, FT,  MatrixZT, MatrixFT>  L(LR.getbase(),4,NO_TRANSFORM,reduction_method);
+     
     time.start();
 
     verboseDepth=0; 
@@ -152,10 +149,11 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
       cout << "     Total: " << ttot << endl;
     }
    
-
+    
     
     C=L.getbase();
 
+    
     // Pour comparaison avec hplll
     // ---------------------------
     // Lattice<ZT, FT,  MatrixZT, MatrixFT>  LH(B,NO_TRANSFORM,reduction_method);
@@ -196,6 +194,8 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
 
 int main(int argc, char *argv[])  {
   
+  FP_NR<dd_real> tt;
+  tt=1.0;
   
   ZZ_mat<mpz_t> A; // For hpLLL 
 
@@ -233,8 +233,8 @@ int main(int argc, char *argv[])  {
   Timer tw;
   tw.start();
      
-  lll_wrap<mpz_t, ldpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<long double, ldpe_t> > (C,A,delta,DEF_REDUCTION);
-  
+  //lll_wrap<mpz_t, ldpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<long double, ldpe_t> > (C,A,delta,SEYSEN_REDUCTION);
+  lll_wrap<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C,A,delta,DEF_REDUCTION);
 
   tw.stop();
   
@@ -246,15 +246,15 @@ int main(int argc, char *argv[])  {
 
   verboseDepth=0;
    
-   Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
+   // Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
    
-   Timer tl;
-   tl.start();
-   L.hlll(delta);
-   tl.stop();
+   // Timer tl;
+   // tl.start();
+   // L.hlll(delta);
+   // tl.stop();
 
   
-   cout << endl << "hlll: " << tl << endl;
+   // cout << endl << "hlll: " << tl << endl;
 
    // Vertification
    // -------------
@@ -266,121 +266,30 @@ int main(int argc, char *argv[])  {
    Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
    Btest.isreduced(delta-0.1);
 
-   Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Ltest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-   Ltest.isreduced(delta-0.1);
+   // Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Ltest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+   // Ltest.isreduced(delta-0.1);
 
+
+   //DBG ratio 
+   double t,u,v,w;
+
+   ratio<mpz_t>(C,t,u,v,w);
    
-  // // Découpage rectangle de A
-  
- 
-  // ZZ_mat<mpz_t>  T;
-  // T.resize(n,K);
-  
-  // for (i=0; i<n; i++)
-  //   for (j=0; j<K; j++)
-  //     T(i,j)=A(i,j);
+   cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+   cout << ".. Average diagonal ratio: " << u << endl;
+   cout << ".. Max diagonal ratio: " << v << endl;
+   cout << ".. First vector quality: " << w << endl;
 
-  
-  // // Réduction du premier rectangle
-  
-  // Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > LT(T,NO_TRANSFORM,DEF_REDUCTION);
- 
-  // Timer lt;
-  // lt.start();
-  // LT.hlll(delta);
-  // lt.stop();
-  // cout << endl << "d: " << d << "    " <<  "K: " << K << endl << endl; 
-  // cout << "1er bout: " << lt << "   " <<  LT.nbswaps << endl;
-  
-  // // On complète de 1
+   // ZZ_mat<mpz_t> Ct;
 
-  // T=LT.getbase();
-  
-  // ZZ_mat<mpz_t>  B;
-  // B.resize(n,K+1);
-  
-  // for (i=0; i<n; i++)
-  //   for (j=0; j<K; j++)
-  //     B(i,j)=T(i,j);
-
-  //  for (i=0; i<n; i++)
-  //    B(i,j)=A(i,K);
-
-    
-  //  // Avec plll
-  //  // ----------
+   // Ct.resize(d,n);
+   // transpose(Ct,C);
    
-  //  // PLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > LP(B,NO_TRANSFORM,DEF_REDUCTION);
+   // cout << Ct << endl;
    
-  //  // Timer lp;
-  //  // lp.start();
-  //  // LP.hlll(delta);
-  //  // lp.stop();
-  //  // cout << endl << "plll: " << lp << "   " <<  LP.nbswaps << endl;
-  //  // cout << endl << "compteur: " << LP.compteur <<  endl;
-
-  //  //print2maple(B,n,K+1); 
-	     
-  //  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > TT(B,NO_TRANSFORM,DEF_REDUCTION);
-
-  //  Timer lp0,lp;
-
-
-  //  lp0.start();
-  //  TT.householder();
-  //  TT.hsizereduce(K);
-  //  lp0.stop();
-  
-   
-  //  S=4;
-  //  nbthreads=4;
-
-
-  //  lp.start();
-   
-  //  SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t>  > LP(TT.getbase(),S,NO_TRANSFORM,DEF_REDUCTION);
- 
-  //  LP.hlll(0.99,S,nbthreads,lovmax);
-
-  //  lp.stop();
-  //  cout << endl << "hsize: " << lp0  << endl;
-  //  cout << endl << "slll: " << lp  << endl;
-
-  //  // Avec hlll
-  //  // ----------
-   
-  //  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > LB(B,NO_TRANSFORM,DEF_REDUCTION);
-   
-  //  Timer lb;
-  //  lb.start();
-  //  LB.hlll(delta);
-  //  lb.stop();
-
-  
-  //  cout << endl << "hplll: " << lb << "   " <<  LB.nbswaps << endl;
-  //  cout << endl << "compteur: " << LB.compteur <<  endl;
-
-  //  // Avec fplll
-  //  // ----------
-
-  //  ZZ_mat<mpz_t> BT;  
-  //  BT.resize(K+1,n);
-  //  transpose(BT,B);
-   
-  //  Timer fp;
-  //  fp.start();
-  //  lllReduction(BT, delta, 0.501, LM_WRAPPER);
-  //  fp.stop();
-  //  cout << endl << "fplll: " << fp << endl;
-
-   
-  //  cout << endl;
-   
-  //  Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(LP.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-  //  Btest.isreduced(delta-0.1);
-
   } 
 
- 
+  
+    
   return 0;
 }

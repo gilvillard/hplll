@@ -1379,11 +1379,7 @@ void set_f(matrix<Z_NR<mpz_t> >& B, MatrixPE<double, dpe_t> R, long condbits)
     for (i=0; i<n; i++) {
 
       bf.mul_2si(R.get(i,j),condbits+1);  // +1
-     
-      //tt.randb(2);
-      //set_z(rt,tt);
-      //rt.mul(rt,norm);
-      //if (j>=i) bf.add(bf,rt);
+
       bf.div(bf,minval);
       B(i,j).set_f(bf);
 
@@ -1421,9 +1417,7 @@ void set_f(matrix<Z_NR<mpz_t> >& B, MatrixPE<long double, ldpe_t> R, long condbi
     if (minval.cmp(norm) > 0) minval=norm;
   }
 
- 
 
-  
   FP_NR<ldpe_t> bf;
 
   Z_NR<mpz_t> tt,z;
@@ -1443,12 +1437,8 @@ void set_f(matrix<Z_NR<mpz_t> >& B, MatrixPE<long double, ldpe_t> R, long condbi
 
       bf.mul_2si(R.get(i,j),condbits+1);  // +1
      
-      //tt.randb(2);
-      //set_z(rt,tt);
-      //rt.mul(rt,norm);
-      //if (j>=i) bf.add(bf,rt);
       bf.div(bf,minval);
-      B(i,j).set_f(bf);
+      set_f(B(i,j),bf);
 
       }
      
