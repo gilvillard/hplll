@@ -1,4 +1,4 @@
-main.o: main.cc ../src/hlll.h ../src/defs.h \
+main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
  /usr/local/include/c++/5.3.0/cmath \
  /usr/local/include/c++/5.3.0/x86_64-apple-darwin15.0.0/bits/c++config.h \
  /usr/local/include/c++/5.3.0/x86_64-apple-darwin15.0.0/bits/os_defines.h \
@@ -189,7 +189,9 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
  /usr/local/lib/gcc/x86_64-apple-darwin15.0.0/5.3.0/include/omp.h \
  ../src/nr_Z_l128.h ../src/ldpe.h ../src/nr-ld.cpp ../src/mat.h \
  ../src/mixed-col.h ../src/matpe.h ../src/matmixed.h ../src/hlll.cc \
- ../src/ratio.h
+ ../src/ratio.h ../src/matgen.h ../src/tools.h ../src/matgen.cc
+
+../src/hplll.h:
 
 ../src/hlll.h:
 
@@ -738,3 +740,9 @@ main.o: main.cc ../src/hlll.h ../src/defs.h \
 ../src/hlll.cc:
 
 ../src/ratio.h:
+
+../src/matgen.h:
+
+../src/tools.h:
+
+../src/matgen.cc:
