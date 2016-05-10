@@ -14,10 +14,10 @@ using namespace hplll;
 int main(int argc, char *argv[]) {
 
   //typedef mpz_t ZT;
-  typedef long ZT;
+  //typedef double ZT;
 
   int d=20;
-  int nbbits=40;
+  int nbbits=60;
 
   int K=200;
   
@@ -35,22 +35,28 @@ int main(int argc, char *argv[]) {
 
     for (int k=0; k<K; k++) {
     
-      ZZ_mat<ZT> A,B,C,D;
+      Matrix<FP_NR<double> > A,B,C,D;
   
       A.resize(d,d); 
       B.resize(d,d);
       C.resize(d,d);
       D.resize(d,d);
- 
-      for (int i=0; i<d; i++)
-	for (int j=0; j<d ; j++) 
-	  A(i,j).randb(nbbits);
 
- 
+      Z_NR<mpz_t> tz;
+      
+      for (int i=0; i<d; i++)
+	for (int j=0; j<d ; j++) {
+	  tz.randb(nbbits);
+	  A(i,j).set_z(tz);
+	}
+
+      
 
       for (int i=0; i<d; i++)
-	for (int j=0; j<d ; j++) 
-	  B(i,j).randb(nbbits);
+	for (int j=0; j<d ; j++) {
+	  tz.randb(nbbits);
+	  B(i,j).set_z(tz);
+	}
   
 
       OMPTimer tseq,tpar;
@@ -113,7 +119,7 @@ int main(int argc, char *argv[]) {
     
     cout << endl << endl << "Dim: " << d << "     Ratio par/seq: " << ratio << endl << endl; 
 
-    if (ratio < 0.661) d=2000000; 
+    if (ratio < 0.75) d=2000000; 
   }
   
   
