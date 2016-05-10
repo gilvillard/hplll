@@ -1533,6 +1533,8 @@ cout << "Matrix([";
 
 };
 
+
+
 // ********************************************************************
 // 
 //       TRUNCATION OF A BASIS for lift, lehmer, nullspace, L1
@@ -2017,7 +2019,7 @@ template<class T> int maxbitsize(const ZZ_mat<T>& B);
 */
 
 // Whole matrix 
-inline  int maxbitsize(const ZZ_mat<mpz_t>& B) {
+inline  unsigned int maxbitsize(const ZZ_mat<mpz_t>& B) {
 
   int l=0;
 
@@ -2046,6 +2048,68 @@ int maxbitsize(const ZZ_mat<T>& B, int d0, int d, int n) {
 
 }
 
+// ICI 
+template<class T> 
+int maxbitsize(const matrix<T>& B) {
+
+  int l=0;
+
+  int n=B.getRows();
+  int d=B.getCols();
+  
+  for (int i=0; i<n ; i++) 
+    for (int j=0; j<d; j++)
+      l=max(l, size_in_bits(B(i,j))); 
+
+  return l;
+
+}
+
+
+
+// ********************************************************************
+// 
+//       MATRIC CAST 
+// 
+// ********************************************************************
+ 
+  // Dimensions may change in C 
+
+ template<class ZT> void matrix_cast(ZZ_mat<ZT>& B, ZZ_mat<mpz_t> A);
+ 
+ 
+ template<> void matrix_cast(ZZ_mat<mpz_t>& B, ZZ_mat<mpz_t> A) {
+
+   int n= A.getRows();
+   int d= A.getCols();
+
+   B.resize(n,d);
+   
+   for (int i=0; i<n; i++) 
+    for (int j=0; j<d; j++) 
+      B(i,j)=A(i,j);
+ }
+
+  template<> void matrix_cast(ZZ_mat<long>& B, ZZ_mat<mpz_t> A) {
+
+   int n= A.getRows();
+   int d= A.getCols();
+
+   
+   B.resize(n,d);
+
+   if (maxbitsize(A) > ((8*sizeof(B(0,0).getData())) -1))
+       cerr << endl << "** Error in matrix cast **" << endl; 
+			  
+   for (int i=0; i<n; i++) 
+    for (int j=0; j<d; j++) 
+      B(i,j)=A(i,j).get_si();
+
+   cout << " ************ " << maxbitsize(A) << endl; 
+ }
+  
+ 
+ 
 inline int
 utime ()
 {

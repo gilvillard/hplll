@@ -54,7 +54,7 @@ int main(int argc, char *argv[])  {
 
   
 
-    Timer time;
+  Timer time,thlll,tfplll;
 
     int status;
     
@@ -69,12 +69,13 @@ int main(int argc, char *argv[])  {
     status=B.hlll(delta);
     time.stop();
 
+    thlll=time; 
     
     cout << "   dimension = " << d  << endl << endl;
 
     time.print(cout);
 
-    cout << B.getbase() << endl; 
+    //cout << B.getbase() << endl; 
       
     if (status ==0) {
       Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION,NO_LONG);
@@ -92,7 +93,8 @@ int main(int argc, char *argv[])  {
     lllReduction(AT, delta, 0.501, LM_WRAPPER, FT_DEFAULT,0,LLL_VERBOSE);
 
     time.stop();
-  
+
+    tfplll=time;
     
     cout << "   dimension = " << d  << endl << endl;
    
@@ -102,7 +104,12 @@ int main(int argc, char *argv[])  {
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
     T2.isreduced(delta-0.1);
 
-   
+    cout << "-----------------------" << endl;
+
+    cout << "HLLL:" << endl;
+    thlll.print(cout);
+    cout << "FPLLL:" << endl;
+    tfplll.print(cout);
    
 
   return 0;

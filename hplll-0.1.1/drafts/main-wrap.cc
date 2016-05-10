@@ -39,7 +39,7 @@ using namespace hplll;
 template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
 lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) { 
 
-  Timer time,ttot,tinit,tsize,th,thlll;
+  OMPTimer time,ttot,tinit,tsize,th,thlll;
   time.clear();
   ttot.clear();
   tinit.clear();
@@ -54,7 +54,7 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
 
   ZZ_mat<ZT> B;
     
-  int d1=min(d,20);
+  int d1=min(d,255);
 
   // Initial reduction
   // -----------------
@@ -125,6 +125,7 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
     
     time.stop();
     ttot+=time;
+    time.start();
     if (verboseDepth >0) 
       cout << "     Size reduction: " << time << endl;
 
@@ -134,7 +135,6 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
 
     SLattice<ZT, FT,  MatrixZT, MatrixFT>  L(LR.getbase(),4,NO_TRANSFORM,reduction_method);
      
-    time.start();
 
     verboseDepth=0; 
     L.hlll(delta,4,4,1000000);
@@ -193,14 +193,18 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
 
 
 int main(int argc, char *argv[])  {
-  
-  ZZ_mat<mpz_t> A; // For hpLLL 
 
-  ZZ_mat<mpz_t> AT;  // fpLLL
+  typedef mpz_t  ZT;
+  //typedef long ZT;
+
+  ZZ_mat<mpz_t> A0; // For hpLLL
+  
+  ZZ_mat<ZT> A; // For hpLLL 
+
+  ZZ_mat<ZT> AT;  // fpLLL
  
   // ---------------------------------------------------------------------
-  { 
-  
+   
   int d=8;
   int n;
   
@@ -218,20 +222,22 @@ int main(int argc, char *argv[])  {
 
   int nbthreads=4;
 
-  command_line_basis(A, n, d, delta, argc, argv);
+  command_line_basis(A0, n, d, delta, argc, argv);
 
-
+  // Attention en 128 bits, mpfr get_si pas autrement 
+  matrix_cast(A,A0);
+  
   // With the wrapper
   // ----------------
   
-  ZZ_mat<mpz_t> C; 
+  ZZ_mat<ZT> C; 
   
 
   Timer tw;
   tw.start();
      
-  //lll_wrap<mpz_t, ldpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<long double, ldpe_t> > (C,A,delta,SEYSEN_REDUCTION);
-  lll_wrap<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C,A,delta,DEF_REDUCTION);
+  //lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,A,delta,SEYSEN_REDUCTION);
+  lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,delta,SEYSEN_REDUCTION);
 
   tw.stop();
   
@@ -243,15 +249,15 @@ int main(int argc, char *argv[])  {
 
   verboseDepth=0;
    
-   // Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
+   Lattice<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
    
-   // Timer tl;
-   // tl.start();
-   // L.hlll(delta);
-   // tl.stop();
+   Timer tl;
+   tl.start();
+   //L.hlll(delta);
+   tl.stop();
 
   
-   // cout << endl << "hlll: " << tl << endl;
+   cout << endl << "hlll: " << tl << endl;
 
    // Vertification
    // -------------
@@ -260,33 +266,30 @@ int main(int argc, char *argv[])  {
 
    verboseDepth=0;
    
-   Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
+   Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
    Btest.isreduced(delta-0.1);
 
-   // Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Ltest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-   // Ltest.isreduced(delta-0.1);
+   Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Ltest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+   Ltest.isreduced(delta-0.1);
 
 
    //DBG ratio 
    double t,u,v,w;
 
-   ratio<mpz_t>(C,t,u,v,w);
+   ratio<ZT>(C,t,u,v,w);
    
    cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
    cout << ".. Average diagonal ratio: " << u << endl;
    cout << ".. Max diagonal ratio: " << v << endl;
    cout << ".. First vector quality: " << w << endl;
 
-   // ZZ_mat<mpz_t> Ct;
+   cout << "-----------------------" << endl;
 
-   // Ct.resize(d,n);
-   // transpose(Ct,C);
-   
-   // cout << Ct << endl;
-   
-  } 
+   cout << "SLLL: " << tw << endl;
+   //tw.print(cout);
+   cout << "HLLL :" << tl << endl;
+   //tl.print(cout);  
 
-  
     
   return 0;
 }
