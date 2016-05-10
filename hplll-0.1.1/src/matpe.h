@@ -1346,8 +1346,7 @@ void set_f(matrix<Z_NR<mpz_t> >& B, MatrixPE<double, dpe_t> R, long condbits)
   norm=0.0;
 
   int i,j;
-
-
+  
   fp_norm(minval,R.getcol(0),n);
 
    // Avant Mar 29 avr 2014 10:42:12 CEST
@@ -1358,21 +1357,9 @@ void set_f(matrix<Z_NR<mpz_t> >& B, MatrixPE<double, dpe_t> R, long condbits)
     if (minval.cmp(norm) > 0) minval=norm;
   }
 
- 
-
-  
   FP_NR<dpe_t> bf;
 
-  Z_NR<mpz_t> tt,z;
-  tt=0;
-  z=0;
-  FP_NR<dpe_t> rt;
-
-  Z_NR<mpz_t> mm;
-  mm=B(0,0);
-
   for (j=0; j<d; j++) {
-
     
     fp_norm(norm,R.getcol(j),n);
     
@@ -1383,12 +1370,51 @@ void set_f(matrix<Z_NR<mpz_t> >& B, MatrixPE<double, dpe_t> R, long condbits)
       bf.div(bf,minval);
       B(i,j).set_f(bf);
 
-      }
-     
+    }
   }
-
 }
 
+ 
+void set_f(matrix<Z_NR<long> >& B, MatrixPE<double, dpe_t> R, long condbits)
+{
+
+  int n,d;
+
+  n= B.getRows();
+  d= B.getCols();
+
+  FP_NR<dpe_t> norm,minval;
+  minval=0.0;
+  norm=0.0;
+
+  int i,j;
+  
+  fp_norm(minval,R.getcol(0),n);
+
+   // Avant Mar 29 avr 2014 10:42:12 CEST
+  for (j=1; j<d; j++) {
+    
+    fp_norm(norm,R.getcol(j),n);
+ 
+    if (minval.cmp(norm) > 0) minval=norm;
+  }
+
+  FP_NR<dpe_t> bf;
+
+  for (j=0; j<d; j++) {
+    
+    fp_norm(norm,R.getcol(j),n);
+    
+    for (i=0; i<n; i++) {
+
+      bf.mul_2si(R.get(i,j),condbits+1);  // +1
+
+      bf.div(bf,minval);
+      B(i,j).set_f(bf);
+
+    }
+  }
+}
 
 
 #ifdef HPLLL_WITH_LONG_DOUBLE
@@ -1420,14 +1446,6 @@ void set_f(matrix<Z_NR<mpz_t> >& B, MatrixPE<long double, ldpe_t> R, long condbi
 
   FP_NR<ldpe_t> bf;
 
-  Z_NR<mpz_t> tt,z;
-  tt=0;
-  z=0;
-  FP_NR<ldpe_t> rt;
-
-  Z_NR<mpz_t> mm;
-  mm=B(0,0);
-
   for (j=0; j<d; j++) {
 
     
@@ -1439,11 +1457,9 @@ void set_f(matrix<Z_NR<mpz_t> >& B, MatrixPE<long double, ldpe_t> R, long condbi
      
       bf.div(bf,minval);
       set_f(B(i,j),bf);
-
-      }
-     
+      
+    }
   }
-
 }
 #endif
 

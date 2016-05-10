@@ -123,7 +123,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
    
    
     set_f(RZ,R,condbits);
-   
+    
     for (i=1; i<d; i++)
       for (j=0;j<i;j++)
 	RZ(i,j)=0;
