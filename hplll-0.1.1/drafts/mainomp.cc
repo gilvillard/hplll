@@ -1,9 +1,6 @@
 
 
-#include "hlll.h"
-
-#include <omp.h>
-
+#include "hplll.h"
 
 
 /* ***********************************************
@@ -14,97 +11,117 @@
 
 using namespace hplll;
 
-int main() {
+int main(int argc, char *argv[]) {
 
-  int d=2000;
-  int nbbits=1000;
-  int i;
+  //typedef mpz_t ZT;
+  //typedef double ZT;
 
-  Timer time;
+  int d=20;
+  int nbbits=60;
+
+  int K=200;
   
-  vector<Z_NR<mpz_t> > u,v,w,z;
-  Z_NR<mpz_t> alpha,beta;
+  // PARSE_MAIN_ARGS {
+    
+  //   MATCH_MAIN_ARGID("-d",d);
+  //   MATCH_MAIN_ARGID("-bits",nbbits);
+  // }
+
+  for (d=2; d<10000; d++) {
+
+    OMPTimer tots,totp;
+    tots.clear();
+    totp.clear();
+
+    for (int k=0; k<K; k++) {
+    
+      Matrix<FP_NR<double> > A,B,C,D;
   
-  u.resize(d);
-  v.resize(d);
-   
-  for (i=0; i<d; i++) u[i].randb(nbbits);
-  for (i=0; i<d; i++) v[i].randb(nbbits); 
+      A.resize(d,d); 
+      B.resize(d,d);
+      C.resize(d,d);
+      D.resize(d,d);
 
-  w.resize(d);
-  z.resize(d);
-   
-  for (i=0; i<d; i++) w[i].randb(nbbits);
-  for (i=0; i<d; i++) z[i].randb(nbbits); 
+      Z_NR<mpz_t> tz;
+      
+      for (int i=0; i<d; i++)
+	for (int j=0; j<d ; j++) {
+	  tz.randb(nbbits);
+	  A(i,j).set_z(tz);
+	}
 
+      
+
+      for (int i=0; i<d; i++)
+	for (int j=0; j<d ; j++) {
+	  tz.randb(nbbits);
+	  B(i,j).set_z(tz);
+	}
   
-  alpha.randb(20);
-  beta.randb(20);
 
-   // ************************
-  
-   time.start();
+      OMPTimer tseq,tpar;
 
-   for (i=0; i<d; i++)
-     v[i].addmul(u[i],alpha);
+      tseq.clear();
+      tpar.clear();
 
-   for (i=0; i<d; i++)
-     z[i].addmul(w[i],beta);
+      // SEQ
+      // ---
 
-  
-   time.stop();
-   
-   cout << endl << "-------- Seq --------" << endl << endl;
-   
-   time.print(cout);
 
-   // ************************
+      tseq.start();
 
-   u.resize(d);
-   v.resize(d);
-   
-   for (i=0; i<d; i++) u[i].randb(nbbits);
-   for (i=0; i<d; i++) v[i].randb(nbbits); 
-   
-  w.resize(d);
-  z.resize(d);
-  
-  for (i=0; i<d; i++) w[i].randb(nbbits);
-  for (i=0; i<d; i++) z[i].randb(nbbits);
-  
-  time.start();
+    
+      matprod(C,A,A);
+      matprod(D,B,B);
+    
+ 
+      tseq.stop();
+      tots+=tseq;
+      
+      // PAR
+      // ---
+
+      tpar.start();
   
 #pragma omp parallel sections num_threads(2)
-   {
-
+      {
+	
 #pragma omp section
-     {
-       for (i=0; i<d; i++)
-	 v[i].addmul(u[i],alpha); 
-     }
-
+	{
+	  matprod(C,A,A);
+	}
+    
 #pragma omp section
-     {
-       for (i=0; i<d; i++)
-	 z[i].addmul(w[i],beta);
-     }
-   } 
-   time.stop();
-
-   cout << endl <<  endl << "-------- Par --------" << endl << endl;
-
-   time.print(cout);
+	{
+	  matprod(D,B,B);
+	}
+      }
   
-   cout << endl; 
+      tpar.stop();
+      totp+=tpar;
+      
+
+    }
+    
+    cout << endl << "-------- Seq --------" << endl << endl;
+
+    
+
+    cout << endl << tots << endl;
+
+    cout << endl << "-------- Par --------" << endl << endl;
+
+    
+    cout << endl << totp << endl;
+
+
+    double ratio= totp.realtime()/tots.realtime();
+    
+    cout << endl << endl << "Dim: " << d << "     Ratio par/seq: " << ratio << endl << endl; 
+
+    if (ratio < 0.6601) d=2000000; 
+  }
   
-  
-
-  
-// #pragma omp parallel 
-//   printf("Hello from thread %d, nthreads %d\n", omp_get_thread_num(), omp_get_num_threads());
-
-
-
   
 }
 

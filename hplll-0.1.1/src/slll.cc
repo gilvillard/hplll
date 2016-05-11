@@ -88,7 +88,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
   int phase_tests;
   
   
-  int condbits=53;
+  int condbits=63;
      
   // ************************************
   //   
