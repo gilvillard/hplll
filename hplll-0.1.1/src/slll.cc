@@ -98,6 +98,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
   // Computed through size reduction afterwards
 
+  // DBG
+  cout << "** 0" << endl;
   
   householder(dorigin); 
 
@@ -106,7 +108,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
   for (i=dorigin; i < d; i++) 
     R.set(i,i,afmax);
-  
+
+  //DBG
+  cout << "** 1" << endl;
     
   for (iter=0; stop==0; iter++) {
     //  for (iter=0; iter < 1; iter++) {
@@ -120,7 +124,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     
     // The integer block lattice: truncation of the floating point R
     // 0 triangulaire ici car householder global
-   
+
+    //DBG
+    cout << "** iter: " << iter << "  *** A " << endl;
    
     set_f(RZ,R,condbits);
     
@@ -138,16 +144,42 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     // Even reductions
     // ***************
 
+    //DBG
+    cout << "** iter: " << iter << "  *** B " << endl;
+    
     setId(U_even); // Pas nécessaire pour even sans doute 
     phase_tests=0;
     
     //cout << endl <<  "--- Even reductions" << endl;
     time.start();
+
+
+    // DBG
+    // See the conditioning of the last block 
+    // {
+      
+    //   double t,u,v,w;  
+      
+    //   for  (int k=0; k<S; k++) { 
+	
+    // 	ratio<ZT>(getblock(RZ,k,k,S,0),t,u,v,w);
+
+    // 	if (t> 50.0) {
+    // 	  cout << endl << "----------- iter: " << iter << "    bloc: " << k << endl; 
+    // 	  cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+    // 	  cout << ".. Average diagonal ratio: " << u << endl;
+    // 	  cout << ".. Max diagonal ratio: " << v << endl;
+    // 	}
+    //   }
+    // }
+
+    
     
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif
 
+    
     for (k=0; k<S; k++) { 
       {
 	
@@ -183,6 +215,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
     for (k=0; k<S; k++) phase_tests+=lovtests[k];
 
+    //DBG
+    cout << "** iter: " << iter << "  *** C " << endl;
+    
     //DBG
     //cout << "**** Even: " << phase_tests << "  vs " << S*(2*bdim-1) << endl; 
       
@@ -236,6 +271,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
       R.set(i,i,afmax);
     
 
+    //DBG
+    cout << "** iter: " << iter << "  *** D " << endl;
     
     // Odd reductions
     // **************
@@ -258,6 +295,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     for (i=0; i<d; i++)
       if (RZ(i,i).sgn() ==0) RZ(i,i)=1;
     
+    //DBG
+    cout << "** iter: " << iter << "  *** E " << endl;
     
     time.start();
 
@@ -288,7 +327,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     //DBG
     //cout << "**** Odd: " << phase_tests << "  vs " << (S-1)*(2*bdim-1) << endl; 
       
-   
+   //DBG
+    cout << "** iter: " << iter << "  *** F " << endl;
     
     time.stop();
     redtime+=time; 
@@ -308,6 +348,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     time.stop();
     prodtime2+=time;
     
+    //DBG
+    cout << "** iter: " << iter << "  *** G " << endl;
     
     // Odd size reduction
     // ******************
@@ -344,7 +386,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     
   totime.stop();
   
-  
+  //DBG
+    cout << "** iter: " << iter << "  *** H " << endl;
   
   // cout << endl;
   // //cout << " Householder: " << qrtime << endl;
