@@ -47,6 +47,7 @@ namespace hplll {
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
 SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, unsigned int lovmax) { 
 
+  verboseDepth-=1;
  
   int i,j,k;
 
@@ -405,7 +406,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
   // //cout << endl << " Special chrono:" << special << endl << endl;
   // cout << endl << "Swaps: " << swapstab << endl;
   
-      
+  verboseDepth+=1;
+  
   return 0;
   
 };

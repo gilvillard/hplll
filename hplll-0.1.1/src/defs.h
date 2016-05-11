@@ -53,7 +53,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef HPLLL_VERBOSE
 int verboseDepth = 0;
-#define HPLLL_INFO(x,y) {if (verboseDepth > 0) cout << x << y << endl;}
+#define HPLLL_INFO(x,y) {if (verboseDepth >= 0) cout << x << y << endl;}
 #else
 #define HPLLL_INFO(x,y)
 #endif 

@@ -33,74 +33,96 @@ namespace hplll {
 
 
 
-/* ***********************************************
+  /* ***********************************************
 
-   Lehmer like LLL  
+     Lehmer like LLL  
 
-   n x d matrix, shift of the fisrt row  
+     n x d matrix, shift of the fisrt row  
 
-   ********************************************** */
+     Under the Gaussian heuristic 
 
+     ********************************************** */
 
+  // Mettre LLL method avec fplll
   
-template<class FT, class MatrixFT> int  
-lehmer_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, double delta, int lshift) { 
+  // reduction method avec Seysen 
 
-
+  // Mettre un défaut au shift
   
-  if (lshift==0) {
+  template<class ZT, class FT, class MatrixFT> int  
+  lehmer_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, double delta, int lshift) { 
     
-    Lattice<mpz_t, FT, matrix<Z_NR<mpz_t> >, MatrixFT> B(A,NO_TRANSFORM,DEF_REDUCTION); 
+    verboseDepth-=1;
     
+    if (lshift==0) {
+      
+      Lattice<mpz_t, FT, matrix<Z_NR<mpz_t> >, MatrixFT> B(A,NO_TRANSFORM,DEF_REDUCTION); 
+      
     B.hlll(delta);
     
     C=B.getbase();
     
   }
 
-  // // Non trivial shift 
-//   // -----------------
+  // Non trivial shift 
+  // -----------------
   
-//   else {   // lsigma <> 0 
+  else {   // lsshift <> 0 
 
-//     int i,j;
+    int i,j;
+
+    int n=A.getRows();
+    int d=A.getCols();
+
     
-//     int m=1;   // To change in parameter
+    C.resize(n,d); // Update of the basis 
 
-//     int d=A.getCols();
+    for (i=0; i<n; i++)
+      for (j=0; j<d; j++)
+	C(i,j)=A(i,j);
 
-//     C.resize(m+d,d);
+    ZZ_mat<ZT> Ct;  // Truncated basis  
+    Ct.resize(n,d);  
 
-//     for (i=0; i<m+d; i++)
-//        for (j=0; j<d; j++)
-// 	 C(i,j)=A(i,j);
+    // Truncated lattice
+    Lattice<ZT, FT, matrix<Z_NR<ZT> >, MatrixFT> B(Ct,TRANSFORM,DEF_REDUCTION);
+
     
-//     int bitsize = maxbitsize(A,0,m,d);
+    int bitsize = maxbitsize(A);
 
-//     int def = -bitsize;
+    int def = -bitsize;
 
-//     ZZ_mat<double> Af;
-//     Af.resize(m+d,d);
-
-//     Z_NR<ZT> tz;
-
-//     Lattice<double, double,  matrix<Z_NR<double> >, matrix<FP_NR<double> > > B(Af,TRANSFORM,DEF_REDUCTION);
-
-//     ZZ_mat<long> U;
-//     U.resize(d,d);
+    //DBG
+    print2maple(C,n,d);
     
-//     ZZ_mat<double> Uf;
-//     Uf.resize(d,d);
+    // Main Lehmer loop on the defect
+    // ------------------------------
+    
+    while (def < 0) { 
 
-//     FP_NR<double> tf;
+      def = min(0,def+lshift);
+
      
-//     // Main Lehmer loop on the defect
-//     // ------------------------------
-    
-//     while (def < 0) { 
+      // Voir à optimiser la fonction
+      // Faire pour 128 bits
+      
+      lift_truncate(Ct, C, def, 60); // Régler >= lshift 
 
-//       def = min(0,def+lsigma);
+      print2maple(Ct,n,d);
 
+      B.assign(Ct);
+      
+      B.hlll(0.99);
+ 
+      matprod_in_si(C,B.getU());
+
+      print2maple(C,n,d);
+      
+
+      //DBG puis incrementer 
+      //def=0;
+
+      
 //       // ICI 
 //       int mmax=0;
 //       for (j=0; j<d; j++)
@@ -201,12 +223,13 @@ lehmer_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, double delta, int lshift) {
 //       //print2maple(C,d+1,d);
 
       
-//     } // End Lehmer loop on the defect 
+    } // End Lehmer loop on the defect 
       
-//   } // End else lsigma > 0 
+  } // End else lshift > 0 
     
-  return 0;
-}
+    verboseDepth+=1;
+    return 0;
+  }
 
 } // end namespace hplll
 
