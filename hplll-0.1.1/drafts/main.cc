@@ -125,10 +125,11 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
     
     time.stop();
     ttot+=time;
-    time.start();
+    
     if (verboseDepth >0) 
       cout << "     Size reduction: " << time << endl;
 
+    time.start();
 
     // Reduction with the last column 
     // ------------------------------
