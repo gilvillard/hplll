@@ -99,8 +99,10 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
 
     if (verboseDepth > 0) 
       cout << "Discovering+ vector " << k  << "/" << d << endl;
-     
-	    
+
+    // DBG Pb 442 
+    if (k==442)
+      print2maple(B,n,k);
     
 
     // Size reduction of the last column
@@ -130,6 +132,10 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
       cout << "     Size reduction: " << time << endl;
 
 
+    // Pb 442 
+    if (k==442)
+      print2maple(LR.getbase(),n,k);
+    
     // Reduction with the last column 
     // ------------------------------
 
@@ -269,8 +275,8 @@ int main(int argc, char *argv[])  {
    Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
    Btest.isreduced(delta-0.1);
 
-   // Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Ltest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-   // Ltest.isreduced(delta-0.1);
+   Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Ltest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+   Ltest.isreduced(delta-0.1);
 
 
    //DBG ratio 
