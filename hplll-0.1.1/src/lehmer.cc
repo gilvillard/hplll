@@ -53,7 +53,11 @@ namespace hplll {
   lehmer_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, double delta, int lshift) { 
     
     verboseDepth-=1;
-    
+
+     if (verboseDepth >=0) {
+       cout << endl << "Lehmer LLL " << endl << endl;  
+      }
+     
     if (lshift==0) {
       
       Lattice<mpz_t, FT, matrix<Z_NR<mpz_t> >, MatrixFT> B(A,NO_TRANSFORM,DEF_REDUCTION); 
@@ -92,136 +96,34 @@ namespace hplll {
 
     int def = -bitsize;
 
-    //DBG
-    print2maple(C,n,d);
     
     // Main Lehmer loop on the defect
     // ------------------------------
     
     while (def < 0) { 
 
+      if (verboseDepth >=0) {
+	cout << "Current default: " << def << endl;  
+      }
+      
       def = min(0,def+lshift);
 
      
       // Voir à optimiser la fonction
       // Faire pour 128 bits
+
       
-      lift_truncate(Ct, C, def, 60); // Régler >= lshift 
+      
+      lift_truncate(Ct, C, def, 48); // Régler >= lshift 
 
       print2maple(Ct,n,d);
 
       B.assign(Ct);
       
       B.hlll(0.99);
- 
+
+      // Open mp à faire
       matprod_in_si(C,B.getU());
-
-      print2maple(C,n,d);
-      
-
-      //DBG puis incrementer 
-      //def=0;
-
-      
-//       // ICI 
-//       int mmax=0;
-//       for (j=0; j<d; j++)
-// 	if (mmax <  size_in_bits(C(0,j))) mmax=size_in_bits(C(0,j));
-	
-//       def=lsigma-mmax;
-
-//       cout << endl << "def: " << def << endl; 
-
-	
-      
-//       for (i=0; i<m; i++) 
-// 	for (j=0; j<d; j++) {
-
-// 	  tz.mul_2si(C(i,j),def);
-// 	  Af(i,j).getData()=tz.get_d();  
-	  
-// 	}
-
-//       for (i=m; i<m+d; i++) 
-// 	for (j=0; j<d; j++)
-// 	  Af(i,j).getData()=(C(i,j)).get_d();  
-	  
-//      {
-// 	//ICI
-
-// 	FP_NR<double> td;
-
-// 	ZZ_mat<mpz_t> Afz;
-// 	Afz.resize(d+1,d);
-	
-// 	for (i=0; i<m+d; i++) 
-// 	  for (j=0; j<d; j++) {
-// 	    td=(Af(i,j)).get_d();
-// 	    (Afz(i,j)).set_f(td);
-// 	  }
-
-// 	double t,u,v,w;
-// 	ratio(Afz,t,u,v,w);
-
-// 	cout << endl << "---------------" << endl;
-	
-// 	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-// 	cout << ".. Average diagonal ratio: " << u << endl;
-// 	cout << ".. Max diagonal ratio: " << v << endl;
-
-
-
-//       }
-
-    
-//       B.assign(Af);
-
-//       B.hlll(delta);
-
-//       Af=B.getbase();
-      
-// {
-// 	//ICI
-
-// 	FP_NR<double> td;
-
-// 	ZZ_mat<mpz_t> Afz;
-// 	Afz.resize(d+1,d);
-	
-// 	for (i=0; i<m+d; i++) 
-// 	  for (j=0; j<d; j++) {
-// 	    td=(Af(i,j)).get_d();
-// 	    (Afz(i,j)).set_f(td);
-// 	  }
-
-// 	double t,u,v,w;
-// 	ratio(Afz,t,u,v,w);
-
-// 	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-// 	cout << ".. Average diagonal ratio: " << u << endl;
-// 	cout << ".. Max diagonal ratio: " << v << endl;
-
-
-
-//       }
-      
-//       Uf = B.getU();
-
-//       for (i=0; i<d; i++) 
-// 	for (j=0; j<d; j++) {
-// 	  tf = Uf(i,j).getData(); 
-// 	  U(i,j).set_f(tf);  // Pour long double ou autre, vérifier et passer par set_z ? 
-// 	}
-
-
-//       matprod_in_si(C,U);
-
-//       int size_of_U = maxbitsize(U,0,d,d);
-//       cout << "size of U: " << size_of_U << endl; 
-
-      
-//       //print2maple(C,d+1,d);
-
       
     } // End Lehmer loop on the defect 
       
