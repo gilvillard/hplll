@@ -1671,9 +1671,7 @@ template<> void trunc_sigma(matrix<Z_NR<mpz_t> >& B, ZZ_mat<mpz_t> A, long n, lo
 // Au moins bits en sortie (pour la plus petite colonne)
 // si non homogène, certaine colonne peuvent rester grandes
 
-// Le calcul flottant de la norme spécialiser : double, dpe selon la taille
  
-// Avec des flottants size in bits ici 
 void lift_truncate(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long def, long bits) {
 
    int i,j;
@@ -1726,7 +1724,6 @@ void lift_truncate(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long def, long bits) {
  };
   
 // LONG 
- // Avec des flottants size in bits ici 
 void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
 
   

@@ -39,6 +39,7 @@ namespace hplll {
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) { 
 
+  verboseDepth-=1;
   
   int kappa=1,i;
   int prevkappa=-1; // For the looping test between tow indices 
@@ -79,7 +80,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
   while ((kappa < kappa_max) && (nblov < nblov_max)) 
     {
 
-      if (verboseDepth > 0) {
+      if (verboseDepth >= 0) {
 	if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
       }
       
@@ -98,8 +99,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	flag_reduce=seysenreduce(kappa);
 
                   
-      if (flag_reduce==-1) return(-1);
-      
+      if (flag_reduce==-1) {
+	verboseDepth+=1;
+	return(-1);
+      }
 
       //newt=normB2[kappa];  // The newt test was like that in old non exp 
       //for (i=0; i<=kappa-2; i++) newt.submul(R.get(i,kappa),R.get(i,kappa));
@@ -134,7 +137,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
 	  cpu_tot+=cpu_discovered;
 	  
-	  if (verboseDepth > 0) {
+	  if (verboseDepth >= 0) {
 	    cout << "Discovering vector " << kappa +1 << "/" << d << endl;
 	    cout << "     Phase-: " << cpu_discovered << endl;
 	    cout << "     Total: " << cpu_tot << endl;
@@ -156,7 +159,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	  if (t > prevR[kappa]) {
 	
 	    cout << " **** #tests = " << nblov << " **** Anomaly: the norm increases for kappa = " << kappa << endl;
-	 
+	    
+	    verboseDepth+=1; 
 	    return -1;
 	  }
 
@@ -207,7 +211,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
     } // End main LLL loop 
   
-
+  verboseDepth+=1;
   return 0;
   
 };
