@@ -153,17 +153,6 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
     
     C=L.getbase();
 
-
-    //DBG
-    double t,u,v,w;
-
-    ratio(C,t,u,v,w);
-
-    cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-    cout << ".. Average diagonal ratio: " << u << endl;
-    cout << ".. Max diagonal ratio: " << v << endl;
-    cout << ".. First vector quality: " << w << endl << endl;
-    
     
     // Pour comparaison avec hplll
     // ---------------------------
