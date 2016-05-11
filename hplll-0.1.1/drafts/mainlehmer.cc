@@ -21,10 +21,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
-#include "hlll.h"
-#include "lehmer.cc"
+#include "hplll.h"
 
-#include "tools.h"
+#include "../src/lehmer.cc"
+
+using namespace hplll; 
+
 
 /* ***********************************************
 
@@ -32,82 +34,86 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
    ********************************************** */
 
-using namespace hplll; 
+
 
 int main(int argc, char *argv[])  {
-  
-  
-  ZZ_mat<mpz_t> A; // For hpLLL 
-  ZZ_mat<mpz_t> C; // For Lehmer
-  ZZ_mat<mpz_t> AT;  // fpLLL  
+
+  typedef mpz_t  ZT;
+  //typedef long ZT;
+
+  ZZ_mat<ZT> A; // For hpLLL 
 
   // ---------------------------------------------------------------------
-  { 
-  
+   
   int d=8;
-  int nbbits=100;
-  int shift = 20;
+  int n;
+  
+  
   double delta = 0.99;
 
+  command_line_basis(A, n, d, delta, argc, argv);
 
-    PARSE_MAIN_ARGS {
-      MATCH_MAIN_ARGID("-d",d);
-      MATCH_MAIN_ARGID("-bits",nbbits);
-      MATCH_MAIN_ARGID("-shift",shift);
-      MATCH_MAIN_ARGID("-delta",delta);
-      SYNTAX();
-    }
+  // Lehmer
+  // ------
+  
+  ZZ_mat<ZT> C; 
+  
+  Timer tleh;
+  tleh.start();
 
+  lehmer_lll<dpe_t, MatrixPE<double, dpe_t> > (C, A, delta, 0);
+  
+  tleh.stop();
+  
+  cout << endl << "Lehmer: " << tleh << endl;  
 
+  
+   // With hlll
+   // ---------
 
-  int start;
-
-
-  A.resize(d+1,d); 
-  AT.resize(d,d+1);  
-  AT.gen_intrel(nbbits);
-  transpose(A,AT);
-
-  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
-
-  start=utime();
-  //B.hlll(delta);
-  start=utime()-start;
-    
-  cout << endl; 
-  cout << "   bits = " << nbbits << endl;
-  cout << "   dimension = " << d  << endl;
-  cout << "   delta = " << delta  << endl;
- 
-  cout << endl << "   time hplll: " << start/1000 << " ms" << endl;
+  verboseDepth=0;
    
-  start=utime();
+  Lattice<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
+   
+  Timer tl;
+  tl.start();
+  L.hlll(delta);
+  tl.stop();
 
-  //lehmer_f<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, shift, delta);
-  Lehmer_lll<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double,dpe_t> > (C, A, shift, delta);
- 
-  start=utime()-start;
+   cout << endl << "hlll: " << tl << endl;
 
-  cout << endl; 
-  cout << "   time lehmer: " << start/1000 << " ms" << endl;
+   // Verification
+   // -------------
 
-  
-  start=utime();
-  lllReduction(AT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
-  start=utime()-start;
+   cout << endl << endl;
+
+   verboseDepth=0;
+   
+   Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
+   Btest.isreduced(delta-0.1);
+
+   // Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Ltest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+   // Ltest.isreduced(delta-0.1);
+
+   
+
+   //DBG ratio 
+   double t,u,v,w;
+
+   ratio<ZT>(C,t,u,v,w);
+   
+   cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+   cout << ".. Average diagonal ratio: " << u << endl;
+   cout << ".. Max diagonal ratio: " << v << endl;
+   cout << ".. First vector quality: " << w << endl;
+
+   cout << "-----------------------" << endl;
+
+   cout << "Lehmer LLL: " << tleh << endl;
+   //tw.print(cout);
+   cout << "HLLL :" << tl << endl;
+   //tl.print(cout);  
+
     
-  cout << endl; 
-  cout << "   time fplll: " << start/1000 << " ms" << endl;
-  
-  //transpose(A,AT);
-  //Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Ctest(A,NO_TRANSFORM,DEF_REDUCTION);
-  //Ctest.isreduced(delta);
-
-   Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
-  Btest.isreduced(delta-0.1);
-
-  } 
-
- 
   return 0;
 }
