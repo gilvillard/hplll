@@ -39,7 +39,7 @@ namespace hplll {
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) { 
 
-  verboseDepth-=1;
+  //verboseDepth-=1;
   
   int kappa=1,i;
   int prevkappa=-1; // For the looping test between tow indices 
@@ -92,7 +92,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       } 
       else for (i=kappa+1; i<d; i++) kappamin[i]=min(kappamin[i],kappa); // lowest visit after kappa 
 
-      
+
       if (seysen_flag < 1) 
       	flag_reduce=hsizereduce(kappa);
       else
@@ -100,7 +100,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
                   
       if (flag_reduce==-1) {
-	verboseDepth+=1;
+	//verboseDepth+=1;
 	return(-1);
       }
 
@@ -138,7 +138,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	  cpu_tot+=cpu_discovered;
 	  
 	  if (verboseDepth >= 0) {
-	    cout << "Discovering vector " << kappa +1 << "/" << d << endl;
+	    cout << "Discovering vector " << kappa +2 << "/" << d << endl;
 	    cout << "     Phase-: " << cpu_discovered << endl;
 	    cout << "     Total: " << cpu_tot << endl;
 	  }
@@ -160,7 +160,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	
 	    cout << " **** #tests = " << nblov << " **** Anomaly: the norm increases for kappa = " << kappa << endl;
 	    
-	    verboseDepth+=1; 
+	    //verboseDepth+=1; 
 	    return -1;
 	  }
 
@@ -211,7 +211,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
     } // End main LLL loop 
   
-  verboseDepth+=1;
+  //verboseDepth+=1;
   return 0;
   
 };
@@ -267,11 +267,19 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
   
   householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
 
+
+  FP_NR<FT> theta,eps;
+  
+
   int bdim,ld,tdig,indexdec;
   
   while (nonstop) {  // LOOP COLUMN CONVERGENCE
 
-    
+    // Jeu 12 mai 2016 12:55:13 CEST 
+    theta.sqrt(normB2[kappa]);
+    eps=0.00000000001; // To tune for theta depending on the precision
+    theta.mul(theta,eps);
+  
     w++;
 
     somedone = 0;
@@ -306,10 +314,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
       
       for (i=kappa-1-indexdec; i>=restdim; i--){
 	
-	vectx[i].div(tmpcolR[i],R.get(i,i));
+	vectx[i].div(tmpcolR[i],R.get(i,i)); // Faire après le test, pas besoin si bounded ?
 	
- 
-	qq.abs(vectx[i]);
+	qq.add(R.get(i,i),theta); // À optimiser 
+	qq.div(tmpcolR[i],qq);
+	qq.abs(qq);
+	//qq.abs(vectx[i]);
+	
 	if (qq.cmp(0.501) == 1) {
 	  bounded[i]=0;
 	  compteur +=1;
@@ -330,7 +341,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
       // --------------------------------
       for (i=kappa-1-indexdec; i>= restdim; i--){
 
-	vectx[i].rnd(vectx[i]);
+	vectx[i].rnd(vectx[i]); // Mettre que si bounded ci-dessous ? 
 	x=vectx[i]; 
 
 	//if (x.sgn() !=0) { 
@@ -656,9 +667,14 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
       	  FP_NR<FT> one;
       	  one = 1.0;
 	  
-      	  FP_NR<FT> theta;
-      	  theta = 0.0000001;
-      	  theta.mul(theta,R.get(kappa,kappa));
+      	  FP_NR<FT> theta,eps;
+      	  //theta = 0.0000001;
+      	  //theta.mul(theta,R.get(kappa,kappa));
+	  // Jeu 12 mai 2016 12:55:13 CEST - R.get(kappa,kappa) may not be relevant (no hoseholder_v) 
+	  theta.sqrt(normB2[kappa]);
+	  eps=0.00000000001; // To tune for theta depending on the precision
+	  theta.mul(theta,eps);
+
 	  
       	  FP_NR<FT> mu,mu_test;
 
@@ -669,11 +685,12 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
       	    mu_test.div(theta,R.get(i,i));
       	    mu_test.add(mu_test,one);
-
+	    mu_test.abs(mu_test); // Jeu 12 mai 2016 12:55:13 CEST 
+	    
       	    if (mu.cmp(mu_test) == 1) {
 	      
-      	      cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, kappa = " << kappa  << endl;
-      	      return -1;
+      	      cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, i = " << i << " ,kappa = " << kappa  << endl;
+	      return -1;
       	    }
 	    
       	  }
@@ -1330,6 +1347,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::shiftRT(long lsigma) {
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<ZT,FT, MatrixZT, MatrixFT>::isreduced(double deltain) {
 
+  verboseDepth-=1;
+  
   // We launch HLLL, "reduced" if no swap
   // ************************************
 
@@ -1539,6 +1558,8 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
 
   } // Was not reduced 
 
+  verboseDepth+=1;
+  
   setprec(oldprec);
 }
 
