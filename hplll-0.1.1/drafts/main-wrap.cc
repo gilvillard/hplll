@@ -39,6 +39,8 @@ using namespace hplll;
 template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
 lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) { 
 
+  verboseDepth-=1;
+  
   OMPTimer time,ttot,tinit,tsize,th,thlll;
   time.clear();
   ttot.clear();
@@ -54,7 +56,7 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
 
   ZZ_mat<ZT> B;
     
-  int d1=min(d,255);
+  int d1=min(d,8);
 
   // Initial reduction
   // -----------------
@@ -65,7 +67,7 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
     for (j=0; j<d1; j++)
       B.Set(i,j,A(i,j));
 
-  verboseDepth= 1;
+ 
   Lattice<ZT, FT,  MatrixZT, MatrixFT>  L(B,NO_TRANSFORM,reduction_method);
 
   time.start();
@@ -97,10 +99,12 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
     for (i=0; i<n; i++)
       B.Set(i,k-1,A(i,k-1));
 
-    if (verboseDepth > 0) 
+    if (verboseDepth >= 0) 
       cout << "Discovering+ vector " << k  << "/" << d << endl;
-     
-	    
+
+    // DBG Pb 442 
+    // if (k==442)
+    //   print2maple(B,n,k);
     
 
     // Size reduction of the last column
@@ -120,31 +124,31 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
       LR.hsizereduce(k-1);
     else 
       LR.seysenreduce(k-1);
-   
-    verboseDepth=1;
     
     time.stop();
     ttot+=time;
     time.start();
-    if (verboseDepth >0) 
+    if (verboseDepth >= 0) 
       cout << "     Size reduction: " << time << endl;
 
 
+    // Pb 442 
+    // if (k==442)
+    //   print2maple(LR.getbase(),n,k);
+    
     // Reduction with the last column 
     // ------------------------------
 
+    
     SLattice<ZT, FT,  MatrixZT, MatrixFT>  L(LR.getbase(),4,NO_TRANSFORM,reduction_method);
      
-
-    verboseDepth=0; 
     L.hlll(delta,4,4,1000000);
 
-    verboseDepth=1;
     time.stop();
 
     ttot+=time;
      
-    if (verboseDepth >0) {
+    if (verboseDepth >=0) {
       cout << "     Phase+: " << time << endl;
       cout << "     Total: " << ttot << endl;
     }
@@ -158,7 +162,7 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
     // ---------------------------
     // Lattice<ZT, FT,  MatrixZT, MatrixFT>  LH(B,NO_TRANSFORM,reduction_method);
 
-    // verboseDepth=0; 
+   
     // th.start();
     
     // LH.hlll(delta);
@@ -166,7 +170,7 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
     // th.stop();
     // thlll+=th;
     // cout << endl << "     hlll: " << th << endl << endl;
-    // verboseDepth=1; 
+   
     
   }
 
@@ -177,9 +181,9 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
   //cout << endl << endl << "lllw: " << tinit+ttot << endl; 
 
   //cout << endl << "hlll: " << tinit+thlll << endl << endl;
-  
-  return 0;
 
+  verboseDepth+=1;
+  return 0;
 
   } 
 
@@ -235,9 +239,11 @@ int main(int argc, char *argv[])  {
 
   Timer tw;
   tw.start();
-     
-  //lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,A,delta,SEYSEN_REDUCTION);
-  lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,delta,SEYSEN_REDUCTION);
+
+  verboseDepth=2;
+  
+  lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,A,delta,SEYSEN_REDUCTION);
+  //lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,delta,SEYSEN_REDUCTION);
 
   tw.stop();
   
@@ -264,13 +270,12 @@ int main(int argc, char *argv[])  {
 
    cout << endl << endl;
 
-   verboseDepth=0;
-   
+  
    Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
    Btest.isreduced(delta-0.1);
 
-   Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Ltest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-   Ltest.isreduced(delta-0.1);
+   //Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Ltest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+   //Ltest.isreduced(delta-0.1);
 
 
    //DBG ratio 

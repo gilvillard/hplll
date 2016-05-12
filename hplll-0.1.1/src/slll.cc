@@ -99,9 +99,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
   // Computed through size reduction afterwards
 
-  // DBG
-  //cout << "** 0" << endl;
-  
+    
   householder(dorigin); 
 
   FP_NR<FT> afmax;
@@ -110,13 +108,15 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
   for (i=dorigin; i < d; i++) 
     R.set(i,i,afmax);
 
-  //DBG
-  //cout << "** 1" << endl;
-    
-  for (iter=0; stop==0; iter++) {
-    //  for (iter=0; iter < 1; iter++) {
+  // For the gap detection
+  
+  FP_NR<FT>  qq;
+  FP_NR<FT>  eps;
+  eps=0.000000000001;
 
-	    
+  
+  for (iter=0; stop==0; iter++) {
+  	    
     stop=1;
        
 
@@ -126,9 +126,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     // The integer block lattice: truncation of the floating point R
     // 0 triangulaire ici car householder global
 
-    //DBG
-    //cout << "** iter: " << iter << "  *** A " << endl;
-   
+       
     set_f(RZ,R,condbits);
     
     for (i=1; i<d; i++)
@@ -141,40 +139,20 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
  
     for (i=0; i<d; i++)
       if (RZ(i,i).sgn() ==0) RZ(i,i)=1;
-    
+
+          
     // Even reductions
     // ***************
 
-    //DBG
-    //cout << "** iter: " << iter << "  *** B " << endl;
-    
+        
     setId(U_even); // Pas nécessaire pour even sans doute 
     phase_tests=0;
     
     //cout << endl <<  "--- Even reductions" << endl;
     time.start();
 
-
-    // DBG
-    // See the conditioning of the last block 
-    // {
-      
-    //   double t,u,v,w;  
-      
-    //   for  (int k=0; k<S; k++) { 
-	
-    // 	ratio<ZT>(getblock(RZ,k,k,S,0),t,u,v,w);
-
-    // 	if (t> 50.0) {
-    // 	  cout << endl << "----------- iter: " << iter << "    bloc: " << k << endl; 
-    // 	  cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-    // 	  cout << ".. Average diagonal ratio: " << u << endl;
-    // 	  cout << ".. Max diagonal ratio: " << v << endl;
-    // 	}
-    //   }
-    // }
-
-    
+    // Voir avec les threads 
+    verboseDepth-=1;
     
 #ifdef _OPENMP
 #pragma omp parallel for 
@@ -213,15 +191,12 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 #ifdef _OPENMP
 #pragma omp barrier 
 #endif
+    // Voir avec les threads 
+    verboseDepth+=1;
 
     for (k=0; k<S; k++) phase_tests+=lovtests[k];
 
-    //DBG
-    //cout << "** iter: " << iter << "  *** C " << endl;
-    
-    //DBG
-    //cout << "**** Even: " << phase_tests << "  vs " << S*(2*bdim-1) << endl; 
-      
+          
     time.stop();
     redtime+=time;
     eventime+=time; 
@@ -263,17 +238,33 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
       	hsizereduce(i);
       else 
 	seysenreduce(i);
-      
+
+     
       householder_v(i);
 
+      // Gap detection is a e.g. small vector has been found
+      // ---------------------------------------------------
+      
+      if ((i >= 2) && (i<dorigin-1)) {
+	  qq.div(R.get(i,i),R.get(i-1,i-1));
+	  qq.abs(qq);
+	  
+	  if (eps.cmp(qq) == 1) {
+	    cout << " **** Anomaly gap detection, column: " << i+1 << "/" << dorigin << "    Ratio = ";
+	    hplllprint(qq); 	cout << endl;
+	    if ((i+1)%(2*bdim) == 1)
+	      cout << "      At the beginning of even block " << (i+1)/(2*bdim)+1 << endl;
+
+	    return i;
+	     
+	  }
+	}
+      
     }
 
     for (i=dorigin; i < d; i++) 
       R.set(i,i,afmax);
     
-
-    //DBG
-    //cout << "** iter: " << iter << "  *** D " << endl;
     
     // Odd reductions
     // **************
@@ -292,16 +283,16 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
       for (j=0;j<i;j++)
 	RZ(i,j)=0;
     
-    // DBG
+    // PATCH 
     for (i=0; i<d; i++)
       if (RZ(i,i).sgn() ==0) RZ(i,i)=1;
-    
-    //DBG
-    //cout << "** iter: " << iter << "  *** E " << endl;
-    
+
     time.start();
 
     //cout << endl <<  "--- Odd reductions" << endl;
+
+    // Voir avec les threads 
+    verboseDepth-=1;
     
 #ifdef _OPENMP
 #pragma omp parallel for 
@@ -323,14 +314,12 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
       	  
     }
 
+    // Voir avec les threads 
+    verboseDepth+=1;
+    
     for (k=0; k<S-1; k++) phase_tests+=lovtests[k];
 
-    //DBG
-    //cout << "**** Odd: " << phase_tests << "  vs " << (S-1)*(2*bdim-1) << endl; 
-      
-   //DBG
-    //cout << "** iter: " << iter << "  *** F " << endl;
-    
+              
     time.stop();
     redtime+=time; 
     oddtime+=time; 
@@ -348,10 +337,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     
     time.stop();
     prodtime2+=time;
-    
-    //DBG
-    //cout << "** iter: " << iter << "  *** G " << endl;
-    
+
+        
     // Odd size reduction
     // ******************
     
@@ -374,6 +361,23 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
       
       householder_v(i);
 
+      // Gap detection is a e.g. small vector has been found
+      // ---------------------------------------------------
+      
+      if ((i >= 2) && (i<dorigin-1)) {
+	  qq.div(R.get(i,i),R.get(i-1,i-1));
+	  qq.abs(qq);
+	  
+	  if (eps.cmp(qq) == 1) {
+	    cout << " **** Anomaly gap detection, column: " << i+1 << "/" << dorigin  << "    Ratio = ";
+	    hplllprint(qq); 	cout << endl;
+	    if ((i+1-bdim)%(2*bdim) == 1)
+	      cout << "      At the beginning of odd block " << (i+1-bdim)/(2*bdim)+1 << endl; 
+
+	    return i;
+	  }
+	}
+            
     }
 
     for (i=dorigin; i < d; i++) 
@@ -386,10 +390,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
     
   totime.stop();
-  
-  //DBG
-  //cout << "** iter: " << iter << "  *** H " << endl;
-  
+
+    
   // cout << endl;
   // //cout << " Householder: " << qrtime << endl;
   // //cout << " Re-ortho: " << orthotime  << endl;
@@ -426,13 +428,13 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) { 
 
-      
+  
   nmaxkappa=structure[kappa]+1;
 
   FP_NR<FT> approx;
   approx=0.01;
    
-  FP_NR<FT>  qq;
+  
   
   FP_NR<FT> x,t,tmpfp;
   Z_NR<ZT>  xz,tmpz;
@@ -462,11 +464,19 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
   
   householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
 
+  FP_NR<FT> theta,eps,qq;
+  eps=0.00000000001; // To tune for theta depending on the precision
+ 
+ 
   int bdim,ld,tdig,indexdec;
   
   while (nonstop) {  // LOOP COLUMN CONVERGENCE
 
     
+     // Jeu 12 mai 2016 12:55:13 CEST 
+    theta.sqrt(normB2[kappa]);
+    theta.mul(theta,eps);
+
     w++;
 
     somedone = 0;
@@ -500,13 +510,17 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 	
       for (i=kappa-1-indexdec; i>=restdim; i--){
+
 	
-	vectx[i].div(tmpcolR[i],R.get(i,i));
+	vectx[i].div(tmpcolR[i],R.get(i,i)); // Faire après le test, pas besoin si bounded ?
 	
- 
+	qq.add(R.get(i,i),theta); // À optimiser 
+	qq.div(tmpcolR[i],qq);
+	qq.abs(qq);
+	//qq.abs(vectx[i]);
+	
 	qq.abs(vectx[i]);
 	if (qq.cmp(0.501) == 1) bounded[i]=0; else bounded[i]=1;
-
 	
 	
 	// Faire une opération vectorielle 
@@ -526,7 +540,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 	//if (x.sgn() !=0) { 
 	if (bounded[i]==0) {
-	  
+
+	  	
 	  lx = x.get_si_exp(expo);
 
 	  nmax=structure[i]+1;
@@ -677,7 +692,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
   FP_NR<FT> approx;
   
-  approx=0.1;
+  approx=0.001;
 
 
   FP_NR<FT> t,tmpfp;
@@ -856,9 +871,14 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
       	  FP_NR<FT> one;
       	  one = 1.0;
 	  
-      	  FP_NR<FT> theta;
-      	  theta = 0.0000001;
-      	  theta.mul(theta,R.get(kappa,kappa));
+	  FP_NR<FT> theta,eps;
+      	  //theta = 0.0000001;
+      	  //theta.mul(theta,R.get(kappa,kappa));
+	  // Jeu 12 mai 2016 12:55:13 CEST - R.get(kappa,kappa) may not be relevant (no hoseholder_v) 
+	  theta.sqrt(normB2[kappa]);
+	  eps=0.00000000001; // To tune for theta depending on the precision
+	  theta.mul(theta,eps);
+	  
 	  
       	  FP_NR<FT> mu,mu_test;
 
@@ -869,6 +889,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
       	    mu_test.div(theta,R.get(i,i));
       	    mu_test.add(mu_test,one);
+	    mu_test.abs(mu_test); // Jeu 12 mai 2016 12:55:13 CEST
 
       	    if (mu.cmp(mu_test) == 1) {
 	      

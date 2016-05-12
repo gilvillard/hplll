@@ -107,7 +107,6 @@ namespace hplll {
       }
       
       def = min(0,def+lshift);
-
      
       // Voir à optimiser la fonction
       // Faire pour 128 bits

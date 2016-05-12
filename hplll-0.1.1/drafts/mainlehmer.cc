@@ -61,8 +61,10 @@ int main(int argc, char *argv[])  {
   Timer tleh;
   tleh.start();
 
-  lehmer_lll<dpe_t, MatrixPE<double, dpe_t> > (C, A, delta, 0);
-  
+  verboseDepth=1;
+  //lehmer_lll<long,dpe_t, MatrixPE<double, dpe_t> > (C, A, delta, 20);
+  lehmer_lll<long, double, matrix<FP_NR<double> > > (C, A, delta, 40);
+    
   tleh.stop();
   
   cout << endl << "Lehmer: " << tleh << endl;  
@@ -98,14 +100,14 @@ int main(int argc, char *argv[])  {
    
 
    //DBG ratio 
-   double t,u,v,w;
+   // double t,u,v,w;
 
-   ratio<ZT>(C,t,u,v,w);
+   // ratio<ZT>(C,t,u,v,w);
    
-   cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-   cout << ".. Average diagonal ratio: " << u << endl;
-   cout << ".. Max diagonal ratio: " << v << endl;
-   cout << ".. First vector quality: " << w << endl;
+   // cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+   // cout << ".. Average diagonal ratio: " << u << endl;
+   // cout << ".. Max diagonal ratio: " << v << endl;
+   // cout << ".. First vector quality: " << w << endl;
 
    cout << "-----------------------" << endl;
 
