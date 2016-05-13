@@ -56,7 +56,7 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
 
   ZZ_mat<ZT> B;
     
-  int d1=min(d,8);
+  int d1=min(d,440);
 
   // Initial reduction
   // -----------------
@@ -87,21 +87,21 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
   // -----------------------------------------------
   
   for (k = d1+1; k<=d; k++) {    // Real dims (not indices) 
-
+      
     time.start();
-   
+    
     B.resize(n,k);
-
+    
     for (i=0; i<n; i++)
       for (j=0; j<k-1; j++)
 	B.Set(i,j,C(i,j));
-
+    
     for (i=0; i<n; i++)
       B.Set(i,k-1,A(i,k-1));
-
+    
     if (verboseDepth >= 0) 
       cout << "Discovering+ vector " << k  << "/" << d << endl;
-
+    
     // DBG Pb 442 
     // if (k==442)
     //   print2maple(B,n,k);
@@ -116,8 +116,8 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
     LR.householder_v(0);
     
     for (i=1; i<k-1; i++) {
-       LR.householder_r(i);
-       LR.householder_v(i);
+      LR.householder_r(i);
+      LR.householder_v(i);
     }
 
     if (reduction_method < 1) 
@@ -139,10 +139,11 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
     // Reduction with the last column 
     // ------------------------------
 
+    int gap_status;
     
     SLattice<ZT, FT,  MatrixZT, MatrixFT>  L(LR.getbase(),4,NO_TRANSFORM,reduction_method);
      
-    L.hlll(delta,4,4,1000000);
+    gap_status=L.hlll(delta,4,4,1000000);
 
     time.stop();
 
@@ -153,7 +154,6 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
       cout << "     Total: " << ttot << endl;
     }
    
-    
     
     C=L.getbase();
 
@@ -170,9 +170,19 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
     // th.stop();
     // thlll+=th;
     // cout << endl << "     hlll: " << th << endl << endl;
-   
+
+    if (gap_status >=2) {
+
+      cout << endl; 
+      cout << "Initial reduction: " << tinit << endl;
+      cout << "Segment reduction: " << ttot << endl;
+      
+      verboseDepth+=1;
+      return gap_status; 
+    }
     
-  }
+  } // End loop on extra columns 
+  
 
   cout << endl; 
   cout << "Initial reduction: " << tinit << endl;
@@ -229,22 +239,67 @@ int main(int argc, char *argv[])  {
   command_line_basis(A0, n, d, delta, argc, argv);
 
   // Attention en 128 bits, mpfr get_si pas autrement 
-  matrix_cast(A,A0);
+  //matrix_cast(A,A0);  // temporaire avec ci-dessous
+
+  // Transposition temporaire pb 442 - 512 mai 2016
+  int tt;
+  tt=n;
+  n=d;
+  d=tt;
+  
+  A.resize(n,d);
+  
+  transpose(A,A0);
+
   
   // With the wrapper
   // ----------------
   
   ZZ_mat<ZT> C; 
-  
 
+  ZZ_mat<ZT> T; 
+  T.resize(n,d);
+    
   Timer tw;
   tw.start();
 
   verboseDepth=2;
-  
-  lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,A,delta,SEYSEN_REDUCTION);
-  //lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,delta,SEYSEN_REDUCTION);
 
+  int gap_status=0;
+
+  for (int i=0; i<n; i++)
+    for (int j=0; j<d; j++)
+      T(i,j)=A(i,j);
+  
+  // Loop to do on gap status
+  // ------------------------
+  
+  gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,delta,SEYSEN_REDUCTION);
+
+  if (gap_status >=2) {
+
+    for (int i=0; i<n; i++)
+	T(i,0)=C(i,gap_status-1);
+
+    for (int i=0; i<n; i++)
+      for (int j=0; j < gap_status-1; j++)
+	T(i,j+1)=C(i,j);
+     
+    for (int i=0; i<n; i++)
+      for (int j=gap_status; j<d; j++)
+	T(i,j)=C(i,j);
+
+    ZZ_mat<ZT> TT; 
+    TT.resize(d,n);
+
+    transpose(TT,T);
+
+    cout << TT << endl; 
+  
+    gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,delta,SEYSEN_REDUCTION);
+    
+  }
+  
   tw.stop();
   
   //cout << endl << "lllw: " << tw << endl; // cf bout de hlll aussi pour l'instant 

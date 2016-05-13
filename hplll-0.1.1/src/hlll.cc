@@ -80,12 +80,14 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
   while ((kappa < kappa_max) && (nblov < nblov_max)) 
     {
 
+     
       if (verboseDepth >= 0) {
 	if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
       }
       
       if (kappa == 1) { 
 	for (i=0; i<d; i++) kappamin[i]=min(kappamin[i],0);
+ 
 	householder_r(0);  
 	householder_v(0);
 	
@@ -138,7 +140,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	  cpu_tot+=cpu_discovered;
 	  
 	  if (verboseDepth >= 0) {
-	    cout << "Discovering vector " << kappa +2 << "/" << d << endl;
+	    if (kappa < d-1) cout << "Discovering vector " << kappa +2 << "/" << d << endl;
+	    else cout << endl; 
 	    cout << "     Phase-: " << cpu_discovered << endl;
 	    cout << "     Total: " << cpu_tot << endl;
 	  }
@@ -231,7 +234,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) { 
 
-        
+  
   nmaxkappa=structure[kappa]+1;
 
   FP_NR<FT> approx;
@@ -275,6 +278,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
   
   while (nonstop) {  // LOOP COLUMN CONVERGENCE
 
+  
+  
     // Jeu 12 mai 2016 12:55:13 CEST 
     theta.sqrt(normB2[kappa]);
     eps=0.00000000001; // To tune for theta depending on the precision
@@ -315,8 +320,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
       for (i=kappa-1-indexdec; i>=restdim; i--){
 	
 	vectx[i].div(tmpcolR[i],R.get(i,i)); // Faire après le test, pas besoin si bounded ?
-	
-	qq.add(R.get(i,i),theta); // À optimiser 
+
+	qq.abs(R.get(i,i)); 
+	qq.add(qq,theta); // À optimiser 
 	qq.div(tmpcolR[i],qq);
 	qq.abs(qq);
 	//qq.abs(vectx[i]);
@@ -327,9 +333,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	}
 	else bounded[i]=1;
 
-	//if (compteur > 20) cout << "***** " << compteur << "  " << kappa << endl; 
-	
-	
+		
 	// Faire une opération vectorielle 
 	for (k=restdim; k<i; k++) 
 	  tmpcolR[k].submul(R.get(k,i),vectx[i]);
@@ -344,9 +348,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	vectx[i].rnd(vectx[i]); // Mettre que si bounded ci-dessous ? 
 	x=vectx[i]; 
 
-	//if (x.sgn() !=0) { 
 	if (bounded[i]==0) {
-	  
+
 	  lx = x.get_si_exp(expo);
 
 	  nmax=structure[i]+1;
@@ -684,8 +687,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
       	    mu.abs(mu);
 
       	    mu_test.div(theta,R.get(i,i));
-      	    mu_test.add(mu_test,one);
 	    mu_test.abs(mu_test); // Jeu 12 mai 2016 12:55:13 CEST 
+      	    mu_test.add(mu_test,one);
 	    
       	    if (mu.cmp(mu_test) == 1) {
 	      
@@ -1348,6 +1351,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::shiftRT(long lsigma) {
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<ZT,FT, MatrixZT, MatrixFT>::isreduced(double deltain) {
 
   verboseDepth-=1;
+
+  cout << endl << "Testing reduction" << endl;
   
   // We launch HLLL, "reduced" if no swap
   // ************************************
@@ -1389,7 +1394,7 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
 
     if (s < delta) delta=s;
   }
-  cout << endl;
+  
   cout << "n = "<< n << endl;
   cout << "d = "<< d << endl;
   cout << "(Householder) delta is about "; 
