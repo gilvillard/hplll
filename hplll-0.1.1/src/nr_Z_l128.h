@@ -231,10 +231,10 @@ inline void Z_NR<__int128_t>::sub(const Z_NR<__int128_t>& a, const Z_NR<__int128
 /*   data = a.data - b; */
 /* } */
 
-/* template<> */
-/* inline void Z_NR<long>::neg(const Z_NR<long>& a) { */
-/*   data = -a.data; */
-/* } */
+template<> 
+inline void Z_NR<__int128_t>::neg(const Z_NR<__int128_t>& a) { 
+  data = -a.data; 
+} 
 
 template<>
 inline void Z_NR<__int128_t>::mul(const Z_NR<__int128_t>& a, const Z_NR<__int128_t>& b) {
@@ -296,8 +296,9 @@ inline void Z_NR<__int128_t>::submul(const Z_NR<__int128_t>& a, const Z_NR<__int
 
 /* template<> */
 /* inline void Z_NR<long>::abs(const Z_NR<long>& a) { */
-/*   data = labs(a.data); */
+/*   data = labs(a.data);  ==> error Ven 13 mai 2016 18:34:13 CEST  with data = abs(a.data); __int128_t ??? */
 /* } */
+
 
 /* template<> */
 /* inline void Z_NR<long>::swap(Z_NR<long>& a) { */

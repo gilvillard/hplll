@@ -113,9 +113,9 @@ namespace hplll {
 
       
       
-      lift_truncate(Ct, C, def, 48); // Régler >= lshift 
+      lift_truncate(Ct, C, def, 40); // Régler >= lshift 
 
-      print2maple(Ct,n,d);
+      //print2maple(Ct,n,d);
 
       B.assign(Ct);
       

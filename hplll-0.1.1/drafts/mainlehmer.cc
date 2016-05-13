@@ -63,7 +63,8 @@ int main(int argc, char *argv[])  {
 
   verboseDepth=1;
   //lehmer_lll<long,dpe_t, MatrixPE<double, dpe_t> > (C, A, delta, 20);
-  lehmer_lll<long, double, matrix<FP_NR<double> > > (C, A, delta, 40);
+  //lehmer_lll<__int128_t, double, matrix<FP_NR<double> > > (C, A, delta, 30);
+  lehmer_lll<long, double, matrix<FP_NR<double> > > (C, A, delta, 30);
     
   tleh.stop();
   

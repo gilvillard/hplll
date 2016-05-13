@@ -1742,6 +1742,8 @@ void lift_truncate(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long def, long bits) {
 
  };
   
+// 128 TODO
+
 // LONG 
 void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
 
@@ -1753,6 +1755,7 @@ void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
 
    ZZ_mat<mpz_t> C;
    C.resize(n,d);
+
    
    for (j=0; j<d; j++) 
      C(0,j).mul_2si(A(0,j),def);
@@ -1763,7 +1766,7 @@ void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
 
    
    // Min max norms of the columns 
-   int mmax,mmin;
+   int mmax,mmin,maxloc;
   
    Z_NR<mpz_t> t;
 
@@ -1775,30 +1778,38 @@ void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
    mmin=mmax;
 
    for (j=1; j<d ; j++) { 
-     mmax=0;
+     maxloc=0;
      for (i=0; i<n; i++) { 
        t.abs(C(i,j));
-       mmax=max(mmax,size_in_bits(t));
+       maxloc=max(maxloc,size_in_bits(t));
      }
-     mmin = min(mmin, mmax);
+     mmin = min(mmin, maxloc);
+     mmax = max(mmin, maxloc);
    }
 
    // Truncation 
 
    if (mmin > bits) {
-     long s= - (mmin - bits);
+     long s= bits - mmin; 
 
      for (i=0; i<n; i++)
        for (j=0; j<d; j++) 
 	 C(i,j).mul_2si(C(i,j),s);
    }
 
+
+   // !!! One should check for max bit sizes now : less than long ?
+   cout << "****** " << mmax + bits -mmin << endl;
+   
+   // Conversion to long
+   
    for (i=0; i<n; i++)
      for (j=0; j<d; j++)
        C_out(i,j)=mpz_get_si(C(i,j).getData());
 
 }; 
 
+ 
 // ********************************************************************
 // 
 //       TRUNCATION OF A BASIS for lift, lehmer, nullspace, L1
