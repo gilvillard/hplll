@@ -37,7 +37,7 @@ using namespace hplll;
 
   
 template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
-lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) { 
+lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reduction_method=0) { 
 
   verboseDepth-=1;
   
@@ -56,7 +56,7 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, double delta, int reduction_method=0) {
 
   ZZ_mat<ZT> B;
     
-  int d1=min(d,440);
+  int d1=min(d,dthreshold);
 
   // Initial reduction
   // -----------------
@@ -239,17 +239,17 @@ int main(int argc, char *argv[])  {
   command_line_basis(A0, n, d, delta, argc, argv);
 
   // Attention en 128 bits, mpfr get_si pas autrement 
-  //matrix_cast(A,A0);  // temporaire avec ci-dessous
+  matrix_cast(A,A0);  // temporaire avec ci-dessous
 
   // Transposition temporaire pb 442 - 512 mai 2016
-  int tt;
-  tt=n;
-  n=d;
-  d=tt;
+  // int tt;
+  // tt=n;
+  // n=d;
+  // d=tt;
   
-  A.resize(n,d);
+  // A.resize(n,d);
   
-  transpose(A,A0);
+  // transpose(A,A0);
 
   
   // With the wrapper
@@ -274,15 +274,33 @@ int main(int argc, char *argv[])  {
   // Loop to do on gap status
   // ------------------------
   
-  gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,delta,SEYSEN_REDUCTION);
+   gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,440,delta,SEYSEN_REDUCTION);
+  //gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,10,delta,DEF_REDUCTION);
 
-  if (gap_status >=2) {
+   while (gap_status >=2) {
+     //if (gap_status >=2) {
 
-    for (int i=0; i<n; i++)
-      for (int j=0; j<d-1; j++)
-	T(i,j+1)=C(i,j);
-    
-    gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,delta,SEYSEN_REDUCTION);
+     // Rotation
+     // --------
+     // for (int i=0; i<n; i++)
+     // 	T(i,0)=C(i,gap_status-1);
+     
+     // for (int i=0; i<n; i++)
+     //   for (int j=0; j < gap_status-1; j++)
+     // 	T(i,j+1)=C(i,j);
+     
+     // for (int i=0; i<n; i++)
+     //   for (int j=gap_status; j<d; j++)
+     // 	T(i,j)=C(i,j);
+
+     // Without rotation
+     // ----------------
+     
+     for (int i=0; i<n; i++)
+       for (int j=0; j < d; j++)
+     	 T(i,j)=C(i,j);
+  
+    gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,gap_status,delta,SEYSEN_REDUCTION);
     
   }
   
@@ -290,17 +308,20 @@ int main(int argc, char *argv[])  {
   
   //cout << endl << "lllw: " << tw << endl; // cf bout de hlll aussi pour l'instant 
 
+  cout << "Transposed result" << endl;
+
+  cout << transpose(C) << endl; 
   
    // With hlll
    // ---------
 
   verboseDepth=0;
    
-   Lattice<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
+   Lattice<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > L(A,NO_TRANSFORM,SEYSEN_REDUCTION);
    
    Timer tl;
    tl.start();
-   //L.hlll(delta);
+   // L.hlll(delta);
    tl.stop();
 
   

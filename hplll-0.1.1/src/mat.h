@@ -1416,6 +1416,25 @@ template<class T> void transpose(Matrix<T>& B, Matrix<T> A)
 
 };
 
+ template<class T> Matrix<T> transpose(Matrix<T> A) 
+{
+
+  int m,n,i,j;
+
+  m= A.GetNumRows();
+  n= A.GetNumCols();
+
+  Matrix<T> B;
+  B.resize(n,m);
+  
+  for (i=0; i<m; i++)
+    for (j=0; j<n; j++)
+      B.Set(j,i,A(i,j));
+
+  return B;
+
+};
+
 template<class T> void print2maple(Matrix<T> B, int n, int d) 
   { 
   // Stockage en lignes 

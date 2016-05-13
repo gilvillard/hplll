@@ -255,7 +255,15 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 	    if ((i+1)%(2*bdim) == 1)
 	      cout << "      At the beginning of even block " << (i+1)/(2*bdim)+1 << endl;
 
-	    return i;
+
+	    // // DBG
+
+	    // for (int k=0; k<=i; k++) {
+	    //   cout << "k = " << k << "   "; hplllprint(normB2[k]); cout << "    ";  hplllprint(R.get(k,k)); cout << endl;
+	    // }
+	    
+	    verboseDepth+=1;
+	    return i+1; // Math column index 
 	     
 	  }
 	}
@@ -374,7 +382,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 	    if ((i+1-bdim)%(2*bdim) == 1)
 	      cout << "      At the beginning of odd block " << (i+1-bdim)/(2*bdim)+1 << endl; 
 
-	    return i;
+	    verboseDepth+=1;
+	    return i; // Math column index
 	  }
 	}
             
@@ -513,8 +522,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 	
 	vectx[i].div(tmpcolR[i],R.get(i,i)); // Faire après le test, pas besoin si bounded ?
-	
-	qq.add(R.get(i,i),theta); // À optimiser 
+
+	qq.abs(R.get(i,i)); 
+	qq.add(qq,theta); // À optimiser
 	qq.div(tmpcolR[i],qq);
 	qq.abs(qq);
 	//qq.abs(vectx[i]);
@@ -888,8 +898,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
       	    mu.abs(mu);
 
       	    mu_test.div(theta,R.get(i,i));
-      	    mu_test.add(mu_test,one);
 	    mu_test.abs(mu_test); // Jeu 12 mai 2016 12:55:13 CEST
+      	    mu_test.add(mu_test,one);
+	    
 
       	    if (mu.cmp(mu_test) == 1) {
 	      
