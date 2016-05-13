@@ -21,183 +21,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
-#include "hlll.h"
-#include "matgen.h"
+#include "hplll.h"
 
-#include "slll.h"
 
 using namespace hplll; 
 
-/* ***********************************************
 
-        Wrapper for using slll  
-
-   ********************************************** */
-
-
-  
-template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
-lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reduction_method=0) { 
-
-  verboseDepth-=1;
-  
-  OMPTimer time,ttot,tinit,tsize,th,thlll;
-  time.clear();
-  ttot.clear();
-  tinit.clear();
-  tsize.clear();
-  th.clear();
-  thlll.clear();
-  
-  int i,j,k;
-
-  int n=A.getRows();
-  int d=A.getCols();
-
-  ZZ_mat<ZT> B;
-    
-  int d1=min(d,dthreshold);
-
-  // Initial reduction
-  // -----------------
-  
-  B.resize(n,d1);
-
-  for (i=0; i<n; i++)
-    for (j=0; j<d1; j++)
-      B.Set(i,j,A(i,j));
-
- 
-  Lattice<ZT, FT,  MatrixZT, MatrixFT>  L(B,NO_TRANSFORM,reduction_method);
-
-  time.start();
-
-  L.hlll(delta);
-  
-  time.stop();
-  tinit+=time;
-  
-  C=L.getbase();
-
-  cout << endl << "Initial  time: " << tinit << endl << endl;
-
-  ttot+=tinit;
-  
-  // Rest of the reductions, one dimension at a time
-  // -----------------------------------------------
-  
-  for (k = d1+1; k<=d; k++) {    // Real dims (not indices) 
-      
-    time.start();
-    
-    B.resize(n,k);
-    
-    for (i=0; i<n; i++)
-      for (j=0; j<k-1; j++)
-	B.Set(i,j,C(i,j));
-    
-    for (i=0; i<n; i++)
-      B.Set(i,k-1,A(i,k-1));
-    
-    if (verboseDepth >= 0) 
-      cout << "Discovering+ vector " << k  << "/" << d << endl;
-    
-    // DBG Pb 442 
-    // if (k==442)
-    //   print2maple(B,n,k);
-    
-
-    // Size reduction of the last column
-    // ---------------------------------
-    
-    Lattice<ZT, FT,  MatrixZT, MatrixFT>  LR(B,NO_TRANSFORM,reduction_method);
-
-    LR.householder_r(0);
-    LR.householder_v(0);
-    
-    for (i=1; i<k-1; i++) {
-      LR.householder_r(i);
-      LR.householder_v(i);
-    }
-
-    if (reduction_method < 1) 
-      LR.hsizereduce(k-1);
-    else 
-      LR.seysenreduce(k-1);
-    
-    time.stop();
-    ttot+=time;
-    time.start();
-    if (verboseDepth >= 0) 
-      cout << "     Size reduction: " << time << endl;
-
-
-    // Pb 442 
-    // if (k==442)
-    //   print2maple(LR.getbase(),n,k);
-    
-    // Reduction with the last column 
-    // ------------------------------
-
-    int gap_status;
-    
-    SLattice<ZT, FT,  MatrixZT, MatrixFT>  L(LR.getbase(),4,NO_TRANSFORM,reduction_method);
-     
-    gap_status=L.hlll(delta,4,4,1000000);
-
-    time.stop();
-
-    ttot+=time;
-     
-    if (verboseDepth >=0) {
-      cout << "     Phase+: " << time << endl;
-      cout << "     Total: " << ttot << endl;
-    }
-   
-    
-    C=L.getbase();
-
-    
-    // Pour comparaison avec hplll
-    // ---------------------------
-    // Lattice<ZT, FT,  MatrixZT, MatrixFT>  LH(B,NO_TRANSFORM,reduction_method);
-
-   
-    // th.start();
-    
-    // LH.hlll(delta);
-
-    // th.stop();
-    // thlll+=th;
-    // cout << endl << "     hlll: " << th << endl << endl;
-
-    if (gap_status >=2) {
-
-      cout << endl; 
-      cout << "Initial reduction: " << tinit << endl;
-      cout << "Segment reduction: " << ttot << endl;
-      
-      verboseDepth+=1;
-      return gap_status; 
-    }
-    
-  } // End loop on extra columns 
-  
-
-  cout << endl; 
-  cout << "Initial reduction: " << tinit << endl;
-  cout << "Segment reduction: " << ttot << endl;
-
-  //cout << endl << endl << "lllw: " << tinit+ttot << endl; 
-
-  //cout << endl << "hlll: " << tinit+thlll << endl << endl;
-
-  verboseDepth+=1;
-  return 0;
-
-  } 
-
-    
 /* ***********************************************
 
           MAIN   
@@ -208,155 +37,62 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reductio
 
 int main(int argc, char *argv[])  {
 
-  typedef mpz_t  ZT;
-  //typedef long ZT;
+  typedef __int128_t ZT;
 
-  ZZ_mat<mpz_t> A0; // For hpLLL
+  Z_NR<mpz_t> a,b;
+
+  a=25443;
+  a.mul(a,a);
+  a.mul(a,a);
+  a.mul(a,a);   // 175608908455044406357860029088740001   size: 117
+
+  cout << "a: " << a << "   size: " << size_in_bits(a) << endl;
+
+  b=232;
+  b.mul(b,b);
+  b.mul(b,b);
+  b.mul(b,b);
+  b.mul(b,b);
+  b.neg(b);     // -70438120351099559671412028074440523776   size: 125
   
-  ZZ_mat<ZT> A; // For hpLLL 
+  cout << "b: " << b << "   size: " << size_in_bits(b) << endl;
 
-  ZZ_mat<ZT> AT;  // fpLLL
- 
-  // ---------------------------------------------------------------------
-   
-  int d=8;
-  int n;
+  // MPZ to 128
   
-  //int nbbits=8;
-  //double alpha;
-  //int output;
+  char str[sizeof(__int128_t)+4];
+
+  mpz_get_str (str, 10, b.getData());
+
+  cout << "str " << str << endl;
+
+  std::string str_dec = str;
   
-  double delta = 0.99;
+  //std::string str_hex = "40c3";
+  //std::string str_bin = "-10010110001";
+  //std::string str_auto = "0x7f";
 
-  //int m=1;
+  std::string::size_type sz;   // alias of size_t
+
+  __int128_t c;
   
-  //int lovmax=1000000;
+  c = std::stoi (str,&sz);
 
-  int S=4;  // Rajouter à commandline 
 
-  int nbthreads=4;
+ //  int print_uint128(uint128_t n) {
+//   if (n == 0)  return printf("0\n");
 
-  command_line_basis(A0, n, d, delta, argc, argv);
+//   char str[40] = {0}; log10(1 << 128) + '\0'
+//   char *s = str + sizeof(str) - 1; start at the end
+//   while (n != 0) {
+//     if (s == str) return -1; never happens
 
-  // Attention en 128 bits, mpfr get_si pas autrement 
-  matrix_cast(A,A0);  // temporaire avec ci-dessous
-
-  // Transposition temporaire pb 442 - 512 mai 2016
-  // int tt;
-  // tt=n;
-  // n=d;
-  // d=tt;
+//     *--s = "0123456789"[n % 10]; save last digit
+//     n /= 10;                     drop it
+//   }
+//   return printf("%s\n", s);
+// }
   
-  // A.resize(n,d);
+  // 128 to mpz via  mpz_set_str ds nr-ld 
   
-  // transpose(A,A0);
-
-  
-  // With the wrapper
-  // ----------------
-  
-  ZZ_mat<ZT> C; 
-
-  ZZ_mat<ZT> T; 
-  T.resize(n,d);
-    
-  Timer tw;
-  tw.start();
-
-  verboseDepth=2;
-
-  int gap_status=0;
-
-  for (int i=0; i<n; i++)
-    for (int j=0; j<d; j++)
-      T(i,j)=A(i,j);
-  
-  // Loop to do on gap status
-  // ------------------------
-  
-   gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,440,delta,SEYSEN_REDUCTION);
-  //gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,10,delta,DEF_REDUCTION);
-
-   while (gap_status >=2) {
-     //if (gap_status >=2) {
-
-     // Rotation
-     // --------
-     // for (int i=0; i<n; i++)
-     // 	T(i,0)=C(i,gap_status-1);
-     
-     // for (int i=0; i<n; i++)
-     //   for (int j=0; j < gap_status-1; j++)
-     // 	T(i,j+1)=C(i,j);
-     
-     // for (int i=0; i<n; i++)
-     //   for (int j=gap_status; j<d; j++)
-     // 	T(i,j)=C(i,j);
-
-     // Without rotation
-     // ----------------
-     
-     for (int i=0; i<n; i++)
-       for (int j=0; j < d; j++)
-     	 T(i,j)=C(i,j);
-  
-    gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,gap_status,delta,SEYSEN_REDUCTION);
-    
-  }
-  
-  tw.stop();
-  
-  //cout << endl << "lllw: " << tw << endl; // cf bout de hlll aussi pour l'instant 
-
-  cout << "Transposed result" << endl;
-
-  cout << transpose(C) << endl; 
-  
-   // With hlll
-   // ---------
-
-  verboseDepth=0;
-   
-   Lattice<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > L(A,NO_TRANSFORM,SEYSEN_REDUCTION);
-   
-   Timer tl;
-   tl.start();
-   // L.hlll(delta);
-   tl.stop();
-
-  
-   cout << endl << "hlll: " << tl << endl;
-
-   // Vertification
-   // -------------
-
-   cout << endl << endl;
-
-  
-   Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
-   Btest.isreduced(delta-0.1);
-
-   //Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Ltest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-   //Ltest.isreduced(delta-0.1);
-
-
-   //DBG ratio 
-   double t,u,v,w;
-
-   ratio<ZT>(C,t,u,v,w);
-   
-   cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-   cout << ".. Average diagonal ratio: " << u << endl;
-   cout << ".. Max diagonal ratio: " << v << endl;
-   cout << ".. First vector quality: " << w << endl;
-
-   cout << "-----------------------" << endl;
-
-   cout << "SLLL: " << tw << endl;
-   //tw.print(cout);
-   cout << "HLLL :" << tl << endl;
-   //tl.print(cout);  
-
-    
   return 0;
 }
