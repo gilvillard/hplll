@@ -52,6 +52,8 @@ namespace hplll {
   template<class ZT, class FT, class MatrixFT> int  
   lehmer_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, double delta, int lshift) { 
     
+    Timer time,ttrunc,tred,tmul,ttot;
+
     verboseDepth-=1;
 
      if (verboseDepth >=0) {
@@ -102,33 +104,65 @@ namespace hplll {
     
     while (def < 0) { 
 
+      
+
       if (verboseDepth >=0) {
 	cout << "Current default: " << def << endl;  
       }
       
+      // Truncation 
+      // ----------
+      time.start();
+
       def = min(0,def+lshift);
      
       // Voir à optimiser la fonction
       // Faire pour 128 bits
-
       
-      
-      lift_truncate(Ct, C, def, 40); // Régler >= lshift 
+      lift_truncate(Ct, C, def, 30); // Régler >= lshift 
 
-      //print2maple(Ct,n,d);
+      time.stop();
+      ttot+=time;
+      ttrunc+=time;
+
+
+      // Reduction 
+      // ---------
+      time.start();
 
       B.assign(Ct);
       
       B.hlll(0.99);
 
+      time.stop();
+      ttot+=time;
+      tred+=time;
+
+     
+      // Product
+      // -------
       // Open mp à faire
-      matprod_in_si(C,B.getU());
+      time.start();
+
+      matprod_in_int(C,B.getU());
       
+      time.stop();
+      ttot+=time;
+      tmul+=time;
+
     } // End Lehmer loop on the defect 
       
   } // End else lshift > 0 
     
     verboseDepth+=1;
+
+    cout << endl;
+    cout << "Total: " << ttot << endl;
+    cout << "   truncations: " << ttrunc << endl;
+    cout << "   reductions: " << tred << endl;
+    cout << "   products: " << tmul << endl;
+    
+
     return 0;
   }
 

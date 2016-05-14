@@ -1,7 +1,4 @@
-/* Sam 14 mai 2016 17:12:58 CEST
-
-With 64 bits long int 
-Conversions between mpz_t and __int128_t
+/* Integer matrix nullspace test file  
 
 Created Dim  7 avr 2013 16:54:03 CEST
 Copyright (C) 2013      Gilles Villard 
@@ -26,6 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "hplll.h"
 
+#include "../src/lehmer.cc"
 
 using namespace hplll; 
 
@@ -37,64 +35,89 @@ using namespace hplll;
    ********************************************** */
 
 
+
 int main(int argc, char *argv[])  {
 
- 
-  int status =0;
+  typedef mpz_t  ZT;
+  //typedef long ZT;
 
-  int k,i;
+  ZZ_mat<ZT> A; // For hpLLL 
 
-  for (i=1; i<1000; i++) {
-
-    // Positive 
-    for (k=1; k<=127; k++) {
-
-      Z_NR<mpz_t> a,b,one;
-      one = 1;
-
-      Z_NR<__int128_t> r,oone;
-      oone = 1;
-
-      a.randb(k);
-
-      mpz_set_128int(r,a); 
-
-      r.sub(r,oone);
-
-      mpz_get_128int(b,r);
-
-      a.sub(a,one);
-
-      status |= a.cmp(b); 
-
-    }
+  // ---------------------------------------------------------------------
+   
+  int d=8;
+  int n;
   
-    // Negative  
-    for (k=1; k<=127; k++) {
+  
+  double delta = 0.99;
 
-      Z_NR<mpz_t> a,b,one;
-      one = 1;
+  command_line_basis(A, n, d, delta, argc, argv);
 
-      Z_NR<__int128_t> r,oone;
-      oone = 1;
+  // Lehmer
+  // ------
+  
+  ZZ_mat<ZT> C; 
+  
+  Timer tleh;
+  tleh.start();
 
-      a.randb(k);
+  verboseDepth=1;
+  lehmer_lll<long,dpe_t, MatrixPE<double, dpe_t> > (C, A, delta, 10);
+  //lehmer_lll<__int128_t, double, matrix<FP_NR<double> > > (C, A, delta, 10);
+  //lehmer_lll<long, double, matrix<FP_NR<double> > > (C, A, delta, 20);
+  //lehmer_lll<mpz_t, double, matrix<FP_NR<double> > > (C, A, delta, 20);
 
-      a.neg(a);
+  tleh.stop();
+  
+  cout << endl << "Lehmer: " << tleh << endl;  
 
-      mpz_set_128int(r,a); 
+  
+   // With hlll
+   // ---------
 
-      r.add(r,oone);
+  verboseDepth=0;
+   
+  Lattice<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
+   
+  Timer tl;
+  tl.start();
+  //L.hlll(delta);
+  tl.stop();
 
-      mpz_get_128int(b,r);
+   cout << endl << "hlll: " << tl << endl;
 
-      a.add(a,one);
+   // Verification
+   // -------------
 
-      status |= a.cmp(b); 
+   cout << endl << endl;
+
+   verboseDepth=0;
+   
+   Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
+   Btest.isreduced(delta-0.1);
+
+   // Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Ltest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+   // Ltest.isreduced(delta-0.1);
 
    
-    }
-  } // i: nb of loop tests 
 
-  return status;
+   //DBG ratio 
+   // double t,u,v,w;
+
+   // ratio<ZT>(C,t,u,v,w);
+   
+   // cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+   // cout << ".. Average diagonal ratio: " << u << endl;
+   // cout << ".. Max diagonal ratio: " << v << endl;
+   // cout << ".. First vector quality: " << w << endl;
+
+   cout << "-----------------------" << endl;
+
+   cout << "Lehmer LLL: " << tleh << endl;
+   //tw.print(cout);
+   cout << "HLLL :" << tl << endl;
+   //tl.print(cout);  
+
+    
+  return 0;
 }

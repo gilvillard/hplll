@@ -1097,6 +1097,81 @@ template<class T> void matprod_in(Matrix<T>& C, Matrix<T> U)
       C(i,j)=tmat(i,j);
 };
 
+ inline void matprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> U)
+{
+
+  int m,n,i,j,k;
+
+  m= C.GetNumRows();
+  n= C.GetNumCols();
+
+  ZZ_mat<mpz_t> tmat;
+  tmat.resize(m,n);
+
+  for (i=0; i<m; i++) 
+    for (j=0; j<n; j++) {
+      tmat(i,j).mul(C(i,0),U(0,j));
+      for (k=1; k<n; k++) {
+	tmat(i,j).addmul(C(i,k),U(k,j));
+      }
+    }
+
+  for (i=0; i<m; i++) 
+    for (j=0; j<n; j++)
+      C(i,j)=tmat(i,j);
+};
+
+
+
+inline void matprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U) 
+{
+
+  int m,n,i,j,k;
+
+  m= C.GetNumRows();
+  n= C.GetNumCols();
+
+  Matrix<Z_NR<mpz_t> > tmat;
+  tmat.resize(m,n);
+
+  for (i=0; i<m; i++) 
+    for (j=0; j<n; j++) {
+      tmat(i,j).mul_si(C(i,0),U(0,j).GetData());
+      for (k=1; k<n; k++) {
+	tmat(i,j).addmul_si(C(i,k),U(k,j).GetData());
+      }
+    }
+
+  for (i=0; i<m; i++) 
+    for (j=0; j<n; j++)
+      C(i,j)=tmat(i,j);
+};
+
+
+// TO OPTIMIZE
+inline void matprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<__int128_t> U)
+{
+
+  int n,i,j;
+
+  n= U.GetNumRows();
+
+  ZZ_mat<mpz_t> V;
+  V.resize(n,n);
+
+  Z_NR<mpz_t> z;
+
+  for (i=0; i<n; i++)
+    for (j=0; j<n; j++) {
+      
+      mpz_get_128int(z, U(i,j)); 
+      V(i,j)=z;
+
+    }
+    
+  matprod_in(C,V);
+
+};
 
 inline void matprod_in_si(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U) 
 {
@@ -1742,7 +1817,7 @@ void lift_truncate(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long def, long bits) {
 
  };
   
-// 128 TODO
+
 
 // LONG 
 void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
@@ -1799,7 +1874,7 @@ void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
 
 
    // !!! One should check for max bit sizes now : less than long ?
-   cout << "****** " << mmax + bits -mmin << endl;
+   cout << "Bits before conversion " << mmax + bits -mmin << endl;
    
    // Conversion to long
    
@@ -1809,7 +1884,83 @@ void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
 
 }; 
 
+// 128 bits 
+void lift_truncate(ZZ_mat<__int128_t>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
+
+  
+  int i,j;
+   
+   int n=A.getRows();
+   int d=A.getCols();
+
+   ZZ_mat<mpz_t> C;
+   C.resize(n,d);
+
+   
+   for (j=0; j<d; j++) 
+     C(0,j).mul_2si(A(0,j),def);
+
+   for (i=1; i<n; i++)
+     for (j=0; j<d; j++) 
+       C(i,j)=A(i,j);
+
+   
+   // Min max norms of the columns 
+   int mmax,mmin,maxloc;
+  
+   Z_NR<mpz_t> t;
+
+   mmax=0;
+   for (i=0; i<n; i++) { 
+     t.abs(C(i,0));
+     mmax=max(mmax,size_in_bits(t));
+   }
+   mmin=mmax;
+
+   for (j=1; j<d ; j++) { 
+     maxloc=0;
+     for (i=0; i<n; i++) { 
+       t.abs(C(i,j));
+       maxloc=max(maxloc,size_in_bits(t));
+     }
+     mmin = min(mmin, maxloc);
+     mmax = max(mmin, maxloc);
+   }
+
+   // Truncation 
+
+   if (mmin > bits) {
+     long s= bits - mmin; 
+
+     for (i=0; i<n; i++)
+       for (j=0; j<d; j++) 
+	 C(i,j).mul_2si(C(i,j),s);
+   }
+
+
+   // !!! One should check for max bit sizes now : less than long ?
+   cout << "Bits before conversion " << mmax + bits -mmin << endl;
+   
+   // Conversion to 128 int 
+   
+   Z_NR<__int128_t> z;
+
+   for (i=0; i<n; i++)
+     for (j=0; j<d; j++) {
+       mpz_set_128int(z,C(i,j));
+       C_out(i,j)=z; 
+     }
+}; 
+
  
+
+
+
+
+
+
+
+
 // ********************************************************************
 // 
 //       TRUNCATION OF A BASIS for lift, lehmer, nullspace, L1
