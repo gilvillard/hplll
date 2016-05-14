@@ -98,10 +98,6 @@ inline void get_round(FP_NR<dpe_t>& x, int&xs, long& lx, long& expo, const FP_NR
 
   } // End non zero 
 
- 
-
- 
-
 
 }
 
