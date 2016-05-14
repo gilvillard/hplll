@@ -15,7 +15,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/src
 #LDADD =  -lfplll  
 
 
-TESTS = arithmetic  hllltest relationstest matint128
+TESTS = arithmetic  hllltest relationstest matint128 mpz128inttest
 
 arithmetic_SOURCES=arithmetic.cc  
 
@@ -24,6 +24,8 @@ hllltest_SOURCES=hllltest.cc
 relationstest_SOURCES=relationstest.cc
 
 matint128_SOURCES=matint128.cc
+
+mpz128inttest_SOURCES=mpz128inttest.cc
 
 check_PROGRAMS = $(TESTS)
 
