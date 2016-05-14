@@ -23,6 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "hplll.h"
 
+#include "../src/lehmer.cc"
 
 using namespace hplll; 
 
@@ -37,62 +38,85 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
 
-  typedef __int128_t ZT;
+  typedef mpz_t  ZT;
+  //typedef long ZT;
 
-  Z_NR<mpz_t> a,b;
+  ZZ_mat<ZT> A; // For hpLLL 
 
-  a=25443;
-  a.mul(a,a);
-  a.mul(a,a);
-  a.mul(a,a);   // 175608908455044406357860029088740001   size: 117
-
-  cout << "a: " << a << "   size: " << size_in_bits(a) << endl;
-
-  b=232;
-  b.mul(b,b);
-  b.mul(b,b);
-  b.mul(b,b);
-  b.mul(b,b);
-  b.neg(b);     // -70438120351099559671412028074440523776   size: 125
+  // ---------------------------------------------------------------------
+   
+  int d=8;
+  int n;
   
-  cout << "b: " << b << "   size: " << size_in_bits(b) << endl;
-
-  // MPZ to 128
   
-  char str[sizeof(__int128_t)+4];
+  double delta = 0.99;
 
-  mpz_get_str (str, 10, b.getData());
+  command_line_basis(A, n, d, delta, argc, argv);
 
-  cout << "str " << str << endl;
-
-  std::string str_dec = str;
+  // Lehmer
+  // ------
   
-  //std::string str_hex = "40c3";
-  //std::string str_bin = "-10010110001";
-  //std::string str_auto = "0x7f";
-
-  std::string::size_type sz;   // alias of size_t
-
-  __int128_t c;
+  ZZ_mat<ZT> C; 
   
-  c = std::stoi (str,&sz);
+  Timer tleh;
+  tleh.start();
 
-
- //  int print_uint128(uint128_t n) {
-//   if (n == 0)  return printf("0\n");
-
-//   char str[40] = {0}; log10(1 << 128) + '\0'
-//   char *s = str + sizeof(str) - 1; start at the end
-//   while (n != 0) {
-//     if (s == str) return -1; never happens
-
-//     *--s = "0123456789"[n % 10]; save last digit
-//     n /= 10;                     drop it
-//   }
-//   return printf("%s\n", s);
-// }
+  verboseDepth=1;
+  //lehmer_lll<long,dpe_t, MatrixPE<double, dpe_t> > (C, A, delta, 20);
+  //lehmer_lll<__int128_t, double, matrix<FP_NR<double> > > (C, A, delta, 30);
+  lehmer_lll<long, double, matrix<FP_NR<double> > > (C, A, delta, 30);
+    
+  tleh.stop();
   
-  // 128 to mpz via  mpz_set_str ds nr-ld 
+  cout << endl << "Lehmer: " << tleh << endl;  
+
   
+   // With hlll
+   // ---------
+
+  verboseDepth=0;
+   
+  Lattice<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
+   
+  Timer tl;
+  tl.start();
+  L.hlll(delta);
+  tl.stop();
+
+   cout << endl << "hlll: " << tl << endl;
+
+   // Verification
+   // -------------
+
+   cout << endl << endl;
+
+   verboseDepth=0;
+   
+   Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
+   Btest.isreduced(delta-0.1);
+
+   // Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Ltest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+   // Ltest.isreduced(delta-0.1);
+
+   
+
+   //DBG ratio 
+   // double t,u,v,w;
+
+   // ratio<ZT>(C,t,u,v,w);
+   
+   // cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+   // cout << ".. Average diagonal ratio: " << u << endl;
+   // cout << ".. Max diagonal ratio: " << v << endl;
+   // cout << ".. First vector quality: " << w << endl;
+
+   cout << "-----------------------" << endl;
+
+   cout << "Lehmer LLL: " << tleh << endl;
+   //tw.print(cout);
+   cout << "HLLL :" << tl << endl;
+   //tl.print(cout);  
+
+    
   return 0;
 }
