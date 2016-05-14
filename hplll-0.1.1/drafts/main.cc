@@ -354,6 +354,7 @@ int main(int argc, char *argv[])  {
 
    cout << endl << endl;
 
+
   
    Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
    Btest.isreduced(delta-0.1);
