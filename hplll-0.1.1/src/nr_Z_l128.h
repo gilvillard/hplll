@@ -12,6 +12,41 @@
 
 FPLLL_BEGIN_NAMESPACE
 
+// For gmp conversions 
+
+// long on 64 bits 
+// sign + 127 bits : 64 + 63 
+inline void mpz_set_128int(Z_NR< __int128_t>& r, const Z_NR<mpz_t> a){
+
+  mpz_t lmp,ump;
+  mpz_init(lmp);
+  mpz_init(ump);
+
+  mpz_fdiv_q_2exp (ump, a.getData(), 64);
+  mpz_fdiv_r_2exp (lmp, a.getData(), 64);
+
+  r.getData()=mpz_get_si(ump);
+  r.getData()<<=64;
+  r.getData()+=mpz_get_ui(lmp);
+}
+
+// long on 64 bits 
+// sign + 127 bits : 64 + 63 
+inline void mpz_get_128int(Z_NR<mpz_t>& a, const Z_NR< __int128_t> r){
+
+  mpz_t data;
+  mpz_init(data);
+
+  mpz_init(data);
+  mpz_set_si(data,r.getData()>>64);
+  mpz_mul_2exp(data,data,64);
+
+  mpz_set(a.getData(),data);
+
+  mpz_add_ui(a.getData(),a.getData(),(r.getData()<<64)>>64);
+
+}
+
 
 template<>
 inline Z_NR<__int128_t>::Z_NR() {}
