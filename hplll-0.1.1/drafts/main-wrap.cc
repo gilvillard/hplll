@@ -150,15 +150,42 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reductio
 
     ttot+=time;
      
+    // If restart needed, complete with the initial basis columns
+    // ----------------------------------------------------------
+
+    if (gap_status >=2) {
+
+      cout << endl; 
+      cout << "Initial reduction: " << tinit << endl;
+      cout << "Segment reduction: " << ttot << endl;
+      
+
+      B=L.getbase();
+    
+      C.resize(n,d);
+
+      for (i=0; i<n; i++)
+	for (j=0; j<k; j++)
+	  C.Set(i,j,B(i,j));
+      
+      for (i=0; i<n; i++)
+	for (j=k; j<d; j++)
+	  C.Set(i,j,A(i,j));
+
+      verboseDepth+=1;
+      cout << "gap_status: " << gap_status << endl;  
+      return gap_status; 
+    }
+    
+
     if (verboseDepth >=0) {
       cout << "     Phase+: " << time << endl;
       cout << "     Total: " << ttot << endl;
     }
-   
-    
+
+
     C=L.getbase();
 
-    
     // Pour comparaison avec hplll
     // ---------------------------
     // Lattice<ZT, FT,  MatrixZT, MatrixFT>  LH(B,NO_TRANSFORM,reduction_method);
@@ -171,18 +198,9 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reductio
     // th.stop();
     // thlll+=th;
     // cout << endl << "     hlll: " << th << endl << endl;
+   
 
-    if (gap_status >=2) {
-
-      cout << endl; 
-      cout << "Initial reduction: " << tinit << endl;
-      cout << "Segment reduction: " << ttot << endl;
-      
-      verboseDepth+=1;
-      return gap_status; 
-    }
-    
-  } // End loop on extra columns 
+  } // End loop on k: extra columns 
   
 
   cout << endl; 
@@ -276,7 +294,7 @@ int main(int argc, char *argv[])  {
   // ------------------------
   
   
-  gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,10,delta,DEF_REDUCTION);
+  gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,10,delta,SEYSEN_REDUCTION);
 
    while (gap_status >=2) {
      //if (gap_status >=2) {
@@ -297,11 +315,13 @@ int main(int argc, char *argv[])  {
      // Without rotation
      // ----------------
      
+     cout << n << "," << d << " New C for restart with " << C.getRows() << "," << C.getCols() << endl; 
+
      for (int i=0; i<n; i++)
        for (int j=0; j < d; j++)
      	 T(i,j)=C(i,j);
 
-     gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,gap_status,delta,DEF_REDUCTION);
+     gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,gap_status,delta,SEYSEN_REDUCTION);
   
     
   }
@@ -310,9 +330,9 @@ int main(int argc, char *argv[])  {
   
   //cout << endl << "lllw: " << tw << endl; // cf bout de hlll aussi pour l'instant 
 
-  // cout << "Transposed result" << endl;
+  cout << "Transposed result" << endl;
 
-  // cout << transpose(C) << endl; 
+  cout << transpose(C) << endl; 
   
    // With hlll
    // ---------
@@ -323,7 +343,7 @@ int main(int argc, char *argv[])  {
    
    Timer tl;
    tl.start();
-   L.hlll(delta);
+   //L.hlll(delta);
    tl.stop();
 
   
@@ -333,7 +353,6 @@ int main(int argc, char *argv[])  {
    // -------------
 
    cout << endl << endl;
-
   
    Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
    Btest.isreduced(delta-0.1);
