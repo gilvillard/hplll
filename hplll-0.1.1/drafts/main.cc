@@ -301,6 +301,7 @@ int main(int argc, char *argv[])  {
 
      cout << n << "," << d << " New C for restart with " << C.getRows() << "," << C.getCols() << endl; 
 
+     
      for (int i=0; i<n; i++)
        for (int j=0; j < d; j++)
      	 T(i,j)=C(i,j);
