@@ -50,16 +50,19 @@ namespace hplll {
   // Mettre un défaut au shift
   
   template<class ZT, class FT, class MatrixFT> int  
-  lehmer_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, double delta, int lshift) { 
+  lehmer_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, double delta, int lshift, bool truncate) { 
     
     Timer time,ttrunc,tred,tmul,ttot;
-
+    
     verboseDepth-=1;
-
-     if (verboseDepth >=0) {
-       cout << endl << "Lehmer LLL " << endl << endl;  
-      }
-     
+    
+    if (verboseDepth >=0) {
+      cout << endl << "Lehmer LLL " << endl << endl;  
+    }
+    
+    // Trivial shift, direct LLL reduction
+    // -----------------------------------
+    
     if (lshift==0) {
       
       Lattice<mpz_t, FT, matrix<Z_NR<mpz_t> >, MatrixFT> B(A,NO_TRANSFORM,DEF_REDUCTION); 
@@ -73,8 +76,9 @@ namespace hplll {
   // Non trivial shift 
   // -----------------
   
-  else {   // lsshift <> 0 
+  else {   // lshift <> 0 
 
+   
     int i,j;
 
     int n=A.getRows();
@@ -107,7 +111,7 @@ namespace hplll {
       
 
       if (verboseDepth >=0) {
-	cout << "Current default: " << def << endl;  
+	cout << endl <<  "Current default: " << def << endl;  
       }
       
       // Truncation 
@@ -118,9 +122,35 @@ namespace hplll {
      
       // Voir à optimiser la fonction
       // Faire pour 128 bits
-      
-      lift_truncate(Ct, C, def, 30); // Régler >= lshift 
 
+     
+      
+      if (truncate) 
+	lift_truncate(Ct, C, def, 40); // Régler >= lshift 
+      else
+	lift_truncate(Ct, C, def, 0); //
+
+
+       // DBG
+      // {
+
+      
+      // 	double t,u,v,w;
+      // 	ratio<mpz_t>(Ct,t,u,v,w);
+
+      // 	cout << "log 2 Frobenius norm cond: " << t << endl;
+
+      // 	//Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Ttest(T,NO_TRANSFORM,DEF_REDUCTION);
+      // 	//Ttest.isreduced(delta-0.2);
+
+      // }
+      
+      // DBG
+      // {
+
+      // 	cout << "max bit size: " << maxbitsize(Ct) << endl; 
+
+      // }
       time.stop();
       ttot+=time;
       ttrunc+=time;
@@ -138,6 +168,20 @@ namespace hplll {
       ttot+=time;
       tred+=time;
 
+      // DBG
+      // {
+      // cout << endl << endl << "*******************************" << endl << endl;
+
+      // double t,u,v,w;
+      // ratio<mpz_t>(B.getbase(),t,u,v,w);
+      
+      // cout << "log 2 Frobenius norm cond: " << t << endl;
+      
+      // //Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Ttest(T,NO_TRANSFORM,DEF_REDUCTION);
+      // //Ttest.isreduced(delta-0.2);
+      
+      // }
+     
      
       // Product
       // -------
@@ -146,26 +190,26 @@ namespace hplll {
 
       matprod_in_int(C,B.getU());
       
+      
       time.stop();
       ttot+=time;
       tmul+=time;
 
     } // End Lehmer loop on the defect 
-      
+    
   } // End else lshift > 0 
     
-    verboseDepth+=1;
 
     cout << endl;
     cout << "Total: " << ttot << endl;
-    cout << "   truncations: " << ttrunc << endl;
+    cout << "   liftings/truncations: " << ttrunc << endl;
     cout << "   reductions: " << tred << endl;
     cout << "   products: " << tmul << endl;
     
-
+    verboseDepth+=1;
     return 0;
   }
-
+  
 } // end namespace hplll
 
 #endif 

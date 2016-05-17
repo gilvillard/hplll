@@ -31,6 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "defs.h"
 #include "mixed-col.h"
 
+
 #ifdef NTL_GMP_LIP
 #include <NTL/mat_ZZ.h>
  
@@ -1765,6 +1766,8 @@ template<> void trunc_sigma(matrix<Z_NR<mpz_t> >& B, ZZ_mat<mpz_t> A, long n, lo
 // Au moins bits en sortie (pour la plus petite colonne)
 // si non homogène, certaine colonne peuvent rester grandes
 
+// **** If bits = 0 : no truncation 
+
  
 void lift_truncate(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long def, long bits) {
 
@@ -1777,43 +1780,52 @@ void lift_truncate(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long def, long bits) {
    for (j=0; j<d; j++) 
      C(0,j).mul_2si(A(0,j),def);
 
+     
+
    for (i=1; i<n; i++)
      for (j=0; j<d; j++) 
        C(i,j)=A(i,j);
 
-   
-   // Min max norms of the columns 
-   int mmax,mmin;
+   // bits > 0 then truncation
+   // ------------------------
+
   
-   Z_NR<mpz_t> t;
+   if (bits > 0) {
+     
+     // Min max norms of the columns 
+     int mmax,mmin;
+  
+     Z_NR<mpz_t> t;
 
-   mmax=0;
-   for (i=0; i<n; i++) { 
-     t.abs(C(i,0));
-     mmax=max(mmax,size_in_bits(t));
-   }
-   mmin=mmax;
-
-   for (j=1; j<d ; j++) { 
      mmax=0;
      for (i=0; i<n; i++) { 
-       t.abs(C(i,j));
+       t.abs(C(i,0));
        mmax=max(mmax,size_in_bits(t));
      }
-     mmin = min(mmin, mmax);
-   }
+     mmin=mmax;
 
-   // Truncation 
+     for (j=1; j<d ; j++) { 
+       mmax=0;
+       for (i=0; i<n; i++) { 
+	 t.abs(C(i,j));
+	 mmax=max(mmax,size_in_bits(t));
+       }
+       mmin = min(mmin, mmax);
+     }
 
-   if (mmin > bits) {
+     // Truncation 
+
+     if (mmin > bits) {
     
      
-     long s= - (mmin - bits);
+       long s= bits - mmin + 4;
 
-     for (i=0; i<n; i++)
-       for (j=0; j<d; j++) 
-	 C(i,j).mul_2si(C(i,j),s);
-   } 
+       for (i=0; i<n; i++)
+	 for (j=0; j<d; j++) 
+	   C(i,j).mul_2si(C(i,j),s);
+     }
+
+   } // end bits > 0 / truncation
 
  };
   
@@ -1839,7 +1851,7 @@ void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
      for (j=0; j<d; j++) 
        C(i,j)=A(i,j);
 
-   
+
    // Min max norms of the columns 
    int mmax,mmin,maxloc;
   
@@ -1859,7 +1871,7 @@ void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
        maxloc=max(maxloc,size_in_bits(t));
      }
      mmin = min(mmin, maxloc);
-     mmax = max(mmin, maxloc);
+     mmax = max(mmax, maxloc);
    }
 
    // Truncation 
@@ -1924,7 +1936,7 @@ void lift_truncate(ZZ_mat<__int128_t>& C_out, ZZ_mat<mpz_t> A, long def, long bi
        maxloc=max(maxloc,size_in_bits(t));
      }
      mmin = min(mmin, maxloc);
-     mmax = max(mmin, maxloc);
+     mmax = max(mmax, maxloc);
    }
 
    // Truncation 

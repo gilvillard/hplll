@@ -294,45 +294,32 @@ int main(int argc, char *argv[])  {
   // ------------------------
   
   
-  gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,10,delta,SEYSEN_REDUCTION);
-
+  gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,40,delta,SEYSEN_REDUCTION);
+  //gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,255,delta,DEF_REDUCTION);
+ 
    while (gap_status >=2) {
-     //if (gap_status >=2) {
 
-     // Rotation
-     // --------
-     // for (int i=0; i<n; i++)
-     // 	T(i,0)=C(i,gap_status-1);
-     
-     // for (int i=0; i<n; i++)
-     //   for (int j=0; j < gap_status-1; j++)
-     // 	T(i,j+1)=C(i,j);
-     
-     // for (int i=0; i<n; i++)
-     //   for (int j=gap_status; j<d; j++)
-     // 	T(i,j)=C(i,j);
-
-     // Without rotation
-     // ----------------
-     
      cout << n << "," << d << " New C for restart with " << C.getRows() << "," << C.getCols() << endl; 
 
+     cout << transpose(C) << endl; 
+     
      for (int i=0; i<n; i++)
        for (int j=0; j < d; j++)
      	 T(i,j)=C(i,j);
 
      gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,gap_status,delta,SEYSEN_REDUCTION);
+     //gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,gap_status,delta,DEF_REDUCTION);
   
     
   }
-  
+
   tw.stop();
   
   //cout << endl << "lllw: " << tw << endl; // cf bout de hlll aussi pour l'instant 
 
-  cout << "Transposed result" << endl;
+  //cout << "Transposed result" << endl;
 
-  cout << transpose(C) << endl; 
+  //cout << transpose(C) << endl; 
   
    // With hlll
    // ---------
