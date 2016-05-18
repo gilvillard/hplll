@@ -28,6 +28,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef HPLLL_LEHMER_CC
 #define HPLLL_LEHMER_CC
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif 
+
 
 namespace hplll {
 
@@ -50,7 +54,7 @@ namespace hplll {
   // Mettre un défaut au shift
   
   template<class ZT, class FT, class MatrixFT> int  
-  lehmer_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, double delta, int lshift, bool truncate) { 
+  lehmer_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, double delta, int lshift, bool truncate, int S) { 
     
     Timer time,ttrunc,tred,tmul,ttot;
     
@@ -126,7 +130,7 @@ namespace hplll {
      
       
       if (truncate) 
-	lift_truncate(Ct, C, def, 40); // Régler >= lshift 
+	lift_truncate(Ct, C, def, 30); // Régler >= lshift 
       else
 	lift_truncate(Ct, C, def, 0); //
 
@@ -167,29 +171,16 @@ namespace hplll {
       time.stop();
       ttot+=time;
       tred+=time;
-
-      // DBG
-      // {
-      // cout << endl << endl << "*******************************" << endl << endl;
-
-      // double t,u,v,w;
-      // ratio<mpz_t>(B.getbase(),t,u,v,w);
-      
-      // cout << "log 2 Frobenius norm cond: " << t << endl;
-      
-      // //Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Ttest(T,NO_TRANSFORM,DEF_REDUCTION);
-      // //Ttest.isreduced(delta-0.2);
-      
-      // }
-     
      
       // Product
       // -------
       // Open mp à faire
       time.start();
 
-      matprod_in_int(C,B.getU());
-      
+      if (S > 1) 
+	pmatprod_in_int(C,B.getU(),S);
+      else
+	matprod_in_int(C,B.getU());
       
       time.stop();
       ttot+=time;
