@@ -1124,6 +1124,59 @@ template<class T> void matprod_in(Matrix<T>& C, Matrix<T> U)
 
 
 
+ inline void pmatprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> U,int S) 
+{
+
+  int m,n;
+
+  m= C.GetNumRows();
+  n= C.GetNumCols();
+
+
+#ifdef _OPENMP
+#pragma omp parallel for shared(C)
+#endif
+  
+  for (int l=0; l<S; l++) { 
+
+    int mloc;
+    mloc=m/S;
+    if ((l+1) <= m%S)
+      mloc+=1;
+
+    int ibeg;
+    ibeg=(m/S)*l;
+    if ((l+1) <= m%S)
+      ibeg+=l;
+    else
+      ibeg+=m%S;
+
+    //cout << "l: " << l << "   mloc: " << mloc << "    ibeg: " << ibeg << endl;
+
+    Matrix<Z_NR<mpz_t> > tmat;
+    tmat.resize(mloc,n);
+
+    int i,j,k;
+    
+    for (i=0; i<mloc; i++) 
+      for (j=0; j<n; j++) {
+	tmat(i,j).mul(C(i+ibeg,0),U(0,j));
+	for (k=1; k<n; k++) {
+	  tmat(i,j).addmul(C(i+ibeg,k),U(k,j));
+	}
+      }
+    
+    for (i=0; i<mloc; i++) 
+      for (j=0; j<n; j++)
+	C(i+ibeg,j)=tmat(i,j);   
+
+    
+  } // Parallel loop
+
+  
+};
+
+
 inline void matprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U) 
 {
 
@@ -1226,6 +1279,73 @@ inline void matprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<__int128_t> U)
     
   matprod_in(C,V);
 
+};
+
+
+ 
+ inline void pmatprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<__int128_t> U,int S) 
+{
+
+  int m,n;
+
+  m= C.GetNumRows();
+  n= C.GetNumCols();
+
+
+  ZZ_mat<mpz_t> V;
+  V.resize(n,n);
+
+  Z_NR<mpz_t> z;
+
+  for (int i=0; i<n; i++)
+    for (int j=0; j<n; j++) {
+      
+      mpz_get_128int(z, U(i,j)); 
+      V(i,j)=z;
+
+    }
+  
+#ifdef _OPENMP
+#pragma omp parallel for shared(C)
+#endif
+  
+  for (int l=0; l<S; l++) { 
+
+    int mloc;
+    mloc=m/S;
+    if ((l+1) <= m%S)
+      mloc+=1;
+
+    int ibeg;
+    ibeg=(m/S)*l;
+    if ((l+1) <= m%S)
+      ibeg+=l;
+    else
+      ibeg+=m%S;
+
+    //cout << "l: " << l << "   mloc: " << mloc << "    ibeg: " << ibeg << endl;
+
+    Matrix<Z_NR<mpz_t> > tmat;
+    tmat.resize(mloc,n);
+
+    int i,j,k;
+    
+    for (i=0; i<mloc; i++) 
+      for (j=0; j<n; j++) {
+	tmat(i,j).mul(C(i+ibeg,0),V(0,j));
+	for (k=1; k<n; k++) {
+	  tmat(i,j).addmul(C(i+ibeg,k),V(k,j));
+	}
+      }
+    
+    for (i=0; i<mloc; i++) 
+      for (j=0; j<n; j++)
+	C(i+ibeg,j)=tmat(i,j);   
+
+    
+  } // Parallel loop
+
+  
 };
 
 inline void matprod_in_si(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U) 
