@@ -1148,6 +1148,60 @@ inline void matprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U)
       C(i,j)=tmat(i,j);
 };
 
+ 
+ inline void pmatprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U,int S) 
+{
+
+  int m,n;
+
+  m= C.GetNumRows();
+  n= C.GetNumCols();
+
+
+#ifdef _OPENMP
+#pragma omp parallel for shared(C)
+#endif
+  
+  for (int l=0; l<S; l++) { 
+
+    int mloc;
+    mloc=m/S;
+    if ((l+1) <= m%S)
+      mloc+=1;
+
+    int ibeg;
+    ibeg=(m/S)*l;
+    if ((l+1) <= m%S)
+      ibeg+=l;
+    else
+      ibeg+=m%S;
+
+    //cout << "l: " << l << "   mloc: " << mloc << "    ibeg: " << ibeg << endl;
+
+    Matrix<Z_NR<mpz_t> > tmat;
+    tmat.resize(mloc,n);
+
+    int i,j,k;
+    
+    for (i=0; i<mloc; i++) 
+      for (j=0; j<n; j++) {
+	tmat(i,j).mul_si(C(i+ibeg,0),U(0,j).GetData());
+	for (k=1; k<n; k++) {
+	  tmat(i,j).addmul_si(C(i+ibeg,k),U(k,j).GetData());
+	}
+      }
+    
+    for (i=0; i<mloc; i++) 
+      for (j=0; j<n; j++)
+	C(i+ibeg,j)=tmat(i,j);   
+
+    
+  } // Parallel loop
+
+  
+};
+
+
 
 // TO OPTIMIZE
 inline void matprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<__int128_t> U)

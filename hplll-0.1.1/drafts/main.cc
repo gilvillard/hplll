@@ -62,11 +62,11 @@ int main(int argc, char *argv[])  {
   tleh.start();
 
   verboseDepth=1;
-  //lehmer_lll<long,dpe_t, MatrixPE<double, dpe_t> > (C, A, delta, 20);
-  //lehmer_lll<__int128_t, double, matrix<FP_NR<double> > > (C, A, delta, 5, true);
-  //lehmer_lll<mpz_t, double, matrix<FP_NR<double> > > (C, A, delta, 10, true);
-  //lehmer_lll<mpz_t,dpe_t, MatrixPE<double, dpe_t> > (C, A, delta, 10, true);
-  lehmer_lll<long, double, matrix<FP_NR<double> > > (C, A, delta, 5,true);
+  //lehmer_lll<long,dpe_t, MatrixPE<double, dpe_t> > (C, A, delta, 20,4);
+  //lehmer_lll<__int128_t, double, matrix<FP_NR<double> > > (C, A, delta, 40, true,4);
+  //lehmer_lll<mpz_t, double, matrix<FP_NR<double> > > (C, A, delta, 10, true,4);
+  //lehmer_lll<mpz_t,dpe_t, MatrixPE<double, dpe_t> > (C, A, delta, 10, true,4);
+  lehmer_lll<long, double, matrix<FP_NR<double> > > (C, A, delta, 10,true,1);
     
   tleh.stop();
   
