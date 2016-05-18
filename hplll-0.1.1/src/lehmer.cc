@@ -129,7 +129,7 @@ namespace hplll {
      
       
       if (truncate) 
-	lift_truncate(Ct, C, def, 40); // Régler >= lshift 
+	lift_truncate(Ct, C, def, 30); // Régler >= lshift 
       else
 	lift_truncate(Ct, C, def, 0); //
 
@@ -164,6 +164,7 @@ namespace hplll {
       time.start();
 
       B.assign(Ct);
+      
       
       B.hlll(0.99);
 
