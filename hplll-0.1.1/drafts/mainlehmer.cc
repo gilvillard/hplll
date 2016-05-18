@@ -62,9 +62,11 @@ int main(int argc, char *argv[])  {
   tleh.start();
 
   verboseDepth=1;
-  //lehmer_lll<long,dpe_t, MatrixPE<double, dpe_t> > (C, A, delta, 20);
-  //lehmer_lll<__int128_t, double, matrix<FP_NR<double> > > (C, A, delta, 30);
-  lehmer_lll<long, double, matrix<FP_NR<double> > > (C, A, delta, 30);
+  //lehmer_lll<long,dpe_t, MatrixPE<double, dpe_t> > (C, A, delta, 20,4);
+  //lehmer_lll<__int128_t, double, matrix<FP_NR<double> > > (C, A, delta, 5, true,4);
+  //lehmer_lll<mpz_t, double, matrix<FP_NR<double> > > (C, A, delta, 10, true,4);
+  //lehmer_lll<mpz_t,dpe_t, MatrixPE<double, dpe_t> > (C, A, delta, 5, false,4);
+  lehmer_lll<long, double, matrix<FP_NR<double> > > (C, A, delta, 20,true,4);
     
   tleh.stop();
   
@@ -80,7 +82,7 @@ int main(int argc, char *argv[])  {
    
   Timer tl;
   tl.start();
-  L.hlll(delta);
+  //L.hlll(delta);
   tl.stop();
 
    cout << endl << "hlll: " << tl << endl;
