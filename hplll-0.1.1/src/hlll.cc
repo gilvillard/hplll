@@ -39,7 +39,7 @@ namespace hplll {
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) { 
 
-  verboseDepth-=1; // Segment à commenter 
+  //verboseDepth-=1; // Segment à commenter 
   
   int kappa=1,i;
   int prevkappa=-1; // For the looping test between tow indices 
@@ -102,7 +102,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
                   
       if (flag_reduce==-1) {
-	verboseDepth+=1;  // Segment à commenter 
+	//verboseDepth+=1;  // Segment à commenter 
 	return(-1);
       }
 
@@ -163,7 +163,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	
 	    cout << " **** #tests = " << nblov << " **** Anomaly: the norm increases for kappa = " << kappa << endl;
 	    
-	    verboseDepth+=1;   // Segment à commenter 
+	    // verboseDepth+=1;   // Segment à commenter 
 	    return -1;
 	  }
 
@@ -214,7 +214,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
     } // End main LLL loop 
   
-  verboseDepth+=1;  // Segment à commenter 
+  //verboseDepth+=1;  // Segment à commenter 
   return 0;
   
 };

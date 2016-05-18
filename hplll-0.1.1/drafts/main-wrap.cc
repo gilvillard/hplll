@@ -294,8 +294,8 @@ int main(int argc, char *argv[])  {
   // ------------------------
   
   
-  gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,40,delta,SEYSEN_REDUCTION);
-  //gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,255,delta,DEF_REDUCTION);
+  //gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,40,delta,SEYSEN_REDUCTION);
+  gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,30,delta,DEF_REDUCTION);
  
    while (gap_status >=2) {
 
@@ -307,8 +307,8 @@ int main(int argc, char *argv[])  {
        for (int j=0; j < d; j++)
      	 T(i,j)=C(i,j);
 
-     gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,gap_status,delta,SEYSEN_REDUCTION);
-     //gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,gap_status,delta,DEF_REDUCTION);
+     //gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,gap_status,delta,SEYSEN_REDUCTION);
+     gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,gap_status,delta,DEF_REDUCTION);
   
     
   }

@@ -63,17 +63,17 @@ int main(int argc, char *argv[])  {
 
   verboseDepth=1;
   //lehmer_lll<long,dpe_t, MatrixPE<double, dpe_t> > (C, A, delta, 20,4);
-  //lehmer_lll<__int128_t, double, matrix<FP_NR<double> > > (C, A, delta, 5, true,4);
-  //lehmer_lll<mpz_t, double, matrix<FP_NR<double> > > (C, A, delta, 10, true,4);
-  //lehmer_lll<mpz_t,dpe_t, MatrixPE<double, dpe_t> > (C, A, delta, 5, false,4);
-  lehmer_lll<long, double, matrix<FP_NR<double> > > (C, A, delta, 20,true,4);
+  //lehmer_lll<__int128_t, double, matrix<FP_NR<double> > > (C, A, delta, 10, true,8);
+  //lehmer_lll<mpz_t, double, matrix<FP_NR<double> > > (C, A, delta, 10, false,4);
+  //lehmer_lll<mpz_t,dpe_t, MatrixPE<double, dpe_t> > (C, A, delta, 100, false,4);
+  lehmer_lll<long, double, matrix<FP_NR<double> > > (C, A, delta, 5,true,4);
     
   tleh.stop();
   
   cout << endl << "Lehmer: " << tleh << endl;  
 
   
-   // With hlll
+   // With hlllB.assign(Ct);
    // ---------
 
   verboseDepth=0;
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])  {
    
   Timer tl;
   tl.start();
-  //L.hlll(delta);
+  L.hlll(delta);
   tl.stop();
 
    cout << endl << "hlll: " << tl << endl;
