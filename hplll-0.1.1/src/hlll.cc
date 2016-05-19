@@ -163,7 +163,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	
 	    cout << " **** #tests = " << nblov << " **** Anomaly: the norm increases for kappa = " << kappa << endl;
 	    
-	    // verboseDepth+=1;   // Segment à commenter 
+	    //verboseDepth+=1;   // Segment à commenter 
 	    return -1;
 	  }
 

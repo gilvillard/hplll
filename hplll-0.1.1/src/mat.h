@@ -2414,7 +2414,7 @@ int maxbitsize(const ZZ_mat<T>& B, int d0, int d, int n) {
 
 // ICI 
 template<class T> 
-int maxbitsize(const matrix<T>& B) {
+unsigned int maxbitsize(const matrix<T>& B) {
 
   int l=0;
 
@@ -2433,14 +2433,15 @@ int maxbitsize(const matrix<T>& B) {
 
 // ********************************************************************
 // 
-//       MATRIC CAST 
+//       MATRIX CAST 
 // 
 // ********************************************************************
  
   // Dimensions may change in C 
 
  template<class ZT> void matrix_cast(ZZ_mat<ZT>& B, ZZ_mat<mpz_t> A);
- 
+
+ template<class ZT> void matrix_cast(matrix<Z_NR<ZT> > & B,  matrix<Z_NR<mpz_t> >  A);
  
  template<> void matrix_cast(ZZ_mat<mpz_t>& B, ZZ_mat<mpz_t> A) {
 
@@ -2454,6 +2455,19 @@ int maxbitsize(const matrix<T>& B) {
       B(i,j)=A(i,j);
  }
 
+ template<> void matrix_cast(matrix<Z_NR<mpz_t> > & B,  matrix<Z_NR<mpz_t> >  A) {
+
+   int n= A.getRows();
+   int d= A.getCols();
+
+   B.resize(n,d);
+   
+   for (int i=0; i<n; i++) 
+    for (int j=0; j<d; j++) 
+      B(i,j)=A(i,j);
+ }
+
+ 
   template<> void matrix_cast(ZZ_mat<long>& B, ZZ_mat<mpz_t> A) {
 
    int n= A.getRows();
@@ -2469,9 +2483,26 @@ int maxbitsize(const matrix<T>& B) {
     for (int j=0; j<d; j++) 
       B(i,j)=A(i,j).get_si();
 
-   cout << " ************ " << maxbitsize(A) << endl; 
- }
   
+ }
+
+  template<> void matrix_cast(matrix<Z_NR<long> >& B, matrix<Z_NR<mpz_t> >  A) {
+
+   int n= A.getRows();
+   int d= A.getCols();
+
+   
+   B.resize(n,d);
+
+   if (maxbitsize(A) > ((8*sizeof(B(0,0).getData())) -1))
+       cerr << endl << "** Error in matrix cast **" << endl; 
+			  
+   for (int i=0; i<n; i++) 
+    for (int j=0; j<d; j++) 
+      B(i,j)=A(i,j).get_si();
+
+  
+ }
  
  
 inline int

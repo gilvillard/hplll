@@ -39,13 +39,15 @@ class SLattice
 
   MatrixZT B;
 
-  MatrixZT RZ;
+  matrix<Z_NR<mpz_t> > RZ;
+
+ 
+  
+  matrix<Z_NR<mpz_t> > U_even;
+  matrix<Z_NR<mpz_t> > U_odd;
 
   MatrixZT U;
-  
-  ZZ_mat<ZT> U_even;
-  ZZ_mat<ZT> U_odd;
-
+   
   int norigin,n,dorigin,d; 
 
   bool transf;
