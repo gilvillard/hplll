@@ -53,12 +53,12 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
 #ifdef _OPENMP
   OMPTimer time,totime;
-  OMPTimer redtime,eventime,oddtime,prodtime1,prodtime2,esizetime,osizetime;
+  OMPTimer redtime,eventime,oddtime,prodtime1,prodtime2,esizetime,osizetime,rztime;
   
   omp_set_num_threads(nbthreads);
 #else 
   Timer time,totime;
-  Timer redtime,eventime,oddtime,prodtime1,prodtime2,esizetime,osizetime;
+  Timer redtime,eventime,oddtime,prodtime1,prodtime2,esizetime,osizetime,rztime;
 #endif
 
   time.clear();
@@ -70,7 +70,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
   esizetime.clear();
   osizetime.clear();
   totime.clear();
- 
+  rztime.clear();
     
   totime.start();
   
@@ -114,19 +114,30 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
   FP_NR<FT>  eps;
   eps=0.000000000001;
 
+  int gap_status=0;
+
+  
+  //DBG
+  FP_NR<FT>  ming;
+  ming=1.0;
+
+  // Main iteration loop
+  // *******************
   
   for (iter=0; stop==0; iter++) {
-  	    
+
+    gap_status=0;
+    
     stop=1;
-       
+
+    time.start();
 
     // col_kept ??
 
     
     // The integer block lattice: truncation of the floating point R
     // 0 triangulaire ici car householder global
-
-       
+    
     set_f(RZ,R,condbits);
     
     for (i=1; i<d; i++)
@@ -140,7 +151,10 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     for (i=0; i<d; i++)
       if (RZ(i,i).sgn() ==0) RZ(i,i)=1;
 
-          
+
+    time.stop();
+    rztime+=time;
+    
     // Even reductions
     // ***************
 
@@ -162,7 +176,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     for (k=0; k<S; k++) { 
       {
 	
-	Lattice<ZT,FT, MatrixZT, MatrixFT>  BR(getblock(RZ,k,k,S,0),TRANSFORM,seysen_flag);
+	Lattice<mpz_t,FT, matrix<Z_NR<mpz_t> >, MatrixFT>  BR(getblock(RZ,k,k,S,0),TRANSFORM,seysen_flag);
 
 	
 	BR.set_nblov_max(lovmax);
@@ -195,7 +209,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     verboseDepth+=1;
 
     for (k=0; k<S; k++) phase_tests+=lovtests[k];
-
+    nblov+=phase_tests;
           
     time.stop();
     redtime+=time;
@@ -210,6 +224,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     
     time.start();
 
+    matrix_cast(U,U_even);
     
     pmatprod(S,0); 
 
@@ -218,9 +233,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     prodtime1+=time;
     
     
-
     // Even size reduction
     // *******************
+
     
     time.start();
     
@@ -241,13 +256,17 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
      
       householder_v(i);
-
+      
+      
       // Gap detection is a e.g. small vector has been found
       // ---------------------------------------------------
       
       if ((i >= 2) && (i<dorigin-1)) {
 	  qq.div(R.get(i,i),R.get(i-1,i-1));
 	  qq.abs(qq);
+
+	  //DBG 
+	  if (ming.cmp(qq) ==1) ming=qq;
 	  
 	  if (eps.cmp(qq) == 1) {
 	    cout << " **** Anomaly gap detection, column: " << i+1 << "/" << dorigin << "    Ratio = ";
@@ -262,21 +281,29 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 	    //   cout << "k = " << k << "   "; hplllprint(normB2[k]); cout << "    ";  hplllprint(R.get(k,k)); cout << endl;
 	    // }
 	    
-	    verboseDepth+=1;
-	    return i+1; // Math column index 
+	    //verboseDepth+=1;
+	    //return i+1; // Math column index
+	    gap_status = i+1;   // real matrix index 
+	    break;
 	     
 	  }
-	}
-      
-    }
+      } // gap detection test 
 
+    } // end size reduction loop
+
+    if (gap_status >=2) break; // Output the main loop 
+      
     for (i=dorigin; i < d; i++) 
       R.set(i,i,afmax);
-    
+
+    time.stop();
+    esizetime+=time;
     
     // Odd reductions
     // **************
 
+    time.start();
+    
     setId(U_odd);
 
     phase_tests=0;
@@ -295,6 +322,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     for (i=0; i<d; i++)
       if (RZ(i,i).sgn() ==0) RZ(i,i)=1;
 
+    time.stop();
+    rztime+=time;
+    
     time.start();
 
     //cout << endl <<  "--- Odd reductions" << endl;
@@ -308,7 +338,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     
     for (k=0; k<S-1; k++) {
 
-      Lattice<ZT,FT, MatrixZT, MatrixFT> BR(getblock(RZ,k,k,S,bdim),TRANSFORM,seysen_flag);
+      Lattice<mpz_t,FT, matrix<Z_NR<mpz_t> >, MatrixFT>  BR(getblock(RZ,k,k,S,bdim),TRANSFORM,seysen_flag);
+      
       
       BR.set_nblov_max(lovmax);
       BR.hlll(delta);
@@ -326,7 +357,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     verboseDepth+=1;
     
     for (k=0; k<S-1; k++) phase_tests+=lovtests[k];
-
+    nblov+=phase_tests;
               
     time.stop();
     redtime+=time; 
@@ -339,8 +370,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     stop = (stop && ( phase_tests == ((S-1)*(2*bdim-1)) ));
  
     time.start();
+
+    matrix_cast(U,U_odd);
     
-    //matprod_in(B,U_odd);
     pmatprod(S,1);
     
     time.stop();
@@ -375,6 +407,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
       if ((i >= 2) && (i<dorigin-1)) {
 	  qq.div(R.get(i,i),R.get(i-1,i-1));
 	  qq.abs(qq);
+
+	   //DBG 
+	  if (ming.cmp(qq) ==1) ming=qq;
 	  
 	  if (eps.cmp(qq) == 1) {
 	    cout << " **** Anomaly gap detection, column: " << i+1 << "/" << dorigin  << "    Ratio = ";
@@ -397,6 +432,11 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     
   } // End odd-even iter until reduced  
 
+
+   // DBG
+  cout << "******* ICI **** " << gap_status << endl;
+  
+    cout << "*********************************************  ";  hplllprint(ming); cout << endl; 
     
   totime.stop();
 
@@ -404,16 +444,17 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
   // cout << endl;
   // //cout << " Householder: " << qrtime << endl;
   // //cout << " Re-ortho: " << orthotime  << endl;
-  // cout << " Reductions: " << redtime << endl;
-  // cout << "   Even reductions: " << eventime << endl;
-  // cout << "   Odd reductions: " << oddtime << endl;
-  // cout << " Products: " << prodtime1 << endl;
-  // cout << "           " << prodtime2 << endl;
+   cout << " Reductions: " << redtime << endl;
+   cout << "   Even reductions: " << eventime << endl;
+   cout << "   Odd reductions: " << oddtime << endl;
+   cout << " Products: " << prodtime1 << endl;
+   cout << "           " << prodtime2 << endl;
   // //cout << "           " << prodtime3 << endl;
   // //cout << "           " << prodtime4 << endl;
-  // cout << " Even size reds: " << esizetime  << endl;
-  // cout << " Odd size reds: " << osizetime  << endl;
-  // cout << " Total time:  " << totime << endl;  
+   cout << " Even size reds: " << esizetime  << endl;
+   cout << " Odd size reds: " << osizetime  << endl;
+   cout << " RZ: " << rztime  << endl;
+   cout << " Total time:  " << totime << endl;  
   // //cout << endl << " Special chrono:" << special << endl << endl;
   // cout << endl << "Swaps: " << swapstab << endl;
   
@@ -1465,10 +1506,10 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::householder(int dmax)
 	for (i=0; i<n; i++) {
 	  for (j=shift; j<shift+sdim; j++) {
 	    
-	    tmat(i,j-shift).mul(B(i,shift),U_even(shift,j));
+	    tmat(i,j-shift).mul(B(i,shift),U(shift,j));
 	    
 	    for (k=shift+1; k < shift+sdim; k++) {
-	      tmat(i,j-shift).addmul(B(i,k),U_even(k,j));
+	      tmat(i,j-shift).addmul(B(i,k),U(k,j));
 	    }
 	  }
 	  for (j=shift; j<shift+sdim; j++)
@@ -1502,10 +1543,10 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::householder(int dmax)
 	for (i=0; i<n; i++) {
 	  for (j=shift; j<shift+sdim; j++) {
 	    
-	    tmat(i,j-shift).mul(B(i,shift),U_odd(shift,j));
+	    tmat(i,j-shift).mul(B(i,shift),U(shift,j));
 	    
 	    for (k=shift+1; k < shift+sdim; k++) {
-	      tmat(i,j-shift).addmul(B(i,k),U_odd(k,j));
+	      tmat(i,j-shift).addmul(B(i,k),U(k,j));
 	    }
 	  }
 	  for (j=shift; j<shift+sdim; j++)

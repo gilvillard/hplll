@@ -127,6 +127,61 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reductio
     
     time.stop();
     ttot+=time;
+
+    // DBG
+    // {
+
+    //   LR.householder_v(k-1);
+      
+    //   cout << "+++++++++++++++++++++++++++++++++++++++++" << endl; 
+    //   matrix<FP_NR<FT> >  RR;
+    //   RR=LR.getR();
+
+    //   FP_NR<FT> tn;
+    //   int j;
+
+    //   j=0;
+    //   cout << "Norm " << j << " :   ";
+    //   fp_norm(tn, RR.getcol(j), k); hplllprint(tn); cout << endl; 
+    //   j=1;
+    //   cout << "Norm " << j << " :   ";
+    //   fp_norm(tn, RR.getcol(j), k); hplllprint(tn); cout << endl;
+    //   j=2;
+    //   cout << "Norm " << j << " :   ";
+    //   fp_norm(tn, RR.getcol(j), k); hplllprint(tn); cout << endl;
+    //   j=3;
+    //   cout << "Norm " << j << " :   ";
+    //   fp_norm(tn, RR.getcol(j), k); hplllprint(tn); cout << endl;
+    //   j=k-4;
+    //   cout << "Norm " << j << " :   ";
+    //   fp_norm(tn, RR.getcol(j), k); hplllprint(tn); cout << endl; 
+    //   j=k-3;
+    //   cout << "Norm " << j << " :   ";
+    //   fp_norm(tn, RR.getcol(j), k); hplllprint(tn); cout << endl;
+    //   j=k-2;
+    //   cout << "Norm " << j << " :   ";
+    //   fp_norm(tn, RR.getcol(j), k); hplllprint(tn); cout << endl;
+    //   j=k-1;
+    //   cout << "Norm " << j << " :   ";
+    //   fp_norm(tn, RR.getcol(j), k); hplllprint(tn); cout << endl;
+
+    //   cout << endl;
+
+    //   for (j=0; j<=3; j++) {
+    // 	cout << "Diag " << j << " :   ";
+    // 	hplllprint(RR.get(j,j)); cout << endl; 
+    //   }
+      
+    //   for (j=k-4; j<=k-1; j++) {
+    // 	cout << "Diag " << j << " :   ";
+    // 	hplllprint(RR.get(j,j)); cout << endl; 
+    //   }	     
+      
+    //   cout << "+++++++++++++++++++++++++++++++++++++++++" << endl; 
+
+      
+    // }
+
     
     if (verboseDepth >= 0) 
       cout << "     Size reduction: " << time << endl;
@@ -180,6 +235,7 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reductio
 
     if (verboseDepth >=0) {
       cout << "     Phase+: " << time << endl;
+      cout << "     Nblov: " << L.nblov << endl; 
       cout << "     Total: " << ttot << endl;
     }
 
@@ -289,26 +345,47 @@ int main(int argc, char *argv[])  {
   for (int i=0; i<n; i++)
     for (int j=0; j<d; j++)
       T(i,j)=A(i,j);
-  
+
+ 
   // Loop to do on gap status
   // ------------------------
   
   
-  //gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,40,delta,SEYSEN_REDUCTION);
-  gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,30,delta,DEF_REDUCTION);
+  gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,20,delta,DEF_REDUCTION);
+  //gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,20,delta,DEF_REDUCTION);
+  //gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,100,delta,SEYSEN_REDUCTION);
  
    while (gap_status >=2) {
 
      cout << n << "," << d << " New C for restart with " << C.getRows() << "," << C.getCols() << endl; 
 
-     cout << transpose(C) << endl; 
+     //cout << transpose(C) << endl; 
+
+     // Rotation
+     // --------
+
      
      for (int i=0; i<n; i++)
-       for (int j=0; j < d; j++)
-     	 T(i,j)=C(i,j);
+     	 T(i,0)=C(i,gap_status-1);
 
-     //gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,gap_status,delta,SEYSEN_REDUCTION);
-     gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,gap_status,delta,DEF_REDUCTION);
+     for (int i=0; i<n; i++)
+       for (int j=0; j < gap_status -1; j++)
+     	 T(i,j+1)=C(i,j);
+
+     for (int i=0; i<n; i++)
+       for (int j=gap_status; j < d; j++)
+     	 T(i,j)=C(i,j);
+     
+     // Basis as it is
+     // --------------
+     
+     // for (int i=0; i<n; i++)
+     //   for (int j=0; j < d; j++)
+     // 	 T(i,j)=C(i,j);
+
+     gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,40,delta,DEF_REDUCTION);
+     //gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,40,delta,SEYSEN_REDUCTION);
+     //gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,gap_status,delta,SEYSEN_REDUCTION);
   
     
   }
@@ -330,13 +407,13 @@ int main(int argc, char *argv[])  {
    
    Timer tl;
    tl.start();
-   //L.hlll(delta);
+   L.hlll(delta);
    tl.stop();
 
   
    cout << endl << "hlll: " << tl << endl;
 
-   // Vertification
+   // Verification
    // -------------
 
    cout << endl << endl;
