@@ -109,6 +109,11 @@ public:
   int hsizereduce(int kappa, int fromk=0);
   
   int seysenreduce(int kappa);
+
+  int reduce_and_gap_detect(int seysen_flag);
+
+  int rotate(int gap_status);  
+
   int seysen_flag;
 
   int fast_long_flag;

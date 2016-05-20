@@ -100,33 +100,25 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
   // Computed through size reduction afterwards
 
     
-  householder(dorigin); 
+ 
 
   FP_NR<FT> afmax;
   set_z(afmax,amax);
 
-  for (i=dorigin; i < d; i++) 
-    R.set(i,i,afmax);
-
-  // For the gap detection
-  
-  FP_NR<FT>  qq;
-  FP_NR<FT>  eps;
-  eps=0.000000000001;
-
   int gap_status=0;
 
   
-  //DBG
-  FP_NR<FT>  ming;
-  ming=1.0;
+  householder(dorigin); 
+    
+ 
+  for (i=dorigin; i < d; i++) 
+    R.set(i,i,afmax);
 
+      
   // Main iteration loop
   // *******************
   
   for (iter=0; stop==0; iter++) {
-
-    gap_status=0;
     
     stop=1;
 
@@ -190,15 +182,6 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
 	lovtests[k]=BR.nblov;
 	
-	// if (isId(BR.getU()))
-	//   cout << "ok " << endl;
-	// else {
-	//   cout << "*** NO *** " << k << endl;
-	//   cout << "    nblov: " << BR.nblov << endl;
-	//   //print2maple(BR.getU(),2*bdim,2*bdim);
-	// } 
-	//cout << "Nb threads: " << omp_get_num_threads() << endl; 
-
       }
     }
 
@@ -238,67 +221,23 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
     
     time.start();
+
+    gap_status=reduce_and_gap_detect(seysen_flag);
+
     
-    for (i=0; i<dorigin; i++) {
-      col_kept[i]=0;
-      descendu[i]=0;
+    if (gap_status>=2) {
+      verboseDepth+=1;
+      return gap_status; 
     }
-    
-    householder_r(0);
-    householder_v(0);
-    
-    for (i=1; i<dorigin; i++) {
 
-      if (seysen_flag < 1) 
-      	hsizereduce(i);
-      else 
-	seysenreduce(i);
-
-     
-      householder_v(i);
-      
-      
-      // Gap detection is a e.g. small vector has been found
-      // ---------------------------------------------------
-      
-      if ((i >= 2) && (i<dorigin-1)) {
-	  qq.div(R.get(i,i),R.get(i-1,i-1));
-	  qq.abs(qq);
-
-	  //DBG 
-	  if (ming.cmp(qq) ==1) ming=qq;
-	  
-	  if (eps.cmp(qq) == 1) {
-	    cout << " **** Anomaly gap detection, column: " << i+1 << "/" << dorigin << "    Ratio = ";
-	    hplllprint(qq); 	cout << endl;
-	    if ((i+1)%(2*bdim) == 1)
-	      cout << "      At the beginning of even block " << (i+1)/(2*bdim)+1 << endl;
-
-
-	    // // DBG
-
-	    // for (int k=0; k<=i; k++) {
-	    //   cout << "k = " << k << "   "; hplllprint(normB2[k]); cout << "    ";  hplllprint(R.get(k,k)); cout << endl;
-	    // }
-	    
-	    //verboseDepth+=1;
-	    //return i+1; // Math column index
-	    gap_status = i+1;   // real matrix index 
-	    break;
-	     
-	  }
-      } // gap detection test 
-
-    } // end size reduction loop
-
-    if (gap_status >=2) break; // Output the main loop 
-      
     for (i=dorigin; i < d; i++) 
       R.set(i,i,afmax);
 
+    
     time.stop();
     esizetime+=time;
-    
+
+      
     // Odd reductions
     // **************
 
@@ -383,79 +322,46 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     // ******************
     
     time.start();
-    
-    for (i=0; i<dorigin; i++) {
-      col_kept[i]=0;
-      descendu[i]=0;
-    }
-    
-    householder_r(0);
-    householder_v(0);
-    
-    for (i=1; i<dorigin; i++) {
 
-      if (seysen_flag < 1) 
-      	hsizereduce(i);
-      else 
-	seysenreduce(i);
+    gap_status=reduce_and_gap_detect(seysen_flag);
       
-      householder_v(i);
-
-      // Gap detection is a e.g. small vector has been found
-      // ---------------------------------------------------
-      
-      if ((i >= 2) && (i<dorigin-1)) {
-	  qq.div(R.get(i,i),R.get(i-1,i-1));
-	  qq.abs(qq);
-
-	   //DBG 
-	  if (ming.cmp(qq) ==1) ming=qq;
-	  
-	  if (eps.cmp(qq) == 1) {
-	    cout << " **** Anomaly gap detection, column: " << i+1 << "/" << dorigin  << "    Ratio = ";
-	    hplllprint(qq); 	cout << endl;
-	    if ((i+1-bdim)%(2*bdim) == 1)
-	      cout << "      At the beginning of odd block " << (i+1-bdim)/(2*bdim)+1 << endl; 
-
-	    verboseDepth+=1;
-	    return i; // Math column index
-	  }
-	}
-            
+    if (gap_status>=2) {
+      verboseDepth+=1;
+      return gap_status; 
     }
 
     for (i=dorigin; i < d; i++) 
       R.set(i,i,afmax);
 
+    
     time.stop();
     osizetime+=time;
     
   } // End odd-even iter until reduced  
 
-
-   // DBG
-  cout << "******* ICI **** " << gap_status << endl;
   
-    cout << "*********************************************  ";  hplllprint(ming); cout << endl; 
-    
   totime.stop();
 
     
   // cout << endl;
   // //cout << " Householder: " << qrtime << endl;
   // //cout << " Re-ortho: " << orthotime  << endl;
-   cout << " Reductions: " << redtime << endl;
-   cout << "   Even reductions: " << eventime << endl;
-   cout << "   Odd reductions: " << oddtime << endl;
-   cout << " Products: " << prodtime1 << endl;
-   cout << "           " << prodtime2 << endl;
-  // //cout << "           " << prodtime3 << endl;
+
+  // cout << " Reductions: " << redtime << endl;
+  //  cout << "   Even reductions: " << eventime << endl;
+  //  cout << "   Odd reductions: " << oddtime << endl;
+  //  cout << " Products: " << prodtime1 << endl;
+  //  cout << "           " << prodtime2 << endl;
+
+   // //cout << "           " << prodtime3 << endl;
   // //cout << "           " << prodtime4 << endl;
-   cout << " Even size reds: " << esizetime  << endl;
-   cout << " Odd size reds: " << osizetime  << endl;
-   cout << " RZ: " << rztime  << endl;
-   cout << " Total time:  " << totime << endl;  
-  // //cout << endl << " Special chrono:" << special << endl << endl;
+
+   // cout << " Even size reds: " << esizetime  << endl;
+   // cout << " Odd size reds: " << osizetime  << endl;
+   // cout << " RZ: " << rztime  << endl;
+   // cout << " Total time:  " << totime << endl;  
+
+   // //cout << endl << " Special chrono:" << special << endl << endl;
   // cout << endl << "Swaps: " << swapstab << endl;
   
   verboseDepth+=1;
@@ -465,6 +371,102 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 };
 
 
+   
+/* -------------------------------------------------------------------------
+
+  Rotation 
+  
+  
+  ------------------------------------------------------------------------- */
+  
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
+SLattice<ZT,FT, MatrixZT, MatrixFT>::rotate(int gap_status) { 
+
+  vector<Z_NR<ZT> > vz;
+  vz.resize(n);
+
+  int i,j;
+
+  for (i=0; i<n; i++)
+    vz[i]=B(i,gap_status-1);
+
+  for (j=gap_status-1; j>0; j--)
+    for (i=0; i<n; i++)
+      B(i,j)=B(i,j-1);
+
+  for (i=0; i<n; i++)
+    B(i,0)=vz[i];
+  
+  return(0);
+
+}
+
+  
+/* -------------------------------------------------------------------------
+
+   Size reduction and gap detection 
+
+
+   ------------------------------------------------------------------------- */
+
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
+SLattice<ZT,FT, MatrixZT, MatrixFT>::reduce_and_gap_detect(int seysen_flag) { 
+
+  // For the gap detection
+  
+  FP_NR<FT>  qq;
+  FP_NR<FT>  eps;
+  eps=0.001;
+
+  
+  int i;
+  
+  for (i=0; i<dorigin; i++) {
+    col_kept[i]=0;
+    descendu[i]=0;
+  }
+  
+  householder_r(0);
+  householder_v(0);
+  
+  for (i=1; i<dorigin; i++) {
+    
+    if (seysen_flag < 1) 
+      hsizereduce(i);
+    else 
+      seysenreduce(i);
+
+     
+    householder_v(i);
+    
+    
+    // Gap detection is a e.g. small vector has been found
+    // ---------------------------------------------------
+    
+    if ((i >= 2) && (i<dorigin-1)) {
+
+      qq.div(R.get(i,i),R.get(i-1,i-1));
+      qq.abs(qq);
+
+      if (eps.cmp(qq) == 1) {
+
+	cout << " **** Anomaly gap detection, column: " << i+1 << "/" << dorigin << "    Ratio = ";
+	hplllprint(qq); 	cout << endl;
+	
+	return i+1; // Math column index
+      }
+    } // gap detection test 
+    
+  } // end size reduction loop
+
+ 
+  return 0;
+
+}
+
+  
 /* -------------------------------------------------------------------------
    Seysen size reduction 
 
