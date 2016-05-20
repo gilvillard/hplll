@@ -28,6 +28,85 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 using namespace hplll; 
 
+
+/* ***********************************************
+
+        Wrapper for using slll, with gap 
+
+   ********************************************** */
+
+
+// Reduced until real column gap_status 
+  
+template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
+lll_wrap_gap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int gap_position, double delta, int reduction_method=0) {
+
+  int i,j;
+
+  int gap_status;
+
+  int n=A.getRows();
+  int d=A.getCols();
+
+  // First part of the basis
+  // -----------------------
+  
+  ZZ_mat<ZT> B;
+
+  B.resize(n,gap_position);
+
+  for (i=0; i<n; i++)
+    for (j=0; j<gap_position; j++)
+      B.Set(i,j,A(i,j));
+  
+  // Reduction of the first part
+  // ---------------------------
+  
+  SLattice<ZT, FT,  MatrixZT, MatrixFT>  LB(B,4,NO_TRANSFORM,reduction_method);
+
+  gap_status=LB.hlll(delta,4,4,1000000);
+
+  // Recursively
+  // -----------
+  if (gap_status >=2) {
+
+    lll_wrap_gap<ZT, FT,  MatrixZT, MatrixFT>(B,LB.getbase(),gap_status,delta,reduction_method);
+
+    
+  }
+  // For second part directly
+  // ------------------------
+  else {
+
+    B=LB.getbase();
+  }
+
+  // Reduction of the second part
+  // ----------------------------
+  
+  C.resize(n,d);
+
+  for (j=0; j<gap_position; j++)
+    for (i=0; i<n; i++)
+      C.Set(i,j,B(i,j));
+
+  for (j=gap_position; j<d; j++)
+    for (i=0; i<n; i++)
+      C.Set(i,j,A(i,j));
+  
+  Lattice<ZT, FT,  MatrixZT, MatrixFT>  LC(C,NO_TRANSFORM,reduction_method);
+  
+  LC.hlll(0.99);
+  
+  C=LC.getbase();
+
+  return 0;
+}
+
+
+
+
+
 /* ***********************************************
 
         Wrapper for using slll  
@@ -55,7 +134,9 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reductio
   int d=A.getCols();
 
   ZZ_mat<ZT> B;
-    
+
+  int gap_status;
+  
   int d1=min(d,dthreshold);
 
   // Initial reduction
@@ -102,10 +183,6 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reductio
     if (verboseDepth >= 0) 
       cout << "Discovering+ vector " << k  << "/" << d << endl;
     
-    // DBG Pb 442 
-    // if (k==442)
-    //   print2maple(B,n,k);
-    
 
     // Size reduction of the last column
     // ---------------------------------
@@ -128,119 +205,40 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reductio
     time.stop();
     ttot+=time;
 
-    // DBG
-    // {
-
-    //   LR.householder_v(k-1);
-      
-    //   cout << "+++++++++++++++++++++++++++++++++++++++++" << endl; 
-    //   matrix<FP_NR<FT> >  RR;
-    //   RR=LR.getR();
-
-    //   FP_NR<FT> tn;
-    //   int j;
-
-    //   j=0;
-    //   cout << "Norm " << j << " :   ";
-    //   fp_norm(tn, RR.getcol(j), k); hplllprint(tn); cout << endl; 
-    //   j=1;
-    //   cout << "Norm " << j << " :   ";
-    //   fp_norm(tn, RR.getcol(j), k); hplllprint(tn); cout << endl;
-    //   j=2;
-    //   cout << "Norm " << j << " :   ";
-    //   fp_norm(tn, RR.getcol(j), k); hplllprint(tn); cout << endl;
-    //   j=3;
-    //   cout << "Norm " << j << " :   ";
-    //   fp_norm(tn, RR.getcol(j), k); hplllprint(tn); cout << endl;
-    //   j=k-4;
-    //   cout << "Norm " << j << " :   ";
-    //   fp_norm(tn, RR.getcol(j), k); hplllprint(tn); cout << endl; 
-    //   j=k-3;
-    //   cout << "Norm " << j << " :   ";
-    //   fp_norm(tn, RR.getcol(j), k); hplllprint(tn); cout << endl;
-    //   j=k-2;
-    //   cout << "Norm " << j << " :   ";
-    //   fp_norm(tn, RR.getcol(j), k); hplllprint(tn); cout << endl;
-    //   j=k-1;
-    //   cout << "Norm " << j << " :   ";
-    //   fp_norm(tn, RR.getcol(j), k); hplllprint(tn); cout << endl;
-
-    //   cout << endl;
-
-    //   for (j=0; j<=3; j++) {
-    // 	cout << "Diag " << j << " :   ";
-    // 	hplllprint(RR.get(j,j)); cout << endl; 
-    //   }
-      
-    //   for (j=k-4; j<=k-1; j++) {
-    // 	cout << "Diag " << j << " :   ";
-    // 	hplllprint(RR.get(j,j)); cout << endl; 
-    //   }	     
-      
-    //   cout << "+++++++++++++++++++++++++++++++++++++++++" << endl; 
-
-      
-    // }
-
-    
+        
     if (verboseDepth >= 0) 
       cout << "     Size reduction: " << time << endl;
 
+    
     time.start();
 
-    // Pb 442 
-    // if (k==442)
-    //   print2maple(LR.getbase(),n,k);
     
-    // Reduction with the last column 
-    // ------------------------------
+    // Reduction with the last column and recursive w.r.t. gap_status 
+    // --------------------------------------------------------------
 
-    int gap_status;
-    
     SLattice<ZT, FT,  MatrixZT, MatrixFT>  L(LR.getbase(),4,NO_TRANSFORM,reduction_method);
-     
+
     gap_status=L.hlll(delta,4,4,1000000);
+
+    
+    if (gap_status >=2) 
+      lll_wrap_gap<ZT, FT,  MatrixZT, MatrixFT>(C,L.getbase(),gap_status,delta,reduction_method);
+
+    else
+      C=L.getbase();
 
     time.stop();
 
     ttot+=time;
-     
-    // If restart needed, complete with the initial basis columns
-    // ----------------------------------------------------------
 
-    if (gap_status >=2) {
-
-      cout << endl; 
-      cout << "Initial reduction: " << tinit << endl;
-      cout << "Segment reduction: " << ttot << endl;
-      
-
-      B=L.getbase();
     
-      C.resize(n,d);
-
-      for (i=0; i<n; i++)
-	for (j=0; j<k; j++)
-	  C.Set(i,j,B(i,j));
-      
-      for (i=0; i<n; i++)
-	for (j=k; j<d; j++)
-	  C.Set(i,j,A(i,j));
-
-      verboseDepth+=1;
-      cout << "gap_status: " << gap_status << endl;  
-      return gap_status; 
-    }
-    
-
     if (verboseDepth >=0) {
       cout << "     Phase+: " << time << endl;
       cout << "     Nblov: " << L.nblov << endl; 
       cout << "     Total: " << ttot << endl;
     }
 
-
-    C=L.getbase();
+   
 
     // Pour comparaison avec hplll
     // ---------------------------
@@ -332,63 +330,16 @@ int main(int argc, char *argv[])  {
   
   ZZ_mat<ZT> C; 
 
-  ZZ_mat<ZT> T; 
-  T.resize(n,d);
-    
+
   Timer tw;
   tw.start();
 
   verboseDepth=2;
 
-  int gap_status=0;
-
-  for (int i=0; i<n; i++)
-    for (int j=0; j<d; j++)
-      T(i,j)=A(i,j);
-
- 
-  // Loop to do on gap status
-  // ------------------------
   
-  
-  gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,20,delta,DEF_REDUCTION);
-  //gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,20,delta,DEF_REDUCTION);
-  //gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,100,delta,SEYSEN_REDUCTION);
- 
-   while (gap_status >=2) {
-
-     cout << n << "," << d << " New C for restart with " << C.getRows() << "," << C.getCols() << endl; 
-
-     //cout << transpose(C) << endl; 
-
-     // Rotation
-     // --------
-
-     
-     for (int i=0; i<n; i++)
-     	 T(i,0)=C(i,gap_status-1);
-
-     for (int i=0; i<n; i++)
-       for (int j=0; j < gap_status -1; j++)
-     	 T(i,j+1)=C(i,j);
-
-     for (int i=0; i<n; i++)
-       for (int j=gap_status; j < d; j++)
-     	 T(i,j)=C(i,j);
-     
-     // Basis as it is
-     // --------------
-     
-     // for (int i=0; i<n; i++)
-     //   for (int j=0; j < d; j++)
-     // 	 T(i,j)=C(i,j);
-
-     gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,40,delta,DEF_REDUCTION);
-     //gap_status=lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,40,delta,SEYSEN_REDUCTION);
-     //gap_status=lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,gap_status,delta,SEYSEN_REDUCTION);
-  
-    
-  }
+  lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,A,255,delta,SEYSEN_REDUCTION);
+  //lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,30,delta,SEYSEN_REDUCTION);
+  //lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,100,delta,SEYSEN_REDUCTION);
 
   tw.stop();
   
@@ -407,7 +358,7 @@ int main(int argc, char *argv[])  {
    
    Timer tl;
    tl.start();
-   L.hlll(delta);
+   //L.hlll(delta);
    tl.stop();
 
   
