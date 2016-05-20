@@ -347,19 +347,19 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
   // //cout << " Householder: " << qrtime << endl;
   // //cout << " Re-ortho: " << orthotime  << endl;
 
-  // cout << " Reductions: " << redtime << endl;
-  //  cout << "   Even reductions: " << eventime << endl;
-  //  cout << "   Odd reductions: " << oddtime << endl;
-  //  cout << " Products: " << prodtime1 << endl;
-  //  cout << "           " << prodtime2 << endl;
+  cout << " Reductions: " << redtime << endl;
+   cout << "   Even reductions: " << eventime << endl;
+   cout << "   Odd reductions: " << oddtime << endl;
+   cout << " Products: " << prodtime1 << endl;
+   cout << "           " << prodtime2 << endl;
 
    // //cout << "           " << prodtime3 << endl;
   // //cout << "           " << prodtime4 << endl;
 
-   // cout << " Even size reds: " << esizetime  << endl;
-   // cout << " Odd size reds: " << osizetime  << endl;
-   // cout << " RZ: " << rztime  << endl;
-   // cout << " Total time:  " << totime << endl;  
+   cout << " Even size reds: " << esizetime  << endl;
+   cout << " Odd size reds: " << osizetime  << endl;
+   cout << " RZ: " << rztime  << endl;
+   cout << " Total time:  " << totime << endl;  
 
    // //cout << endl << " Special chrono:" << special << endl << endl;
   // cout << endl << "Swaps: " << swapstab << endl;
@@ -418,7 +418,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::reduce_and_gap_detect(int seysen_flag) {
   
   FP_NR<FT>  qq;
   FP_NR<FT>  eps;
-  eps=0.001;
+  eps=0.000000001;
 
   
   int i;
