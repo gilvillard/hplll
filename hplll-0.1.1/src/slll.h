@@ -110,6 +110,8 @@ public:
   
   int seysenreduce(int kappa);
 
+  int seysen_update(int from, int to, vector<FP_NR<FT> > vectx); 
+    
   int reduce_and_gap_detect(int seysen_flag);
 
   int rotate(int gap_status);  
