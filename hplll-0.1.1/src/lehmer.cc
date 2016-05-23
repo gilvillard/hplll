@@ -165,8 +165,9 @@ namespace hplll {
 
       B.assign(Ct);
       
-      
+      verboseDepth-=1;
       B.hlll(0.99);
+      verboseDepth+=1;
 
       time.stop();
       ttot+=time;

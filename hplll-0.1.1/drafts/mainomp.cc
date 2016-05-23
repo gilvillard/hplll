@@ -118,8 +118,10 @@ int main(int argc, char *argv[]) {
     double ratio= totp.realtime()/tots.realtime();
     
     cout << endl << endl << "Dim: " << d << "     Ratio par/seq: " << ratio << endl << endl; 
-
-    if (ratio < 0.6601) d=2000000; 
+    cout << "               Par: " <<  totp.realtime()/((double) K) << endl;
+    cout << "               Seq: " <<  tots.realtime()/((double) K) << endl;
+  
+    if (ratio < 0.5601) d=2000000; 
   }
   
   

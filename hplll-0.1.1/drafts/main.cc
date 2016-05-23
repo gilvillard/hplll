@@ -314,13 +314,20 @@ int main(int argc, char *argv[])  {
   // Attention en 128 bits, mpfr get_si pas autrement 
   matrix_cast(A,A0);  // temporaire avec ci-dessous
 
-  // Transposition temporaire pb 442 - 512 mai 2016
-  // int tt;
-  // tt=n;
-  // n=d;
-  // d=tt;
+  // Random preconditioning for the 512 example
+  // ------------------------------------------
+
+  ZZ_mat<ZT> Q;
+  Q.resize(d,d);
   
-  // A.resize(n,d);
+  for (int i=0; i<d; i++)
+	for (int j=0; j<d ; j++) 
+	  Q(i,j).randb(4);
+
+    
+  matprod_in(A,Q);
+  
+    // A.resize(n,d);
   
   // transpose(A,A0);
 
@@ -337,8 +344,8 @@ int main(int argc, char *argv[])  {
   verboseDepth=2;
 
   
-  lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,40,delta,DEF_REDUCTION);
-  //lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,30,delta,SEYSEN_REDUCTION);
+  //lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,10,delta,DEF_REDUCTION);
+  lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,A,255,delta,SEYSEN_REDUCTION);
   //lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,100,delta,SEYSEN_REDUCTION);
 
   tw.stop();
@@ -358,7 +365,7 @@ int main(int argc, char *argv[])  {
    
    Timer tl;
    tl.start();
-   //L.hlll(delta);
+   L.hlll(delta);
    tl.stop();
 
   
