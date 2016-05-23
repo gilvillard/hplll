@@ -564,7 +564,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
       for (i=kappa-1-indexdec; i>=restdim; i--){
 
 	
-	vectx[i].div(tmpcolR[i],R.get(i,i)); // Faire après le test, pas besoin si bounded ?
+	vectx[i].div(tmpcolR[i],R.get(i,i)); 
 
 	qq.abs(R.get(i,i)); 
 	qq.add(qq,theta); // À optimiser
@@ -582,7 +582,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	
 	 
       } // end calcul de la transfo 
-       
+
+     
 
       // Et on applique la transformation  
       // --------------------------------

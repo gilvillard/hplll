@@ -337,7 +337,7 @@ int main(int argc, char *argv[])  {
   verboseDepth=2;
 
   
-  lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,A,255,delta,SEYSEN_REDUCTION);
+  lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,10,delta,DEF_REDUCTION);
   //lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,30,delta,SEYSEN_REDUCTION);
   //lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,100,delta,SEYSEN_REDUCTION);
 
@@ -358,7 +358,7 @@ int main(int argc, char *argv[])  {
    
    Timer tl;
    tl.start();
-   //L.hlll(delta);
+   L.hlll(delta);
    tl.stop();
 
   
