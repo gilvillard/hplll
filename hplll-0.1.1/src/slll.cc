@@ -726,8 +726,33 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 };
 
+/* -------------------------------------------------------------------------
+   Seysen sequential update of R and B   
+
+   ------------------------------------------------------------------------- */
+
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
+  SLattice<ZT,FT, MatrixZT, MatrixFT>::seysen_update(int from, int to, vector<FP_NR<FT> > vectx) { 
 
 
+    return 0;
+
+  } 
+/* -------------------------------------------------------------------------
+   Seysen parallel update of R  
+
+   ------------------------------------------------------------------------- */
+
+
+ 
+
+    
+  /* -------------------------------------------------------------------------
+   Seysen parallel update of B  
+
+   ------------------------------------------------------------------------- */
+
+  
 
 /* -------------------------------------------------------------------------
    Size reduction 
