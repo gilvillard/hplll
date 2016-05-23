@@ -314,23 +314,39 @@ int main(int argc, char *argv[])  {
   // Attention en 128 bits, mpfr get_si pas autrement 
   matrix_cast(A,A0);  // temporaire avec ci-dessous
 
-  // Random preconditioning for the 512 example
-  // ------------------------------------------
+  // Random unimodular preconditioning for the 512 example
+  // -----------------------------------------------------
 
   ZZ_mat<ZT> Q;
   Q.resize(d,d);
+
+  for (int i=0; i<d; i++)
+    Q(i,i)=1;
   
   for (int i=0; i<d; i++)
-	for (int j=0; j<d ; j++) 
-	  Q(i,j).randb(4);
+    for (int j=i+1; j<d ; j++) 
+      Q(i,j).randb(4);
 
-    
+  for (int i=0; i<d; i++)
+    for (int j=0; j<i ; j++) 
+      Q(i,j)=0;
+ 
   matprod_in(A,Q);
   
-    // A.resize(n,d);
+  for (int i=0; i<d; i++)
+    Q(i,i)=1;
   
-  // transpose(A,A0);
+  for (int i=0; i<d; i++)
+    for (int j=i+1; j<d ; j++) 
+      Q(i,j)=0;
+  
+   for (int i=0; i<d; i++)
+    for (int j=0; j<i ; j++) 
+      Q(i,j).randb(4);
 
+  matprod_in(A,Q);
+  
+  
   
   // With the wrapper
   // ----------------
