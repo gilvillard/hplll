@@ -34,7 +34,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 namespace hplll {   
 
-
   
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) { 
@@ -242,10 +241,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
    
   FP_NR<FT>  qq;
   
-  FP_NR<FT> x,t,tmpfp;
-  Z_NR<ZT>  xz,tmpz;
-
-  long expo,lx;
+  FP_NR<FT> x,t;
 
   vector<FP_NR<FT> > vectx(kappa);  
   
@@ -260,13 +256,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
   
   int restdim=0; // Remaining dimension after the current block 
 
-  int nmax; // De la structure triangulaire 
-
-
-  //int whilemax=10000;  // Convergence problem if too low precision  
-
-  // To see / prec problem 
-  //col_kept[kappa]=0;
   
   householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
 
@@ -329,7 +318,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	
 	if (qq.cmp(0.501) == 1) {
 	  bounded[i]=0;
-	  compteur +=1;
+	  somedone=1;
 	}
 	else bounded[i]=1;
 
@@ -343,108 +332,20 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
       // Et on applique la transformation  
       // --------------------------------
-      for (i=kappa-1-indexdec; i>= restdim; i--){
 
-	vectx[i].rnd(vectx[i]); // Mettre que si bounded ci-dessous ? 
-	x=vectx[i]; 
+      // Sequential
+      // ----------
 
-	if (bounded[i]==0) {
+      seysen_update(vectx, kappa, kappa-1-indexdec,  restdim,  bounded);
 
-	  lx = x.get_si_exp(expo);
-
-	  nmax=structure[i]+1;
-	  
-	  // Cf fplll 
-	  // Long case 
-	  if (expo == 0) {
-	    
-	    if (lx == 1) {
-
-	      	      
-	      somedone = 1;
-	      
-	      R.subcol(kappa,i,restdim);
-	      
-	      B.subcol(kappa,i,nmax);
-	      
-	      if (transf) 
-		U.subcol(kappa,i,min(d,nmax));
-	      
-	    } 
-	    else if (lx == -1) {
-
-	      
-	      
-	      somedone = 1;
- 
-	      R.addcol(kappa,i,restdim);
-	      
-	      B.addcol(kappa,i,nmax);
-	      
-	      if (transf) 
-		U.addcol(kappa,i,min(d,nmax));
-
-	    } 
-	    else { 
-
-	      
-	      
-	      somedone = 1;
-
-	      
-	      if (fast_long_flag == 1) {
-	      
-	       	R.submulcol(kappa,i,x,restdim);
-	       	B.addmulcol_si(kappa,i,-lx,nmax);
-	       	if (transf)  
-	       	  U.addmulcol_si(kappa,i,-lx,min(d,nmax));
-		
-	      } // end fast_long
-	      else {
-		
-	       	set_f(xz,x);  
-	      
-	       	R.submulcol(kappa,i,x,restdim);	
-	       	B.submulcol(kappa,i,xz,nmax);
-	       	if (transf)  
-	       	  U.submulcol(kappa,i,xz,min(d,nmax));
-	      }	      
-	    } 
-	    
-	  } // end expo == 0 
-	  else {  // expo <> 0 
-
-	    somedone = 1;
-	    
-	    // **** À FAIRE Le mettre pour Seysen 
-	    if (fast_long_flag == 1) {
-
-	     
-	      
-	      R.submulcol(kappa,i,x,restdim);
-	      B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
-	      if (transf)  
-		U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
-	    
-	    } // end fast_long
-	    else {
-	   
-	      set_f(xz,x);  
-	  
-	      R.submulcol(kappa,i,x,restdim);	
-	      B.submulcol(kappa,i,xz,nmax);
-	      if (transf)  
-		U.submulcol(kappa,i,xz,min(d,nmax));
-	  
-	    } // end no long
-
-
-	    
-	  } // end expo <> 0 
-	} // Non zero combination 
-
-      } // end application de la transformation 
-
+      
+      // Parallel     
+      // --------
+      
+      //seysen_update_R(vectx, kappa, kappa-1-indexdec,  restdim,  bounded);
+      //pseysen_update_B(kappa, kappa-1-indexdec,  restdim, vectx, bounded, 4);
+       
+      
       indexdec+=bdim;     
       ld=ld*2;
 
@@ -473,7 +374,340 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 };
 
+/* -------------------------------------------------------------------------
+   Seysen sequential update of R and B   
 
+   ------------------------------------------------------------------------- */
+
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline bool 
+  Lattice<ZT,FT, MatrixZT, MatrixFT>::seysen_update( vector<FP_NR<FT> >& vectx, int kappa, int from_i, int restdim, vector<bool> bounded) { 
+
+
+    int i;
+    
+    FP_NR<FT>  xf; // Old x
+
+    long expo,lx;
+
+    int nmax;
+    
+    Z_NR<ZT>  xz;
+    
+    for (i=from_i; i>= restdim; i--){
+
+	vectx[i].rnd(vectx[i]);
+	xf=vectx[i]; 
+
+	
+	if (bounded[i]==0) {
+
+	  	
+	  lx = xf.get_si_exp(expo);
+
+	  nmax=structure[i]+1;
+	  
+	  // Cf fplll 
+	  // Long case 
+	  if (expo == 0) {
+	    
+	    if (lx == 1) {
+
+	      R.subcol(kappa,i,restdim);
+	      
+	      B.subcol(kappa,i,nmax);
+	      
+	      if (transf) 
+		U.subcol(kappa,i,min(d,nmax));
+	      
+	    } 
+	    else if (lx == -1) {
+
+	     
+	      R.addcol(kappa,i,restdim);
+	      
+	      B.addcol(kappa,i,nmax);
+	      
+	      if (transf) 
+		U.addcol(kappa,i,min(d,nmax));
+
+	    } 
+	    else { 
+	      
+	      if (fast_long_flag == 1) {
+	      
+	       	R.submulcol(kappa,i,xf,restdim);
+		
+	       	B.addmulcol_si(kappa,i,-lx,nmax);
+	       	if (transf)  
+	       	  U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+		
+	      } // end fast_long
+	      else {
+		
+	       	set_f(xz,x);  
+	      
+	       	R.submulcol(kappa,i,xf,restdim);	
+	       	B.submulcol(kappa,i,xz,nmax);
+	       	if (transf)  
+	       	  U.submulcol(kappa,i,xz,min(d,nmax));
+	      }	      
+	    } 
+	    
+	  } // end expo == 0 
+	  else {  // expo <> 0 
+
+	   
+	    if (fast_long_flag == 1) {
+	    
+	      R.submulcol(kappa,i,xf,restdim);
+	      
+	      B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+	      if (transf)  
+		U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    
+	    } // end fast_long
+	    else {
+	   
+	      set_f(xz,x);  
+	  
+	      R.submulcol(kappa,i,xf,restdim);
+	      
+	      B.submulcol(kappa,i,xz,nmax);
+	      if (transf)  
+		U.submulcol(kappa,i,xz,min(d,nmax));
+	  
+	    } // end no long
+
+
+	    
+	  } // end expo <> 0 
+	} // Non zero combination 
+
+      } // end application de la transformation 
+    
+
+    return 0;
+
+  }
+
+
+  
+/* -------------------------------------------------------------------------
+   Seysen update of R  / TO DO parallel 
+
+   ------------------------------------------------------------------------- */
+
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline bool 
+  Lattice<ZT,FT, MatrixZT, MatrixFT>::seysen_update_R(vector<FP_NR<FT> >& vectx, int kappa, int from_i, int restdim, vector<bool> bounded) { 
+
+
+    int i;
+    
+    FP_NR<FT>  xf; // Old x
+
+    long expo,lx;
+    
+    
+    for (i=from_i; i>= restdim; i--){
+
+      vectx[i].rnd(vectx[i]);  // Attention si en parallèle 
+      xf=vectx[i]; 
+
+	
+      if (bounded[i]==0) {
+
+	  	
+	lx = xf.get_si_exp(expo);
+
+	// Cf fplll 
+	// Long case 
+	if (expo == 0) {
+	    
+	  if (lx == 1) {
+
+	    R.subcol(kappa,i,restdim);
+	      
+	  } 
+	  else if (lx == -1) {
+
+	     
+	    R.addcol(kappa,i,restdim);
+	      
+	  } 
+	  else { 
+	      
+	    if (fast_long_flag == 1) {
+	      
+	      R.submulcol(kappa,i,xf,restdim);
+		
+	    } // end fast_long
+	    else {
+		
+	      
+	      R.submulcol(kappa,i,xf,restdim);	
+	       	
+	    }	      
+	  } 
+	    
+	} // end expo == 0 
+	else {  // expo <> 0 
+
+	  R.submulcol(kappa,i,xf,restdim);
+
+	} // end expo <> 0 
+      } // Non zero combination 
+
+    } // end application de la transformation 
+    
+
+    return 0;
+
+  }
+
+
+ 
+
+    
+  /* -------------------------------------------------------------------------
+   Seysen parallel update of B  
+
+   ------------------------------------------------------------------------- */
+
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline bool 
+  Lattice<ZT,FT, MatrixZT, MatrixFT>::pseysen_update_B(int kappa, int from_i, int restdim,
+							vector<FP_NR<FT> > vectx, vector<bool> bounded, int S) { 
+
+    
+    int nmax;
+      
+    nmax=structure[from_i];
+    
+    for (int i=from_i+1; i>=restdim; i--)  
+      nmax=max(nmax,structure[i]);
+    
+    nmax +=1;
+
+    // Parallel loop
+    // -------------
+    
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif
+
+    for (int l=0; l<S; l++) {
+
+	int i;
+       
+	FP_NR<FT>  xf; // Old x
+      
+	long expo,lx;
+      
+	Z_NR<ZT>  xz;
+
+	int nloc;
+	nloc=nmax/S;
+	if ((l+1) <= nmax%S)
+	  nloc+=1;
+      
+	int ibeg;
+	ibeg=(nmax/S)*l;
+	if ((l+1) <= nmax%S)
+	  ibeg+=l;
+	else
+	  ibeg+=nmax%S;
+
+      
+	for (i=from_i; i>= restdim; i--){
+    
+	  xf=vectx[i]; 
+      
+	
+	  if (bounded[i]==0) {
+	  
+	  
+	    lx = xf.get_si_exp(expo);
+	  
+	    // Cf fplll 
+	    // Long case 
+	    if (expo == 0) {
+	    
+	      if (lx == 1) {
+
+	     
+		B.psubcol(kappa,i,ibeg,nloc);
+	      
+		// if (transf)   TODO EN PARALLELE CF LONGUEUR
+		// 	U.subcol(kappa,i,min(d,nmax));
+	      
+	      } 
+	      else if (lx == -1) {
+
+		B.paddcol(kappa,i,ibeg,nloc);
+	      
+		// if (transf) 
+		// 	U.addcol(kappa,i,min(d,nmax));
+
+	      } 
+	      else { 
+	      
+		if (fast_long_flag == 1) {
+	      
+	       
+		  B.paddmulcol_si(kappa,i,-lx,ibeg,nloc);
+		
+		  // if (transf)  
+		  //   U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+		
+		} // end fast_long
+		else {
+		
+		  set_f(xz,x);  
+	      
+		  B.psubmulcol(kappa,i,xz,ibeg,nloc);
+		
+		  // if (transf)  
+		  //   U.submulcol(kappa,i,xz,min(d,nmax));
+		}	      
+	      } 
+	    
+	    } // end expo == 0 
+	    else {  // expo <> 0 
+
+	   
+	      if (fast_long_flag == 1) {
+	    
+		B.paddmulcol_si_2exp(kappa,i,-lx,expo,ibeg,nloc);
+	      
+		// if (transf)  
+		// 	U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    
+	      } // end fast_long
+	      else {
+	   
+		set_f(xz,x);  
+	  
+		B.psubmulcol(kappa,i,xz,ibeg,nloc);
+	      
+		// if (transf)  
+		// 	U.submulcol(kappa,i,xz,min(d,nmax));
+	  
+	      } // end no long
+
+	      
+	    
+	    } // end expo <> 0 
+	  } // Non zero combination 
+
+	} // end application de la transformation 
+
+    } // Parallel loop 
+
+    return 0;
+
+  }
+  
+
+ 
 
 
 /* -------------------------------------------------------------------------
@@ -492,16 +726,16 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
   
   nmaxkappa=structure[kappa]+1;
 
+  vector<FP_NR<FT> > vectx;
+  vectx.resize(n);
+  
   FP_NR<FT> approx;
   
   approx=0.1;
 
 
-  FP_NR<FT> t,tmpfp;
-  Z_NR<ZT>  xz,tmpz;
-
-  long expo,lx;
-
+  FP_NR<FT> t;
+ 
   int i,w=0;
 
   bool nonstop=1;
@@ -509,7 +743,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
   
   bool somedone=0;
 
-  int nmax; // De la structure triangulaire 
+ 
   
   householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous
 
@@ -528,128 +762,29 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
     somedone = 1;
   
   //while (nonstop) {
-  while (somedone == 1) { 
+  while (somedone == 1) {
+
+    
     w++;
-    
-    somedone = 0;
 
 
-    // Loop through the column 
-    // -----------------------
-
-   
-    for (i=startposition; i>-1; i--){  
-    
-  
-      x.div(R.get(i,kappa),R.get(i,i));
-      x.rnd(x);
- 
+    // Sequential
+    // ----------
+    // if (startposition <= 10000)
       
-	
-      if (x.sgn() !=0) {   // Non zero combination 
-                           // --------------------
-	lx = x.get_si_exp(expo);
+    somedone=size_update(kappa, startposition, 0);
 
-		  
-	nmax=structure[i]+1;
-	
-	// Cf fplll 
-	// Long case 
-	if (expo == 0) {
+    // Parallel
+    // --------
+    //else {
+      
+    //somedone=size_update_R(vectx, kappa, startposition, 0); 
 
-	  if (lx == 1) {
+    //psize_update_B(kappa, startposition, 0, vectx, 2);
+    //} 
 
-	    
-	    somedone = 1;
-	    
-	    
-	    R.subcol(kappa,i,i+1);
-	    
-	    B.subcol(kappa,i,nmax);
-	    	    
-	    if (transf) 
-	      U.subcol(kappa,i,min(d,nmax));
-	
-	  } 
-	  else if (lx == -1) {
-
-	    
-	    somedone = 1;
-	   
-	    
-	    R.addcol(kappa,i,i+1);
-	    
-	    B.addcol(kappa,i,nmax);
-		
-	    if (transf) 
-	      U.addcol(kappa,i,min(d,nmax));
-
-	  } 
-	  else { 
-
-	    
-	    somedone = 1;
-	    
- 
-	    if (fast_long_flag == 1) {
-  
-	      R.submulcol(kappa,i,x,i+1);
-	      B.addmulcol_si(kappa,i,-lx,nmax);
-	      if (transf)  
-		U.addmulcol_si(kappa,i,-lx,min(d,nmax));
-	      
-
-	    } // end fast_long
-	    else {
-	      
-	      set_f(xz,x);
-
-	      R.submulcol(kappa,i,x,i+1);
-	      
-	      B.submulcol(kappa,i,xz,nmax);
-	      if (transf)  
-	     	U.submulcol(kappa,i,xz,min(d,nmax));
-	    }
-
-	    
-	  } // end else expo ==0 and not 1 or -1
-  
-	} // end expo == 0 
-	else {  // expo <> 0 
-
-	  
-	  somedone = 1;
-	 
- 
-	  if (fast_long_flag == 1) {
-	    
-	    R.submulcol(kappa,i,x,i+1);
-	    B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
-	    if (transf)  
-	      U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
-	    
-	    } // end fast_long
-	  else {
-	   
-	    set_f(xz,x);  
-	  
-	    R.submulcol(kappa,i,x,i+1);	
-	    B.submulcol(kappa,i,xz,nmax);
-	    if (transf)  
-	      U.submulcol(kappa,i,xz,min(d,nmax));
-	  
-	  } // end no long
-	  
-	} // end expo <> 0 
-
-      } // Non zero combination 
-
-    } // Loop through the column
     
-    
-
     if (somedone) {
-
       
       col_kept[kappa]=0;
       
@@ -727,6 +862,370 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 }
 
 
+  /* -------------------------------------------------------------------------
+   Size reduce sequential update of R and B   
+
+   ------------------------------------------------------------------------- */
+
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline bool 
+  Lattice<ZT,FT, MatrixZT, MatrixFT>::size_update(int kappa, int from_i, int to_i) { 
+
+    bool somedone=false;
+    
+    int i;
+
+    int nmax;
+    
+    Z_NR<ZT>  xz;
+    
+    long expo,lx;
+  
+    
+    // Loop through the column 
+    // -----------------------
+
+    for (i=from_i; i>=to_i; i--){  
+    
+  
+      x.div(R.get(i,kappa),R.get(i,i));
+      x.rnd(x);
+ 
+      
+	
+      if (x.sgn() !=0) {   // Non zero combination 
+                           // --------------------
+	lx = x.get_si_exp(expo);
+
+		  
+	nmax=structure[i]+1;
+	
+	// Cf fplll 
+	// Long case 
+	if (expo == 0) {
+
+	  if (lx == 1) {
+
+	    //compteur +=1;
+	    somedone = 1;
+	    
+	    
+	    R.subcol(kappa,i,i+1);
+	    
+	    B.subcol(kappa,i,nmax);
+	    	    
+	    if (transf) 
+	      U.subcol(kappa,i,min(d,nmax));
+	
+	  } 
+	  else if (lx == -1) {
+
+	    //compteur +=1;
+	    somedone = 1;
+	   
+	    
+	    R.addcol(kappa,i,i+1);
+	    
+	    B.addcol(kappa,i,nmax);
+		
+	    if (transf) 
+	      U.addcol(kappa,i,min(d,nmax));
+
+	  } 
+	  else { 
+
+	    //compteur +=1;
+	    somedone = 1;
+	    
+ 
+	    if (fast_long_flag == 1) {
+	      
+	      R.submulcol(kappa,i,x,i+1);
+	      B.addmulcol_si(kappa,i,-lx,nmax);
+	      if (transf)  
+		U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+	      
+
+	    } // end fast_long
+	    else {
+	      
+	      set_f(xz,x);
+
+	      R.submulcol(kappa,i,x,i+1);
+	      
+	      B.submulcol(kappa,i,xz,nmax);
+	      if (transf)  
+	     	U.submulcol(kappa,i,xz,min(d,nmax));
+	    }
+
+	    
+	  } // end else expo ==0 and not 1 or -1
+  
+	} // end expo == 0 
+	else {  // expo <> 0 
+
+	  //compteur +=1;
+	  somedone = 1;
+	 
+ 
+	  if (fast_long_flag == 1) {
+	    
+	    R.submulcol(kappa,i,x,i+1);
+	    B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+	    if (transf)  
+	      U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    
+	    } // end fast_long
+	  else {
+	   
+	    set_f(xz,x);  
+	  
+	    R.submulcol(kappa,i,x,i+1);	
+	    B.submulcol(kappa,i,xz,nmax);
+	    if (transf)  
+	      U.submulcol(kappa,i,xz,min(d,nmax));
+	  
+	  } // end no long
+	  
+	} // end expo <> 0 
+
+      } // Non zero combination 
+
+    } // Loop through the column
+    
+    
+    return somedone;
+
+  }
+
+
+/* -------------------------------------------------------------------------
+   Size reduce update of R    
+
+   ------------------------------------------------------------------------- */
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline bool 
+Lattice<ZT,FT, MatrixZT, MatrixFT>::size_update_R(vector<FP_NR<FT> >& vectx, int kappa, int from_i, int to_i) { 
+
+  bool somedone=false;
+    
+  int i;
+  
+  long expo,lx;
+  
+  
+  // Loop through the column 
+  // -----------------------
+  
+  for (i=from_i; i>=to_i; i--){  
+    
+  
+    x.div(R.get(i,kappa),R.get(i,i));
+    x.rnd(x);
+    
+    vectx[i]=x;
+    
+    if (x.sgn() !=0) {     // Non zero combination 
+                           // --------------------
+      lx = x.get_si_exp(expo);
+      
+      
+      // Cf fplll 
+      // Long case 
+      if (expo == 0) {
+	
+	if (lx == 1) {
+	  
+	  
+	  somedone = 1;
+	  
+	  R.subcol(kappa,i,i+1);
+	  
+	} 
+	else if (lx == -1) {
+	  
+	  
+	  somedone = 1;
+	  
+	  R.addcol(kappa,i,i+1);
+	  
+	}
+	else {
+
+	  somedone = 1;
+	  
+	  R.submulcol(kappa,i,x,i+1); 
+	  
+	}
+      }
+      else { 
+
+	somedone = 1;
+	
+	R.submulcol(kappa,i,x,i+1);
+	
+      } // end expo <> 0 
+      
+    } // Non zero combination 
+
+  } // Loop through the column
+    
+    
+  return somedone;
+
+}
+
+
+  
+  
+  
+  
+/* -------------------------------------------------------------------------
+   Size reduce parallel update of B   
+
+   ------------------------------------------------------------------------- */
+
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline bool 
+  Lattice<ZT,FT, MatrixZT, MatrixFT>::psize_update_B(int kappa, int from_i, int to_i,  vector<FP_NR<FT> > vectx, int S) {
+
+   
+    
+    int nmax;
+  
+    nmax=structure[from_i];
+    
+    for (int i=from_i+1; i>=to_i; i--)  
+      nmax=max(nmax,structure[i]);
+
+   
+    nmax +=1;
+
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif
+    
+    // Parallel loop
+    // -------------
+    
+    for (int l=0; l<S; l++) { 
+
+      int i;
+
+      Z_NR<ZT>  xz;
+
+      FP_NR<FT>  xf; // Old x 
+    
+      long expo,lx;
+    
+      int nloc;
+      nloc=nmax/S;
+      if ((l+1) <= nmax%S)
+	nloc+=1;
+      
+      int ibeg;
+      ibeg=(nmax/S)*l;
+      if ((l+1) <= nmax%S)
+	ibeg+=l;
+      else
+	ibeg+=nmax%S;
+
+      
+      // Loop through the column 
+      // -----------------------
+
+      for (i=from_i; i>=to_i; i--){  
+    
+  
+	xf=vectx[i]; 
+
+	
+	if (xf.sgn() !=0) {   // Non zero combination 
+	                      // --------------------
+	  
+	  lx = xf.get_si_exp(expo); // To put also through R 
+		  
+	  //nmax=structure[i]+1;
+	
+	  // Cf fplll 
+	  // Long case 
+	  if (expo == 0) {
+
+	    if (lx == 1) {
+
+	      B.psubcol(kappa,i,ibeg,nloc);
+	    	    
+	      // if (transf)   A FAIRE EN PARALLELE CF LONG 
+	      // 	U.subcol(kappa,i,min(d,nmax));
+	
+	    } 
+	    else if (lx == -1) {
+
+	      B.paddcol(kappa,i,ibeg,nloc);
+		
+	      // if (transf) 
+	      // 	U.addcol(kappa,i,min(d,nmax));
+
+	    } 
+	    else { 
+
+	      if (fast_long_flag == 1) {
+	      
+		B.paddmulcol_si(kappa,i,-lx,ibeg,nloc);
+		
+		// if (transf)  
+		//   U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+	      
+
+	      } // end fast_long
+	      else {
+	      
+		set_f(xz,xf);
+	      
+		B.psubmulcol(kappa,i,xz,ibeg,nloc);
+		
+		// if (transf)  
+		//   U.submulcol(kappa,i,xz,min(d,nmax));
+	      }
+
+	    
+	    } // end else expo ==0 and not 1 or -1
+  
+	  } // end expo == 0 
+	  else {  // expo <> 0 
+
+
+	    if (fast_long_flag == 1) {
+	    
+	      B.paddmulcol_si_2exp(kappa,i,-lx,expo,ibeg,nloc);
+	      
+	      // if (transf)  
+	      // 	U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    
+	    } // end fast_long
+	    else {
+	   
+	      set_f(xz,xf);  
+	  
+	      B.psubmulcol(kappa,i,xz,ibeg,nloc);
+	      
+	      // if (transf)  
+	      // 	U.submulcol(kappa,i,xz,min(d,nmax));
+	  
+	    } // end no long
+	  
+	  } // end expo <> 0 
+
+	} // Non zero combination 
+
+      } // Loop through the column
+    
+    } // Parallel loop
+    
+    return true; // Somedone by R 
+  }
+  
+  
+
+  
 /* ------------- */
 /* Householder R */
 /* ------------- */
