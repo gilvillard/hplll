@@ -491,8 +491,6 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
   FP_NR<FT> x,t,tmpfp;
   Z_NR<ZT>  xz,tmpz;
 
-  long expo,lx;
-
   vector<FP_NR<FT> > vectx(kappa);  
   
   vector<FP_NR<FT> > tmpcolR(kappa);  
@@ -504,15 +502,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
   vector<bool> bounded(kappa);
   
-  int restdim=0; // Remaining dimension after the current block 
-
-  int nmax; // De la structure triangulaire 
-
-
-  //int whilemax=10000;  // Convergence problem if too low precision  
-
-  // To see / prec problem 
-  //col_kept[kappa]=0;
+  int restdim=0; // Remaining dimension after the current block
+  
   
   householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
 
@@ -573,7 +564,11 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	//qq.abs(vectx[i]);
 	
 	qq.abs(vectx[i]);
-	if (qq.cmp(0.501) == 1) bounded[i]=0; else bounded[i]=1;
+	if (qq.cmp(0.501) == 1) {
+	  bounded[i]=0;
+	  somedone=1;
+	}
+	else bounded[i]=1;
 	
 	
 	// Faire une opération vectorielle 
@@ -584,114 +579,24 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
       } // end calcul de la transfo 
 
      
-
+      // ********* Update
+      //for (i=kappa-1-indexdec; i>= restdim; i--){
+      
       // Et on applique la transformation  
       // --------------------------------
-      for (i=kappa-1-indexdec; i>= restdim; i--){
 
-	vectx[i].rnd(vectx[i]);
-	x=vectx[i]; 
+      // Sequential
 
-	//if (x.sgn() !=0) { 
-	if (bounded[i]==0) {
+      //seysen_update(vectx, kappa, kappa-1-indexdec,  restdim,  bounded);
 
-	  	
-	  lx = x.get_si_exp(expo);
-
-	  nmax=structure[i]+1;
-	  
-	  // Cf fplll 
-	  // Long case 
-	  if (expo == 0) {
-	    
-	    if (lx == 1) {
-
-	      //compteur +=1;
-	      
-	      somedone = 1;
-	      
-	      R.subcol(kappa,i,restdim);
-	      
-	      B.subcol(kappa,i,nmax);
-	      
-	      if (transf) 
-		U.subcol(kappa,i,min(d,nmax));
-	      
-	    } 
-	    else if (lx == -1) {
-
-	      //compteur +=1;
-	      
-	      somedone = 1;
- 
-	      R.addcol(kappa,i,restdim);
-	      
-	      B.addcol(kappa,i,nmax);
-	      
-	      if (transf) 
-		U.addcol(kappa,i,min(d,nmax));
-
-	    } 
-	    else { 
-
-	      //compteur +=1;
-	      
-	      somedone = 1;
-
-	      
-	      if (fast_long_flag == 1) {
-	      
-	       	R.submulcol(kappa,i,x,restdim);
-	       	B.addmulcol_si(kappa,i,-lx,nmax);
-	       	if (transf)  
-	       	  U.addmulcol_si(kappa,i,-lx,min(d,nmax));
-		
-	      } // end fast_long
-	      else {
-		
-	       	set_f(xz,x);  
-	      
-	       	R.submulcol(kappa,i,x,restdim);	
-	       	B.submulcol(kappa,i,xz,nmax);
-	       	if (transf)  
-	       	  U.submulcol(kappa,i,xz,min(d,nmax));
-	      }	      
-	    } 
-	    
-	  } // end expo == 0 
-	  else {  // expo <> 0 
-
-	    //compteur +=1;
-	      
-	    somedone = 1;
-	    
-	    // **** À FAIRE Le mettre pour Seysen 
-	    if (fast_long_flag == 1) {
-	    
-	      R.submulcol(kappa,i,x,restdim);
-	      B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
-	      if (transf)  
-		U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
-	    
-	    } // end fast_long
-	    else {
-	   
-	      set_f(xz,x);  
-	  
-	      R.submulcol(kappa,i,x,restdim);	
-	      B.submulcol(kappa,i,xz,nmax);
-	      if (transf)  
-		U.submulcol(kappa,i,xz,min(d,nmax));
-	  
-	    } // end no long
-
-
-	    
-	  } // end expo <> 0 
-	} // Non zero combination 
-
-      } // end application de la transformation 
-
+      
+      // Parallel
+      // --------
+    
+      seysen_update_R(vectx, kappa, kappa-1-indexdec,  restdim,  bounded);
+       
+      pseysen_update_B(kappa, kappa-1-indexdec,  restdim, vectx, bounded, 4);
+    
       indexdec+=bdim;     
       ld=ld*2;
 
@@ -731,17 +636,189 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
    ------------------------------------------------------------------------- */
 
-  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
-  SLattice<ZT,FT, MatrixZT, MatrixFT>::seysen_update(int from, int to, vector<FP_NR<FT> > vectx) { 
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline bool 
+  SLattice<ZT,FT, MatrixZT, MatrixFT>::seysen_update( vector<FP_NR<FT> >& vectx, int kappa, int from_i, int restdim, vector<bool> bounded) { 
 
+
+    int i;
+    
+    FP_NR<FT>  xf; // Old x
+
+    long expo,lx;
+
+    int nmax;
+    
+    Z_NR<ZT>  xz;
+    
+    for (i=from_i; i>= restdim; i--){
+
+	vectx[i].rnd(vectx[i]);
+	xf=vectx[i]; 
+
+	
+	if (bounded[i]==0) {
+
+	  	
+	  lx = xf.get_si_exp(expo);
+
+	  nmax=structure[i]+1;
+	  
+	  // Cf fplll 
+	  // Long case 
+	  if (expo == 0) {
+	    
+	    if (lx == 1) {
+
+	      R.subcol(kappa,i,restdim);
+	      
+	      B.subcol(kappa,i,nmax);
+	      
+	      if (transf) 
+		U.subcol(kappa,i,min(d,nmax));
+	      
+	    } 
+	    else if (lx == -1) {
+
+	     
+	      R.addcol(kappa,i,restdim);
+	      
+	      B.addcol(kappa,i,nmax);
+	      
+	      if (transf) 
+		U.addcol(kappa,i,min(d,nmax));
+
+	    } 
+	    else { 
+	      
+	      if (fast_long_flag == 1) {
+	      
+	       	R.submulcol(kappa,i,xf,restdim);
+		
+	       	B.addmulcol_si(kappa,i,-lx,nmax);
+	       	if (transf)  
+	       	  U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+		
+	      } // end fast_long
+	      else {
+		
+	       	set_f(xz,x);  
+	      
+	       	R.submulcol(kappa,i,xf,restdim);	
+	       	B.submulcol(kappa,i,xz,nmax);
+	       	if (transf)  
+	       	  U.submulcol(kappa,i,xz,min(d,nmax));
+	      }	      
+	    } 
+	    
+	  } // end expo == 0 
+	  else {  // expo <> 0 
+
+	   
+	    if (fast_long_flag == 1) {
+	    
+	      R.submulcol(kappa,i,xf,restdim);
+	      
+	      B.addmulcol_si_2exp(kappa,i,-lx,expo,nmax);
+	      if (transf)  
+		U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    
+	    } // end fast_long
+	    else {
+	   
+	      set_f(xz,x);  
+	  
+	      R.submulcol(kappa,i,xf,restdim);
+	      
+	      B.submulcol(kappa,i,xz,nmax);
+	      if (transf)  
+		U.submulcol(kappa,i,xz,min(d,nmax));
+	  
+	    } // end no long
+
+
+	    
+	  } // end expo <> 0 
+	} // Non zero combination 
+
+      } // end application de la transformation 
+    
 
     return 0;
 
-  } 
+  }
+
+  
 /* -------------------------------------------------------------------------
-   Seysen parallel update of R  
+   Seysen update of R  / TO DO parallel 
 
    ------------------------------------------------------------------------- */
+
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline bool 
+  SLattice<ZT,FT, MatrixZT, MatrixFT>::seysen_update_R(vector<FP_NR<FT> >& vectx, int kappa, int from_i, int restdim, vector<bool> bounded) { 
+
+
+    int i;
+    
+    FP_NR<FT>  xf; // Old x
+
+    long expo,lx;
+    
+    
+    for (i=from_i; i>= restdim; i--){
+
+      vectx[i].rnd(vectx[i]);  // Attention si en parallèle 
+      xf=vectx[i]; 
+
+	
+      if (bounded[i]==0) {
+
+	  	
+	lx = xf.get_si_exp(expo);
+
+	// Cf fplll 
+	// Long case 
+	if (expo == 0) {
+	    
+	  if (lx == 1) {
+
+	    R.subcol(kappa,i,restdim);
+	      
+	  } 
+	  else if (lx == -1) {
+
+	     
+	    R.addcol(kappa,i,restdim);
+	      
+	  } 
+	  else { 
+	      
+	    if (fast_long_flag == 1) {
+	      
+	      R.submulcol(kappa,i,xf,restdim);
+		
+	    } // end fast_long
+	    else {
+		
+	      
+	      R.submulcol(kappa,i,xf,restdim);	
+	       	
+	    }	      
+	  } 
+	    
+	} // end expo == 0 
+	else {  // expo <> 0 
+
+	  R.submulcol(kappa,i,xf,restdim);
+
+	} // end expo <> 0 
+      } // Non zero combination 
+
+    } // end application de la transformation 
+    
+
+    return 0;
+
+  }
 
 
  
@@ -752,6 +829,141 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
    ------------------------------------------------------------------------- */
 
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline bool 
+  SLattice<ZT,FT, MatrixZT, MatrixFT>::pseysen_update_B(int kappa, int from_i, int restdim,
+							vector<FP_NR<FT> > vectx, vector<bool> bounded, int S) { 
+
+    
+    int nmax;
+      
+    nmax=structure[from_i];
+    
+    for (int i=from_i+1; i>=restdim; i--)  
+      nmax=max(nmax,structure[i]);
+    
+    nmax +=1;
+
+    // Parallel loop
+    // -------------
+    
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif
+
+    for (int l=0; l<S; l++) {
+
+	int i;
+       
+	FP_NR<FT>  xf; // Old x
+      
+	long expo,lx;
+      
+	Z_NR<ZT>  xz;
+
+	int nloc;
+	nloc=nmax/S;
+	if ((l+1) <= nmax%S)
+	  nloc+=1;
+      
+	int ibeg;
+	ibeg=(nmax/S)*l;
+	if ((l+1) <= nmax%S)
+	  ibeg+=l;
+	else
+	  ibeg+=nmax%S;
+
+      
+	for (i=from_i; i>= restdim; i--){
+    
+	  xf=vectx[i]; 
+      
+	
+	  if (bounded[i]==0) {
+	  
+	  
+	    lx = xf.get_si_exp(expo);
+	  
+	    // Cf fplll 
+	    // Long case 
+	    if (expo == 0) {
+	    
+	      if (lx == 1) {
+
+	     
+		B.psubcol(kappa,i,ibeg,nloc);
+	      
+		// if (transf)   TODO EN PARALLELE CF LONGUEUR
+		// 	U.subcol(kappa,i,min(d,nmax));
+	      
+	      } 
+	      else if (lx == -1) {
+
+		B.paddcol(kappa,i,ibeg,nloc);
+	      
+		// if (transf) 
+		// 	U.addcol(kappa,i,min(d,nmax));
+
+	      } 
+	      else { 
+	      
+		if (fast_long_flag == 1) {
+	      
+	       
+		  B.paddmulcol_si(kappa,i,-lx,ibeg,nloc);
+		
+		  // if (transf)  
+		  //   U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+		
+		} // end fast_long
+		else {
+		
+		  set_f(xz,x);  
+	      
+		  B.psubmulcol(kappa,i,xz,ibeg,nloc);
+		
+		  // if (transf)  
+		  //   U.submulcol(kappa,i,xz,min(d,nmax));
+		}	      
+	      } 
+	    
+	    } // end expo == 0 
+	    else {  // expo <> 0 
+
+	   
+	      if (fast_long_flag == 1) {
+	    
+		B.paddmulcol_si_2exp(kappa,i,-lx,expo,ibeg,nloc);
+	      
+		// if (transf)  
+		// 	U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    
+	      } // end fast_long
+	      else {
+	   
+		set_f(xz,x);  
+	  
+		B.psubmulcol(kappa,i,xz,ibeg,nloc);
+	      
+		// if (transf)  
+		// 	U.submulcol(kappa,i,xz,min(d,nmax));
+	  
+	      } // end no long
+
+	      
+	    
+	    } // end expo <> 0 
+	  } // Non zero combination 
+
+	} // end application de la transformation 
+
+    } // Parallel loop 
+
+    return 0;
+
+  }
+  
+
+ 
   
 
 /* -------------------------------------------------------------------------
@@ -767,17 +979,16 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
 SLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) { 
 
-  nmaxkappa=structure[kappa]+1;
+  //nmaxkappa=structure[kappa]+1;
 
   FP_NR<FT> approx;
-  
+  vector<FP_NR<FT> > vectx;
+     
   approx=0.001;
 
 
   FP_NR<FT> t,tmpfp;
-  Z_NR<ZT>  xz,tmpz;
-
-  long expo,lx;
+  
 
   int i,w=0;
 
@@ -786,37 +997,150 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
   
   bool somedone=0;
 
-  int nmax; // De la structure triangulaire 
+ 
   
   householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous
 
   
       
-  // While loop for the norm decrease
-  // --------------------------------
-  
-
   int startposition;
   if (fromk > 0) 
     startposition = min(kappa-1,fromk);
   else 
     startposition = kappa-1;
-
-    somedone = 1;
   
-  //while (nonstop) {
+  somedone = 1;
+  
+  // While loop for the norm decrease
+  // --------------------------------
+  
+  
   while (somedone == 1) { 
+
     w++;
     
-    somedone = 0;
 
-    //compteur +=1;
+    // Sequential
+    // ----------
+    somedone=size_update(kappa, startposition, 0);
 
+    // Parallel
+    // --------
+    
+    //somedone=size_update_R(vectx, kappa, startposition, 0); 
+
+    //psize_update_B(kappa, startposition, 0, vectx, 1);
+
+    
+    // Somedone 
+
+    if (somedone) {
+
+      
+      compteur+=1;
+      
+      col_kept[kappa]=0;
+      
+      t.mul(approx,normB2[kappa]);
+      
+      householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
+
+      nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ?
+
+      // Heuristic test
+      // The norm is not increasing for several steps
+      // This may happen exceptionnaly in correct cases with mu_ij = 1/2 exactly
+      //  (and alternates between to values 1/2 and -1/2 in floating point 
+      // Or happen when not enough precision
+      // Hence here: test of size reduction, if yes then exit if no then return -1 
+      if ((prev_nonstop ==0) && (nonstop == 0)) {
+      	
+      	  FP_NR<FT> one;
+      	  one = 1.0;
+	  
+	  FP_NR<FT> theta,eps;
+      	  //theta = 0.0000001;
+      	  //theta.mul(theta,R.get(kappa,kappa));
+	  // Jeu 12 mai 2016 12:55:13 CEST - R.get(kappa,kappa) may not be relevant (no hoseholder_v) 
+	  theta.sqrt(normB2[kappa]);
+	  eps=0.00000000001; // To tune for theta depending on the precision
+	  theta.mul(theta,eps);
+	  
+	  
+      	  FP_NR<FT> mu,mu_test;
+
+      	  for (i=0; i<kappa; i++) {
+	    
+      	    mu.div(R.get(i,kappa),R.get(i,i));
+      	    mu.abs(mu);
+
+      	    mu_test.div(theta,R.get(i,i));
+	    mu_test.abs(mu_test); // Jeu 12 mai 2016 12:55:13 CEST
+      	    mu_test.add(mu_test,one);
+	    
+
+      	    if (mu.cmp(mu_test) == 1) {
+	      
+      	      cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, kappa = " << kappa  << endl;
+      	      return -1;
+      	    }
+	    
+      	  }
+      	  somedone = 0;  // Here, should be size reduced, hence ok for continuing 
+	  
+      } // End test prec 
+	    
+      prev_nonstop = nonstop;
+      
+    }
+      
+    else 
+      nonstop=0;
+
+    
+    // Heuristic test for not enough precision with respect to delta
+    // Should be done much more efficiently
+    
+    // if ((nonstop==0) && (somedone ==1))  {
+    
+     
+     
+    // } // end test 
+
+    
+  } // end while 
+
+  
+  return somedone;
+
+}
+
+
+/* -------------------------------------------------------------------------
+   Size reduce sequential update of R and B   
+
+   ------------------------------------------------------------------------- */
+
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline bool 
+  SLattice<ZT,FT, MatrixZT, MatrixFT>::size_update(int kappa, int from_i, int to_i) { 
+
+    bool somedone=false;
+    
+    int i;
+
+    int nmax;
+    
+    Z_NR<ZT>  xz;
+    
+    long expo,lx;
+  
+    // vector<FP_NR<FT> > vectx;
+    // vectx.resize(n);
+    
     // Loop through the column 
     // -----------------------
 
-   
-    for (i=startposition; i>-1; i--){  
+    for (i=from_i; i>=to_i; i--){  
     
   
       x.div(R.get(i,kappa),R.get(i,i));
@@ -925,89 +1249,238 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
     } // Loop through the column
     
     
+    return somedone;
 
-    if (somedone) {
+  }
 
-      
-      compteur+=1;
-      
-      col_kept[kappa]=0;
-      
-      t.mul(approx,normB2[kappa]);
-      
-      householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous 
 
-      nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ?
+/* -------------------------------------------------------------------------
+   Size reduce update of R    
 
-      // Heuristic test
-      // The norm is not increasing for several steps
-      // This may happen exceptionnaly in correct cases with mu_ij = 1/2 exactly
-      //  (and alternates between to values 1/2 and -1/2 in floating point 
-      // Or happen when not enough precision
-      // Hence here: test of size reduction, if yes then exit if no then return -1 
-      if ((prev_nonstop ==0) && (nonstop == 0)) {
-      	
-      	  FP_NR<FT> one;
-      	  one = 1.0;
-	  
-	  FP_NR<FT> theta,eps;
-      	  //theta = 0.0000001;
-      	  //theta.mul(theta,R.get(kappa,kappa));
-	  // Jeu 12 mai 2016 12:55:13 CEST - R.get(kappa,kappa) may not be relevant (no hoseholder_v) 
-	  theta.sqrt(normB2[kappa]);
-	  eps=0.00000000001; // To tune for theta depending on the precision
-	  theta.mul(theta,eps);
-	  
-	  
-      	  FP_NR<FT> mu,mu_test;
+   ------------------------------------------------------------------------- */
 
-      	  for (i=0; i<kappa; i++) {
-	    
-      	    mu.div(R.get(i,kappa),R.get(i,i));
-      	    mu.abs(mu);
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline bool 
+SLattice<ZT,FT, MatrixZT, MatrixFT>::size_update_R(vector<FP_NR<FT> >& vectx, int kappa, int from_i, int to_i) { 
 
-      	    mu_test.div(theta,R.get(i,i));
-	    mu_test.abs(mu_test); // Jeu 12 mai 2016 12:55:13 CEST
-      	    mu_test.add(mu_test,one);
-	    
-
-      	    if (mu.cmp(mu_test) == 1) {
-	      
-      	      cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, kappa = " << kappa  << endl;
-      	      return -1;
-      	    }
-	    
-      	  }
-      	  somedone = 0;  // Here, should be size reduced, hence ok for continuing 
-	  
-      } // End test prec 
-	    
-      prev_nonstop = nonstop;
-      
-    }
-      
-    else 
-      nonstop=0;
-
+  bool somedone=false;
     
-    // Heuristic test for not enough precision with respect to delta
-    // Should be done much more efficiently
-    
-    // if ((nonstop==0) && (somedone ==1))  {
-    
-     
-     
-    // } // end test 
-
-    
-  } // end while 
-
+  int i;
   
+  long expo,lx;
+  
+    
+  vectx.resize(n);
+  
+  // Loop through the column 
+  // -----------------------
+  
+  for (i=from_i; i>=to_i; i--){  
+    
+  
+    x.div(R.get(i,kappa),R.get(i,i));
+    x.rnd(x);
+    
+    vectx[i]=x;
+    
+    if (x.sgn() !=0) {     // Non zero combination 
+                           // --------------------
+      lx = x.get_si_exp(expo);
+      
+      
+      // Cf fplll 
+      // Long case 
+      if (expo == 0) {
+	
+	if (lx == 1) {
+	  
+	  
+	  somedone = 1;
+	  
+	  R.subcol(kappa,i,i+1);
+	  
+	} 
+	else if (lx == -1) {
+	  
+	  
+	  somedone = 1;
+	  
+	  R.addcol(kappa,i,i+1);
+	  
+	}
+	else {
+
+	  somedone = 1;
+	  
+	  R.submulcol(kappa,i,x,i+1); 
+	  
+	}
+      }
+      else { 
+
+	somedone = 1;
+	
+	R.submulcol(kappa,i,x,i+1);
+	
+      } // end expo <> 0 
+      
+    } // Non zero combination 
+
+  } // Loop through the column
+    
+    
   return somedone;
 
 }
 
 
+  
+  
+  
+  
+/* -------------------------------------------------------------------------
+   Size reduce parallel update of B   
+
+   ------------------------------------------------------------------------- */
+
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline bool 
+  SLattice<ZT,FT, MatrixZT, MatrixFT>::psize_update_B(int kappa, int from_i, int to_i,  vector<FP_NR<FT> > vectx, int S) {
+
+   
+    int nmax;
+  
+    
+    nmax=structure[from_i];
+    
+    for (int i=from_i+1; i>=to_i; i--)  
+      nmax=max(nmax,structure[i]);
+    
+    nmax +=1;
+
+	  
+    // Parallel loop
+    // -------------
+
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif
+    
+    for (int l=0; l<S; l++) { 
+
+      int i;
+
+      Z_NR<ZT>  xz;
+
+      FP_NR<FT>  xf; // Old x 
+    
+      long expo,lx;
+    
+      int nloc;
+      nloc=nmax/S;
+      if ((l+1) <= nmax%S)
+	nloc+=1;
+      
+      int ibeg;
+      ibeg=(nmax/S)*l;
+      if ((l+1) <= nmax%S)
+	ibeg+=l;
+      else
+	ibeg+=nmax%S;
+
+      
+      // Loop through the column 
+      // -----------------------
+
+      for (i=from_i; i>=to_i; i--){  
+    
+  
+	xf=vectx[i]; 
+
+	
+	if (xf.sgn() !=0) {   // Non zero combination 
+	  // --------------------
+	  lx = xf.get_si_exp(expo); // To put also through R 
+		  
+	  //nmax=structure[i]+1;
+	
+	  // Cf fplll 
+	  // Long case 
+	  if (expo == 0) {
+
+	    if (lx == 1) {
+
+	      B.psubcol(kappa,i,ibeg,nloc);
+	    	    
+	      // if (transf)   A FAIRE EN PARALLELE CF LONG 
+	      // 	U.subcol(kappa,i,min(d,nmax));
+	
+	    } 
+	    else if (lx == -1) {
+
+	      B.paddcol(kappa,i,ibeg,nloc);
+		
+	      // if (transf) 
+	      // 	U.addcol(kappa,i,min(d,nmax));
+
+	    } 
+	    else { 
+
+	      if (fast_long_flag == 1) {
+	      
+		B.paddmulcol_si(kappa,i,-lx,ibeg,nloc);
+		
+		// if (transf)  
+		//   U.addmulcol_si(kappa,i,-lx,min(d,nmax));
+	      
+
+	      } // end fast_long
+	      else {
+	      
+		set_f(xz,xf);
+	      
+		B.psubmulcol(kappa,i,xz,ibeg,nloc);
+		
+		// if (transf)  
+		//   U.submulcol(kappa,i,xz,min(d,nmax));
+	      }
+
+	    
+	    } // end else expo ==0 and not 1 or -1
+  
+	  } // end expo == 0 
+	  else {  // expo <> 0 
+
+
+	    if (fast_long_flag == 1) {
+	    
+	      B.paddmulcol_si_2exp(kappa,i,-lx,expo,ibeg,nloc);
+	      
+	      // if (transf)  
+	      // 	U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
+	    
+	    } // end fast_long
+	    else {
+	   
+	      set_f(xz,xf);  
+	  
+	      B.psubmulcol(kappa,i,xz,ibeg,nloc);
+	      
+	      // if (transf)  
+	      // 	U.submulcol(kappa,i,xz,min(d,nmax));
+	  
+	    } // end no long
+	  
+	  } // end expo <> 0 
+
+	} // Non zero combination 
+
+      } // Loop through the column
+    
+    } // Parallel loop
+    
+    return true; // Somedone by R 
+  }
+  
+  
 /* ------------- */
 /* Householder R */
 /* ------------- */
