@@ -105,9 +105,24 @@ public:
   int householder();
   
   int hsizereduce(int kappa, int fromk=0);
+
+  bool size_update(int kappa, int from_i, int to_i);
+
+  bool size_update_R(vector<FP_NR<FT> >& vectx, int kappa, int from_i, int to_i);
+  
+  bool psize_update_B(int kappa, int from_i, int to_i,  vector<FP_NR<FT> > vectx, int S);
   
   int decrease(int kappa);
+
   int seysenreduce(int kappa);
+
+  bool seysen_update(vector<FP_NR<FT> >& vectx, int kappa, int from_i, int restdim,  vector<bool> bounded);
+
+  bool seysen_update_R(vector<FP_NR<FT> >& vectx, int kappa, int from_i, int restdim, vector<bool> bounded);
+
+  bool pseysen_update_B(int kappa, int from_i, int restdim, vector<FP_NR<FT> > vectx, vector<bool> bounded, int S); 
+
+  
   int newseysenreduce(int kappa, int dthreshold, int compt);
   int seysen_flag;
 

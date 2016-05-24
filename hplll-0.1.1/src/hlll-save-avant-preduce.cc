@@ -528,7 +528,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
     somedone = 1;
   
   //while (nonstop) {
-  while (somedone == 1) { 
+  while (somedone == 1) {
+    
     w++;
     
     somedone = 0;

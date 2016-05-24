@@ -61,7 +61,7 @@ int main(int argc, char *argv[])  {
     cout << "--------------  HLLL" << endl << endl; 
     
    
-    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM);
+    Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM,SEYSEN_REDUCTION);
     //Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > > B(A0,NO_TRANSFORM);
  
     verboseDepth = 1;
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])  {
    
     tf.start();
 
-    lllReduction(AT, delta, 0.501, LM_FAST, FT_DEFAULT,0,LLL_VERBOSE);
+    //lllReduction(AT, delta, 0.501, LM_FAST, FT_DEFAULT,0,LLL_VERBOSE);
 
     tf.stop();
   
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])  {
  
     transpose(A,AT);
     Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
-    T2.isreduced(delta-0.1);
+    //T2.isreduced(delta-0.1);
 
    cout << "-----------------------" << endl;
 

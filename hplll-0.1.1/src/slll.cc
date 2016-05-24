@@ -578,24 +578,22 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	 
       } // end calcul de la transfo 
 
-     
-      // ********* Update
-      //for (i=kappa-1-indexdec; i>= restdim; i--){
+    
       
       // Et on applique la transformation  
       // --------------------------------
 
       // Sequential
 
-      //seysen_update(vectx, kappa, kappa-1-indexdec,  restdim,  bounded);
+      seysen_update(vectx, kappa, kappa-1-indexdec,  restdim,  bounded);
 
       
       // Parallel
-      // --------
+      
     
-      seysen_update_R(vectx, kappa, kappa-1-indexdec,  restdim,  bounded);
+      //seysen_update_R(vectx, kappa, kappa-1-indexdec,  restdim,  bounded);
        
-      pseysen_update_B(kappa, kappa-1-indexdec,  restdim, vectx, bounded, 4);
+      //pseysen_update_B(kappa, kappa-1-indexdec,  restdim, vectx, bounded, 4);
     
       indexdec+=bdim;     
       ld=ld*2;
@@ -983,6 +981,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
   FP_NR<FT> approx;
   vector<FP_NR<FT> > vectx;
+  vectx.resize(n);
+  
      
   approx=0.001;
 
@@ -1134,8 +1134,6 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
     
     long expo,lx;
   
-    // vector<FP_NR<FT> > vectx;
-    // vectx.resize(n);
     
     // Loop through the column 
     // -----------------------
@@ -1267,9 +1265,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::size_update_R(vector<FP_NR<FT> >& vectx, in
   int i;
   
   long expo,lx;
-  
-    
-  vectx.resize(n);
+ 
   
   // Loop through the column 
   // -----------------------
