@@ -308,6 +308,17 @@ public:
 
   }
 
+  inline void paddcol(const int j, const int k, int ibeg, const int l)  {     // j < k 
+ 
+    T* v=getcol(j);
+    T* w=getcol(k);
+
+     for (int i=ibeg; i< l+ibeg; i++) {
+      v[i].add(v[i], w[i]);
+    }
+
+  }
+
   // subcol col j := colj - col k 
 
   inline void subcol(const int j, const int k, const int l)  {     // j < k 
@@ -316,6 +327,18 @@ public:
     T* w=getcol(k);
 
     for (int i=0; i< l; i++) {
+      v[i].sub(v[i], w[i]);
+    }
+
+
+  }
+
+  inline void psubcol(const int j, const int k, const int ibeg, const int l)  {     // j < k 
+ 
+    T* v=getcol(j);
+    T* w=getcol(k);
+
+    for (int i=ibeg; i< l+ibeg; i++) {
       v[i].sub(v[i], w[i]);
     }
 
@@ -333,6 +356,15 @@ public:
 
   }
 
+  inline void psubmulcol(const int j, const int k,  const T a, const int ibeg, const int l)  {     // j < k 
+ 
+    T* v=getcol(j);
+    T* w=getcol(k);
+
+    for (int i=ibeg; i< l+ibeg; i++) 
+      v[i].submul(a,w[i]);
+
+  }
 
 // subcol col j := colj - a* col k 
   inline void addmulcol_si(const int j, const int k,  const long a, const int l)  {     // j < k 
@@ -345,6 +377,17 @@ public:
 
   }
 
+  inline void paddmulcol_si(const int j, const int k,  const long a, const int ibeg, const int l)  {     // j < k 
+ 
+    T* v=getcol(j);
+    T* w=getcol(k);
+
+    for (int i=ibeg; i< l+ibeg; i++) 
+      v[i].addmul_si(w[i],a);
+
+  }
+
+  
 // subcol col j := colj - a* col k 
   inline void addmulcol_si_2exp(const int j, const int k,  const long a, const long expo, const int l)  {     // j < k 
  
@@ -355,6 +398,24 @@ public:
 
     
     for (int i=0; i< l; i++) {
+      
+      tmp.mul_si(w[i],a);
+      tmp.mul_2si(tmp,expo);
+      
+      v[i].add(v[i],tmp);
+    }
+    
+  }
+
+  inline void paddmulcol_si_2exp(const int j, const int k,  const long a, const long expo, const int ibeg, const int l)  {     // j < k 
+ 
+    T* v=getcol(j);
+    T* w=getcol(k);
+
+    T tmp;
+
+    
+    for (int i=ibeg; i< l+ibeg; i++) {
       
       tmp.mul_si(w[i],a);
       tmp.mul_2si(tmp,expo);

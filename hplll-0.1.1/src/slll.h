@@ -110,8 +110,18 @@ public:
   
   int seysenreduce(int kappa);
 
-  int seysen_update(int from, int to, vector<FP_NR<FT> > vectx); 
-    
+  bool seysen_update(vector<FP_NR<FT> >& vectx, int kappa, int from_i, int restdim,  vector<bool> bounded);
+
+  bool seysen_update_R(vector<FP_NR<FT> >& vectx, int kappa, int from_i, int restdim, vector<bool> bounded);
+
+  bool pseysen_update_B(int kappa, int from_i, int restdim, vector<FP_NR<FT> > vectx, vector<bool> bounded, int S); 
+
+  bool size_update(int kappa, int from_i, int to_i);
+
+  bool size_update_R(vector<FP_NR<FT> >& vectx, int kappa, int from_i, int to_i);
+
+  bool psize_update_B(int kappa, int from_i, int to_i,  vector<FP_NR<FT> > vectx, int S);
+   
   int reduce_and_gap_detect(int seysen_flag);
 
   int rotate(int gap_status);  
