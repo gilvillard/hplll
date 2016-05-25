@@ -220,7 +220,7 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reductio
 
     gap_status=L.hlll(delta,4,4,1000000);
 
-    if (gap_status >= 490) {
+    if (gap_status >= 378) {
 
       cout << "Gapout : " << gap_status << "   " << n << "    " << k << endl; 
       cout << transpose(L.getbase()) << endl;  
