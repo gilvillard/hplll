@@ -114,12 +114,15 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
   for (i=dorigin; i < d; i++) 
     R.set(i,i,afmax);
 
+ 
+  
       
   // Main iteration loop
   // *******************
   
   for (iter=0; stop==0; iter++) {
-    
+
+     
     stop=1;
 
     time.start();
@@ -157,8 +160,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     //cout << endl <<  "--- Even reductions" << endl;
     time.start();
 
-    // Voir avec les threads 
-    verboseDepth-=1;
+   
     
 #ifdef _OPENMP
 #pragma omp parallel for 
@@ -172,7 +174,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
 	
 	BR.set_nblov_max(lovmax);
-	BR.hlll(delta);
+	BR.hlll(delta,VERBOSE_NO);
 	
 	//cout << endl << "Swaps (" << 2*k << "): " << BR.nbswaps << endl; 
 	swapstab[2*k]+=BR.nbswaps;
@@ -188,9 +190,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 #ifdef _OPENMP
 #pragma omp barrier 
 #endif
-    // Voir avec les threads 
-    verboseDepth+=1;
-
+    
     for (k=0; k<S; k++) phase_tests+=lovtests[k];
     nblov+=phase_tests;
           
@@ -198,7 +198,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     redtime+=time;
     eventime+=time; 
 
-    
+        
     // Update after the block even reductions
     // **************************************
 
@@ -268,8 +268,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
 
     //cout << endl <<  "--- Odd reductions" << endl;
 
-    // Voir avec les threads 
-    verboseDepth-=1;
+    
     
 #ifdef _OPENMP
 #pragma omp parallel for 
@@ -281,7 +280,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
       
       
       BR.set_nblov_max(lovmax);
-      BR.hlll(delta);
+      BR.hlll(delta,VERBOSE_NO);
       //cout << endl << "Swaps (" << 2*k+1 << "): " << BR.nbswaps << endl;
       swapstab[2*k+1]+=BR.nbswaps;
       nbswaps+=BR.nbswaps;
@@ -292,9 +291,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
       	  
     }
 
-    // Voir avec les threads 
-    verboseDepth+=1;
-    
+        
     for (k=0; k<S-1; k++) phase_tests+=lovtests[k];
     nblov+=phase_tests;
               
@@ -418,8 +415,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::reduce_and_gap_detect(int seysen_flag) {
   
   FP_NR<FT>  qq;
   FP_NR<FT>  eps;
-  eps=0.0000000001;
-
+  
+  //eps=0.000000001; // 9 
+  eps=0.0001; 
   
   int i;
   
@@ -440,8 +438,10 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::reduce_and_gap_detect(int seysen_flag) {
 
      
     householder_v(i);
-    
-    
+
+    //DBG 
+    //cout << "i : " << i << "   "; hplllprint(R.get(i,i)); cout << "   "  << dorigin-1 << endl;
+					     
     // Gap detection is a e.g. small vector has been found
     // ---------------------------------------------------
     
@@ -450,6 +450,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::reduce_and_gap_detect(int seysen_flag) {
       qq.div(R.get(i,i),R.get(i-1,i-1));
       qq.abs(qq);
 
+      // DBG
+      //cout << " qq  "; hplllprint(qq); cout << endl;
+      
       if (eps.cmp(qq) == 1) {
 
 	cout << " **** Anomaly gap detection, column: " << i+1 << "/" << dorigin << "    Ratio = ";
@@ -515,6 +518,9 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
   
   while (nonstop) {  // LOOP COLUMN CONVERGENCE
 
+    // DBG 
+    // cout <<  w << "   ";  hplllprint(normB2[kappa]); cout  << endl;
+    // hplllprint(normB2[kappa-1]); cout << "   ";  hplllprint(R.get(kappa-1,kappa-1));  cout  << endl;
     
      // Jeu 12 mai 2016 12:55:13 CEST 
     theta.sqrt(normB2[kappa]);
@@ -522,6 +528,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
     w++;
 
+        
     somedone = 0;
 
     //compteur += 1;
@@ -594,6 +601,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
       //seysen_update_R(vectx, kappa, kappa-1-indexdec,  restdim,  bounded);
        
       //pseysen_update_B(kappa, kappa-1-indexdec,  restdim, vectx, bounded, 4);
+      
     
       indexdec+=bdim;     
       ld=ld*2;

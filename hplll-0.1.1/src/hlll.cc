@@ -38,7 +38,8 @@ namespace hplll {
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) { 
 
-  //verboseDepth-=1; // Segment à commenter 
+  if (verbose) 
+    verboseDepth-=1;
   
   int kappa=1,i;
   int prevkappa=-1; // For the looping test between tow indices 
@@ -79,10 +80,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
   while ((kappa < kappa_max) && (nblov < nblov_max)) 
     {
 
-     
-      if (verboseDepth >= 0) {
-	if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
-      }
+     if (verbose) 
+       if (verboseDepth >= 0) {
+	 if (((nblov%800000)==0) && (nblov > 0))   cout << nblov << " tests" << endl; 
+       }
       
       if (kappa == 1) { 
 	for (i=0; i<d; i++) kappamin[i]=min(kappamin[i],0);
@@ -101,7 +102,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
                   
       if (flag_reduce==-1) {
-	//verboseDepth+=1;  // Segment à commenter 
+	if (verbose) 
+	  verboseDepth+=1;  // Segment à commenter 
 	return(-1);
       }
 
@@ -138,12 +140,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
 	  cpu_tot+=cpu_discovered;
 	  
-	  if (verboseDepth >= 0) {
-	    if (kappa < d-1) cout << "Discovering vector " << kappa +2 << "/" << d << endl;
-	    else cout << endl; 
-	    cout << "     Phase-: " << cpu_discovered << endl;
-	    cout << "     Total: " << cpu_tot << endl;
-	  }
+	  if (verbose) 
+	    if (verboseDepth >= 0) {
+	      if (kappa < d-1) cout << "Discovering vector " << kappa +2 << "/" << d << endl;
+	      else cout << endl; 
+	      cout << "     Phase-: " << cpu_discovered << endl;
+	      cout << "     Total: " << cpu_tot << endl;
+	    }
 	  
 	  cpu_discovered.start(); 
 	} 
@@ -161,8 +164,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	  if (t > prevR[kappa]) {
 	
 	    cout << " **** #tests = " << nblov << " **** Anomaly: the norm increases for kappa = " << kappa << endl;
-	    
-	    //verboseDepth+=1;   // Segment à commenter 
+
+	    if (verbose) 
+	      verboseDepth+=1;   // Segment à commenter 
 	    return -1;
 	  }
 
@@ -212,8 +216,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       }
 
     } // End main LLL loop 
-  
-  //verboseDepth+=1;  // Segment à commenter 
+
+  if (verbose) 
+    verboseDepth+=1;  // Segment à commenter 
   return 0;
   
 };
@@ -1439,14 +1444,22 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_v(int kappa)
 }
 
 
-template<class ZT,class FT, class MatrixZT, class MatrixFT> inline unsigned int 
-Lattice<ZT,FT, MatrixZT, MatrixFT>::set_nblov_max(unsigned int nb) {
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline unsigned int 
+  Lattice<ZT,FT, MatrixZT, MatrixFT>::set_nblov_max(unsigned int nb) {
 
-  nblov_max = nb;
-  return nblov_max;
+    nblov_max = nb;
+    return nblov_max;
 
-} 
+  } 
 
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline  int 
+  Lattice<ZT,FT, MatrixZT, MatrixFT>::set_num_S(int S, int dthreshold) {
+
+    num_S=S;
+
+    return num_S;
+  }
+    
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline unsigned int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::setprec(unsigned int prec) {
 
@@ -1849,8 +1862,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::shiftRT(long lsigma) {
 
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<ZT,FT, MatrixZT, MatrixFT>::isreduced(double deltain) {
 
-  verboseDepth-=1;
-
   cout << endl << "Testing reduction" << endl;
   
   // We launch HLLL, "reduced" if no swap
@@ -2062,8 +2073,6 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
 
   } // Was not reduced 
 
-  verboseDepth+=1;
-  
   setprec(oldprec);
 }
 

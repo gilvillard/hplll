@@ -235,7 +235,7 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reductio
     if (verboseDepth >=0) {
       cout << "     Phase+: " << time << endl;
       cout << "     Nblov: " << L.nblov << endl; 
-      cout << "     Total: " << ttot << endl;
+      cout << "     Total: " << ttot << endl << endl;
     }
 
    
@@ -360,8 +360,8 @@ int main(int argc, char *argv[])  {
   verboseDepth=2;
 
   
-  lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,10,delta,SEYSEN_REDUCTION);
-  //lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,A,20,delta,SEYSEN_REDUCTION);
+  lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,20,delta,DEF_REDUCTION);
+  //lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,A,255,delta,SEYSEN_REDUCTION);
   //lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,100,delta,SEYSEN_REDUCTION);
 
   tw.stop();
