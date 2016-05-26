@@ -99,6 +99,8 @@ public:
   int compteur;   // while counting 
   int tmpcompt;   // Debug or test counting 
 
+  int num_S;
+  
   int householder_r(int kappa); 
   int householder_v(int kappa); 
 
@@ -122,13 +124,15 @@ public:
 
   bool pseysen_update_B(int kappa, int from_i, int restdim, vector<FP_NR<FT> > vectx, vector<bool> bounded, int S); 
 
+  int set_num_S(int S, int dthreshold);
   
   int newseysenreduce(int kappa, int dthreshold, int compt);
   int seysen_flag;
 
   int fast_long_flag;
 
-  int hlll(double delta, bool verbose=false);
+  int hlll(double delta, bool verbose=true);
+  
   int hlllp(double delta, int dthreshold, int compt);
    
   void assignL(ZZ_mat<mpz_t> L_in);

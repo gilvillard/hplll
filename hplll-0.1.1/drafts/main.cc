@@ -220,12 +220,6 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reductio
 
     gap_status=L.hlll(delta,4,4,1000000);
 
-    if (gap_status >= 378) {
-
-      cout << "Gapout : " << gap_status << "   " << n << "    " << k << endl; 
-      cout << transpose(L.getbase()) << endl;  
-
-    }
     
     if (gap_status >=2) 
       lll_wrap_gap<ZT, FT,  MatrixZT, MatrixFT>(C,L.getbase(),gap_status,delta,reduction_method);
@@ -323,34 +317,34 @@ int main(int argc, char *argv[])  {
   // Random unimodular preconditioning for the 512 example
   // -----------------------------------------------------
 
-  ZZ_mat<ZT> Q;
-  Q.resize(d,d);
+  // ZZ_mat<ZT> Q;
+  // Q.resize(d,d);
 
-  for (int i=0; i<d; i++)
-    Q(i,i)=1;
+  // for (int i=0; i<d; i++)
+  //   Q(i,i)=1;
   
-  for (int i=0; i<d; i++)
-    for (int j=i+1; j<d ; j++) 
-      Q(i,j).randb(4);
+  // for (int i=0; i<d; i++)
+  //   for (int j=i+1; j<d ; j++) 
+  //     Q(i,j).randb(4);
 
-  for (int i=0; i<d; i++)
-    for (int j=0; j<i ; j++) 
-      Q(i,j)=0;
+  // for (int i=0; i<d; i++)
+  //   for (int j=0; j<i ; j++) 
+  //     Q(i,j)=0;
  
-  matprod_in(A,Q);
+  // matprod_in(A,Q);
   
-  for (int i=0; i<d; i++)
-    Q(i,i)=1;
+  // for (int i=0; i<d; i++)
+  //   Q(i,i)=1;
   
-  for (int i=0; i<d; i++)
-    for (int j=i+1; j<d ; j++) 
-      Q(i,j)=0;
+  // for (int i=0; i<d; i++)
+  //   for (int j=i+1; j<d ; j++) 
+  //     Q(i,j)=0;
   
-   for (int i=0; i<d; i++)
-    for (int j=0; j<i ; j++) 
-      Q(i,j).randb(4);
+  //  for (int i=0; i<d; i++)
+  //   for (int j=0; j<i ; j++) 
+  //     Q(i,j).randb(4);
 
-  matprod_in(A,Q);
+  // matprod_in(A,Q);
   
   
   
@@ -366,8 +360,8 @@ int main(int argc, char *argv[])  {
   verboseDepth=2;
 
   
-  //lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,12,delta,DEF_REDUCTION);
-  lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,A,255,delta,SEYSEN_REDUCTION);
+  lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,20,delta,DEF_REDUCTION);
+  //lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,A,255,delta,SEYSEN_REDUCTION);
   //lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,100,delta,SEYSEN_REDUCTION);
 
   tw.stop();

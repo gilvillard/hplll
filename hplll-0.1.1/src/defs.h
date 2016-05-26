@@ -75,8 +75,7 @@ namespace hplll {
 #define FPLLL 0 
 #define L1 2
 
-//#define HPLLL_VERBOSE(x) {if cout << x << endl;}
-
+#define VERBOSE_NO 0 
 
 using namespace std;
 
