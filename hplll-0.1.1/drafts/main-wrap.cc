@@ -281,8 +281,8 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reductio
 
 int main(int argc, char *argv[])  {
 
-  typedef mpz_t  ZT;
-  //typedef long ZT;
+  //typedef mpz_t  ZT;
+  typedef long ZT;
 
   ZZ_mat<mpz_t> A0; // For hpLLL
   
@@ -377,7 +377,7 @@ int main(int argc, char *argv[])  {
 
   verboseDepth=0;
    
-   Lattice<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
+   Lattice<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
    
    Timer tl;
    tl.start();
