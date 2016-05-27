@@ -38,6 +38,8 @@ namespace hplll {
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) { 
 
+ 
+  
   if (verbose) 
     verboseDepth-=1;
   
@@ -94,12 +96,12 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
       } 
       else for (i=kappa+1; i<d; i++) kappamin[i]=min(kappamin[i],kappa); // lowest visit after kappa 
 
-
+      
       if (seysen_flag < 1) 
       	flag_reduce=hsizereduce(kappa);
       else
 	flag_reduce=seysenreduce(kappa);
-
+     
                   
       if (flag_reduce==-1) {
 	if (verbose) 
@@ -147,7 +149,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	      cout << "     Phase-: " << cpu_discovered << endl;
 	      cout << "     Total: " << cpu_tot << endl;
 	    }
-	  
+
+	 
 	  cpu_discovered.start(); 
 	} 
 							      
@@ -338,18 +341,21 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
       // Et on applique la transformation  
       // --------------------------------
 
+      
       // Sequential
       // ----------
 
-      seysen_update(vectx, kappa, kappa-1-indexdec,  restdim,  bounded);
+      if ((num_S==1) || (bdim < par_reduce_threshold))  
+	seysen_update(vectx, kappa, kappa-1-indexdec, restdim,  bounded);
 
       
       // Parallel     
       // --------
-      
-      //seysen_update_R(vectx, kappa, kappa-1-indexdec,  restdim,  bounded);
-      //pseysen_update_B(kappa, kappa-1-indexdec,  restdim, vectx, bounded, 4);
-       
+      else 
+	{
+	  seysen_update_R(vectx, kappa, kappa-1-indexdec,  restdim,  bounded);
+	  pseysen_update_B(kappa, kappa-1-indexdec,  restdim, vectx, bounded, num_S);
+	}
       
       indexdec+=bdim;     
       ld=ld*2;
@@ -775,20 +781,24 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
     // Sequential
     // ----------
-    // if (startposition <= 10000)
-      
-    somedone=size_update(kappa, startposition, 0);
+
+   
+     
+    if ((num_S==1) || ((kappa-1) < par_reduce_threshold))  
+      somedone=size_update(kappa, startposition, 0);
 
     // Parallel
     // --------
-    //else {
+    else {
+
+     
+      somedone=size_update_R(vectx, kappa, startposition, 0); 
       
-    //somedone=size_update_R(vectx, kappa, startposition, 0); 
+      psize_update_B(kappa, startposition, 0, vectx, num_S);
+    } 
 
-    //psize_update_B(kappa, startposition, 0, vectx, 2);
-    //} 
 
-    
+          
     if (somedone) {
       
       col_kept[kappa]=0;
@@ -1092,7 +1102,6 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::size_update_R(vector<FP_NR<FT> >& vectx, int
   template<class ZT,class FT, class MatrixZT, class MatrixFT> inline bool 
   Lattice<ZT,FT, MatrixZT, MatrixFT>::psize_update_B(int kappa, int from_i, int to_i,  vector<FP_NR<FT> > vectx, int S) {
 
-   
     
     int nmax;
   
@@ -1455,8 +1464,15 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_v(int kappa)
   template<class ZT,class FT, class MatrixZT, class MatrixFT> inline  int 
   Lattice<ZT,FT, MatrixZT, MatrixFT>::set_num_S(int S, int dthreshold) {
 
+   
     num_S=S;
-
+    par_reduce_threshold=dthreshold;
+    
+     
+#ifdef _OPENMP
+    omp_set_num_threads(num_S);
+#endif
+    
     return num_S;
   }
     
@@ -1639,6 +1655,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reducti
   fast_long_flag = long_flag;
     
   matrix_structure(structure, B, n,d);
+
+  // For openmp, no threads by default 
+  num_S=1;
+  par_reduce_threshold=1000000;
 
  }
 

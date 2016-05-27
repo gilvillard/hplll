@@ -99,7 +99,8 @@ public:
   int compteur;   // while counting 
   int tmpcompt;   // Debug or test counting 
 
-  int num_S;
+  int num_S; // Number of threads
+  int par_reduce_threshold; // block size threshold for parallelism 
   
   int householder_r(int kappa); 
   int householder_v(int kappa); 
