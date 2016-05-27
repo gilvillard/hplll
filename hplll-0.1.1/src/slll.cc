@@ -417,7 +417,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::reduce_and_gap_detect(int seysen_flag) {
   FP_NR<FT>  eps;
   
   //eps=0.000000001; // 9 
-  eps=0.0001; 
+  eps=0.00000000001; 
   
   int i;
   
