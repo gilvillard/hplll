@@ -39,7 +39,7 @@ using namespace hplll;
 // Reduced until real column gap_status 
   
 template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
-lll_wrap_gap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int gap_position, double delta, int reduction_method=0) {
+lll_wrap_gap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int gap_position, int S, double delta, int reduction_method=0) {
 
   int i,j;
 
@@ -62,9 +62,9 @@ lll_wrap_gap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int gap_position, double delta, int re
   // Reduction of the first part
   // ---------------------------
   
-  SLattice<ZT, FT,  MatrixZT, MatrixFT>  LB(B,4,NO_TRANSFORM,reduction_method);
+  SLattice<ZT, FT,  MatrixZT, MatrixFT>  LB(B,S,NO_TRANSFORM,reduction_method);
 
-  gap_status=LB.hlll(delta,4,4,1000000);
+  gap_status=LB.hlll(delta,S,S,1000000);
 
   // Recursively
   // -----------
@@ -116,7 +116,7 @@ lll_wrap_gap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int gap_position, double delta, int re
 
   
 template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
-lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reduction_method=0) { 
+lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, int S, double delta, int reduction_method=0) { 
 
   verboseDepth-=1;
   
@@ -216,13 +216,13 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reductio
     // Reduction with the last column and recursive w.r.t. gap_status 
     // --------------------------------------------------------------
 
-    SLattice<ZT, FT,  MatrixZT, MatrixFT>  L(LR.getbase(),4,NO_TRANSFORM,reduction_method);
+    SLattice<ZT, FT,  MatrixZT, MatrixFT>  L(LR.getbase(),S,NO_TRANSFORM,reduction_method);
 
-    gap_status=L.hlll(delta,4,4,1000000);
+    gap_status=L.hlll(delta,S,S,1000000);
 
     
     if (gap_status >=2) 
-      lll_wrap_gap<ZT, FT,  MatrixZT, MatrixFT>(C,L.getbase(),gap_status,delta,reduction_method);
+      lll_wrap_gap<ZT, FT,  MatrixZT, MatrixFT>(C,L.getbase(),gap_status,S,delta,reduction_method);
 
     else
       C=L.getbase();
@@ -281,8 +281,8 @@ lll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, double delta, int reductio
 
 int main(int argc, char *argv[])  {
 
-  //typedef mpz_t  ZT;
-  typedef long ZT;
+  typedef mpz_t  ZT;
+  //typedef long ZT;
 
   ZZ_mat<mpz_t> A0; // For hpLLL
   
@@ -359,10 +359,20 @@ int main(int argc, char *argv[])  {
 
   verboseDepth=2;
 
+  cout  << "Dimension " << n << "     " << d << endl; 
+
+
+  //SLattice<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > B(A,4,NO_TRANSFORM,SEYSEN_REDUCTION);
+
+  //lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,20,delta,SEYSEN_REDUCTION);
   
-  lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,20,delta,DEF_REDUCTION);
   //lll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,A,255,delta,SEYSEN_REDUCTION);
+
+  lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,20,4,delta,SEYSEN_REDUCTION);
+  
   //lll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,100,delta,SEYSEN_REDUCTION);
+
+  //B.hlll(delta,4,4,1000000);
 
   tw.stop();
   
@@ -377,7 +387,7 @@ int main(int argc, char *argv[])  {
 
   verboseDepth=0;
    
-   Lattice<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
+  Lattice<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
    
    Timer tl;
    tl.start();

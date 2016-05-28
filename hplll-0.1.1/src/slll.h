@@ -110,9 +110,9 @@ public:
   
   int seysenreduce(int kappa);
 
-  bool seysen_update(vector<FP_NR<FT> >& vectx, int kappa, int from_i, int restdim,  vector<bool> bounded);
+  bool seysen_update(int kappa, int from_i, int restdim,  vector<FP_NR<FT> > vectx, vector<bool> bounded);
 
-  bool seysen_update_R(vector<FP_NR<FT> >& vectx, int kappa, int from_i, int restdim, vector<bool> bounded);
+  bool seysen_update_R(int kappa, int from_i, int restdim, vector<FP_NR<FT> > vectx, vector<bool> bounded);
 
   bool pseysen_update_B(int kappa, int from_i, int restdim, vector<FP_NR<FT> > vectx, vector<bool> bounded, int S); 
 
