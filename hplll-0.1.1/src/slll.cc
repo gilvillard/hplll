@@ -22,7 +22,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "ratio.h"
 
-
 #ifndef HPLLL_SLLL_CC
 #define HPLLL_SLLL_CC
 
