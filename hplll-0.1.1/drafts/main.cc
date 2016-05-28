@@ -34,8 +34,8 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
-  //typedef mpz_t  ZT;
-  typedef long ZT;
+  typedef mpz_t  ZT;
+  //typedef long ZT;
 
   
   ZZ_mat<mpz_t> A0;
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])  {
     
 
     //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM,SEYSEN_REDUCTION);
-    Lattice<long, long double, matrix<Z_NR<long> >, matrix<FP_NR<long double> > > B(A,NO_TRANSFORM);
+    Lattice<long, double, matrix<Z_NR<long> >, matrix<FP_NR<double> > > B(A,NO_TRANSFORM);
  
     verboseDepth = 1;
     th.start();

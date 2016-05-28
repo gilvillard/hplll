@@ -121,7 +121,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
   
   for (iter=0; stop==0; iter++) {
 
-     
+   
+
     stop=1;
 
     time.start();
@@ -151,7 +152,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     
     // Even reductions
     // ***************
-
+    
         
     setId(U_even); // Pas nécessaire pour even sans doute 
     phase_tests=0;
@@ -214,7 +215,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     time.stop();
     prodtime1+=time;
     
-    
+   
+
     // Even size reduction
     // *******************
 
@@ -236,7 +238,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, un
     time.stop();
     esizetime+=time;
 
-      
+    
+
     // Odd reductions
     // **************
 
@@ -416,7 +419,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::reduce_and_gap_detect(int seysen_flag) {
   FP_NR<FT>  eps;
   
   //eps=0.000000001; // 9 
-  eps=0.00000000001; 
+  eps=0.0000001; 
   
   int i;
   
@@ -430,12 +433,13 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::reduce_and_gap_detect(int seysen_flag) {
   
   for (i=1; i<dorigin; i++) {
     
+   
     if (seysen_flag < 1) 
       hsizereduce(i);
     else 
       seysenreduce(i);
 
-     
+        
     householder_v(i);
 
     //DBG 
@@ -461,6 +465,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::reduce_and_gap_detect(int seysen_flag) {
       }
     } // gap detection test 
     
+    
+
   } // end size reduction loop
 
  
@@ -518,8 +524,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
   while (nonstop) {  // LOOP COLUMN CONVERGENCE
 
     // DBG 
-    // cout <<  w << "   ";  hplllprint(normB2[kappa]); cout  << endl;
-    // hplllprint(normB2[kappa-1]); cout << "   ";  hplllprint(R.get(kappa-1,kappa-1));  cout  << endl;
+    //cout <<  w << "   ";  hplllprint(normB2[kappa]); cout  << endl;
+    //hplllprint(normB2[kappa-1]); cout << "   ";  hplllprint(R.get(kappa-1,kappa-1));  cout  << endl;
     
      // Jeu 12 mai 2016 12:55:13 CEST 
     theta.sqrt(normB2[kappa]);
@@ -527,6 +533,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
     w++;
 
+    
         
     somedone = 0;
 
@@ -570,7 +577,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	//qq.abs(vectx[i]);
 	
 	qq.abs(vectx[i]);
-	if (qq.cmp(0.501) == 1) {
+	if (qq.cmp(0.51) == 1) {  // Ex 512 Shi ne passe pas en 512 avec 0.501
 	  bounded[i]=0;
 	  somedone=1;
 	}
@@ -584,23 +591,28 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	 
       } // end calcul de la transfo 
 
-    
+
+      for (i=kappa-1-indexdec; i>=restdim; i--)
+	  vectx[i].rnd(vectx[i]);
+     
       
       // Et on applique la transformation  
       // --------------------------------
 
       // Sequential
 
-      seysen_update(vectx, kappa, kappa-1-indexdec,  restdim,  bounded);
+      if (bdim <= 255)
+	seysen_update(kappa, kappa-1-indexdec,  restdim,  vectx, bounded);
 
       
       // Parallel
       
-    
-      //seysen_update_R(vectx, kappa, kappa-1-indexdec,  restdim,  bounded);
-       
-      //pseysen_update_B(kappa, kappa-1-indexdec,  restdim, vectx, bounded, 4);
-      
+      else {  // Mettre en parallèle avec un seuseyn_update B 
+
+	seysen_update_R(kappa, kappa-1-indexdec,  restdim,  vectx, bounded);
+	
+	pseysen_update_B(kappa, kappa-1-indexdec,  restdim, vectx, bounded, 2); 
+      }
     
       indexdec+=bdim;     
       ld=ld*2;
@@ -642,7 +654,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
    ------------------------------------------------------------------------- */
 
   template<class ZT,class FT, class MatrixZT, class MatrixFT> inline bool 
-  SLattice<ZT,FT, MatrixZT, MatrixFT>::seysen_update( vector<FP_NR<FT> >& vectx, int kappa, int from_i, int restdim, vector<bool> bounded) { 
+  SLattice<ZT,FT, MatrixZT, MatrixFT>::seysen_update(int kappa, int from_i, int restdim, 
+						     vector<FP_NR<FT> > vectx, vector<bool> bounded) { 
 
 
     int i;
@@ -657,7 +670,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
     
     for (i=from_i; i>= restdim; i--){
 
-	vectx[i].rnd(vectx[i]);
+      //vectx[i].rnd(vectx[i]);
 	xf=vectx[i]; 
 
 	
@@ -759,7 +772,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
    ------------------------------------------------------------------------- */
 
   template<class ZT,class FT, class MatrixZT, class MatrixFT> inline bool 
-  SLattice<ZT,FT, MatrixZT, MatrixFT>::seysen_update_R(vector<FP_NR<FT> >& vectx, int kappa, int from_i, int restdim, vector<bool> bounded) { 
+  SLattice<ZT,FT, MatrixZT, MatrixFT>::seysen_update_R(int kappa, int from_i, int restdim, 
+						       vector<FP_NR<FT> > vectx, vector<bool> bounded) { 
 
 
     int i;
@@ -771,7 +785,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
     
     for (i=from_i; i>= restdim; i--){
 
-      vectx[i].rnd(vectx[i]);  // Attention si en parallèle 
+      //vectx[i].rnd(vectx[i]);  // Attention si en parallèle 
       xf=vectx[i]; 
 
 	
