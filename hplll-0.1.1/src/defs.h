@@ -75,6 +75,9 @@ namespace hplll {
 #define FPLLL 0 
 #define L1 2
 
+#define DIM_PREC_1 330
+#define DIM_PREC_2 430  
+
 #define VERBOSE_NO 0 
 
 using namespace std;
