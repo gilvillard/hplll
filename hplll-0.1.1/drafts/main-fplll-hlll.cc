@@ -23,6 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "hplll.h"
 
+#include "wrappers.h"
 
 /* ***********************************************
 
@@ -34,86 +35,66 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
   
-  //typedef mpz_t  ZT;
-  typedef long ZT;
-
   
-  ZZ_mat<mpz_t> A0;
-  ZZ_mat<ZT> A; // For hpLLL 
-  ZZ_mat<ZT> AT;  // fpLLL  
+  ZZ_mat<mpz_t> A;
 
+  ZZ_mat<mpz_t> C;
+  
+  ZZ_mat<mpz_t> AT;
+ 
   // ---------------------------------------------------------------------
 
   int n,d;
   double delta;
 
-  command_line_basis(A0, n, d, delta, argc, argv); 
+  command_line_basis(A, n, d, delta, argc, argv); 
 
-  // Attention en 128 bits, mpfr get_si pas autrement
-  matrix_cast(A,A0);  // temporaire avec ci-dessous
+ 
+  Timer th,tf;
+  
+  // HLLL ------------------------------------------
+   
+  
+  //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
 
+  // verboseDepth = 1;
+  // th.start();
+  // status=B.hlll(delta);
+  // th.stop();
+  
+  verboseDepth = 2;
+  
+  th=hlll<mpz_t>(C, A, 0.99, false, true);
+    
+  //hlll<__int128_t>(C, A, 0.99, 0,0); 
+  //hlll<long>(C, A, 0.99, false, true); 
+ 
+  cout << endl; 
+
+  cout << "--------------  FPLLL WRAPPER" << endl << endl;
+  
   AT.resize(d,n);
   
   transpose(AT,A);
-
   
-
-  Timer th,tf;
-
-    int status;
-    
-    cout << "--------------  HLLL" << endl << endl; 
-    
-
-    //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A0,NO_TRANSFORM,SEYSEN_REDUCTION);
-    Lattice<long, double, matrix<Z_NR<long> >, matrix<FP_NR<double> > > B(A,NO_TRANSFORM);
- 
-    verboseDepth = 1;
-    th.start();
-    status=B.hlll(delta);
-    th.stop();
-
-    
-    cout << "   dimension = " << d  << endl << endl;
-
-    th.print(cout);
-
-    //cout << B.getbase() << endl; 
-      
-    if (status ==0) {
-      Lattice<ZT, mpfr_t, matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > T1(B.getbase(),NO_TRANSFORM,DEF_REDUCTION,NO_LONG);
-      verboseDepth = 0;
-      T1.isreduced(delta-0.1);
-      }
-    cout << endl; 
-
-    cout << "--------------  FPLLL WRAPPER" << endl << endl;
-    
-    transpose(AT,A);
-
-   
-    tf.start();
-
-    //lllReduction(AT, delta, 0.501, LM_FAST, FT_DEFAULT,0,LLL_VERBOSE);
-
-    tf.stop();
+  tf.start();
   
-    
-    cout << "   dimension = " << d  << endl << endl;
-   
-    tf.print(cout);
- 
-    transpose(A,AT);
-    Lattice<ZT, mpfr_t, matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION);
-    //T2.isreduced(delta-0.1);
+  lllReduction(AT, delta, 0.501, LM_FAST, FT_DEFAULT,0,LLL_VERBOSE);
+  
+  tf.stop();
+  
+  // transpose(A,AT);
+  
+  // Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A,NO_TRANSFORM,DEF_REDUCTION);
+  // verboseDepth=0;
+  //T.isreduced(delta-0.1);
 
-   cout << "-----------------------" << endl;
+  //  cout << "-----------------------" << endl;
 
    cout << "HLLL: " << th << endl;
-   //tw.print(cout);
+  
    cout << "FPLLL :" << tf << endl;
-   //tl.print(cout);
-   
+  
 
   return 0;
 }
