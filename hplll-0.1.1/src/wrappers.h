@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef HPLLL_WRAPPERS_H
 #define HPLLL_WRAPPERS_H
 
-#include "hplll.h" 
+#include "slll-wrap.h"
 
 namespace hplll { 
 
@@ -549,6 +549,201 @@ namespace hplll {
 	C=M.getbase();
      
 
+      }
+
+      time.stop();
+      
+      // Reduction check
+      // ---------------
+
+      if (check) {
+
+	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(C,NO_TRANSFORM,DEF_REDUCTION);
+
+	L.isreduced(delta-0.1);
+
+      }
+
+      if (comput_cond) {
+
+	double t,u,v,w;
+	
+	ratio(C,t,u,v,w);
+
+	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+	cout << ".. Average diagonal ratio: " << u << endl;
+	cout << ".. Max diagonal ratio: " << v << endl;
+	cout << ".. First vector quality: " << w << endl << endl;
+      }
+
+      cout << endl << "Reduction time: " << time << endl << endl; 
+      
+      verboseDepth+=1;
+      return time;
+
+  }
+
+
+  // *******************************************************************************************
+  
+  // Wrapper for slll, ZT used internally
+  // ------------------------------------
+  
+  template<class ZT> Timer
+    slll(ZZ_mat<mpz_t>& C, const ZZ_mat<mpz_t> A,
+	 int dthreshold=40, int S=4,  double delta = 0.99,
+	 bool check=true, bool comput_cond=true);
+
+
+  // *******************************************************************************************
+  
+  // Long int wrapper TODO
+  // ----------------
+  
+
+  // *******************************************************************************************
+  
+  // 128 int wrapper   TODO 
+  // ---------------
+  
+
+  // *******************************************************************************************
+  
+  // mpz_t wrapper 
+  // -------------
+  
+  template<> Timer
+    slll<mpz_t>(ZZ_mat<mpz_t>& C, const ZZ_mat<mpz_t> A, 
+		int dthreshold, int S, double delta,
+		bool check, bool comput_cond)
+    {
+
+      Timer time;
+
+      time.start();
+      
+      verboseDepth-=1;
+      
+      typedef mpz_t ZT; // and cout below to change 
+      
+      int n=A.getRows();
+      int d=A.getCols();
+      
+
+      int d1=DIM_PREC_1;
+      int d2=DIM_PREC_2;
+      
+      // Reduction
+      // *********
+      
+     
+      if (d <= d1) {
+
+	if (verboseDepth >=0) {
+	  cout << endl << "----------------------------------" << endl; 
+	  cout << "SLLL Wrapper, mpz_t, double, S = " << S << endl << endl; 
+	}
+
+	// Base LLL
+	// --------
+	
+	slll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,dthreshold,S,delta,DEF_REDUCTION);
+	 
+      }
+      else if (d <= d2) {
+
+	ZZ_mat<ZT> T;
+
+	if (verboseDepth >=0) {
+	  cout << endl << "----------------------------------" << endl;
+	  cout << "SLLL Wrapper, mpz_t, double, S = " << S << endl << endl;
+	   
+	}
+      
+	// Base LLL
+	// --------
+	
+	T.resize(n,d1);
+
+	set(T,A,n,d1);
+
+	slll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,dthreshold,S,delta,DEF_REDUCTION);
+	
+	if (verboseDepth >=0) {
+	  cout << endl << "----------------------------------" << endl; 
+	  cout << "HLLL Wrapper,  mpz_t, double -- Seysen reduction, S = " << S << endl << endl; 
+	}
+	
+	// Seysen change dthreshold
+	// ------
+
+	T.resize(n,d); 
+      
+	set(T,C,n,d1);
+	
+	for (int i=0; i<n; i++)
+	  for (int j=d1; j<d; j++)
+	    T(i,j)=A(i,j);
+
+	slll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,d1,S,delta,SEYSEN_REDUCTION);
+
+      }
+      else {
+
+	ZZ_mat<ZT> T;
+
+      	if (verboseDepth >=0) {
+	  cout << endl << "----------------------------------" << endl; 
+	  cout << "HLLL Wrapper,  mpz_t, double, S = " << S << endl << endl; 
+	}
+	
+	// Base LLL
+	// --------
+      
+	T.resize(n,d1);
+
+	set(T,A,n,d1);
+
+	slll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,dthreshold,S,delta,DEF_REDUCTION);
+
+	if (verboseDepth >=0) {
+	  cout << endl << "----------------------------------" << endl; 
+	  cout << "HLLL Wrapper,  mpz_t, double -- Seysen reduction, S = " << S << endl << endl; 
+	}
+      
+	// Seysen 
+	// ------
+
+	T.resize(n,d2); 
+      
+	set(T,C,n,d1);
+
+	for (int i=0; i<n; i++)
+	  for (int j=d1; j<d2; j++)
+	    T(i,j)=A(i,j);
+
+	
+	slll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,d1,S,delta,SEYSEN_REDUCTION);
+
+	
+	if (verboseDepth >=0) {
+	  cout << endl << "----------------------------------" << endl; 
+	  cout << "HLLL Wrapper,  mpz_t, long double -- Seysen reduction, S = " << S << endl << endl; 
+	}
+      
+	// Long double Seysen 
+	// ------------------
+
+	T.resize(n,d); 
+      
+	set(T,C,n,d2);
+
+	for (int i=0; i<n; i++)
+	  for (int j=d2; j<d; j++)
+	    T(i,j)=A(i,j);
+
+	slll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,d2,S,delta,SEYSEN_REDUCTION);
+	
       }
 
       time.stop();
