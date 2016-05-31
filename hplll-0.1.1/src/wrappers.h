@@ -423,7 +423,7 @@ namespace hplll {
 
   	if (verboseDepth >=0) {
   	  cout << endl << "----------------------------------" << endl;
-  	  cout << "HLLL Wrapper, mpz_t, double " << endl << endl;
+  	  cout << "HLLL Wrapper, mpz_t, dpe double " << endl << endl;
   	}
 
   	// Base LLL
@@ -440,7 +440,7 @@ namespace hplll {
 
   	if (verboseDepth >=0) {
   	  cout << endl << "----------------------------------" << endl;
-  	  cout << "HLLL Wrapper, mpz_t, double " << endl << endl;
+  	  cout << "HLLL Wrapper, mpz_t, dpe double " << endl << endl;
   	}
       
   	// Base LLL
@@ -456,7 +456,7 @@ namespace hplll {
 
   	if (verboseDepth >=0) {
   	  cout << endl << "----------------------------------" << endl;
-  	  cout << "HLLL Wrapper,  mpz_t, double -- Seysen reduction " << endl << endl;
+  	  cout << "HLLL Wrapper,  mpz_t, dpe double -- Seysen reduction " << endl << endl;
   	}
 	
   	// Seysen
@@ -484,7 +484,7 @@ namespace hplll {
 
       	if (verboseDepth >=0) {
   	  cout << endl << "----------------------------------" << endl;
-  	  cout << "HLLL Wrapper,  mpz_t, double " << endl << endl;
+  	  cout << "HLLL Wrapper,  mpz_t, dpe double " << endl << endl;
   	}
 	
   	// Base LLL
@@ -500,7 +500,7 @@ namespace hplll {
 
   	if (verboseDepth >=0) {
   	  cout << endl << "----------------------------------" << endl;
-  	  cout << "HLLL Wrapper,  mpz_t, double -- Seysen reduction " << endl << endl;
+  	  cout << "HLLL Wrapper,  mpz_t, dpe double -- Seysen reduction " << endl << endl;
   	}
       
   	// Seysen
@@ -521,7 +521,7 @@ namespace hplll {
 
   	if (verboseDepth >=0) {
   	  cout << endl << "----------------------------------" << endl;
-  	  cout << "HLLL Wrapper,  mpz_t, long double -- Seysen reduction " << endl << endl;
+  	  cout << "HLLL Wrapper,  mpz_t, dpe long double -- Seysen reduction " << endl << endl;
   	}
       
   	// Long double Seysen
@@ -632,7 +632,7 @@ namespace hplll {
 
   	if (verboseDepth >=0) {
   	  cout << endl << "----------------------------------" << endl;
-  	  cout << "SLLL Wrapper, mpz_t, double, S = " << S << endl << endl;
+  	  cout << "SLLL Wrapper, mpz_t, dpe double, S = " << S << endl << endl;
   	}
 
   	// Base LLL
@@ -647,7 +647,7 @@ namespace hplll {
 
   	if (verboseDepth >=0) {
   	  cout << endl << "----------------------------------" << endl;
-  	  cout << "SLLL Wrapper, mpz_t, double, S = " << S << endl << endl;
+  	  cout << "SLLL Wrapper, mpz_t, dpe double, S = " << S << endl << endl;
 	   
   	}
       
@@ -662,7 +662,7 @@ namespace hplll {
 	
   	if (verboseDepth >=0) {
   	  cout << endl << "----------------------------------" << endl;
-  	  cout << "HLLL Wrapper,  mpz_t, double -- Seysen reduction, S = " << S << endl << endl;
+  	  cout << "HLLL Wrapper,  mpz_t, dpe double -- Seysen reduction, S = " << S << endl << endl;
   	}
 	
   	// Seysen change dthreshold
@@ -685,7 +685,7 @@ namespace hplll {
 
       	if (verboseDepth >=0) {
   	  cout << endl << "----------------------------------" << endl;
-  	  cout << "HLLL Wrapper,  mpz_t, double, S = " << S << endl << endl;
+  	  cout << "HLLL Wrapper,  mpz_t, dpe double, S = " << S << endl << endl;
   	}
 	
   	// Base LLL
@@ -699,7 +699,7 @@ namespace hplll {
 
   	if (verboseDepth >=0) {
   	  cout << endl << "----------------------------------" << endl;
-  	  cout << "HLLL Wrapper,  mpz_t, double -- Seysen reduction, S = " << S << endl << endl;
+  	  cout << "HLLL Wrapper,  mpz_t, dpe double -- Seysen reduction, S = " << S << endl << endl;
   	}
       
   	// Seysen
@@ -719,7 +719,7 @@ namespace hplll {
 	
   	if (verboseDepth >=0) {
   	  cout << endl << "----------------------------------" << endl;
-  	  cout << "HLLL Wrapper,  mpz_t, long double -- Seysen reduction, S = " << S << endl << endl;
+  	  cout << "HLLL Wrapper,  mpz_t, dpe long double -- Seysen reduction, S = " << S << endl << endl;
   	}
       
   	// Long double Seysen

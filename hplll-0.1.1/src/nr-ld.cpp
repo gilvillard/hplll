@@ -156,6 +156,14 @@ template<class ZT, class FT> inline void set_f(Z_NR<ZT>& xz, const FP_NR<FT> x) 
 
 #ifdef HPLLL_WITH_LONG_DOUBLE
 
+
+template<> template<>
+inline void FP_NR<ldpe_t>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
+  ldpe_set_ld(data, static_cast<long double>(a.getData())); 
+}
+
+
+
 template<> inline void set_f(Z_NR<mpz_t>& xz, const FP_NR<long double> xx) {
 
   long double x;
@@ -222,6 +230,7 @@ template<> inline void set_f(Z_NR<mpz_t>& xz, const FP_NR<ldpe_t> xx) {
 
   }  
 }
+
 #endif 
 
 template<class ZT, class FT> inline void set_z(FP_NR<FT>& x, const Z_NR<ZT> xz) {
@@ -690,6 +699,18 @@ inline unsigned int FP_NR<ldpe_t>::setprec(unsigned int prec) {
 }
 
 #undef ldpe_ncref
+
+
+template<> inline void set_f(Z_NR<__int128_t>& xz, const FP_NR<ldpe_t> xx) {
+
+  Z_NR<mpz_t> mz;
+  set_f(mz,xx);
+  mpz_set_128int(xz, mz); 
+
+
+} 
+
+
 #endif // LONG DOUBLE 
 
 FPLLL_END_NAMESPACE
