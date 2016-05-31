@@ -175,10 +175,12 @@ public:
 
   inline void setcol(int j, Z_NR<long>* b, int beg, int length);
 
+  inline void setcol(int j, Z_NR<__int128_t>* b, int beg, int length);
+  
   inline void setcol(int j, Z_NR<double>* b, int beg, int length);
   
   inline void setcol(int j, Z_NR<mpz_t>* b, int beg, int length);
-
+  
   inline void setcol(int j, FP_NR<mpfr_t>* f, int beg, int length);
 
 
@@ -794,33 +796,33 @@ template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, Z_NR<mpz_t>* b, in
 };
 
 #ifdef HPLLL_WITH_LONG_DOUBLE
-template<>  inline void MatrixPE<long double,ldpe_t>::setcol(int j, Z_NR<mpz_t>* b, int beg, int l) {  
+ template<>  inline void MatrixPE<long double,ldpe_t>::setcol(int j, Z_NR<mpz_t>* b, int beg, int l) {  
 
-  if (l !=0) {
+   if (l !=0) {
 
-    mpfr_t xzf;
-    mpfr_init2(xzf,64);  // À voir 
+     mpfr_t xzf;
+     mpfr_init2(xzf,64);  // À voir 
 
-    int maxexp=INT_MIN;
-    vector<long> tmpexp(beg+l);
+     int maxexp=INT_MIN;
+     vector<long> tmpexp(beg+l);
 
-    for (int i=beg; i<beg+l; i++) {
+     for (int i=beg; i<beg+l; i++) {
 
-      mpfr_set_z(xzf, b[i].getData(),GMP_RNDN);
+       mpfr_set_z(xzf, b[i].getData(),GMP_RNDN);
 
-      M[j][i]=mpfr_get_ld_2exp (&tmpexp[i], xzf,GMP_RNDN);
+       M[j][i]=mpfr_get_ld_2exp (&tmpexp[i], xzf,GMP_RNDN);
   
-      if (tmpexp[i] > maxexp) maxexp=tmpexp[i];
+       if (tmpexp[i] > maxexp) maxexp=tmpexp[i];
 
-    }
+     }
 
-    exp[j]=maxexp;
+     exp[j]=maxexp;
 
-    for (int i=beg; i<beg+l; i++) {
-      M[j][i]=ldexpl(M[j][i],tmpexp[i]-maxexp);
-    }
-  }
-};
+     for (int i=beg; i<beg+l; i++) {
+       M[j][i]=ldexpl(M[j][i],tmpexp[i]-maxexp);
+     }
+   }
+ };
 #endif 
 
 // Mise à jour de la colonne j à partir d'un vecteur de Z_NR<long> et Z_NR<double>
@@ -829,47 +831,92 @@ template<>  inline void MatrixPE<long double,ldpe_t>::setcol(int j, Z_NR<mpz_t>*
 
 // TODO better here simply cut and paste of above 
  
-template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, Z_NR<long>* b, int beg, int l) {  
+ template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, Z_NR<long>* b, int beg, int l) {  
 
-  if (l !=0) {
-    long maxexp=INT_MIN;
-    vector<long> tmpexp(beg+l);
+   if (l !=0) {
+     long maxexp=INT_MIN;
+     vector<long> tmpexp(beg+l);
 
-    for (int i=beg; i<beg+l; i++) {
+     for (int i=beg; i<beg+l; i++) {
 
-      M[j][i]=b[i].get_d_2exp (&tmpexp[i]);
+       M[j][i]=b[i].get_d_2exp (&tmpexp[i]);
 
-      maxexp=max(maxexp,tmpexp[i]);
-    }
+       maxexp=max(maxexp,tmpexp[i]);
+     }
 
-    exp[j]=maxexp;
+     exp[j]=maxexp;
 
-    for (int i=beg; i<beg+l; i++) {
-      M[j][i]=ldexp(M[j][i],tmpexp[i]-maxexp);
-    }
-  }
-};
+     for (int i=beg; i<beg+l; i++) {
+       M[j][i]=ldexp(M[j][i],tmpexp[i]-maxexp);
+     }
+   }
+ };
 
+ template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, Z_NR<__int128_t>* b, int beg, int l) {  
+
+   if (l !=0) {
+     int maxexp=INT_MIN;   // Pas long ici ??? cf avec int* dans frexp
+     vector<int> tmpexp(beg+l);
+
+     for (int i=beg; i<beg+l; i++) {
+
+       M[j][i]=frexp(static_cast<double>((b[i]).getData()), &tmpexp[i]);
+
+       maxexp=max(maxexp,tmpexp[i]);
+     }
+
+     exp[j]=maxexp;
+
+     for (int i=beg; i<beg+l; i++) {
+       M[j][i]=ldexp(M[j][i],tmpexp[i]-maxexp);
+     }
+   }
+ };
+ 
+#ifdef HPLLL_WITH_LONG_DOUBLE
+template<>  inline void MatrixPE<long double,ldpe_t>::setcol(int j, Z_NR<__int128_t>* b, int beg, int l) {  
+
+   if (l !=0) {
+     int maxexp=INT_MIN;   // Pas long ici ??? cf avec int* dans frexp
+     vector<int> tmpexp(beg+l);
+
+     for (int i=beg; i<beg+l; i++) {
+
+       M[j][i]=frexp(static_cast<long double>((b[i]).getData()), &tmpexp[i]);
+
+       maxexp=max(maxexp,tmpexp[i]);
+     }
+
+     exp[j]=maxexp;
+
+     for (int i=beg; i<beg+l; i++) {
+       M[j][i]=ldexp(M[j][i],tmpexp[i]-maxexp);
+     }
+   }
+ };
+ #endif 
+ 
+ 
  template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, Z_NR<double>* b, int beg, int l) {  
+  
+   if (l !=0) {
+     long maxexp=INT_MIN;
+     vector<long> tmpexp(beg+l);
 
-  if (l !=0) {
-    long maxexp=INT_MIN;
-    vector<long> tmpexp(beg+l);
+     for (int i=beg; i<beg+l; i++) {
 
-    for (int i=beg; i<beg+l; i++) {
+       M[j][i]=b[i].get_d_2exp (&tmpexp[i]);
+       
+       maxexp=max(maxexp,tmpexp[i]);
+     }
 
-      M[j][i]=b[i].get_d_2exp (&tmpexp[i]);
+     exp[j]=maxexp;
 
-      maxexp=max(maxexp,tmpexp[i]);
-    }
-
-    exp[j]=maxexp;
-
-    for (int i=beg; i<beg+l; i++) {
-      M[j][i]=ldexp(M[j][i],tmpexp[i]-maxexp);
-    }
-  }
-};
+     for (int i=beg; i<beg+l; i++) {
+       M[j][i]=ldexp(M[j][i],tmpexp[i]-maxexp);
+     }
+   }
+ };
  
 // Mise à jour de la colonne j à partir d'un vecteur de FP_NR<mpfr_t>
 // On suppose qu'on remplace toute la colonne 

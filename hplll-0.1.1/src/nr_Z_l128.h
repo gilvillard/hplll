@@ -105,12 +105,12 @@ inline Z_NR<__int128_t>::~Z_NR() {}
 /* } */
 
 /* /\** comparison *\/ */
-/* template<> */
-/* inline int Z_NR<long>::cmp(const Z_NR<long>& m) const { */
-/*   if (data > m.data) return 1; */
-/*   if (data == m.data) return 0; */
-/*   return -1; */
-/* } */
+template<>
+inline int Z_NR<__int128_t>::cmp(const Z_NR<__int128_t>& m) const {
+  if (data > m.data) return 1;
+  if (data == m.data) return 0;
+  return -1;
+}
 
 /* template<> */
 /* inline int Z_NR<long>::sgn() const { */
@@ -146,6 +146,7 @@ inline void Z_NR<__int128_t>::set_f(const FP_NR<double>& a) {
 }
 
 
+// Mettre ds nr-ld 
 template<> template<>
 inline void Z_NR<__int128_t>::set_f(const FP_NR<long double>& a) {
     data = static_cast<__int128_t>(a.getData());
@@ -174,10 +175,14 @@ inline void FP_NR<double>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
   data=static_cast<double>(a.getData());
 }
 
+// Mettre ds nr-ld 
 template<> template<>
 inline void FP_NR<long double>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
   data=static_cast<long double>(a.getData());
 }
+
+
+
 
 /* template<> */
 /* inline void Z_NR<long>::operator=(const mpz_t& a) { */
@@ -328,10 +333,12 @@ inline void Z_NR<__int128_t>::submul(const Z_NR<__int128_t>& a, const Z_NR<__int
 /*   data -= a.data * b; */
 /* } */
 
-/* template<> */
-/* inline void Z_NR<long>::abs(const Z_NR<long>& a) { */
-/*   data = labs(a.data);  ==> error Ven 13 mai 2016 18:34:13 CEST  with data = abs(a.data); __int128_t ??? */
-/* } */
+template<>
+inline void Z_NR<__int128_t>::abs(const Z_NR<__int128_t>& a) {
+  if (a.data >=0) 
+    data = a.data;  //==> error Ven 13 mai 2016 18:34:13 CEST  with data = abs(a.data); __int128_t ???
+  else data = -a.data;
+}
 
 
 /* template<> */

@@ -2572,7 +2572,7 @@ unsigned int maxbitsize(const matrix<T>& B) {
 
  }
   
-   template<> void matrix_cast(ZZ_mat<__int128_t>& B, ZZ_mat<mpz_t> A) {
+ template<> void matrix_cast(ZZ_mat<__int128_t>& B, ZZ_mat<mpz_t> A) {
 
    int n= A.getRows();
    int d= A.getCols();
@@ -2581,7 +2581,7 @@ unsigned int maxbitsize(const matrix<T>& B) {
    B.resize(n,d);
 
    if (maxbitsize(A) > ((8*sizeof(B(0,0).getData())) -1))
-       cerr << endl << "** Error in matrix cast **" << endl; 
+     cerr << endl << "** Error in matrix cast **" << endl; 
 
    Z_NR<__int128_t> tz;
    
@@ -2591,6 +2591,28 @@ unsigned int maxbitsize(const matrix<T>& B) {
        B(i,j)=tz;
      }
  }
+
+ template<> void matrix_cast(matrix<Z_NR<__int128_t> >& B, matrix<Z_NR<mpz_t> > A) {
+
+   int n= A.getRows();
+   int d= A.getCols();
+
+   
+   B.resize(n,d);
+
+   if (maxbitsize(A) > ((8*sizeof(B(0,0).getData())) -1))
+     cerr << endl << "** Error in matrix cast **" << endl; 
+
+   Z_NR<__int128_t> tz;
+   
+   for (int i=0; i<n; i++) 
+     for (int j=0; j<d; j++) {
+       mpz_set_128int(tz, A(i,j));
+       B(i,j)=tz;
+     }
+ }
+
+
 
    void matrix_cast(ZZ_mat<mpz_t>& B, ZZ_mat<__int128_t> A) {
 
