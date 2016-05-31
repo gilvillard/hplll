@@ -25,6 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "slll.h"
 
+//#include "slll-wrap.h"
 #include "wrappers.h"
 
 using namespace hplll; 
@@ -77,34 +78,34 @@ int main(int argc, char *argv[])  {
   // Random unimodular preconditioning for the 512 example
   // -----------------------------------------------------
 
-  // ZZ_mat<ZT> Q;
-  // Q.resize(d,d);
+  ZZ_mat<ZT> Q;
+  Q.resize(d,d);
 
-  // for (int i=0; i<d; i++)
-  //   Q(i,i)=1;
+  for (int i=0; i<d; i++)
+    Q(i,i)=1;
   
-  // for (int i=0; i<d; i++)
-  //   for (int j=i+1; j<d ; j++) 
-  //     Q(i,j).randb(4);
+  for (int i=0; i<d; i++)
+    for (int j=i+1; j<d ; j++) 
+      Q(i,j).randb(4);
 
-  // for (int i=0; i<d; i++)
-  //   for (int j=0; j<i ; j++) 
-  //     Q(i,j)=0;
+  for (int i=0; i<d; i++)
+    for (int j=0; j<i ; j++) 
+      Q(i,j)=0;
  
-  // matprod_in(A,Q);
+  matprod_in(A,Q);
   
-  // for (int i=0; i<d; i++)
-  //   Q(i,i)=1;
+  for (int i=0; i<d; i++)
+    Q(i,i)=1;
   
-  // for (int i=0; i<d; i++)
-  //   for (int j=i+1; j<d ; j++) 
-  //     Q(i,j)=0;
+  for (int i=0; i<d; i++)
+    for (int j=i+1; j<d ; j++) 
+      Q(i,j)=0;
   
-  //  for (int i=0; i<d; i++)
-  //   for (int j=0; j<i ; j++) 
-  //     Q(i,j).randb(4);
+   for (int i=0; i<d; i++)
+    for (int j=0; j<i ; j++) 
+      Q(i,j).randb(4);
 
-  // matprod_in(A,Q);
+  matprod_in(A,Q);
   
   
   
@@ -113,19 +114,17 @@ int main(int argc, char *argv[])  {
   
   ZZ_mat<ZT> C; 
 
-
   Timer tw;
-  tw.start();
-
+ 
   verboseDepth=3;
 
   cout  << "Dimension " << n << "     " << d << endl; 
 
-  slll<mpz_t>(C,A,20,4,delta, false, false); 
+  tw=slll<mpz_t>(C,A,255,4,delta, true, true); 
     
-  // slll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,20,4,delta,SEYSEN_REDUCTION);
-    
-  tw.stop();
+  //tw.start();
+  // slll_wrap<mpz_t, ldpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<long double, long dpe_t> > (C,A,255,4,delta,SEYSEN_REDUCTION);
+  //tw.stop();
   
   //cout << endl << "lllw: " << tw << endl; // cf bout de hlll aussi pour l'instant 
 
@@ -153,7 +152,7 @@ int main(int argc, char *argv[])  {
 
    cout << endl << endl;
   
-   Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
+   Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Btest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
    Btest.isreduced(delta-0.1);
 
    //Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Ltest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
