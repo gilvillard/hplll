@@ -419,7 +419,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::reduce_and_gap_detect(int seysen_flag) {
   FP_NR<FT>  eps;
   
   //eps=0.000000001; // 9 
-  eps=0.0000001; 
+  //eps=0.0000001; // 7
+  eps=0.00001; // 4
   
   int i;
   
@@ -566,7 +567,6 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 	
       for (i=kappa-1-indexdec; i>=restdim; i--){
-
 	
 	vectx[i].div(tmpcolR[i],R.get(i,i)); 
 
@@ -577,7 +577,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	//qq.abs(vectx[i]);
 	
 	qq.abs(vectx[i]);
-	if (qq.cmp(0.51) == 1) {  // Ex 512 Shi ne passe pas en 512 avec 0.501
+	if (qq.cmp(0.501) == 1) {  // Ex 512 Shi ne passe pas en 512 avec 0.501
 	  bounded[i]=0;
 	  somedone=1;
 	}

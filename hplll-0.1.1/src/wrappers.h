@@ -37,7 +37,7 @@ namespace hplll {
   
   template<class ZT> Timer
     hlll(ZZ_mat<mpz_t>& C, const ZZ_mat<mpz_t> A, double delta = 0.99,
-	 bool check=true, bool comput_cond=true);
+  	 bool check=true, bool comput_cond=true);
 
 
   // *******************************************************************************************
@@ -47,7 +47,7 @@ namespace hplll {
   
   template<> Timer
     hlll<long>(ZZ_mat<mpz_t>& C, const ZZ_mat<mpz_t> A, double delta,
-	       bool check, bool comput_cond)
+  	       bool check, bool comput_cond)
     {
 
       Timer time;
@@ -55,8 +55,6 @@ namespace hplll {
       time.start();
       
       verboseDepth-=1;
-      
-      typedef long ZT; // and cout below to change 
       
       int n=A.getRows();
       int d=A.getCols();
@@ -68,119 +66,119 @@ namespace hplll {
       // Reduction
       // *********
       
-      ZZ_mat<ZT> B;
+      ZZ_mat<long> B;
       B.resize(n,d);
       
-      matrix_cast(B,A);  // From mpz_t to ZT 
+      matrix_cast(B,A);  // From mpz_t to ZT
       
       if (d <= d1) {
 
-	if (verboseDepth >=0) {
-	  cout << endl << "---------------------------------------------------------" << endl;
-	  cout << "HLLL Wrapper, long int, double " << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "---------------------------------------------------------" << endl;
+  	  cout << "HLLL Wrapper, long int, double " << endl << endl;
+  	}
 
-	// Base LLL
-	// --------
-	Lattice<ZT, double, matrix<Z_NR<ZT> >,  matrix<FP_NR<double> > > L(B,NO_TRANSFORM,DEF_REDUCTION);
+  	// Base LLL
+  	// --------
+  	Lattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > L(B,NO_TRANSFORM,DEF_REDUCTION);
       
-	L.hlll(delta);
+  	L.hlll(delta);
 	
-	matrix_cast(C,L.getbase());
+  	matrix_cast(C,L.getbase());
       }
       else if (d <= d2) {
 
-	ZZ_mat<ZT> T;
+  	ZZ_mat<long> T;
 
-	if (verboseDepth >=0) {
-	  cout << endl << "---------------------------------------------------------" << endl;
-	  cout << "HLLL Wrapper, long int, double " << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "---------------------------------------------------------" << endl;
+  	  cout << "HLLL Wrapper, long int, double " << endl << endl;
+  	}
       
-	// Base LLL
-	// --------
+  	// Base LLL
+  	// --------
       
-	T.resize(n,d1);
+  	T.resize(n,d1);
 
-	set(T,B,n,d1);
+  	set(T,B,n,d1);
 
-	Lattice<ZT, double, matrix<Z_NR<ZT> >,  matrix<FP_NR<double> > > L0(T,NO_TRANSFORM,DEF_REDUCTION);
+  	Lattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > L0(T,NO_TRANSFORM,DEF_REDUCTION);
        
-	L0.hlll(delta);
+  	L0.hlll(delta);
 
-	if (verboseDepth >=0) {
-	  cout << endl << "---------------------------------------------------------" << endl;
-	  cout << "HLLL Wrapper, long int, double -- Seysen reduction " << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "---------------------------------------------------------" << endl;
+  	  cout << "HLLL Wrapper, long int, double -- Seysen reduction " << endl << endl;
+  	}
 	
-	// Seysen
-	// ------
+  	// Seysen
+  	// ------
       
-	set(B,L0.getbase(),n,d1);
+  	set(B,L0.getbase(),n,d1);
 
-	Lattice<ZT, double, matrix<Z_NR<ZT> >,  matrix<FP_NR<double> > > L(B,NO_TRANSFORM,SEYSEN_REDUCTION);
+  	Lattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > L(B,NO_TRANSFORM,SEYSEN_REDUCTION);
     
 
-	L.hlll(delta);
+  	L.hlll(delta);
 
-	matrix_cast(C,L.getbase());
+  	matrix_cast(C,L.getbase());
 
       }
       else {
 
-	ZZ_mat<long> T;
+  	ZZ_mat<long> T;
 
       	if (verboseDepth >=0) {
-	  cout << endl << "---------------------------------------------------------" << endl;
-	  cout << "HLLL Wrapper, long int, double " << endl << endl; 
-	}
+  	  cout << endl << "---------------------------------------------------------" << endl;
+  	  cout << "HLLL Wrapper, long int, double " << endl << endl;
+  	}
 	
-	// Base LLL
-	// --------
+  	// Base LLL
+  	// --------
       
-	T.resize(n,d1);
+  	T.resize(n,d1);
 
-	set(T,B,n,d1);
+  	set(T,B,n,d1);
 
-	Lattice<ZT, double, matrix<Z_NR<ZT> >,  matrix<FP_NR<double> > > L0(T,NO_TRANSFORM,DEF_REDUCTION);
+  	Lattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > L0(T,NO_TRANSFORM,DEF_REDUCTION);
      
-	L0.hlll(delta);
+  	L0.hlll(delta);
 
-	if (verboseDepth >=0) {
-	  cout << endl << "---------------------------------------------------------" << endl;
-	  cout << "HLLL Wrapper, long int, double -- Seysen reduction " << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "---------------------------------------------------------" << endl;
+  	  cout << "HLLL Wrapper, long int, double -- Seysen reduction " << endl << endl;
+  	}
       
-	// Seysen 
-	// ------
+  	// Seysen
+  	// ------
       
-	set(B,L0.getbase(),n,d1);
+  	set(B,L0.getbase(),n,d1);
 
-	T.resize(n,d2);
+  	T.resize(n,d2);
 
-	set(T,B,n,d2);
+  	set(T,B,n,d2);
 
-	Lattice<ZT, double, matrix<Z_NR<ZT> >,  matrix<FP_NR<double> > > L(T,NO_TRANSFORM,SEYSEN_REDUCTION);
+  	Lattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > L(T,NO_TRANSFORM,SEYSEN_REDUCTION);
      
 
-	L.hlll(delta);
+  	L.hlll(delta);
 
-	if (verboseDepth >=0) {
-	  cout << endl << "---------------------------------------------------------" << endl;
-	  cout << "HLLL Wrapper, long int, long double -- Seysen reduction " << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "---------------------------------------------------------" << endl;
+  	  cout << "HLLL Wrapper, long int, long double -- Seysen reduction " << endl << endl;
+  	}
       
-	// Long double Seysen 
-	// ------------------
+  	// Long double Seysen
+  	// ------------------
       
-	set(B,L.getbase(),n,d2);
+  	set(B,L.getbase(),n,d2);
 
-	Lattice<ZT, long double, matrix<Z_NR<ZT> >,  matrix<FP_NR<long double> > > M(B,NO_TRANSFORM,SEYSEN_REDUCTION);
+  	Lattice<long, long double, matrix<Z_NR<long> >,  matrix<FP_NR<long double> > > M(B,NO_TRANSFORM,SEYSEN_REDUCTION);
       
     
-	M.hlll(delta);
+  	M.hlll(delta);
 
-	matrix_cast(C,M.getbase());
+  	matrix_cast(C,M.getbase());
      
 
       }
@@ -192,22 +190,22 @@ namespace hplll {
 
       if (check) {
 
-	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(C,NO_TRANSFORM,DEF_REDUCTION);
+  	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(C,NO_TRANSFORM,DEF_REDUCTION);
 
-	L.isreduced(delta-0.1);
+  	L.isreduced(delta-0.1);
 
       }
 
       if (comput_cond) {
 
-	double t,u,v,w;
+  	double t,u,v,w;
 	
-	ratio(C,t,u,v,w);
+  	ratio(C,t,u,v,w);
 
-	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-	cout << ".. Average diagonal ratio: " << u << endl;
-	cout << ".. Max diagonal ratio: " << v << endl;
-	cout << ".. First vector quality: " << w << endl << endl;
+  	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+  	cout << ".. Average diagonal ratio: " << u << endl;
+  	cout << ".. Max diagonal ratio: " << v << endl;
+  	cout << ".. First vector quality: " << w << endl << endl;
       }
       
       verboseDepth+=1;
@@ -225,7 +223,7 @@ namespace hplll {
   
   template<> Timer
     hlll<__int128_t>(ZZ_mat<mpz_t>& C, const ZZ_mat<mpz_t> A, double delta,
-	       bool check, bool comput_cond)
+  	       bool check, bool comput_cond)
     {
 
       Timer time;
@@ -233,8 +231,6 @@ namespace hplll {
       time.start();
       
       verboseDepth-=1;
-      
-      typedef __int128_t ZT; // and cout below to change 
       
       int n=A.getRows();
       int d=A.getCols();
@@ -245,119 +241,119 @@ namespace hplll {
       // Reduction
       // *********
       
-      ZZ_mat<ZT> B;
+      ZZ_mat<__int128_t> B;
       B.resize(n,d);
       
-      matrix_cast(B,A);  // From mpz_t to ZT 
+      matrix_cast(B,A);  // From mpz_t to ZT
       
       if (d <= d1) {
 
-	if (verboseDepth >=0) {
-	  cout << endl << "---------------------------------------------------------" << endl;
-	  cout << "HLLL Wrapper, __int128_t, double " << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "---------------------------------------------------------" << endl;
+  	  cout << "HLLL Wrapper, __int128_t, double " << endl << endl;
+  	}
 
-	// Base LLL
-	// --------
-	Lattice<ZT, double, matrix<Z_NR<ZT> >,  matrix<FP_NR<double> > > L(B,NO_TRANSFORM,DEF_REDUCTION);
+  	// Base LLL
+  	// --------
+  	Lattice<__int128_t, double, matrix<Z_NR<__int128_t> >,  matrix<FP_NR<double> > > L(B,NO_TRANSFORM,DEF_REDUCTION);
       
-	L.hlll(delta);
+  	L.hlll(delta);
 	
-	matrix_cast(C,L.getbase());
+  	matrix_cast(C,L.getbase());
       }
       else if (d <= d2) {
 
-	ZZ_mat<ZT> T;
+  	ZZ_mat<__int128_t> T;
 
-	if (verboseDepth >=0) {
-	  cout << endl << "---------------------------------------------------------" << endl;
-	  cout << "HLLL Wrapper, __int128_t, double " << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "---------------------------------------------------------" << endl;
+  	  cout << "HLLL Wrapper, __int128_t, double " << endl << endl;
+  	}
       
-	// Base LLL
-	// --------
+  	// Base LLL
+  	// --------
       
-	T.resize(n,d1);
+  	T.resize(n,d1);
 
-	set(T,B,n,d1);
+  	set(T,B,n,d1);
 
-	Lattice<ZT, double, matrix<Z_NR<ZT> >,  matrix<FP_NR<double> > > L0(T,NO_TRANSFORM,DEF_REDUCTION);
+  	Lattice<__int128_t, double, matrix<Z_NR<__int128_t> >,  matrix<FP_NR<double> > > L0(T,NO_TRANSFORM,DEF_REDUCTION);
        
-	L0.hlll(delta);
+  	L0.hlll(delta);
 
-	if (verboseDepth >=0) {
-	  cout << endl << "---------------------------------------------------------" << endl;
-	  cout << "HLLL Wrapper, __int128_t, double -- Seysen reduction " << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "---------------------------------------------------------" << endl;
+  	  cout << "HLLL Wrapper, __int128_t, double -- Seysen reduction " << endl << endl;
+  	}
 	
-	// Seysen
-	// ------
+  	// Seysen
+  	// ------
       
-	set(B,L0.getbase(),n,d1);
+  	set(B,L0.getbase(),n,d1);
 
-	Lattice<ZT, double, matrix<Z_NR<ZT> >,  matrix<FP_NR<double> > > L(B,NO_TRANSFORM,SEYSEN_REDUCTION);
+  	Lattice<__int128_t, double, matrix<Z_NR<__int128_t> >,  matrix<FP_NR<double> > > L(B,NO_TRANSFORM,SEYSEN_REDUCTION);
     
 
-	L.hlll(delta);
+  	L.hlll(delta);
 
-	matrix_cast(C,L.getbase());
+  	matrix_cast(C,L.getbase());
 
       }
       else {
 
-	ZZ_mat<ZT> T;
+  	ZZ_mat<__int128_t> T;
 
       	if (verboseDepth >=0) {
-	  cout << endl << "---------------------------------------------------------" << endl;
-	  cout << "HLLL Wrapper, __int128_t, double " << endl << endl; 
-	}
+  	  cout << endl << "---------------------------------------------------------" << endl;
+  	  cout << "HLLL Wrapper, __int128_t, double " << endl << endl;
+  	}
 	
-	// Base LLL
-	// --------
+  	// Base LLL
+  	// --------
       
-	T.resize(n,d1);
+  	T.resize(n,d1);
 
-	set(T,B,n,d1);
+  	set(T,B,n,d1);
 
-	Lattice<ZT, double, matrix<Z_NR<ZT> >,  matrix<FP_NR<double> > > L0(T,NO_TRANSFORM,DEF_REDUCTION);
+  	Lattice<__int128_t, double, matrix<Z_NR<__int128_t> >,  matrix<FP_NR<double> > > L0(T,NO_TRANSFORM,DEF_REDUCTION);
      
-	L0.hlll(delta);
+  	L0.hlll(delta);
 
-	if (verboseDepth >=0) {
-	  cout << endl << "---------------------------------------------------------" << endl;
-	  cout << "HLLL Wrapper, __int128_t, double -- Seysen reduction " << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "---------------------------------------------------------" << endl;
+  	  cout << "HLLL Wrapper, __int128_t, double -- Seysen reduction " << endl << endl;
+  	}
       
-	// Seysen 
-	// ------
+  	// Seysen
+  	// ------
       
-	set(B,L0.getbase(),n,d1);
+  	set(B,L0.getbase(),n,d1);
 
-	T.resize(n,d2);
+  	T.resize(n,d2);
 
-	set(T,B,n,d2);
+  	set(T,B,n,d2);
 
-	Lattice<ZT, double, matrix<Z_NR<ZT> >,  matrix<FP_NR<double> > > L(T,NO_TRANSFORM,SEYSEN_REDUCTION);
+  	Lattice<__int128_t, double, matrix<Z_NR<__int128_t> >,  matrix<FP_NR<double> > > L(T,NO_TRANSFORM,SEYSEN_REDUCTION);
      
 
-	L.hlll(delta);
+  	L.hlll(delta);
 
-	if (verboseDepth >=0) {
-	  cout << endl << "---------------------------------------------------------" << endl; 
-	          cout << "HLLL Wrapper, __int128_t, long double -- Seysen reduction " << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "---------------------------------------------------------" << endl;
+  	          cout << "HLLL Wrapper, __int128_t, long double -- Seysen reduction " << endl << endl;
+  	}
       
-	// Long double Seysen 
-	// ------------------
+  	// Long double Seysen
+  	// ------------------
       
-	set(B,L.getbase(),n,d2);
+  	set(B,L.getbase(),n,d2);
 
-	Lattice<ZT, long double, matrix<Z_NR<ZT> >,  matrix<FP_NR<long double> > > M(B,NO_TRANSFORM,SEYSEN_REDUCTION);
+  	Lattice<__int128_t, long double, matrix<Z_NR<__int128_t> >,  matrix<FP_NR<long double> > > M(B,NO_TRANSFORM,SEYSEN_REDUCTION);
       
     
-	M.hlll(delta);
+  	M.hlll(delta);
 
-	matrix_cast(C,M.getbase());
+  	matrix_cast(C,M.getbase());
      
 
       }
@@ -369,22 +365,22 @@ namespace hplll {
 
       if (check) {
 
-	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(C,NO_TRANSFORM,DEF_REDUCTION);
+  	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(C,NO_TRANSFORM,DEF_REDUCTION);
 
-	L.isreduced(delta-0.1);
+  	L.isreduced(delta-0.1);
 
       }
 
       if (comput_cond) {
 
-	double t,u,v,w;
+  	double t,u,v,w;
 	
-	ratio(C,t,u,v,w);
+  	ratio(C,t,u,v,w);
 
-	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-	cout << ".. Average diagonal ratio: " << u << endl;
-	cout << ".. Max diagonal ratio: " << v << endl;
-	cout << ".. First vector quality: " << w << endl << endl;
+  	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+  	cout << ".. Average diagonal ratio: " << u << endl;
+  	cout << ".. Max diagonal ratio: " << v << endl;
+  	cout << ".. First vector quality: " << w << endl << endl;
       }
       
       verboseDepth+=1;
@@ -398,12 +394,12 @@ namespace hplll {
 
   // *******************************************************************************************
   
-  // mpz_t wrapper 
+  // mpz_t wrapper
   // -------------
   
   template<> Timer
     hlll<mpz_t>(ZZ_mat<mpz_t>& C, const ZZ_mat<mpz_t> A, double delta,
-	       bool check, bool comput_cond)
+  	       bool check, bool comput_cond)
     {
 
       Timer time;
@@ -411,8 +407,6 @@ namespace hplll {
       time.start();
       
       verboseDepth-=1;
-      
-      typedef mpz_t ZT; // and cout below to change 
       
       int n=A.getRows();
       int d=A.getCols();
@@ -427,126 +421,126 @@ namespace hplll {
      
       if (d <= d1) {
 
-	if (verboseDepth >=0) {
-	  cout << endl << "----------------------------------" << endl; 
-	  cout << "HLLL Wrapper, mpz_t, double " << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "----------------------------------" << endl;
+  	  cout << "HLLL Wrapper, mpz_t, double " << endl << endl;
+  	}
 
-	// Base LLL
-	// --------
-	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
+  	// Base LLL
+  	// --------
+  	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
       
-	L.hlll(delta);
+  	L.hlll(delta);
 	
-	C=L.getbase();
+  	C=L.getbase();
       }
       else if (d <= d2) {
 
-	ZZ_mat<ZT> T;
+  	ZZ_mat<mpz_t> T;
 
-	if (verboseDepth >=0) {
-	  cout << endl << "----------------------------------" << endl; 
-	  cout << "HLLL Wrapper, mpz_t, double " << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "----------------------------------" << endl;
+  	  cout << "HLLL Wrapper, mpz_t, double " << endl << endl;
+  	}
       
-	// Base LLL
-	// --------
+  	// Base LLL
+  	// --------
 	
-	T.resize(n,d1);
+  	T.resize(n,d1);
 
-	set(T,A,n,d1);
+  	set(T,A,n,d1);
 
-	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > L0(T,NO_TRANSFORM,DEF_REDUCTION);
+  	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > L0(T,NO_TRANSFORM,DEF_REDUCTION);
        
-	L0.hlll(delta);
+  	L0.hlll(delta);
 
-	if (verboseDepth >=0) {
-	  cout << endl << "----------------------------------" << endl; 
-	  cout << "HLLL Wrapper,  mpz_t, double -- Seysen reduction " << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "----------------------------------" << endl;
+  	  cout << "HLLL Wrapper,  mpz_t, double -- Seysen reduction " << endl << endl;
+  	}
 	
-	// Seysen
-	// ------
+  	// Seysen
+  	// ------
 
-	T.resize(n,d); 
+  	T.resize(n,d);
       
-	set(T,L0.getbase(),n,d1);
+  	set(T,L0.getbase(),n,d1);
 	
-	for (int i=0; i<n; i++)
-	  for (int j=d1; j<d; j++)
-	    T(i,j)=A(i,j);
+  	for (int i=0; i<n; i++)
+  	  for (int j=d1; j<d; j++)
+  	    T(i,j)=A(i,j);
 
-	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > L(T,NO_TRANSFORM,SEYSEN_REDUCTION);
+  	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > L(T,NO_TRANSFORM,SEYSEN_REDUCTION);
     
-	L.hlll(delta);
+  	L.hlll(delta);
 
-	C=L.getbase();
+  	C=L.getbase();
 
 	
       }
       else {
 
-	ZZ_mat<ZT> T;
+  	ZZ_mat<mpz_t> T;
 
       	if (verboseDepth >=0) {
-	  cout << endl << "----------------------------------" << endl; 
-	  cout << "HLLL Wrapper,  mpz_t, double " << endl << endl; 
-	}
+  	  cout << endl << "----------------------------------" << endl;
+  	  cout << "HLLL Wrapper,  mpz_t, double " << endl << endl;
+  	}
 	
-	// Base LLL
-	// --------
+  	// Base LLL
+  	// --------
       
-	T.resize(n,d1);
+  	T.resize(n,d1);
 
-	set(T,A,n,d1);
+  	set(T,A,n,d1);
 
-	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > L0(T,NO_TRANSFORM,DEF_REDUCTION);
+  	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > L0(T,NO_TRANSFORM,DEF_REDUCTION);
      
-	L0.hlll(delta);
+  	L0.hlll(delta);
 
-	if (verboseDepth >=0) {
-	  cout << endl << "----------------------------------" << endl; 
-	  cout << "HLLL Wrapper,  mpz_t, double -- Seysen reduction " << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "----------------------------------" << endl;
+  	  cout << "HLLL Wrapper,  mpz_t, double -- Seysen reduction " << endl << endl;
+  	}
       
-	// Seysen 
-	// ------
+  	// Seysen
+  	// ------
 
-	T.resize(n,d2); 
+  	T.resize(n,d2);
       
-	set(T,L0.getbase(),n,d1);
+  	set(T,L0.getbase(),n,d1);
 
-	for (int i=0; i<n; i++)
-	  for (int j=d1; j<d2; j++)
-	    T(i,j)=A(i,j);
+  	for (int i=0; i<n; i++)
+  	  for (int j=d1; j<d2; j++)
+  	    T(i,j)=A(i,j);
 
-	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > L(T,NO_TRANSFORM,SEYSEN_REDUCTION);
+  	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > L(T,NO_TRANSFORM,SEYSEN_REDUCTION);
      
 
-	L.hlll(delta);
+  	L.hlll(delta);
 
-	if (verboseDepth >=0) {
-	  cout << endl << "----------------------------------" << endl; 
-	  cout << "HLLL Wrapper,  mpz_t, long double -- Seysen reduction " << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "----------------------------------" << endl;
+  	  cout << "HLLL Wrapper,  mpz_t, long double -- Seysen reduction " << endl << endl;
+  	}
       
-	// Long double Seysen 
-	// ------------------
+  	// Long double Seysen
+  	// ------------------
 
-	T.resize(n,d); 
+  	T.resize(n,d);
       
-	set(T,L.getbase(),n,d2);
+  	set(T,L.getbase(),n,d2);
 
-	for (int i=0; i<n; i++)
-	  for (int j=d2; j<d; j++)
-	    T(i,j)=A(i,j);
+  	for (int i=0; i<n; i++)
+  	  for (int j=d2; j<d; j++)
+  	    T(i,j)=A(i,j);
 
-	Lattice<mpz_t, ldpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<long double, ldpe_t> > M(T,NO_TRANSFORM,SEYSEN_REDUCTION);
+  	Lattice<mpz_t, ldpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<long double, ldpe_t> > M(T,NO_TRANSFORM,SEYSEN_REDUCTION);
       
    
-	M.hlll(delta);
+  	M.hlll(delta);
 
-	C=M.getbase();
+  	C=M.getbase();
      
 
       }
@@ -558,25 +552,25 @@ namespace hplll {
 
       if (check) {
 
-	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(C,NO_TRANSFORM,DEF_REDUCTION);
+  	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(C,NO_TRANSFORM,DEF_REDUCTION);
 
-	L.isreduced(delta-0.1);
+  	L.isreduced(delta-0.1);
 
       }
 
       if (comput_cond) {
 
-	double t,u,v,w;
+  	double t,u,v,w;
 	
-	ratio(C,t,u,v,w);
+  	ratio(C,t,u,v,w);
 
-	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-	cout << ".. Average diagonal ratio: " << u << endl;
-	cout << ".. Max diagonal ratio: " << v << endl;
-	cout << ".. First vector quality: " << w << endl << endl;
+  	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+  	cout << ".. Average diagonal ratio: " << u << endl;
+  	cout << ".. Max diagonal ratio: " << v << endl;
+  	cout << ".. First vector quality: " << w << endl << endl;
       }
 
-      cout << endl << "Reduction time: " << time << endl << endl; 
+      cout << endl << "Reduction time: " << time << endl << endl;
       
       verboseDepth+=1;
       return time;
@@ -591,8 +585,8 @@ namespace hplll {
   
   template<class ZT> Timer
     slll(ZZ_mat<mpz_t>& C, const ZZ_mat<mpz_t> A,
-	 int dthreshold=40, int S=4,  double delta = 0.99,
-	 bool check=true, bool comput_cond=true);
+  	 int dthreshold=40, int S=4,  double delta = 0.99,
+  	 bool check=true, bool comput_cond=true);
 
 
   // *******************************************************************************************
@@ -613,18 +607,15 @@ namespace hplll {
   // -------------
   
   template<> Timer
-    slll<mpz_t>(ZZ_mat<mpz_t>& C, const ZZ_mat<mpz_t> A, 
-		int dthreshold, int S, double delta,
-		bool check, bool comput_cond)
-    {
+    slll<mpz_t>(ZZ_mat<mpz_t>& C, const ZZ_mat<mpz_t> A,
+  		int dthreshold, int S, double delta,
+  		bool check, bool comput_cond)     {
 
       Timer time;
 
       time.start();
       
       verboseDepth-=1;
-      
-      typedef mpz_t ZT; // and cout below to change 
       
       int n=A.getRows();
       int d=A.getCols();
@@ -639,110 +630,110 @@ namespace hplll {
      
       if (d <= d1) {
 
-	if (verboseDepth >=0) {
-	  cout << endl << "----------------------------------" << endl; 
-	  cout << "SLLL Wrapper, mpz_t, double, S = " << S << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "----------------------------------" << endl;
+  	  cout << "SLLL Wrapper, mpz_t, double, S = " << S << endl << endl;
+  	}
 
-	// Base LLL
-	// --------
+  	// Base LLL
+  	// --------
 	
-	slll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,dthreshold,S,delta,DEF_REDUCTION);
+  	slll_wrap<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C,A,dthreshold,S,delta,DEF_REDUCTION);
 	 
       }
       else if (d <= d2) {
 
-	ZZ_mat<ZT> T;
+  	ZZ_mat<mpz_t> T;
 
-	if (verboseDepth >=0) {
-	  cout << endl << "----------------------------------" << endl;
-	  cout << "SLLL Wrapper, mpz_t, double, S = " << S << endl << endl;
+  	if (verboseDepth >=0) {
+  	  cout << endl << "----------------------------------" << endl;
+  	  cout << "SLLL Wrapper, mpz_t, double, S = " << S << endl << endl;
 	   
-	}
+  	}
       
-	// Base LLL
-	// --------
+  	// Base LLL
+  	// --------
 	
-	T.resize(n,d1);
+  	T.resize(n,d1);
 
-	set(T,A,n,d1);
+  	set(T,A,n,d1);
 
-	slll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,dthreshold,S,delta,DEF_REDUCTION);
+  	slll_wrap<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C,T,dthreshold,S,delta,DEF_REDUCTION);
 	
-	if (verboseDepth >=0) {
-	  cout << endl << "----------------------------------" << endl; 
-	  cout << "HLLL Wrapper,  mpz_t, double -- Seysen reduction, S = " << S << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "----------------------------------" << endl;
+  	  cout << "HLLL Wrapper,  mpz_t, double -- Seysen reduction, S = " << S << endl << endl;
+  	}
 	
-	// Seysen change dthreshold
-	// ------
+  	// Seysen change dthreshold
+  	// ------
 
-	T.resize(n,d); 
+  	T.resize(n,d);
       
-	set(T,C,n,d1);
+  	set(T,C,n,d1);
 	
-	for (int i=0; i<n; i++)
-	  for (int j=d1; j<d; j++)
-	    T(i,j)=A(i,j);
+  	for (int i=0; i<n; i++)
+  	  for (int j=d1; j<d; j++)
+  	    T(i,j)=A(i,j);
 
-	slll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,d1,S,delta,SEYSEN_REDUCTION);
+  	slll_wrap<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C,T,d1,S,delta,SEYSEN_REDUCTION);
 
       }
       else {
 
-	ZZ_mat<ZT> T;
+  	ZZ_mat<mpz_t> T;
 
       	if (verboseDepth >=0) {
-	  cout << endl << "----------------------------------" << endl; 
-	  cout << "HLLL Wrapper,  mpz_t, double, S = " << S << endl << endl; 
-	}
+  	  cout << endl << "----------------------------------" << endl;
+  	  cout << "HLLL Wrapper,  mpz_t, double, S = " << S << endl << endl;
+  	}
 	
-	// Base LLL
-	// --------
+  	// Base LLL
+  	// --------
       
-	T.resize(n,d1);
+  	T.resize(n,d1);
 
-	set(T,A,n,d1);
+  	set(T,A,n,d1);
 
-	slll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,dthreshold,S,delta,DEF_REDUCTION);
+  	slll_wrap<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C,T,dthreshold,S,delta,DEF_REDUCTION);
 
-	if (verboseDepth >=0) {
-	  cout << endl << "----------------------------------" << endl; 
-	  cout << "HLLL Wrapper,  mpz_t, double -- Seysen reduction, S = " << S << endl << endl; 
-	}
+  	if (verboseDepth >=0) {
+  	  cout << endl << "----------------------------------" << endl;
+  	  cout << "HLLL Wrapper,  mpz_t, double -- Seysen reduction, S = " << S << endl << endl;
+  	}
       
-	// Seysen 
-	// ------
+  	// Seysen
+  	// ------
 
-	T.resize(n,d2); 
+  	T.resize(n,d2);
       
-	set(T,C,n,d1);
+  	set(T,C,n,d1);
 
-	for (int i=0; i<n; i++)
-	  for (int j=d1; j<d2; j++)
-	    T(i,j)=A(i,j);
-
-	
-	slll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,T,d1,S,delta,SEYSEN_REDUCTION);
+  	for (int i=0; i<n; i++)
+  	  for (int j=d1; j<d2; j++)
+  	    T(i,j)=A(i,j);
 
 	
-	if (verboseDepth >=0) {
-	  cout << endl << "----------------------------------" << endl; 
-	  cout << "HLLL Wrapper,  mpz_t, long double -- Seysen reduction, S = " << S << endl << endl; 
-	}
+  	slll_wrap<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (C,T,d1,S,delta,SEYSEN_REDUCTION);
+
+	
+  	if (verboseDepth >=0) {
+  	  cout << endl << "----------------------------------" << endl;
+  	  cout << "HLLL Wrapper,  mpz_t, long double -- Seysen reduction, S = " << S << endl << endl;
+  	}
       
-	// Long double Seysen 
-	// ------------------
+  	// Long double Seysen
+  	// ------------------
 
-	T.resize(n,d); 
+  	T.resize(n,d);
       
-	set(T,C,n,d2);
+  	set(T,C,n,d2);
 
-	for (int i=0; i<n; i++)
-	  for (int j=d2; j<d; j++)
-	    T(i,j)=A(i,j);
+  	for (int i=0; i<n; i++)
+  	  for (int j=d2; j<d; j++)
+  	    T(i,j)=A(i,j);
 
-	slll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,T,d2,S,delta,SEYSEN_REDUCTION);
+  	slll_wrap<mpz_t, ldpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<long double, ldpe_t> > (C,T,d2,S,delta,SEYSEN_REDUCTION);
 	
       }
 
@@ -753,25 +744,25 @@ namespace hplll {
 
       if (check) {
 
-	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(C,NO_TRANSFORM,DEF_REDUCTION);
+  	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(C,NO_TRANSFORM,DEF_REDUCTION);
 
-	L.isreduced(delta-0.1);
+  	L.isreduced(delta-0.1);
 
       }
 
       if (comput_cond) {
 
-	double t,u,v,w;
+  	double t,u,v,w;
 	
-	ratio(C,t,u,v,w);
+  	ratio(C,t,u,v,w);
 
-	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-	cout << ".. Average diagonal ratio: " << u << endl;
-	cout << ".. Max diagonal ratio: " << v << endl;
-	cout << ".. First vector quality: " << w << endl << endl;
+  	cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+  	cout << ".. Average diagonal ratio: " << u << endl;
+  	cout << ".. Max diagonal ratio: " << v << endl;
+  	cout << ".. First vector quality: " << w << endl << endl;
       }
 
-      cout << endl << "Reduction time: " << time << endl << endl; 
+      cout << endl << "Reduction time: " << time << endl << endl;
       
       verboseDepth+=1;
       return time;

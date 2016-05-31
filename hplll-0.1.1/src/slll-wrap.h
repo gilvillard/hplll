@@ -72,7 +72,6 @@ slll_wrap_gap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int gap_position, int S, double delta
   if (gap_status >=2) {
 
     slll_wrap_gap<ZT, FT,  MatrixZT, MatrixFT>(B,LB.getbase(),gap_status,delta,reduction_method);
-
     
   }
   // For second part directly
@@ -220,10 +219,16 @@ slll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, int S, double delta, int 
     SLattice<ZT, FT,  MatrixZT, MatrixFT>  L(LR.getbase(),S,NO_TRANSFORM,reduction_method);
 
     gap_status=L.hlll(delta,S,S,1000000);
-
     
-    if (gap_status >=2) 
+    if (gap_status >=2) {
+
       slll_wrap_gap<ZT, FT,  MatrixZT, MatrixFT>(C,L.getbase(),gap_status,S,delta,reduction_method);
+      
+      cout << endl << "Save : " << n << "  " << k << "     gap: " << gap_status << endl; 
+
+      cout << transpose(L.getbase()) << endl; 
+
+    }
 
     else
       C=L.getbase();
@@ -240,31 +245,12 @@ slll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, int S, double delta, int 
     }
 
    
-
-    // Pour comparaison avec hplll
-    // ---------------------------
-    // Lattice<ZT, FT,  MatrixZT, MatrixFT>  LH(B,NO_TRANSFORM,reduction_method);
-
-   
-    // th.start();
-    
-    // LH.hlll(delta);
-
-    // th.stop();
-    // thlll+=th;
-    // cout << endl << "     hlll: " << th << endl << endl;
-   
-
   } // End loop on k: extra columns 
   
 
   cout << endl; 
   cout << "Initial reduction: " << tinit << endl;
   cout << "Segment reduction: " << ttot << endl;
-
-  //cout << endl << endl << "lllw: " << tinit+ttot << endl; 
-
-  //cout << endl << "hlll: " << tinit+thlll << endl << endl;
 
   verboseDepth+=1;
   return 0;
