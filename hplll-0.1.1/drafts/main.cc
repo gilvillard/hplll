@@ -1,7 +1,7 @@
-/* 
+/* Integer matrix nullspace test file  
 
 Created Dim  7 avr 2013 16:54:03 CEST
-Copyright (C) 2013-2016      Gilles Villard 
+Copyright (C) 2013      Gilles Villard 
 
 This file is part of the hplll Library 
 
@@ -23,78 +23,159 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "hplll.h"
 
+#include "slll.h"
+
+//#include "slll-wrap.h"
 #include "wrappers.h"
 
+using namespace hplll; 
+
+
+    
 /* ***********************************************
 
           MAIN   
 
    ********************************************** */
 
-using namespace hplll; 
+
 
 int main(int argc, char *argv[])  {
-  
-  
-  ZZ_mat<mpz_t> A;
 
-  ZZ_mat<mpz_t> C;
+  typedef mpz_t  ZT;
+  //typedef long ZT;
+
+  ZZ_mat<mpz_t> A0; // For hpLLL
   
-  ZZ_mat<mpz_t> AT;
+  ZZ_mat<ZT> A; // For hpLLL 
+
+  ZZ_mat<ZT> AT;  // fpLLL
  
   // ---------------------------------------------------------------------
-
-  int n,d;
-  double delta;
-
-  command_line_basis(A, n, d, delta, argc, argv); 
-
- 
-  Timer th,tf;
-  
-  // HLLL ------------------------------------------
    
+  int d=8;
+  int n;
   
-  //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
+  //int nbbits=8;
+  //double alpha;
+  //int output;
+  
+  double delta = 0.99;
 
-  // verboseDepth = 1;
-  // th.start();
-  // status=B.hlll(delta);
-  // th.stop();
+  //int m=1;
   
-  verboseDepth = 2;
+  //int lovmax=1000000;
+
+  int S=4;  // Rajouter à commandline 
+
+  int nbthreads=4;
+
+  command_line_basis(A0, n, d, delta, argc, argv);
+
+  // Attention en 128 bits, mpfr get_si pas autrement 
+  matrix_cast(A,A0);  // temporaire avec ci-dessous
+
+  // Random unimodular preconditioning for the 512 example
+  // -----------------------------------------------------
+
+  ZZ_mat<ZT> Q;
+  Q.resize(d,d);
+
+  for (int i=0; i<d; i++)
+    Q(i,i)=1;
   
-  th=hlll<mpz_t>(C, A, 0.99, false, true);
-    
-  //hlll<__int128_t>(C, A, 0.99, 0,0); 
-  //hlll<long>(C, A, 0.99, false, true); 
+  for (int i=0; i<d; i++)
+    for (int j=i+1; j<d ; j++) 
+      Q(i,j).randb(4);
+
+  for (int i=0; i<d; i++)
+    for (int j=0; j<i ; j++) 
+      Q(i,j)=0;
  
-  cout << endl; 
+  matprod_in(A,Q);
+  
+  for (int i=0; i<d; i++)
+    Q(i,i)=1;
+  
+  for (int i=0; i<d; i++)
+    for (int j=i+1; j<d ; j++) 
+      Q(i,j)=0;
+  
+   for (int i=0; i<d; i++)
+    for (int j=0; j<i ; j++) 
+      Q(i,j).randb(4);
 
-  cout << "--------------  FPLLL WRAPPER" << endl << endl;
+  matprod_in(A,Q);
   
-  AT.resize(d,n);
   
-  transpose(AT,A);
   
-  tf.start();
+  // With the wrapper
+  // ----------------
   
-  lllReduction(AT, delta, 0.501, LM_FAST, FT_DEFAULT,0,LLL_VERBOSE);
-  
-  tf.stop();
-  
-  // transpose(A,AT);
-  
-  // Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A,NO_TRANSFORM,DEF_REDUCTION);
-  // verboseDepth=0;
-  //T.isreduced(delta-0.1);
+  ZZ_mat<ZT> C; 
 
-  //  cout << "-----------------------" << endl;
+  Timer tw;
+ 
+  verboseDepth=3;
 
-   cout << "HLLL: " << th << endl;
-  
-   cout << "FPLLL :" << tf << endl;
-  
+  cout  << "Dimension " << n << "     " << d << endl; 
 
+  //tw=slll<mpz_t>(C,A,255,4,delta, true, true); 
+    
+  tw.start();
+  slll_wrap<mpz_t, ldpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<long double, ldpe_t> > (C,A,255,4,delta,SEYSEN_REDUCTION);
+  tw.stop();
+  
+  //cout << endl << "lllw: " << tw << endl; // cf bout de hlll aussi pour l'instant 
+
+  //cout << "Transposed result" << endl;
+
+  //cout << transpose(C) << endl; 
+  
+   // With hlll
+   // ---------
+
+  verboseDepth=0;
+   
+  Lattice<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
+   
+   Timer tl;
+   tl.start();
+   //L.hlll(delta);
+   tl.stop();
+
+  
+   cout << endl << "hlll: " << tl << endl;
+
+   // Verification
+   // -------------
+
+   cout << endl << endl;
+  
+   Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Btest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+   Btest.isreduced(delta-0.1);
+
+   //Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Ltest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+   //Ltest.isreduced(delta-0.1);
+
+
+   //DBG ratio 
+   double t,u,v,w;
+
+   ratio<ZT>(C,t,u,v,w);
+   
+   cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+   cout << ".. Average diagonal ratio: " << u << endl;
+   cout << ".. Max diagonal ratio: " << v << endl;
+   cout << ".. First vector quality: " << w << endl;
+
+   cout << "-----------------------" << endl;
+
+   cout << "SLLL: " << tw << endl;
+   //tw.print(cout);
+   cout << "HLLL :" << tl << endl;
+   //tl.print(cout);  
+
+    
   return 0;
 }
