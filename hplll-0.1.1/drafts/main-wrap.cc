@@ -25,6 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "slll.h"
 
+//#include "slll-wrap.h"
 #include "wrappers.h"
 
 using namespace hplll; 
@@ -43,6 +44,7 @@ int main(int argc, char *argv[])  {
 
   typedef mpz_t  ZT;
   //typedef long ZT;
+  //typedef  __int128_t ZT; 
 
   ZZ_mat<mpz_t> A0; // For hpLLL
   
@@ -113,32 +115,32 @@ int main(int argc, char *argv[])  {
   
   ZZ_mat<ZT> C; 
 
-
   Timer tw;
-  tw.start();
-
+ 
   verboseDepth=3;
 
   cout  << "Dimension " << n << "     " << d << endl; 
 
-  slll<mpz_t>(C,A,20,4,delta, false, false); 
+  //tw=slll<mpz_t>(C,A,127,4,delta, true, true); 
     
-  // slll_wrap<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > (C,A,20,4,delta,SEYSEN_REDUCTION);
-    
+  tw.start();
+  slll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,A,20,4,delta,SEYSEN_REDUCTION);
   tw.stop();
-  
+
+  //SLattice<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > B(A,4,NO_TRANSFORM,DEF_REDUCTION);  
+
   //cout << endl << "lllw: " << tw << endl; // cf bout de hlll aussi pour l'instant 
 
   //cout << "Transposed result" << endl;
 
-  //cout << transpose(C) << endl; 
+  //cout << transpose(C) << endl;  
   
    // With hlll
    // ---------
 
   verboseDepth=0;
    
-  Lattice<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
+  //Lattice<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
    
    Timer tl;
    tl.start();
@@ -153,22 +155,22 @@ int main(int argc, char *argv[])  {
 
    cout << endl << endl;
   
-   Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Btest(C,NO_TRANSFORM,DEF_REDUCTION);
-   Btest.isreduced(delta-0.1);
+   //Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Btest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+   //Btest.isreduced(delta-0.1);
 
    //Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Ltest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
    //Ltest.isreduced(delta-0.1);
 
 
    //DBG ratio 
-   double t,u,v,w;
+   // double t,u,v,w;
 
-   ratio<ZT>(C,t,u,v,w);
+   // ratio<ZT>(C,t,u,v,w);
    
-   cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-   cout << ".. Average diagonal ratio: " << u << endl;
-   cout << ".. Max diagonal ratio: " << v << endl;
-   cout << ".. First vector quality: " << w << endl;
+   // cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+   // cout << ".. Average diagonal ratio: " << u << endl;
+   // cout << ".. Max diagonal ratio: " << v << endl;
+   // cout << ".. First vector quality: " << w << endl;
 
    cout << "-----------------------" << endl;
 
