@@ -209,24 +209,41 @@ slll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, int S, double delta, int 
     if (verboseDepth >= 0) 
       cout << "     Size reduction: " << time << endl;
 
+
+    // DBG 
+    if (k >= 480)
+      {
+	cout << "dbg avant slll  " << k << endl;   
+
+	cout << transpose(LR.getbase()) << endl;
+	
+      }
     
+
+      
     time.start();
 
     
     // Reduction with the last column and recursive w.r.t. gap_status 
     // --------------------------------------------------------------
 
+    
     SLattice<ZT, FT,  MatrixZT, MatrixFT>  L(LR.getbase(),S,NO_TRANSFORM,reduction_method);
 
+    // DBG 
+    if (k >= 480)
+      {
+	cout << "dbg apres slll  " << k << endl;   
+
+	cout << transpose(L.getbase()) << endl;
+	
+      }
+    
     gap_status=L.hlll(delta,S,S,1000000);
     
     if (gap_status >=2) {
 
       slll_wrap_gap<ZT, FT,  MatrixZT, MatrixFT>(C,L.getbase(),gap_status,S,delta,reduction_method);
-      
-      cout << endl << "Save : " << n << "  " << k << "     gap: " << gap_status << endl; 
-
-      cout << transpose(L.getbase()) << endl; 
 
     }
 
