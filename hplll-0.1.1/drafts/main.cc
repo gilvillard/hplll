@@ -78,34 +78,34 @@ int main(int argc, char *argv[])  {
   // Random unimodular preconditioning for the 512 example
   // -----------------------------------------------------
 
-  ZZ_mat<ZT> Q;
-  Q.resize(d,d);
+  // ZZ_mat<ZT> Q;
+  // Q.resize(d,d);
 
-  for (int i=0; i<d; i++)
-    Q(i,i)=1;
+  // for (int i=0; i<d; i++)
+  //   Q(i,i)=1;
   
-  for (int i=0; i<d; i++)
-    for (int j=i+1; j<d ; j++) 
-      Q(i,j).randb(4);
+  // for (int i=0; i<d; i++)
+  //   for (int j=i+1; j<d ; j++) 
+  //     Q(i,j).randb(4);
 
-  for (int i=0; i<d; i++)
-    for (int j=0; j<i ; j++) 
-      Q(i,j)=0;
+  // for (int i=0; i<d; i++)
+  //   for (int j=0; j<i ; j++) 
+  //     Q(i,j)=0;
  
-  matprod_in(A,Q);
+  // matprod_in(A,Q);
   
-  for (int i=0; i<d; i++)
-    Q(i,i)=1;
+  // for (int i=0; i<d; i++)
+  //   Q(i,i)=1;
   
-  for (int i=0; i<d; i++)
-    for (int j=i+1; j<d ; j++) 
-      Q(i,j)=0;
+  // for (int i=0; i<d; i++)
+  //   for (int j=i+1; j<d ; j++) 
+  //     Q(i,j)=0;
   
-   for (int i=0; i<d; i++)
-    for (int j=0; j<i ; j++) 
-      Q(i,j).randb(4);
+  //  for (int i=0; i<d; i++)
+  //   for (int j=0; j<i ; j++) 
+  //     Q(i,j).randb(4);
 
-  matprod_in(A,Q);
+  // matprod_in(A,Q);
   
   
   
@@ -123,14 +123,18 @@ int main(int argc, char *argv[])  {
   //tw=slll<mpz_t>(C,A,255,4,delta, true, true); 
     
   tw.start();
-  slll_wrap<mpz_t, ldpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<long double, ldpe_t> > (C,A,255,4,delta,SEYSEN_REDUCTION);
+
+  slll_wrap<mpz_t, ldpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<long double, ldpe_t> > (C,A,260,4,delta,SEYSEN_REDUCTION);
+
   tw.stop();
   
   //cout << endl << "lllw: " << tw << endl; // cf bout de hlll aussi pour l'instant 
 
   //cout << "Transposed result" << endl;
 
-  //cout << transpose(C) << endl; 
+  cout << "Reduced basis " << endl;
+  
+  cout << transpose(C) << endl; 
   
    // With hlll
    // ---------

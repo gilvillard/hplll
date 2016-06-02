@@ -40,7 +40,7 @@ namespace hplll {
 // Reduced until real column gap_status 
   
 template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
-slll_wrap_gap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int gap_position, int S, double delta, int reduction_method=0) {
+slll_wrap_gap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int gap_position, int S, double delta, int reduction_method) {
 
   int i,j;
 
@@ -62,7 +62,8 @@ slll_wrap_gap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int gap_position, int S, double delta
   
   // Reduction of the first part
   // ---------------------------
-  
+
+
   SLattice<ZT, FT,  MatrixZT, MatrixFT>  LB(B,S,NO_TRANSFORM,reduction_method);
 
   gap_status=LB.hlll(delta,S,S,1000000);
@@ -71,7 +72,7 @@ slll_wrap_gap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int gap_position, int S, double delta
   // -----------
   if (gap_status >=2) {
 
-    slll_wrap_gap<ZT, FT,  MatrixZT, MatrixFT>(B,LB.getbase(),gap_status,delta,reduction_method);
+    slll_wrap_gap<ZT, FT,  MatrixZT, MatrixFT>(B,LB.getbase(),gap_status,S,delta,reduction_method);
     
   }
   // For second part directly
@@ -116,7 +117,7 @@ slll_wrap_gap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int gap_position, int S, double delta
 
   
 template<class ZT, class FT, class MatrixZT, class MatrixFT> int  
-slll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, int S, double delta, int reduction_method=0) { 
+slll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, int S, double delta, int reduction_method) { 
 
   verboseDepth-=1;
   
@@ -210,15 +211,6 @@ slll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, int S, double delta, int 
       cout << "     Size reduction: " << time << endl;
 
 
-    // DBG 
-    if (k >= 480)
-      {
-	cout << "dbg avant slll  " << k << endl;   
-
-	cout << transpose(LR.getbase()) << endl;
-	
-      }
-    
 
       
     time.start();
@@ -230,16 +222,16 @@ slll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, int S, double delta, int 
     
     SLattice<ZT, FT,  MatrixZT, MatrixFT>  L(LR.getbase(),S,NO_TRANSFORM,reduction_method);
 
-    // DBG 
+    gap_status=L.hlll(delta,S,S,1000000);
+
+     // DBG 
     if (k >= 480)
       {
-	cout << "dbg apres slll  " << k << endl;   
+	cout << "La base apres slll  " << k << endl;   
 
 	cout << transpose(L.getbase()) << endl;
 	
       }
-    
-    gap_status=L.hlll(delta,S,S,1000000);
     
     if (gap_status >=2) {
 
