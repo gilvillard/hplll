@@ -1104,7 +1104,7 @@ template<class T> void set(Matrix<T>& B, Matrix<T> A)
  
 };
 
-// On n rows and d columns 
+ // On n rows, for d columns 
  template<class T> void set(Matrix<T>& B, Matrix<T> A, int n, int d) 
 {
 
@@ -1112,6 +1112,18 @@ template<class T> void set(Matrix<T>& B, Matrix<T> A)
 
   for (i=0; i<n; i++) 
     for (j=0; j<d; j++) 
+      B(i,j)=A(i,j); 
+ 
+};
+ 
+// On n rows, after d1 columns, for d2 columns 
+ template<class T> void set(Matrix<T>& B, Matrix<T> A, int n, int d1, int d2) 
+{
+
+  int i,j;
+
+  for (i=0; i<n; i++) 
+    for (j=d1+1; j<d2; j++) 
       B(i,j)=A(i,j); 
  
 };
