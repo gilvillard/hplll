@@ -44,7 +44,6 @@ int main(int argc, char *argv[])  {
 
   typedef mpz_t  ZT;
   //typedef long ZT;
-  //typedef  __int128_t ZT; 
 
   ZZ_mat<mpz_t> A0; // For hpLLL
   
@@ -121,26 +120,28 @@ int main(int argc, char *argv[])  {
 
   cout  << "Dimension " << n << "     " << d << endl; 
 
-  //tw=slll<mpz_t>(C,A,127,4,delta, true, true); 
+  //tw=slll<mpz_t>(C,A,255,4,delta, true, true); 
     
   tw.start();
-  slll_wrap<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > (C,A,20,4,delta,SEYSEN_REDUCTION);
+
+  slll_wrap<mpz_t, ldpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<long double, ldpe_t> > (C,A,260,4,delta,SEYSEN_REDUCTION);
+
   tw.stop();
-
-  //SLattice<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > B(A,4,NO_TRANSFORM,DEF_REDUCTION);  
-
+  
   //cout << endl << "lllw: " << tw << endl; // cf bout de hlll aussi pour l'instant 
 
   //cout << "Transposed result" << endl;
 
-  //cout << transpose(C) << endl;  
+  cout << "Reduced basis " << endl;
+  
+  cout << transpose(C) << endl; 
   
    // With hlll
    // ---------
 
   verboseDepth=0;
    
-  //Lattice<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
+  Lattice<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > L(A,NO_TRANSFORM,DEF_REDUCTION);
    
    Timer tl;
    tl.start();
@@ -155,22 +156,22 @@ int main(int argc, char *argv[])  {
 
    cout << endl << endl;
   
-   //Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Btest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-   //Btest.isreduced(delta-0.1);
+   Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Btest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+   Btest.isreduced(delta-0.1);
 
    //Lattice<ZT, mpfr_t,  matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > Ltest(L.getbase(),NO_TRANSFORM,DEF_REDUCTION);
    //Ltest.isreduced(delta-0.1);
 
 
    //DBG ratio 
-   // double t,u,v,w;
+   double t,u,v,w;
 
-   // ratio<ZT>(C,t,u,v,w);
+   ratio<ZT>(C,t,u,v,w);
    
-   // cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-   // cout << ".. Average diagonal ratio: " << u << endl;
-   // cout << ".. Max diagonal ratio: " << v << endl;
-   // cout << ".. First vector quality: " << w << endl;
+   cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+   cout << ".. Average diagonal ratio: " << u << endl;
+   cout << ".. Max diagonal ratio: " << v << endl;
+   cout << ".. First vector quality: " << w << endl;
 
    cout << "-----------------------" << endl;
 

@@ -62,7 +62,8 @@ namespace hplll {
 
       int d1=DIM_PREC_1;
       int d2=DIM_PREC_2;
-      
+
+     
       // Reduction
       // *********
       
@@ -192,7 +193,10 @@ namespace hplll {
 
   	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(C,NO_TRANSFORM,DEF_REDUCTION);
 
+	verboseDepth-=1;
   	L.isreduced(delta-0.1);
+	verboseDepth+=1;
+	
 
       }
 
@@ -235,9 +239,11 @@ namespace hplll {
       int n=A.getRows();
       int d=A.getCols();
 
+      
       int d1=DIM_PREC_1;
       int d2=DIM_PREC_2;
 
+      
       // Reduction
       // *********
       
@@ -367,7 +373,10 @@ namespace hplll {
 
   	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(C,NO_TRANSFORM,DEF_REDUCTION);
 
+	verboseDepth-=1;
   	L.isreduced(delta-0.1);
+	verboseDepth+=1;
+	
 
       }
 
@@ -414,7 +423,8 @@ namespace hplll {
 
       int d1=DIM_PREC_1;
       int d2=DIM_PREC_2;
-            
+
+      
       // Reduction
       // *********
       
@@ -554,8 +564,9 @@ namespace hplll {
 
   	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(C,NO_TRANSFORM,DEF_REDUCTION);
 
+	verboseDepth-=1;
   	L.isreduced(delta-0.1);
-
+	verboseDepth+=1;
       }
 
       if (comput_cond) {
@@ -746,7 +757,10 @@ namespace hplll {
 
   	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > L(C,NO_TRANSFORM,DEF_REDUCTION);
 
+	verboseDepth-=1;
   	L.isreduced(delta-0.1);
+	verboseDepth+=1;
+	
 
       }
 

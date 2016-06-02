@@ -62,11 +62,11 @@ int main(int argc, char *argv[])  {
   // status=B.hlll(delta);
   // th.stop();
   
-  verboseDepth = 2;
+  verboseDepth = 1;
   
-  th=hlll<mpz_t>(C, A, 0.99, false, true);
+  th=hlll<mpz_t>(C, A, 0.99, true, false);
     
-  //hlll<__int128_t>(C, A, 0.99, 0,0); 
+  //th=hlll<__int128_t>(C, A, 0.99, true,true); 
   //hlll<long>(C, A, 0.99, false, true); 
  
   cout << endl; 
@@ -79,15 +79,15 @@ int main(int argc, char *argv[])  {
   
   tf.start();
   
-  lllReduction(AT, delta, 0.501, LM_FAST, FT_DEFAULT,0,LLL_VERBOSE);
+  lllReduction(AT, delta, 0.501, LM_FAST, FT_DEFAULT,0); //,LLL_VERBOSE);
   
   tf.stop();
   
-  // transpose(A,AT);
+  transpose(A,AT);
   
-  // Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A,NO_TRANSFORM,DEF_REDUCTION);
-  // verboseDepth=0;
-  //T.isreduced(delta-0.1);
+  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A,NO_TRANSFORM,DEF_REDUCTION);
+  verboseDepth=0;
+  T.isreduced(delta-0.1);
 
   //  cout << "-----------------------" << endl;
 

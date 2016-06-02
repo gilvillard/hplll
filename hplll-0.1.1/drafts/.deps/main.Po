@@ -190,8 +190,7 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
  ../src/nr_Z_l128.h ../src/ldpe.h ../src/nr-ld.cpp ../src/mat.h \
  ../src/mixed-col.h ../src/matpe.h ../src/matmixed.h ../src/hlll.cc \
  ../src/ratio.h ../src/matgen.h ../src/tools.h ../src/matgen.cc \
- ../src/slll.h ../src/slll.cc ../src/wrappers.h ../src/slll-wrap.h \
- ../src/slll.h
+ ../src/wrappers.h ../src/slll-wrap.h ../src/slll.h ../src/slll.cc
 
 ../src/hplll.h:
 
@@ -749,12 +748,10 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 
 ../src/matgen.cc:
 
-../src/slll.h:
-
-../src/slll.cc:
-
 ../src/wrappers.h:
 
 ../src/slll-wrap.h:
 
 ../src/slll.h:
+
+../src/slll.cc:
