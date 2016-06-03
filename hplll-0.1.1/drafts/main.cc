@@ -1,7 +1,8 @@
-/* 
+/* NTL tests   
 
-Created Dim  7 avr 2013 16:54:03 CEST
-Copyright (C) 2013-2016      Gilles Villard 
+Created Jeu  2 jui 2016 16:28:42 CEST  
+Copyright (C) 2016      Gilles Villard 
+
 
 This file is part of the hplll Library 
 
@@ -21,9 +22,15 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
+
+
 #include "hplll.h"
 
 #include "wrappers.h"
+
+
+#include <NTL/LLL.h>
+
 
 /* ***********************************************
 
@@ -33,14 +40,15 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 using namespace hplll; 
 
+using namespace NTL;
+
 int main(int argc, char *argv[])  {
   
   
   ZZ_mat<mpz_t> A;
 
   ZZ_mat<mpz_t> C;
-  
-  ZZ_mat<mpz_t> AT;
+ 
  
   // ---------------------------------------------------------------------
 
@@ -50,7 +58,7 @@ int main(int argc, char *argv[])  {
   command_line_basis(A, n, d, delta, argc, argv); 
 
  
-  Timer th,tf;
+  Timer th,tf,tn;
   
   // HLLL ------------------------------------------
    
@@ -64,36 +72,81 @@ int main(int argc, char *argv[])  {
   
   verboseDepth = 1;
   
-  th=hlll<long>(C, A, 0.99, true, false);
+  th=hlll<mpz_t>(C, A, 0.99, true, true);
     
   //th=hlll<__int128_t>(C, A, 0.99, true,true); 
   //hlll<long>(C, A, 0.99, false, true); 
  
   cout << endl; 
 
-  cout << "--------------  FPLLL WRAPPER" << endl << endl;
-  
+  filebuf fb;
+  fb.open ("ntl.txt",ios::out);
+  iostream os(&fb);
+  os <<  transpose(A) ;
+  fb.close();
+
+  cout << "--------------  FPLLL " << endl << endl;
+
+
+  ZZ_mat<mpz_t> AT;
+
   AT.resize(d,n);
   
   transpose(AT,A);
-  
+
   tf.start();
-  
-  lllReduction(AT, delta, 0.501, LM_FAST, FT_DEFAULT,0); //,LLL_VERBOSE);
-  
+
+  lllReduction(AT, delta, 0.501, LM_WRAPPER, FT_DEFAULT,0,LLL_VERBOSE);
+ 
+
   tf.stop();
   
-  transpose(A,AT);
   
-  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A,NO_TRANSFORM,DEF_REDUCTION);
+  cout << "--------------  NTL " << endl << endl;
+
+
+  Mat<ZZ> B; // (INIT_SIZE, 2,2) ;
+ 
+  fb.open ("ntl.txt",ios::in);
+  os >>  B ;
+  fb.close();  
+  
+    
+  tn.start();
+
+  LLL_XD(B,0.99); 
+  
+  tn.stop();
+
+  cout << "----------------------- CHECK " << endl;
+  
+  fb.open ("ntlout.txt",ios::out);
+  os <<  B ;
+  fb.close();  
+
+  ZZ_mat<mpz_t> TNC,NC;
+
+  NC.resize(d,n);
+  TNC.resize(n,d);
+
+ 
+  fb.open ("ntlout.txt",ios::in);
+  os >> NC ;
+  fb.close();  
+
+  transpose(TNC,NC);
+  
+  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(TNC,NO_TRANSFORM,DEF_REDUCTION);
   verboseDepth=0;
   T.isreduced(delta-0.1);
 
   //  cout << "-----------------------" << endl;
 
    cout << "HLLL: " << th << endl;
-  
+
    cout << "FPLLL :" << tf << endl;
+   
+   cout << "NTL :" << tn << endl;
   
 
   return 0;
