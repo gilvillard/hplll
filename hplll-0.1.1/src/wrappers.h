@@ -63,7 +63,7 @@ namespace hplll {
       int d1=DIM_PREC_1;
       int d2=DIM_PREC_2;
 
-     
+      
       // Reduction
       // *********
       
