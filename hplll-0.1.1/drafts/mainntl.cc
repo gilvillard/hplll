@@ -3,6 +3,7 @@
 Created Jeu  2 jui 2016 16:28:42 CEST  
 Copyright (C) 2016      Gilles Villard 
 
+
 This file is part of the hplll Library 
 
 The hplll Library is free software; you can redistribute it and/or modify
@@ -12,8 +13,7 @@ option) any later version.
 
 The hplll Library is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPO
-SE.  See the GNU Lesser General Public
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
@@ -22,16 +22,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 
-#include <sstream>
-#include <iostream>
+
 
 #include "hplll.h"
 
-#include <NTL/ZZX.h>
-#include <NTL/ZZ_pX.h>
-#include <NTL/LLL.h>
+#include "wrappers.h"
 
-//#include "ideal.h"
+
+#include <NTL/LLL.h>
 
 
 /* ***********************************************
@@ -42,26 +40,114 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 using namespace hplll; 
 
-using namespace NTL; 
-
+using namespace NTL;
 
 int main(int argc, char *argv[])  {
   
-  Mat<ZZ> B(INIT_SIZE, 2,2) ;
-  int d,dbits; 
+  
+  ZZ_mat<mpz_t> A;
 
-  ZZ_mat<mpz_t> AT;  // fpLLL  
+  ZZ_mat<mpz_t> C;
+ 
+ 
+  // ---------------------------------------------------------------------
+
+  int n,d;
+  double delta;
+
+  command_line_basis(A, n, d, delta, argc, argv); 
+
+ 
+  Timer th,tf,tn;
+  
+  // HLLL ------------------------------------------
+   
+  
+  //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
+
+  // verboseDepth = 1;
+  // th.start();
+  // status=B.hlll(delta);
+  // th.stop();
+  
+  verboseDepth = 1;
+  
+  th=hlll<mpz_t>(C, A, 0.99, true, true);
+    
+  //th=hlll<__int128_t>(C, A, 0.99, true,true); 
+  //hlll<long>(C, A, 0.99, false, true); 
+ 
+  cout << endl; 
 
   filebuf fb;
-  fb.open ("ntl.txt",ios::in);
+  fb.open ("ntl.txt",ios::out);
   iostream os(&fb);
-  os >>  B ;
+  os <<  transpose(A) ;
   fb.close();
 
+  cout << "--------------  FPLLL " << endl << endl;
+
+
+  ZZ_mat<mpz_t> AT;
+
+  AT.resize(d,n);
   
-  cout << B << endl;
-  
-  
+  transpose(AT,A);
+
+  tf.start();
+
+  lllReduction(AT, delta, 0.501, LM_WRAPPER, FT_DEFAULT,0,LLL_VERBOSE);
  
+
+  tf.stop();
+  
+  
+  cout << "--------------  NTL " << endl << endl;
+
+
+  Mat<ZZ> B; // (INIT_SIZE, 2,2) ;
+ 
+  fb.open ("ntl.txt",ios::in);
+  os >>  B ;
+  fb.close();  
+  
+    
+  tn.start();
+
+  LLL_XD(B,0.99); 
+  
+  tn.stop();
+
+  cout << "----------------------- CHECK " << endl;
+  
+  fb.open ("ntlout.txt",ios::out);
+  os <<  B ;
+  fb.close();  
+
+  ZZ_mat<mpz_t> TNC,NC;
+
+  NC.resize(d,n);
+  TNC.resize(n,d);
+
+ 
+  fb.open ("ntlout.txt",ios::in);
+  os >> NC ;
+  fb.close();  
+
+  transpose(TNC,NC);
+  
+  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(TNC,NO_TRANSFORM,DEF_REDUCTION);
+  verboseDepth=0;
+  T.isreduced(delta-0.1);
+
+  //  cout << "-----------------------" << endl;
+
+   cout << "HLLL: " << th << endl;
+
+   cout << "FPLLL :" << tf << endl;
+   
+   cout << "NTL :" << tn << endl;
+  
+
   return 0;
 }
