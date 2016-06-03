@@ -2,7 +2,7 @@
 AUTOMAKE_OPTIONS = gnu
 
 EXTRA_DIST= 416_in 2_in 3_in C1_out  C2_out C3_in C3_out  \
-             C_huge_in C_huge_out r128int
+             C_huge_in C_huge_out r128int collection 
 
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
@@ -41,20 +41,28 @@ check_PROGRAMS = $(TESTS)
 
 #./relationstest ./nullspacetest 
 
-EXTRA_PROGRAMS = relationstesthuge gentable1 gentable2 gentable3 gentable4 gentable5 gentable6
+EXTRA_PROGRAMS = relationstesthuge \
+                 gen_table_knapsack gen_table_ajtai \
+                 fhn_latticec fhn_ideal fhn_ajtai
 
 relationstesthuge_SOURCES=relationstesthuge.cc
-gentable1_SOURCES=gentable1.cc 
-gentable2_SOURCES=gentable2.cc
-gentable3_SOURCES=gentable3.cc
-gentable4_SOURCES=gentable4.cc
-gentable5_SOURCES=gentable5.cc
-gentable6_SOURCES=gentable6.cc
 
-#check : 
-#	./arithmetic 
-#	./hllltest
-#	./relationstest
+gen_table_knapsack_SOURCES = gen_table_knapsack.cc
+gen_table_ajtai_SOURCES = gen_table_ajtai.cc
+
+fhn_latticec_SOURCES = fhn_latticec.cc
+fhn_ideal_SOURCES = fhn_ideal.cc
+fhn_ajtai_SOURCES = fhn_ajtai.cc
+
+
+benchmarks : gen_table_knapsack  gen_table_ajtai
+	./gen_table_knapsack >& table_knapsack.log
+	./gen_table_ajtai >& table_ajtai.log
+
+benchntl : fhn_latticec  fhn_ideal fhn_ajtai
+	./fhn_latticec >& fhn_latticec.log
+	./fhn_ideal >& fhn_ideal.log
+	./fhn_ajtai >& fhn_ajtai.log
 
 
 
