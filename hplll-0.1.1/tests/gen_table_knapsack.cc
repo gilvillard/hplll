@@ -36,7 +36,7 @@ int main(int argc, char *argv[])  {
   
   filebuf fb;
   iostream os(&fb);
-  fb.open ("table_knapsack.results",ios::out);           // ******** SPECIALIZE
+  fb.open ("benchmarks_results/table_knapsack.results",ios::out);           // ******** SPECIALIZE
 
 
   filebuf inb;

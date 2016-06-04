@@ -2,7 +2,7 @@
 AUTOMAKE_OPTIONS = gnu
 
 EXTRA_DIST= 416_in 2_in 3_in C1_out  C2_out C3_in C3_out  \
-             C_huge_in C_huge_out r128int collection 
+             C_huge_in C_huge_out r128int collection benchmarks_results
 
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
@@ -55,16 +55,30 @@ fhn_ideal_SOURCES = fhn_ideal.cc
 fhn_ajtai_SOURCES = fhn_ajtai.cc
 fhn_table_knapsack_SOURCES = fhn_table_knapsack.cc
 
+benchmarks : bench benchntl 
 
-benchmarks : gen_table_knapsack  gen_table_ajtai
-	./gen_table_knapsack >& table_knapsack.log
-	./gen_table_ajtai >& table_ajtai.log
+bench : b1 b2
 
-benchntl : fhn_latticec  fhn_ideal fhn_ajtai
-	./fhn_latticec >& fhn_latticec.log
-	./fhn_ideal >& fhn_ideal.log
-	./fhn_ajtai >& fhn_ajtai.log
-	./fhn_table_knapsack >& fhn_table_knapsack.log
+b1 : gen_table_knapsack  
+	./gen_table_knapsack >& benchmarks_results/table_knapsack.log
+
+b2 : gen_table_ajtai
+	./gen_table_ajtai >& benchmarks_results/table_ajtai.log
+
+
+benchntl: bfhn1 bfhn2 bfhn3 bfhn4 
+
+bfhn1 : fhn_latticec  
+	./fhn_latticec >& benchmarks_results/fhn_latticec.log
+
+bfhn2 : fhn_ideal 
+	./fhn_ideal >& benchmarks_results/fhn_ideal.log
+
+bfhn3 : fhn_ajtai 
+	./fhn_ajtai >& benchmarks_results/fhn_ajtai.log
+
+bfhn4 : fhn_table_knapsack
+	./fhn_table_knapsack >& benchmarks_results/fhn_table_knapsack.log
 
 
 

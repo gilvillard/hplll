@@ -31,13 +31,13 @@ using namespace NTL;
 
           MAIN   
 
-   ********************************************** */
+    ********************************************** */
 
 using namespace hplll; 
 
 int main(int argc, char *argv[])  {
 
-  char results[]="fhn_table_knapsack.results";    // ******** SPECIALIZE
+  char results[]="benchmarks_results/fhn_table_knapsack.results";    // ******** SPECIALIZE
   
   filebuf fb;
   iostream os(&fb);
