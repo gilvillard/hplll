@@ -37,7 +37,7 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
 
-  char results[]="fhn_latticec.results";    // ******** SPECIALIZE
+  char results[]="fhn_table_knapsack.results";    // ******** SPECIALIZE
   
   filebuf fb;
   iostream os(&fb);
@@ -52,46 +52,34 @@ int main(int argc, char *argv[])  {
 
   int k,K;
 
-  vector<char*> s(100);
- 
+
+  k=0;
+
+  vector<int> d(100);
+
   k=0;
 
   //------------
-
-  s[k]=(char *) malloc(256);
-  strncpy(s[k], "collection/latticec/challenge-200",255);
+ 
+ 
+  d[k]=200;
   k+=1;
 
-  s[k]=(char *) malloc(256);
-  strncpy(s[k], "collection/latticec/challenge-450",255);
+  d[k]=240;
   k+=1;
 
-  s[k]=(char *) malloc(256);
-  strncpy(s[k], "collection/latticec/challenge-650",255);
+  d[k]=280;
   k+=1;
 
-  s[k]=(char *) malloc(256);
-  strncpy(s[k], "collection/latticec/challenge-800",255);
+  d[k]=300;
   k+=1;
 
-  s[k]=(char *) malloc(256);
-  strncpy(s[k], "collection/latticec/challenge-900",255);
+  d[k]=300;
   k+=1;
 
-  s[k]=(char *) malloc(256);
-  strncpy(s[k], "collection/latticec/challenge-1000",255);
-  k+=1;
-
-  s[k]=(char *) malloc(256);
-  strncpy(s[k], "collection/latticec/challenge-1100",255);
-  k+=1;
-
-  s[k]=(char *) malloc(256);
-  strncpy(s[k], "collection/latticec/challenge-1200",255);
+  d[k]=340;
   k+=1;
   
-  cout << s[0] << endl; 
-    
   //-------------
 
   K=k;
@@ -104,7 +92,7 @@ int main(int argc, char *argv[])  {
 
   int status;
 
-    os << endl << "FPLLL, HPLLL, NTL running times / lattice challenge bases / long" << endl;   // ******** SPECIALIZE
+    os << endl << "FPLLL, HPLLL, NTL running times / Knapsack bases " << endl;   // ******** SPECIALIZE
                                                                                     
     os <<         "----------------------------------------------------" << endl << endl;
  
@@ -117,24 +105,16 @@ int main(int argc, char *argv[])  {
       
       run+=1;
 
-      // Input basis 
-      fb.close();
-      fb.open (s[k],ios::in);
-      os >>  AT ;
-      fb.close();
-      fb.open (results,ios::app);    
 
-      int d=AT.getRows();
-      int n=AT.getCols();
 
-      A.resize(n,d);
-      
+      A.resize(d[k]+1,d[k]);
+      AT.resize(d[k],d[k]+1);
+
+      AT.gen_intrel(d[k]*100);
       transpose(A,AT);
 
-      ZZ_mat<long> Along;
-      matrix_cast(Along,A);
 
-      cout << n << "   " << d << endl; 
+      cout << d[k] <<  endl; 
       
       cout << "--------------  HLLL" << endl << endl; 
 
@@ -142,28 +122,27 @@ int main(int argc, char *argv[])  {
 
       	os << endl << "------------------------------------------------ " << endl ;
 
-	Lattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > B(Along,NO_TRANSFORM,DEF_REDUCTION);  //* name 
+	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A,NO_TRANSFORM,DEF_REDUCTION);  //* name 
 
       	time.start();
       	status=B.hlll(delta); //* name
       	time.stop();
 
  
-      	os << "Run " << run << "  with n,d = " << n << "  " << d << ",    delta = " << delta <<  endl << endl;
+      	os << "Run " << run << "  with dim = " << d[k] << ",  bits = " << d[k]*100 << ",   delta = " << delta <<  endl << endl;
       	os << "    hlll: " << time << endl ;
       	time.print(os);
       	os << endl;
 
-	matrix_cast(A,B.getbase());
 	
       	if (status ==0) {
-      	  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A,NO_TRANSFORM,DEF_REDUCTION); //* names
+      	  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(B.getbase(),NO_TRANSFORM,DEF_REDUCTION); //* names
 
       	  T.isreduced(delta-0.1); //* name
 
 	  double t,u,v,w;
 
-	  ratio<mpz_t>(A,t,u,v,w);
+	  ratio<mpz_t>(B.getbase(),t,u,v,w);
 
 	  cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
 	  cout << ".. Average diagonal ratio: " << u << endl;
@@ -183,8 +162,8 @@ int main(int argc, char *argv[])  {
       	time.print(os);
       	os << endl;
 	
-      	transpose(A,AT);
-      	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION); //* name
+      	transpose(tmpmat,AT);
+      	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(tmpmat,NO_TRANSFORM,DEF_REDUCTION); //* name
       	T2.isreduced(delta-0.1); //* name
 
 	cout << "--------------  NTL  " << endl << endl; 
@@ -193,10 +172,14 @@ int main(int argc, char *argv[])  {
 
 	// Input basis 
 	fb.close();
-	fb.open (s[k],ios::in);
-	os >>  BN ;
+	fb.open ("tmp.txt",ios::out);
+	os <<  transpose(A) ;
+	fb.close();
+	fb.open ("tmp.txt",ios::in);
+	os >> BN;
 	fb.close();
 	fb.open (results,ios::app);
+
 
 	time.start();	
        
@@ -213,11 +196,14 @@ int main(int argc, char *argv[])  {
 	fb.close();
 	fb.open (results,ios::app);
 
-	transpose(A,AT);
+
+
+	transpose(tmpmat,AT);
   
-	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A,NO_TRANSFORM,DEF_REDUCTION);
+	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(tmpmat,NO_TRANSFORM,DEF_REDUCTION);
 	verboseDepth=0;
 	T.isreduced(delta-0.1);
+
 
 	os << "   ntl: " << time << endl << endl ;
       	time.print(os);

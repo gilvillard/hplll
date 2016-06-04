@@ -43,7 +43,7 @@ check_PROGRAMS = $(TESTS)
 
 EXTRA_PROGRAMS = relationstesthuge \
                  gen_table_knapsack gen_table_ajtai \
-                 fhn_latticec fhn_ideal fhn_ajtai
+                 fhn_latticec fhn_ideal fhn_ajtai fhn_table_knapsack
 
 relationstesthuge_SOURCES=relationstesthuge.cc
 
@@ -53,6 +53,7 @@ gen_table_ajtai_SOURCES = gen_table_ajtai.cc
 fhn_latticec_SOURCES = fhn_latticec.cc
 fhn_ideal_SOURCES = fhn_ideal.cc
 fhn_ajtai_SOURCES = fhn_ajtai.cc
+fhn_table_knapsack_SOURCES = fhn_table_knapsack.cc
 
 
 benchmarks : gen_table_knapsack  gen_table_ajtai
@@ -63,6 +64,7 @@ benchntl : fhn_latticec  fhn_ideal fhn_ajtai
 	./fhn_latticec >& fhn_latticec.log
 	./fhn_ideal >& fhn_ideal.log
 	./fhn_ajtai >& fhn_ajtai.log
+	./fhn_table_knapsack >& fhn_table_knapsack.log
 
 
 
