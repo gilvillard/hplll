@@ -43,7 +43,8 @@ check_PROGRAMS = $(TESTS)
 
 EXTRA_PROGRAMS = relationstesthuge \
                  gen_table_knapsack gen_table_ajtai \
-                 fhn_latticec fhn_ideal fhn_ajtai fhn_table_knapsack
+                 fhn_latticec fhn_ideal fhn_ajtai fhn_table_knapsack \
+                 fhn_acyclic fhn_al
 
 relationstesthuge_SOURCES=relationstesthuge.cc
 
@@ -54,6 +55,8 @@ fhn_latticec_SOURCES = fhn_latticec.cc
 fhn_ideal_SOURCES = fhn_ideal.cc
 fhn_ajtai_SOURCES = fhn_ajtai.cc
 fhn_table_knapsack_SOURCES = fhn_table_knapsack.cc
+fhn_acyclic_SOURCES = fhn_acyclic.cc
+fhn_al_SOURCES = fhn_al.cc
 
 benchmarks : bench benchntl 
 
@@ -66,7 +69,7 @@ b2 : gen_table_ajtai
 	./gen_table_ajtai >& benchmarks_results/table_ajtai.log
 
 
-benchntl: bfhn1 bfhn2 bfhn3 bfhn4 
+benchntl: bfhn1 bfhn2 bfhn3 bfhn4 bfhn5 
 
 bfhn1 : fhn_latticec  
 	./fhn_latticec >& benchmarks_results/fhn_latticec.log
@@ -79,6 +82,12 @@ bfhn3 : fhn_ajtai
 
 bfhn4 : fhn_table_knapsack
 	./fhn_table_knapsack >& benchmarks_results/fhn_table_knapsack.log
+
+bfhn5 : fhn_acyclic 
+	./fhn_acyclic >& benchmarks_results/fhn_acyclic.log
+
+bfhn6 : fhn_al 
+	./fhn_al >& benchmarks_results/fhn_al.log
 
 
 

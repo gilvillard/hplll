@@ -121,7 +121,7 @@ slll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, int S, double delta, int 
 
   verboseDepth-=1;
   
-  OMPTimer time,ttot,tinit,tsize,th,thlll;
+  Timer time,ttot,tinit,tsize,th,thlll;
   time.clear();
   ttot.clear();
   tinit.clear();
