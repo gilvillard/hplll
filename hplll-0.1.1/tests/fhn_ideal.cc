@@ -37,7 +37,7 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
 
-  char results[]="fhn_ideal.results";    // ******** SPECIALIZE
+  char results[]="benchmarks_results/fhn_ideal.results";    // ******** SPECIALIZE
   
   filebuf fb;
   iostream os(&fb);
