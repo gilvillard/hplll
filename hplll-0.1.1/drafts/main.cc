@@ -110,8 +110,8 @@ int main(int argc, char *argv[])  {
   fb.open ("ntl.txt",ios::in);
   os >>  B ;
   fb.close();  
-  
-    
+  system("rm ntl.txt");
+
   tn.start();
 
   LLL_XD(B,0.99); 
@@ -133,6 +133,7 @@ int main(int argc, char *argv[])  {
   fb.open ("ntlout.txt",ios::in);
   os >> NC ;
   fb.close();  
+  system("rm ntlout.txt");
 
   transpose(TNC,NC);
   
