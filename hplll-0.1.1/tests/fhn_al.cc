@@ -119,8 +119,8 @@ int main(int argc, char *argv[])  {
 
       transpose(AT,A); 
 
-      //ZZ_mat<long> Along;
-      //matrix_cast(Along,A);
+      ZZ_mat<long> Along;
+      matrix_cast(Along,A);
 
       // -------------------
 
