@@ -33,7 +33,8 @@ min_ntl_version=ifelse([$1], ,5.0,$1)
 
 dnl Check for existence
 BACKUP_CXXFLAGS=${CXXFLAGS}
-BACKUP_LIBS=${LDFLAGS}
+BACKUP_LD=${LDFLAGS}
+BACKUP_LIBS=${LIBS}
 
 if test -n "$NTL_HOME_PATH"; then
 AC_MSG_CHECKING(for ntl)
@@ -53,10 +54,10 @@ if test -r "$NTL_HOME/include/NTL/ZZ.h"; then
 	#CXXFLAGS="${BACKUP_CXXFLAGS} ${NTL_CFLAGS} ${GMP_CFLAGS}"
 	# GV
 	CXXFLAGS="${BACKUP_CXXFLAGS} ${NTL_CFLAGS}"
-	#LDFLAGS="${BACKUP_LIBS} ${NTL_LIBS} ${GMP_LIBS}"
+	#LDFLAGS="${BACKUP_LD} ${NTL_LIBS} ${GMP_LIBS}"
 	# GV
-	LDFLAGS="${BACKUP_LIBS} ${NTL_LIBS}"
-	LIBS="${LIBS} ${NTL_LIBS}"
+	LDFLAGS="${BACKUP_LD} ${NTL_LIBS}"
+	LIBS="${BACKUP_LIBS} ${NTL_LIBS}"
 
 	AC_TRY_LINK(
 	[#include <NTL/ZZ.h>],
@@ -98,7 +99,7 @@ if test "x$ntl_found" = "xyes" ; then
 	unset NTL_LIBS
 
 	# GV ??
-        LIBS="${LIBS} -lntl"
+        LIBS="${BACKUP_LIBS} -lntl"
         AC_SUBST(LIBS)
 
 	# GV ??
@@ -120,7 +121,8 @@ if test "x$ntl_found" = "xyes" ; then
 elif test -n "$ntl_problem"; then
 
         CXXFLAGS=${BACKUP_CXXFLAGS}
-        LDFLAGS=${BACKUP_LIBS}
+        LDFLAGS=${BACKUP_LD}
+        LIBS = ${BACKUP_LIBS}
 
 	AC_MSG_RESULT(problem)
 	AC_MSG_WARN(ntl >= $min_ntl_version was not found. hplll may need the NTL namespace to be enabled.)
@@ -129,7 +131,8 @@ elif test -n "$ntl_problem"; then
 elif test   "x$ntl_found" = "xno";  then
 
         CXXFLAGS=${BACKUP_CXXFLAGS}
-        LDFLAGS=${BACKUP_LIBS}
+        LDFLAGS=${BACKUP_LD}
+        LIBS = ${BACKUP_LIBS}
 
         # Result by default search, hence no warning 
 	AC_MSG_RESULT(no)
