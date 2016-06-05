@@ -191,6 +191,7 @@ int main(int argc, char *argv[])  {
 	fb.open ("tmp.txt",ios::in);
 	os >> BN;
 	fb.close();
+        system("rm tmp.txt");
 	fb.open (results,ios::app);
 
 
@@ -207,6 +208,7 @@ int main(int argc, char *argv[])  {
 	fb.open ("tmp.txt",ios::in);
 	os >> AT;
 	fb.close();
+	system("rm tmp.txt");
 	fb.open (results,ios::app);
 
 

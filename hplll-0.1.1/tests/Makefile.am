@@ -69,7 +69,7 @@ b2 : gen_table_ajtai
 	./gen_table_ajtai >& benchmarks_results/table_ajtai.log
 
 
-benchntl: bfhn1 bfhn2 bfhn3 bfhn4 bfhn5 
+benchntl: bfhn1 bfhn2 bfhn3 bfhn4 bfhn5 bfhn6
 
 bfhn1 : fhn_latticec  
 	./fhn_latticec >& benchmarks_results/fhn_latticec.log
