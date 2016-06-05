@@ -17652,7 +17652,8 @@ fi
 min_ntl_version=5.0
 
 BACKUP_CXXFLAGS=${CXXFLAGS}
-BACKUP_LIBS=${LDFLAGS}
+BACKUP_LD=${LDFLAGS}
+BACKUP_LIBS=${LIBS}
 
 if test -n "$NTL_HOME_PATH"; then
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ntl" >&5
@@ -17673,9 +17674,10 @@ if test -r "$NTL_HOME/include/NTL/ZZ.h"; then
 	#CXXFLAGS="${BACKUP_CXXFLAGS} ${NTL_CFLAGS} ${GMP_CFLAGS}"
 	# GV
 	CXXFLAGS="${BACKUP_CXXFLAGS} ${NTL_CFLAGS}"
-	#LDFLAGS="${BACKUP_LIBS} ${NTL_LIBS} ${GMP_LIBS}"
+	#LDFLAGS="${BACKUP_LD} ${NTL_LIBS} ${GMP_LIBS}"
 	# GV
-	LDFLAGS="${BACKUP_LIBS} ${NTL_LIBS}"
+	LDFLAGS="${BACKUP_LD} ${NTL_LIBS}"
+	LIBS="${BACKUP_LIBS} ${NTL_LIBS}"
 
 	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -17744,7 +17746,7 @@ if test "x$ntl_found" = "xyes" ; then
 	unset NTL_LIBS
 
 	# GV ??
-        LIBS="${LIBS} -lntl"
+        LIBS="${BACKUP_LIBS} -lntl"
 
 
 	# GV ??
@@ -17770,7 +17772,8 @@ $as_echo "unknown" >&6; }
 elif test -n "$ntl_problem"; then
 
         CXXFLAGS=${BACKUP_CXXFLAGS}
-        LDFLAGS=${BACKUP_LIBS}
+        LDFLAGS=${BACKUP_LD}
+        LIBS = ${BACKUP_LIBS}
 
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: problem" >&5
 $as_echo "problem" >&6; }
@@ -17781,7 +17784,8 @@ $as_echo "$as_me: WARNING: ntl >= $min_ntl_version was not found. hplll may need
 elif test   "x$ntl_found" = "xno";  then
 
         CXXFLAGS=${BACKUP_CXXFLAGS}
-        LDFLAGS=${BACKUP_LIBS}
+        LDFLAGS=${BACKUP_LD}
+        LIBS = ${BACKUP_LIBS}
 
         # Result by default search, hence no warning
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5

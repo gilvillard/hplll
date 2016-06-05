@@ -141,7 +141,7 @@ CPPFLAGS =
 CXX = /usr/local/bin/g++
 CXXCPP = /usr/local/bin/g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS =  -O3 -Wall -I/usr/local/include -I/usr/local/include  -fopenmp  
+CXXFLAGS =  -O3 -Wall -I/usr/local/include -I/usr/local/include  
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
