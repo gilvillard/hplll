@@ -56,6 +56,7 @@ if test -r "$NTL_HOME/include/NTL/ZZ.h"; then
 	#LDFLAGS="${BACKUP_LIBS} ${NTL_LIBS} ${GMP_LIBS}"
 	# GV
 	LDFLAGS="${BACKUP_LIBS} ${NTL_LIBS}"
+	LIBS="${LIBS} ${NTL_LIBS}"
 
 	AC_TRY_LINK(
 	[#include <NTL/ZZ.h>],
