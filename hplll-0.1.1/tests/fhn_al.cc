@@ -97,9 +97,11 @@ int main(int argc, char *argv[])  {
 
   int status=0;
 
-    os << endl << "(FPLLL,) HPLLL wrapper, NTL running times / Alpha bases - long " << endl;   // ******** SPECIALIZE
+    os << endl << "(FPLLL,) HPLLL wrapper >= dim_prec_1, NTL running times / Alpha bases - long " << endl;   // ******** SPECIALIZE
+    os << endl << "FPLL stopped at 200 (wrapper mpfr) " << endl;
+    os << endl << "NTL FP infinite loop for 300 ==> XD" << endl; 
                                                                                     
-    os <<         "--------------------------------------------------------------" << endl << endl;
+    os <<         "-----------------------------------------------------------------------------" << endl << endl;
  
     for (int k=0; k<K; k++) { 
 
@@ -133,20 +135,24 @@ int main(int argc, char *argv[])  {
       	os << endl << "------------------------------------------------ " << endl ;
 
 
-	//Lattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > B(Along,NO_TRANSFORM,DEF_REDUCTION);  //* name 
+	Lattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > B(Along,NO_TRANSFORM,DEF_REDUCTION);  //* name 
 
-      	time.start();
-      	//status=B.hlll(delta); //* name
-	hlll<long>(tmpmat, A, 0.99, true, true);
-      	time.stop();
+	time.start();
+      	
+	if (n <= DIM_PREC_1) status=B.hlll(delta); //* name
+	
+	else hlll<long>(tmpmat, A, 0.99, true, true);
+      	
+	time.stop();
 
- 
+	 
       	os << "Run " << run << "  with dim = " << n << ",   delta = " << delta <<  endl << endl;
       	os << "    hlll: " << time << endl ;
       	time.print(os);
       	os << endl;
 
-	//matrix_cast(tmpmat,B.getbase());
+	if  (n <= DIM_PREC_1) matrix_cast(tmpmat,B.getbase());
+	matrix_cast(tmpmat,B.getbase());
 	
       	if (status ==0) {
       	  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(tmpmat,NO_TRANSFORM,DEF_REDUCTION); //* names
@@ -165,20 +171,22 @@ int main(int argc, char *argv[])  {
       	cout << endl; 
 
       	// cout << "--------------  FPLLL WRAPPER VERBOSE " << endl << endl; 
-    
-      	// time.start();
-      	// lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
-      	// time.stop();
-  
 
-      	// os << "   fplll: " << time << endl << endl ;
-      	// time.print(os);
-      	// os << endl;
+	if (n <=200) {
+	  time.start();
+	  lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
+	  time.stop();
+	  
+
+	  os << "   fplll: " << time << endl << endl ;
+	  time.print(os);
+	  os << endl;
+	  
+	  transpose(tmpmat,AT);
+	  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(tmpmat,NO_TRANSFORM,DEF_REDUCTION); //* name
+	  T2.isreduced(delta-0.1); //* name
+	}
 	
-      	// transpose(tmpmat,AT);
-      	// Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(tmpmat,NO_TRANSFORM,DEF_REDUCTION); //* name
-      	// T2.isreduced(delta-0.1); //* name
-
 	cout << "--------------  NTL  " << endl << endl; 
 
 	Mat<ZZ> BN; 
@@ -196,8 +204,12 @@ int main(int argc, char *argv[])  {
 
 
 	time.start();	
-       
-	LLL_FP(BN,0.99,0,0,1); 
+
+	if (n < 300) {
+	  LLL_FP(BN,0.99,0,0,1); 
+	}
+	else
+	  LLL_XD(BN,0.99,0,0,1);
 	
 	time.stop();
 
