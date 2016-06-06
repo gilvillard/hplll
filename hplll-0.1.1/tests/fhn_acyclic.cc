@@ -108,11 +108,12 @@ int main(int argc, char *argv[])  {
 
   int status=0;
 
-    os << endl << "(FPLLL,) HPLLL wrapper, NTL running times / Acyclic NTRU bases - long " << endl;   // ******** SPECIALIZE
+    os << endl << "(FPLLL,) HPLLL wrapper >= dim_prec_1, NTL running times / Acyclic NTRU bases - long " << endl;   // ******** SPECIALIZE
 
-    os << endl << "NO FPLLL (wrapper with mpfr to change), NTL infinite loop with FP at 512 ==> XD" << endl; 
+    os << endl << "NO FPLLL >= 512 (wrapper with mpfr to change) " << endl;
+    os << endl << " NTL infinite loop with FP at 512: at dim_prec_1 ==> XD" << endl; 
                                                                                     
-    os <<         "-----------------------------------------------------------" << endl << endl;
+    os <<         "------------------------------------------------------------------------------------" << endl << endl;
  
     for (int k=0; k<K; k++) { 
 
@@ -201,21 +202,23 @@ int main(int argc, char *argv[])  {
       	} 
       	cout << endl; 
 
-      	// cout << "--------------  FPLLL WRAPPER VERBOSE " << endl << endl; 
-    
-      	// time.start();
-      	// lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
-      	// time.stop();
+      	cout << "--------------  FPLLL WRAPPER VERBOSE " << endl << endl; 
+
+	if (n < 512) {
+	  time.start();
+	  lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
+	  time.stop();
   
 
-      	// os << "   fplll: " << time << endl << endl ;
-      	// time.print(os);
-      	// os << endl;
+	  os << "   fplll: " << time << endl << endl ;
+	  time.print(os);
+	  os << endl;
 	
-      	// transpose(tmpmat,AT);
-      	// Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(tmpmat,NO_TRANSFORM,DEF_REDUCTION); //* name
-      	// T2.isreduced(delta-0.1); //* name
-
+	  transpose(tmpmat,AT);
+	  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(tmpmat,NO_TRANSFORM,DEF_REDUCTION); //* name
+	  T2.isreduced(delta-0.1); //* name
+	}
+	
 	cout << "--------------  NTL  " << endl << endl; 
 
 	Mat<ZZ> BN; 
