@@ -199,7 +199,7 @@ int main(int argc, char *argv[])  {
 
 	time.start();	
        
-	if (d[k] <= 100)
+	if (d[k] < 100)
 	  LLL_FP(BN,0.99,0,0,1); 
 	else
 	  LLL_XD(BN,0.99,0,0,1);
