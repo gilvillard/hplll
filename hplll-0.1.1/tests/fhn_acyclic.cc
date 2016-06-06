@@ -171,11 +171,12 @@ int main(int argc, char *argv[])  {
 	Lattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > B(Along,NO_TRANSFORM,DEF_REDUCTION);  //* name 
 
 	time.start();
-      	
+
+	verboseDepth=1;
 	if (n <= DIM_PREC_1) status=B.hlll(delta); //* name
 	
 	else hlll<long>(tmpmat, A, 0.99, true, true);
-      	
+      	verboseDepth=0;
 	time.stop();
 
  
