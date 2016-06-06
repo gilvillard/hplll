@@ -106,8 +106,9 @@ int main(int argc, char *argv[])  {
   int status;
 
     os << endl << "FPLLL, HPLLL, NTL running times / Ajtai bases " << endl;   // ******** SPECIALIZE
+    os << endl << " NTL numbers too big, d=100 == XD " << endl; 
                                                                                     
-    os <<         "----------------------------------------------------" << endl << endl;
+    os <<         "----------------------------------------------" << endl << endl;
  
     for (int k=0; k<K; k++) { 
 
@@ -198,7 +199,10 @@ int main(int argc, char *argv[])  {
 
 	time.start();	
        
-	LLL_FP(BN,0.99,0,0,1); 
+	if (d[k] <= 100)
+	  LLL_FP(BN,0.99,0,0,1); 
+	else
+	  LLL_XD(BN,0.99,0,0,1);
 	
 	time.stop();
 
