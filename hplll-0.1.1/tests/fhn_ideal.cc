@@ -99,8 +99,9 @@ int main(int argc, char *argv[])  {
   int status;
 
     os << endl << "FPLLL, HPLLL, NTL running times / ideal lattice challenge bases " << endl;   // ******** SPECIALIZE
+    os << endl <<  "NTL XD infinite loop for 224, with G_LLL" << endl; 
                                                                                     
-    os <<         "----------------------------------------------------" << endl << endl;
+    os <<         "----------------------------------------------------------------" << endl << endl;
  
     for (int k=0; k<K; k++) { 
 
@@ -190,8 +191,11 @@ int main(int argc, char *argv[])  {
 	fb.open (results,ios::app);
 
 	time.start();	
-       
-	LLL_XD(BN,0.99,0,0,1); 
+
+	if (n < 224) 
+	  LLL_XD(BN,0.99,0,0,1); 
+	else
+	  G_LLL_XD(BN,0.99,0,0,1);
 	
 	time.stop();
 
