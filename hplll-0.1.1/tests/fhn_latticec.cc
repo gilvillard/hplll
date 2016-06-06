@@ -89,7 +89,32 @@ int main(int argc, char *argv[])  {
   s[k]=(char *) malloc(256);
   strncpy(s[k], "collection/latticec/challenge-1200",255);
   k+=1;
-  
+
+  s[k]=(char *) malloc(256);
+  strncpy(s[k], "collection/latticec/challenge-1300",255);
+  k+=1;
+
+  s[k]=(char *) malloc(256);
+  strncpy(s[k], "collection/latticec/challenge-1400",255);
+  k+=1;
+
+  s[k]=(char *) malloc(256);
+  strncpy(s[k], "collection/latticec/challenge-1500",255);
+  k+=1;
+
+  s[k]=(char *) malloc(256);
+  strncpy(s[k], "collection/latticec/challenge-1600",255);
+  k+=1;
+
+  s[k]=(char *) malloc(256);
+  strncpy(s[k], "collection/latticec/challenge-1700",255);
+  k+=1;
+
+  s[k]=(char *) malloc(256);
+  strncpy(s[k], "collection/latticec/challenge-1800",255);
+  k+=1;
+
+    
   cout << s[0] << endl; 
     
   //-------------
@@ -105,8 +130,10 @@ int main(int argc, char *argv[])  {
   int status;
 
     os << endl << "FPLLL, HPLLL, NTL running times / lattice challenge bases / long" << endl;   // ******** SPECIALIZE
+    os << endl << "FPLLL stopped at dim 800, otherwise wrapper with mpfr too costly" << endl;
+    os << endl << "To see: to tune with hlll wrapper if cond too big" << endl; 
                                                                                     
-    os <<         "----------------------------------------------------" << endl << endl;
+    os <<         "----------------------------------------------------------------" << endl << endl;
  
     for (int k=0; k<K; k++) { 
 
@@ -173,20 +200,21 @@ int main(int argc, char *argv[])  {
       	cout << endl; 
 
       	cout << "--------------  FPLLL WRAPPER VERBOSE " << endl << endl; 
-    
-      	time.start();
-      	lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
-      	time.stop();
-  
 
-      	os << "   fplll: " << time << endl << endl ;
-      	time.print(os);
-      	os << endl;
-	
-      	transpose(A,AT);
-      	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION); //* name
-      	T2.isreduced(delta-0.1); //* name
+	if (n <=800) {
+	  time.start();
+	  lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
+	  time.stop();
+	  
 
+	  os << "   fplll: " << time << endl << endl ;
+	  time.print(os);
+	  os << endl;
+	  
+	  transpose(A,AT);
+	  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(A,NO_TRANSFORM,DEF_REDUCTION); //* name
+	  T2.isreduced(delta-0.1); //* name
+	}
 	cout << "--------------  NTL  " << endl << endl; 
 
 	Mat<ZZ> BN; 
