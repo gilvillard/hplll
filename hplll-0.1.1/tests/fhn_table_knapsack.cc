@@ -94,7 +94,7 @@ int main(int argc, char *argv[])  {
 
     os << endl << "FPLLL, HPLLL, NTL running times / Knapsack bases " << endl;   // ******** SPECIALIZE
                                                                                     
-    os <<         "----------------------------------------------------" << endl << endl;
+    os <<         "-------------------------------------------------" << endl << endl;
  
     for (int k=0; k<K; k++) { 
 
