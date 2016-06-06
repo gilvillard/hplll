@@ -171,10 +171,11 @@ int main(int argc, char *argv[])  {
 
 	Lattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > B(Along,NO_TRANSFORM,DEF_REDUCTION);  //* name 
 
+	verboseDepth=1;
       	time.start();
       	status=B.hlll(delta); //* name
       	time.stop();
-
+	verboseDepth=0;
  
       	os << "Run " << run << "  with n,d = " << n << "  " << d << ",    delta = " << delta <<  endl << endl;
       	os << "    hlll: " << time << endl ;

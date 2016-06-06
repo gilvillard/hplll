@@ -137,10 +137,11 @@ int main(int argc, char *argv[])  {
 
 	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A,NO_TRANSFORM,DEF_REDUCTION);  //* name 
 
+	verboseDepth=1;
       	time.start();
       	status=B.hlll(delta); //* name
       	time.stop();
-
+	verboseDepth=1;
  
       	os << "Run " << run << "  with n,d = " << n << "  " << d << ",    delta = " << delta <<  endl << endl;
       	os << "    hlll: " << time << endl ;
