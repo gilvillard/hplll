@@ -22,6 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "hplll.h"
 
+#include "wrappers.h"
 
 #include <NTL/LLL.h>
 
@@ -78,10 +79,29 @@ int main(int argc, char *argv[])  {
   strncpy(s[k], "collection/ideal/ideallatticedim300index604seed0.txt",599);
   k+=1;
 
- s[k]=(char *) malloc(600);
+  s[k]=(char *) malloc(600);
   strncpy(s[k], "collection/ideal/ideallatticedim344index1038seed0.txt",599);
   k+=1;
 
+  s[k]=(char *) malloc(600);
+  strncpy(s[k], "collection/ideal/ideallatticedim366index734seed0.txt",599);
+  k+=1;
+
+   s[k]=(char *) malloc(600);
+  strncpy(s[k], "collection/ideal/ideallatticedim420index844seed0.txt",599);
+  k+=1;
+
+   s[k]=(char *) malloc(600);
+  strncpy(s[k], "collection/ideal/ideallatticedim444index892seed0.txt",599);
+  k+=1;
+
+   s[k]=(char *) malloc(600);
+  strncpy(s[k], "collection/ideal/ideallatticedim492index1162seed0.txt",599);
+  k+=1;
+
+   s[k]=(char *) malloc(600);
+  strncpy(s[k], "collection/ideal/ideallatticedim512index1920seed0.txt",599);
+  k+=1;
   
 
   cout << s[0] << endl; 
@@ -99,6 +119,7 @@ int main(int argc, char *argv[])  {
   int status;
 
     os << endl << "FPLLL, HPLLL, NTL running times / ideal lattice challenge bases " << endl;   // ******** SPECIALIZE
+    os << endl << "HPLLL wrapper dim_prec_1" << endl; 
     os << endl <<  "NTL XD infinite loop for 224, with G_LLL" << endl; 
                                                                                     
     os <<         "----------------------------------------------------------------" << endl << endl;
@@ -137,26 +158,32 @@ int main(int argc, char *argv[])  {
 
 	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A,NO_TRANSFORM,DEF_REDUCTION);  //* name 
 
+	time.start();
 	verboseDepth=1;
-      	time.start();
-      	status=B.hlll(delta); //* name
-      	time.stop();
-	verboseDepth=1;
- 
-      	os << "Run " << run << "  with n,d = " << n << "  " << d << ",    delta = " << delta <<  endl << endl;
+	if (n <= DIM_PREC_1) status=B.hlll(delta); //* name
+	
+	else hlll<long>(tmpmat, A, 0.99, true, true);
+      	verboseDepth=0;
+	time.stop();
+
+
+	if (n <= DIM_PREC_1)
+	  matrix_cast(tmpmat,B.getbase());
+	
+	os << "Run " << run << "  with n,d = " << n << "  " << d << ",    delta = " << delta <<  endl << endl;
       	os << "    hlll: " << time << endl ;
       	time.print(os);
       	os << endl;
 
 	
       	if (status ==0) {
-      	  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(B.getbase(),NO_TRANSFORM,DEF_REDUCTION); //* names
+      	  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(tmpmat,NO_TRANSFORM,DEF_REDUCTION); //* names
 
       	  T.isreduced(delta-0.1); //* name
 
 	  double t,u,v,w;
 
-	  ratio<mpz_t>(B.getbase(),t,u,v,w);
+	  ratio<mpz_t>(tmpmat,t,u,v,w);
 
 	  cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
 	  cout << ".. Average diagonal ratio: " << u << endl;
