@@ -244,12 +244,17 @@ int main(int argc, char *argv[])  {
 	fb.open (results,ios::app);
 
 	transpose(A,AT);
-  
-	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A,NO_TRANSFORM,DEF_REDUCTION);
-	verboseDepth=0;
-	T.isreduced(delta-0.1);
 
 	os << "   ntl: " << time << endl << endl ;
+      	time.print(os);
+      	os << endl;
+	
+	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A,NO_TRANSFORM,DEF_REDUCTION);
+	verboseDepth=1;
+	T.isreduced(delta-0.1);
+	verboseDepth=0;
+	
+	os << "   ntl after check: " << time << endl << endl ;
       	time.print(os);
       	os << endl;
 	
