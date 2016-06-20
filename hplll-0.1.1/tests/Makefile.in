@@ -98,12 +98,10 @@ EXTRA_PROGRAMS = relationstesthuge$(EXEEXT) \
 subdir = tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/macros/fplll-check.m4 \
-	$(top_srcdir)/macros/libtool.m4 \
-	$(top_srcdir)/macros/ltoptions.m4 \
-	$(top_srcdir)/macros/ltsugar.m4 \
-	$(top_srcdir)/macros/ltversion.m4 \
-	$(top_srcdir)/macros/lt~obsolete.m4 \
-	$(top_srcdir)/macros/ntl-check.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/macros/ntl-check.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -562,7 +560,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = gnu
 EXTRA_DIST = 416_in 2_in 3_in C1_out  C2_out C3_in C3_out  \
-             C_huge_in C_huge_out r128int collection benchmarks_results
+             C_huge_in C_huge_out r128int collection benchmarks_results \
+             perfpublisher.sh 
 
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
