@@ -109,7 +109,9 @@ int main(int argc, char *argv[])  {
 
       A.resize(d[k]+1,d[k]);
       AT.resize(d[k],d[k]+1);
-
+      
+      tmpmat.resize(d[k]+1,d[k]);
+ 
       AT.gen_intrel(d[k]*100);
       transpose(A,AT);
 
@@ -161,7 +163,8 @@ int main(int argc, char *argv[])  {
       	os << "   fplll: " << time << endl << endl ;
       	time.print(os);
       	os << endl;
-	
+
+      	 
       	transpose(tmpmat,AT);
       	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(tmpmat,NO_TRANSFORM,DEF_REDUCTION); //* name
       	T2.isreduced(delta-0.1); //* name
