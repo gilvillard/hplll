@@ -14,6 +14,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/src
 #Mis déjà dans le configure 
 #LDADD =  -lfplll  
 
+PERFPUBLISHERFILE=tests-report.xml
 
 TESTS = arithmetic  hllltest relationstest matint128 mpz128inttest
 
@@ -29,13 +30,6 @@ mpz128inttest_SOURCES=mpz128inttest.cc
 
 check_PROGRAMS = $(TESTS)
 
-
-
-#hllltest_SOURCES=hllltest.cc  
-
-#relationstest_SOURCES=relationstest.cc 
-
-#relationstesthuge_SOURCES=relationstesthuge.cc 
 
 #nullspacetest_SOURCES=nullspacetest.cc mettre à jour avec hjls.h 
 
@@ -89,5 +83,10 @@ bfhn5 : fhn_acyclic
 bfhn6 : fhn_al 
 	./fhn_al >& benchmarks_results/fhn_al.log
 
+
+# Perfpublisher script interaction - AC 2016/06/09
+perfpublisher:
+	+chmod 777 ./perfpublisher.sh
+	+./perfpublisher.sh "$(PERFPUBLISHERFILE)" "$(TESTS)" "$(CXX)"
 
 
