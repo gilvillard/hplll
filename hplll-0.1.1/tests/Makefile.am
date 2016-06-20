@@ -2,7 +2,8 @@
 AUTOMAKE_OPTIONS = gnu
 
 EXTRA_DIST= 416_in 2_in 3_in C1_out  C2_out C3_in C3_out  \
-             C_huge_in C_huge_out r128int collection benchmarks_results
+             C_huge_in C_huge_out r128int collection benchmarks_results \
+             perfpublisher.sh 
 
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
