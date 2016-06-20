@@ -6,7 +6,7 @@ include_hplll_HEADERS=  hplll.h defs.h  mat.h matpe.h  ldpe.h nr-ld.cpp  \
 	hlll.h hlll.cc relations.h relations.cc  \
 	matgen.h matgen.cc  \
   	mixed-col.h  matmixed.h  tools.h  \
-	givtimer.h givtimer.C ratio.h nr_Z_l128.h
+	givtimer.h givtimer.C ratio.h nr_Z_l128.h wrappers.h
 
 #include_hplll_HEADERS=  hplll.h defs.h  mat.h matpe.h  ldpe.h nr-ld.cpp  \
 	#hlll.h hlll.cc decomp.h decomp.cc relations.h relations.cc  \
