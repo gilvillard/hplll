@@ -132,7 +132,7 @@ elif test   "x$ntl_found" = "xno";  then
 
         CXXFLAGS=${BACKUP_CXXFLAGS}
         LDFLAGS=${BACKUP_LD}
-        LIBS = ${BACKUP_LIBS}
+        LIBS=${BACKUP_LIBS}
 
         # Result by default search, hence no warning 
 	AC_MSG_RESULT(no)
