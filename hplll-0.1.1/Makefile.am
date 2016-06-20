@@ -10,4 +10,9 @@ include_hpllldir=$(includedir)/hplll
 
 AM_CXXFLAGS = -I $(srcdir)
 
+perfpublisher : tests/perfpublisher
+
+tests/perfpublisher:
+	(cd tests; ${MAKE} perfpublisher)
+
 #EXTRA_DIST=README.html
