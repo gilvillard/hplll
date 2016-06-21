@@ -1,0 +1,2839 @@
+300
+--------------  HLLL
+
+Discovering vector 3/300
+     Phase-: 1.78814e-05s (9e-06 cpu) [1]
+     Total: 1.78814e-05s (9e-06 cpu) [1]
+Discovering vector 4/300
+     Phase-: 7.15256e-06s (5e-06 cpu) [1]
+     Total: 2.5034e-05s (1.4e-05 cpu) [2]
+Discovering vector 5/300
+     Phase-: 5.96046e-06s (6e-06 cpu) [1]
+     Total: 3.09944e-05s (2e-05 cpu) [3]
+Discovering vector 6/300
+     Phase-: 5.96046e-06s (6e-06 cpu) [1]
+     Total: 3.69549e-05s (2.6e-05 cpu) [4]
+Discovering vector 7/300
+     Phase-: 7.86781e-06s (8e-06 cpu) [1]
+     Total: 4.48227e-05s (3.4e-05 cpu) [5]
+Discovering vector 8/300
+     Phase-: 1.3113e-05s (1.3e-05 cpu) [1]
+     Total: 5.79357e-05s (4.7e-05 cpu) [6]
+Discovering vector 9/300
+     Phase-: 7.86781e-06s (8e-06 cpu) [1]
+     Total: 6.58035e-05s (5.5e-05 cpu) [7]
+Discovering vector 10/300
+     Phase-: 1.69277e-05s (1.7e-05 cpu) [1]
+     Total: 8.27312e-05s (7.2e-05 cpu) [8]
+Discovering vector 11/300
+     Phase-: 1.90735e-05s (1.8e-05 cpu) [1]
+     Total: 0.000101805s (9e-05 cpu) [9]
+Discovering vector 12/300
+     Phase-: 1.40667e-05s (1.3e-05 cpu) [1]
+     Total: 0.000115871s (0.000103 cpu) [10]
+Discovering vector 13/300
+     Phase-: 5.00679e-05s (4.9e-05 cpu) [1]
+     Total: 0.000165939s (0.000152 cpu) [11]
+Discovering vector 14/300
+     Phase-: 2.90871e-05s (2.8e-05 cpu) [1]
+     Total: 0.000195026s (0.00018 cpu) [12]
+Discovering vector 15/300
+     Phase-: 4.69685e-05s (4.7e-05 cpu) [1]
+     Total: 0.000241995s (0.000227 cpu) [13]
+Discovering vector 16/300
+     Phase-: 5.91278e-05s (5.8e-05 cpu) [1]
+     Total: 0.000301123s (0.000285 cpu) [14]
+Discovering vector 17/300
+     Phase-: 4.79221e-05s (4.8e-05 cpu) [1]
+     Total: 0.000349045s (0.000333 cpu) [15]
+Discovering vector 18/300
+     Phase-: 5.6982e-05s (5.5e-05 cpu) [1]
+     Total: 0.000406027s (0.000388 cpu) [16]
+Discovering vector 19/300
+     Phase-: 4.91142e-05s (4.9e-05 cpu) [1]
+     Total: 0.000455141s (0.000437 cpu) [17]
+Discovering vector 20/300
+     Phase-: 7.20024e-05s (7.2e-05 cpu) [1]
+     Total: 0.000527143s (0.000509 cpu) [18]
+Discovering vector 21/300
+     Phase-: 5.4121e-05s (5.4e-05 cpu) [1]
+     Total: 0.000581264s (0.000563 cpu) [19]
+Discovering vector 22/300
+     Phase-: 5.50747e-05s (5.4e-05 cpu) [1]
+     Total: 0.000636339s (0.000617 cpu) [20]
+Discovering vector 23/300
+     Phase-: 9.70364e-05s (9.6e-05 cpu) [1]
+     Total: 0.000733376s (0.000713 cpu) [21]
+Discovering vector 24/300
+     Phase-: 0.000158072s (0.000157 cpu) [1]
+     Total: 0.000891447s (0.00087 cpu) [22]
+Discovering vector 25/300
+     Phase-: 3.00407e-05s (3e-05 cpu) [1]
+     Total: 0.000921488s (0.0009 cpu) [23]
+Discovering vector 26/300
+     Phase-: 0.000309944s (0.00031 cpu) [1]
+     Total: 0.00123143s (0.00121 cpu) [24]
+Discovering vector 27/300
+     Phase-: 7.51019e-05s (7.5e-05 cpu) [1]
+     Total: 0.00130653s (0.001285 cpu) [25]
+Discovering vector 28/300
+     Phase-: 0.000225067s (0.000225 cpu) [1]
+     Total: 0.0015316s (0.00151 cpu) [26]
+Discovering vector 29/300
+     Phase-: 0.000123978s (0.000124 cpu) [1]
+     Total: 0.00165558s (0.001634 cpu) [27]
+Discovering vector 30/300
+     Phase-: 7.08103e-05s (7e-05 cpu) [1]
+     Total: 0.00172639s (0.001704 cpu) [28]
+Discovering vector 31/300
+     Phase-: 0.000234842s (0.000235 cpu) [1]
+     Total: 0.00196123s (0.001939 cpu) [29]
+Discovering vector 32/300
+     Phase-: 0.000211954s (0.000211 cpu) [1]
+     Total: 0.00217319s (0.00215 cpu) [30]
+Discovering vector 33/300
+     Phase-: 0.000675201s (0.000675 cpu) [1]
+     Total: 0.00284839s (0.002825 cpu) [31]
+Discovering vector 34/300
+     Phase-: 0.000627041s (0.000626 cpu) [1]
+     Total: 0.00347543s (0.003451 cpu) [32]
+Discovering vector 35/300
+     Phase-: 0.000103951s (0.000104 cpu) [1]
+     Total: 0.00357938s (0.003555 cpu) [33]
+Discovering vector 36/300
+     Phase-: 0.000416994s (0.000416 cpu) [1]
+     Total: 0.00399637s (0.003971 cpu) [34]
+Discovering vector 37/300
+     Phase-: 0.000334024s (0.000332 cpu) [1]
+     Total: 0.0043304s (0.004303 cpu) [35]
+Discovering vector 38/300
+     Phase-: 0.00061202s (0.000611 cpu) [1]
+     Total: 0.00494242s (0.004914 cpu) [36]
+Discovering vector 39/300
+     Phase-: 0.00011611s (0.000115 cpu) [1]
+     Total: 0.00505853s (0.005029 cpu) [37]
+Discovering vector 40/300
+     Phase-: 0.000907898s (0.000907 cpu) [1]
+     Total: 0.00596642s (0.005936 cpu) [38]
+Discovering vector 41/300
+     Phase-: 0.000283003s (0.000282 cpu) [1]
+     Total: 0.00624943s (0.006218 cpu) [39]
+Discovering vector 42/300
+     Phase-: 0.000356197s (0.000356 cpu) [1]
+     Total: 0.00660563s (0.006574 cpu) [40]
+Discovering vector 43/300
+     Phase-: 0.00166512s (0.001664 cpu) [1]
+     Total: 0.00827074s (0.008238 cpu) [41]
+Discovering vector 44/300
+     Phase-: 0.000524044s (0.000523 cpu) [1]
+     Total: 0.00879478s (0.008761 cpu) [42]
+Discovering vector 45/300
+     Phase-: 0.000388145s (0.000388 cpu) [1]
+     Total: 0.00918293s (0.009149 cpu) [43]
+Discovering vector 46/300
+     Phase-: 0.00142503s (0.001424 cpu) [1]
+     Total: 0.010608s (0.010573 cpu) [44]
+Discovering vector 47/300
+     Phase-: 0.000270844s (0.00027 cpu) [1]
+     Total: 0.0108788s (0.010843 cpu) [45]
+Discovering vector 48/300
+     Phase-: 0.000239849s (0.000239 cpu) [1]
+     Total: 0.0111187s (0.011082 cpu) [46]
+Discovering vector 49/300
+     Phase-: 0.00192595s (0.001926 cpu) [1]
+     Total: 0.0130446s (0.013008 cpu) [47]
+Discovering vector 50/300
+     Phase-: 0.000818014s (0.000817 cpu) [1]
+     Total: 0.0138626s (0.013825 cpu) [48]
+Discovering vector 51/300
+     Phase-: 0.00127196s (0.00127 cpu) [1]
+     Total: 0.0151346s (0.015095 cpu) [49]
+Discovering vector 52/300
+     Phase-: 0.00086689s (0.000866 cpu) [1]
+     Total: 0.0160015s (0.015961 cpu) [50]
+Discovering vector 53/300
+     Phase-: 0.00322604s (0.003226 cpu) [1]
+     Total: 0.0192275s (0.019187 cpu) [51]
+Discovering vector 54/300
+     Phase-: 0.000908852s (0.000908 cpu) [1]
+     Total: 0.0201364s (0.020095 cpu) [52]
+Discovering vector 55/300
+     Phase-: 0.000864983s (0.000865 cpu) [1]
+     Total: 0.0210013s (0.02096 cpu) [53]
+Discovering vector 56/300
+     Phase-: 0.00133705s (0.001337 cpu) [1]
+     Total: 0.0223384s (0.022297 cpu) [54]
+Discovering vector 57/300
+     Phase-: 0.000272036s (0.000272 cpu) [1]
+     Total: 0.0226104s (0.022569 cpu) [55]
+Discovering vector 58/300
+     Phase-: 0.002316s (0.002314 cpu) [1]
+     Total: 0.0249264s (0.024883 cpu) [56]
+Discovering vector 59/300
+     Phase-: 0.0030489s (0.003029 cpu) [1]
+     Total: 0.0279753s (0.027912 cpu) [57]
+Discovering vector 60/300
+     Phase-: 0.00101805s (0.001018 cpu) [1]
+     Total: 0.0289934s (0.02893 cpu) [58]
+Discovering vector 61/300
+     Phase-: 0.00137401s (0.001374 cpu) [1]
+     Total: 0.0303674s (0.030304 cpu) [59]
+Discovering vector 62/300
+     Phase-: 0.00379395s (0.003793 cpu) [1]
+     Total: 0.0341613s (0.034097 cpu) [60]
+Discovering vector 63/300
+     Phase-: 0.00137091s (0.001371 cpu) [1]
+     Total: 0.0355322s (0.035468 cpu) [61]
+Discovering vector 64/300
+     Phase-: 0.00437117s (0.00437 cpu) [1]
+     Total: 0.0399034s (0.039838 cpu) [62]
+Discovering vector 65/300
+     Phase-: 0.00141978s (0.00142 cpu) [1]
+     Total: 0.0413232s (0.041258 cpu) [63]
+Discovering vector 66/300
+     Phase-: 0.000520945s (0.000521 cpu) [1]
+     Total: 0.0418441s (0.041779 cpu) [64]
+Discovering vector 67/300
+     Phase-: 0.000352859s (0.000352 cpu) [1]
+     Total: 0.042197s (0.042131 cpu) [65]
+Discovering vector 68/300
+     Phase-: 0.00543499s (0.005413 cpu) [1]
+     Total: 0.047632s (0.047544 cpu) [66]
+Discovering vector 69/300
+     Phase-: 0.0107231s (0.010707 cpu) [1]
+     Total: 0.0583551s (0.058251 cpu) [67]
+Discovering vector 70/300
+     Phase-: 0.000730991s (0.000731 cpu) [1]
+     Total: 0.0590861s (0.058982 cpu) [68]
+Discovering vector 71/300
+     Phase-: 0.00503898s (0.005024 cpu) [1]
+     Total: 0.0641251s (0.064006 cpu) [69]
+Discovering vector 72/300
+     Phase-: 0.00061202s (0.000611 cpu) [1]
+     Total: 0.0647371s (0.064617 cpu) [70]
+Discovering vector 73/300
+     Phase-: 0.00614786s (0.006145 cpu) [1]
+     Total: 0.0708849s (0.070762 cpu) [71]
+Discovering vector 74/300
+     Phase-: 0.00226283s (0.002262 cpu) [1]
+     Total: 0.0731478s (0.073024 cpu) [72]
+Discovering vector 75/300
+     Phase-: 0.00388193s (0.003876 cpu) [1]
+     Total: 0.0770297s (0.0769 cpu) [73]
+Discovering vector 76/300
+     Phase-: 0.00655079s (0.00655 cpu) [1]
+     Total: 0.0835805s (0.08345 cpu) [74]
+Discovering vector 77/300
+     Phase-: 0.00159812s (0.001597 cpu) [1]
+     Total: 0.0851786s (0.085047 cpu) [75]
+Discovering vector 78/300
+     Phase-: 0.000902176s (0.000901 cpu) [1]
+     Total: 0.0860808s (0.085948 cpu) [76]
+Discovering vector 79/300
+     Phase-: 0.0116491s (0.011645 cpu) [1]
+     Total: 0.0977299s (0.097593 cpu) [77]
+Discovering vector 80/300
+     Phase-: 0.00777888s (0.007776 cpu) [1]
+     Total: 0.105509s (0.105369 cpu) [78]
+Discovering vector 81/300
+     Phase-: 0.00757909s (0.007575 cpu) [1]
+     Total: 0.113088s (0.112944 cpu) [79]
+Discovering vector 82/300
+     Phase-: 0.00419497s (0.004161 cpu) [1]
+     Total: 0.117283s (0.117105 cpu) [80]
+Discovering vector 83/300
+     Phase-: 0.012042s (0.01204 cpu) [1]
+     Total: 0.129325s (0.129145 cpu) [81]
+Discovering vector 84/300
+     Phase-: 0.00632906s (0.006326 cpu) [1]
+     Total: 0.135654s (0.135471 cpu) [82]
+Discovering vector 85/300
+     Phase-: 0.00265908s (0.002658 cpu) [1]
+     Total: 0.138313s (0.138129 cpu) [83]
+Discovering vector 86/300
+     Phase-: 0.0157001s (0.015696 cpu) [1]
+     Total: 0.154013s (0.153825 cpu) [84]
+Discovering vector 87/300
+     Phase-: 0.00332785s (0.003326 cpu) [1]
+     Total: 0.157341s (0.157151 cpu) [85]
+Discovering vector 88/300
+     Phase-: 0.00341201s (0.003412 cpu) [1]
+     Total: 0.160753s (0.160563 cpu) [86]
+Discovering vector 89/300
+     Phase-: 0.0112932s (0.01129 cpu) [1]
+     Total: 0.172046s (0.171853 cpu) [87]
+Discovering vector 90/300
+     Phase-: 0.00545216s (0.005448 cpu) [1]
+     Total: 0.177498s (0.177301 cpu) [88]
+Discovering vector 91/300
+     Phase-: 0.00188804s (0.001887 cpu) [1]
+     Total: 0.179386s (0.179188 cpu) [89]
+Discovering vector 92/300
+     Phase-: 0.017581s (0.017572 cpu) [1]
+     Total: 0.196967s (0.19676 cpu) [90]
+Discovering vector 93/300
+     Phase-: 0.0208402s (0.020835 cpu) [1]
+     Total: 0.217808s (0.217595 cpu) [91]
+Discovering vector 94/300
+     Phase-: 0.00744605s (0.007445 cpu) [1]
+     Total: 0.225254s (0.22504 cpu) [92]
+Discovering vector 95/300
+     Phase-: 0.00255609s (0.002556 cpu) [1]
+     Total: 0.22781s (0.227596 cpu) [93]
+Discovering vector 96/300
+     Phase-: 0.0260551s (0.025996 cpu) [1]
+     Total: 0.253865s (0.253592 cpu) [94]
+Discovering vector 97/300
+     Phase-: 0.006073s (0.00607 cpu) [1]
+     Total: 0.259938s (0.259662 cpu) [95]
+Discovering vector 98/300
+     Phase-: 0.0152071s (0.015205 cpu) [1]
+     Total: 0.275145s (0.274867 cpu) [96]
+Discovering vector 99/300
+     Phase-: 0.00917387s (0.009172 cpu) [1]
+     Total: 0.284319s (0.284039 cpu) [97]
+Discovering vector 100/300
+     Phase-: 0.00354409s (0.003543 cpu) [1]
+     Total: 0.287863s (0.287582 cpu) [98]
+Discovering vector 101/300
+     Phase-: 0.0167439s (0.016715 cpu) [1]
+     Total: 0.304607s (0.304297 cpu) [99]
+Discovering vector 102/300
+     Phase-: 0.014673s (0.014663 cpu) [1]
+     Total: 0.31928s (0.31896 cpu) [100]
+Discovering vector 103/300
+     Phase-: 0.00809884s (0.008098 cpu) [1]
+     Total: 0.327379s (0.327058 cpu) [101]
+Discovering vector 104/300
+     Phase-: 0.00177097s (0.001771 cpu) [1]
+     Total: 0.329149s (0.328829 cpu) [102]
+Discovering vector 105/300
+     Phase-: 0.014642s (0.014636 cpu) [1]
+     Total: 0.343791s (0.343465 cpu) [103]
+Discovering vector 106/300
+     Phase-: 0.0046382s (0.004636 cpu) [1]
+     Total: 0.34843s (0.348101 cpu) [104]
+Discovering vector 107/300
+     Phase-: 0.00939107s (0.009389 cpu) [1]
+     Total: 0.357821s (0.35749 cpu) [105]
+Discovering vector 108/300
+     Phase-: 0.0907538s (0.080583 cpu) [1]
+     Total: 0.448575s (0.438073 cpu) [106]
+Discovering vector 109/300
+     Phase-: 0.0054338s (0.005415 cpu) [1]
+     Total: 0.454008s (0.443488 cpu) [107]
+Discovering vector 110/300
+     Phase-: 0.0244439s (0.024439 cpu) [1]
+     Total: 0.478452s (0.467927 cpu) [108]
+Discovering vector 111/300
+     Phase-: 0.0179379s (0.017936 cpu) [1]
+     Total: 0.49639s (0.485863 cpu) [109]
+Discovering vector 112/300
+     Phase-: 0.00867105s (0.008669 cpu) [1]
+     Total: 0.505061s (0.494532 cpu) [110]
+Discovering vector 113/300
+     Phase-: 0.045594s (0.045564 cpu) [1]
+     Total: 0.550655s (0.540096 cpu) [111]
+Discovering vector 114/300
+     Phase-: 0.00467491s (0.004675 cpu) [1]
+     Total: 0.55533s (0.544771 cpu) [112]
+Discovering vector 115/300
+     Phase-: 0.012481s (0.012479 cpu) [1]
+     Total: 0.567811s (0.55725 cpu) [113]
+Discovering vector 116/300
+     Phase-: 0.0652211s (0.065212 cpu) [1]
+     Total: 0.633032s (0.622462 cpu) [114]
+Discovering vector 117/300
+     Phase-: 0.0273829s (0.02738 cpu) [1]
+     Total: 0.660415s (0.649842 cpu) [115]
+Discovering vector 118/300
+     Phase-: 0.0212011s (0.021199 cpu) [1]
+     Total: 0.681616s (0.671041 cpu) [116]
+Discovering vector 119/300
+     Phase-: 0.030935s (0.030932 cpu) [1]
+     Total: 0.712551s (0.701973 cpu) [117]
+Discovering vector 120/300
+     Phase-: 0.0237s (0.023695 cpu) [1]
+     Total: 0.736251s (0.725668 cpu) [118]
+Discovering vector 121/300
+     Phase-: 0.0154169s (0.015415 cpu) [1]
+     Total: 0.751668s (0.741083 cpu) [119]
+Discovering vector 122/300
+     Phase-: 0.00348186s (0.003522 cpu) [1]
+     Total: 0.75515s (0.744605 cpu) [120]
+Discovering vector 123/300
+     Phase-: 0.0312722s (0.03128 cpu) [1]
+     Total: 0.786422s (0.775885 cpu) [121]
+Discovering vector 124/300
+     Phase-: 0.0999951s (0.099934 cpu) [1]
+     Total: 0.886417s (0.875819 cpu) [122]
+Discovering vector 125/300
+     Phase-: 0.0111229s (0.01112 cpu) [1]
+     Total: 0.89754s (0.886939 cpu) [123]
+Discovering vector 126/300
+     Phase-: 0.0262818s (0.02628 cpu) [1]
+     Total: 0.923822s (0.913219 cpu) [124]
+Discovering vector 127/300
+     Phase-: 0.00674915s (0.006749 cpu) [1]
+     Total: 0.930571s (0.919968 cpu) [125]
+Discovering vector 128/300
+     Phase-: 0.0430231s (0.043003 cpu) [1]
+     Total: 0.973594s (0.962971 cpu) [126]
+Discovering vector 129/300
+     Phase-: 0.0195031s (0.019498 cpu) [1]
+     Total: 0.993097s (0.982469 cpu) [127]
+Discovering vector 130/300
+     Phase-: 0.040365s (0.040344 cpu) [1]
+     Total: 1.03346s (1.02281 cpu) [128]
+Discovering vector 131/300
+     Phase-: 0.0527351s (0.052723 cpu) [1]
+     Total: 1.0862s (1.07554 cpu) [129]
+Discovering vector 132/300
+     Phase-: 0.0126491s (0.012646 cpu) [1]
+     Total: 1.09885s (1.08818 cpu) [130]
+Discovering vector 133/300
+     Phase-: 0.0101831s (0.010179 cpu) [1]
+     Total: 1.10903s (1.09836 cpu) [131]
+Discovering vector 134/300
+     Phase-: 0.0566609s (0.056656 cpu) [1]
+     Total: 1.16569s (1.15502 cpu) [132]
+Discovering vector 135/300
+     Phase-: 0.0117612s (0.011759 cpu) [1]
+     Total: 1.17745s (1.16678 cpu) [133]
+Discovering vector 136/300
+     Phase-: 0.047883s (0.04782 cpu) [1]
+     Total: 1.22533s (1.2146 cpu) [134]
+Discovering vector 137/300
+     Phase-: 0.01682s (0.016813 cpu) [1]
+     Total: 1.24215s (1.23141 cpu) [135]
+Discovering vector 138/300
+     Phase-: 0.179794s (0.179698 cpu) [1]
+     Total: 1.42195s (1.41111 cpu) [136]
+Discovering vector 139/300
+     Phase-: 0.0275571s (0.027504 cpu) [1]
+     Total: 1.44951s (1.43861 cpu) [137]
+Discovering vector 140/300
+     Phase-: 0.00562286s (0.005622 cpu) [1]
+     Total: 1.45513s (1.44423 cpu) [138]
+Discovering vector 141/300
+     Phase-: 0.0370531s (0.037028 cpu) [1]
+     Total: 1.49218s (1.48126 cpu) [139]
+Discovering vector 142/300
+     Phase-: 0.0199721s (0.019961 cpu) [1]
+     Total: 1.51215s (1.50122 cpu) [140]
+Discovering vector 143/300
+     Phase-: 0.140331s (0.140278 cpu) [1]
+     Total: 1.65248s (1.6415 cpu) [141]
+Discovering vector 144/300
+     Phase-: 0.0232282s (0.023217 cpu) [1]
+     Total: 1.67571s (1.66472 cpu) [142]
+Discovering vector 145/300
+     Phase-: 0.0152838s (0.015278 cpu) [1]
+     Total: 1.691s (1.67999 cpu) [143]
+Discovering vector 146/300
+     Phase-: 0.097615s (0.097548 cpu) [1]
+     Total: 1.78861s (1.77754 cpu) [144]
+Discovering vector 147/300
+     Phase-: 0.0663409s (0.066335 cpu) [1]
+     Total: 1.85495s (1.84388 cpu) [145]
+Discovering vector 148/300
+     Phase-: 0.0702221s (0.070119 cpu) [1]
+     Total: 1.92517s (1.914 cpu) [146]
+Discovering vector 149/300
+     Phase-: 0.0112321s (0.011231 cpu) [1]
+     Total: 1.93641s (1.92523 cpu) [147]
+Discovering vector 150/300
+     Phase-: 0.045773s (0.045699 cpu) [1]
+     Total: 1.98218s (1.97093 cpu) [148]
+Discovering vector 151/300
+     Phase-: 0.0157449s (0.015741 cpu) [1]
+     Total: 1.99793s (1.98667 cpu) [149]
+Discovering vector 152/300
+     Phase-: 0.060554s (0.060519 cpu) [1]
+     Total: 2.05848s (2.04719 cpu) [150]
+Discovering vector 153/300
+     Phase-: 0.0112069s (0.011205 cpu) [1]
+     Total: 2.06969s (2.05839 cpu) [151]
+Discovering vector 154/300
+     Phase-: 0.100201s (0.100032 cpu) [1]
+     Total: 2.16989s (2.15842 cpu) [152]
+Discovering vector 155/300
+     Phase-: 0.161859s (0.161813 cpu) [1]
+     Total: 2.33175s (2.32024 cpu) [153]
+Discovering vector 156/300
+     Phase-: 0.017839s (0.017836 cpu) [1]
+     Total: 2.34959s (2.33807 cpu) [154]
+Discovering vector 157/300
+     Phase-: 0.0279319s (0.026848 cpu) [1]
+     Total: 2.37752s (2.36492 cpu) [155]
+Discovering vector 158/300
+     Phase-: 0.13431s (0.125257 cpu) [1]
+     Total: 2.51183s (2.49018 cpu) [156]
+Discovering vector 159/300
+     Phase-: 0.258762s (0.256852 cpu) [1]
+     Total: 2.77059s (2.74703 cpu) [157]
+Discovering vector 160/300
+     Phase-: 0.0607791s (0.060772 cpu) [1]
+     Total: 2.83137s (2.8078 cpu) [158]
+Discovering vector 161/300
+     Phase-: 0.079747s (0.079688 cpu) [1]
+     Total: 2.91112s (2.88749 cpu) [159]
+Discovering vector 162/300
+     Phase-: 0.038949s (0.038925 cpu) [1]
+     Total: 2.95006s (2.92641 cpu) [160]
+Discovering vector 163/300
+     Phase-: 0.0380261s (0.038006 cpu) [1]
+     Total: 2.98809s (2.96442 cpu) [161]
+Discovering vector 164/300
+     Phase-: 0.147644s (0.14719 cpu) [1]
+     Total: 3.13573s (3.11161 cpu) [162]
+Discovering vector 165/300
+     Phase-: 0.0621719s (0.061959 cpu) [1]
+     Total: 3.19791s (3.17357 cpu) [163]
+Discovering vector 166/300
+     Phase-: 0.054497s (0.05447 cpu) [1]
+     Total: 3.2524s (3.22804 cpu) [164]
+Discovering vector 167/300
+     Phase-: 0.019809s (0.019797 cpu) [1]
+     Total: 3.27221s (3.24784 cpu) [165]
+Discovering vector 168/300
+     Phase-: 0.270998s (0.269964 cpu) [1]
+     Total: 3.54321s (3.5178 cpu) [166]
+Discovering vector 169/300
+     Phase-: 0.0789881s (0.078967 cpu) [1]
+     Total: 3.6222s (3.59677 cpu) [167]
+Discovering vector 170/300
+     Phase-: 0.0210302s (0.021 cpu) [1]
+     Total: 3.64323s (3.61777 cpu) [168]
+Discovering vector 171/300
+     Phase-: 0.206942s (0.205681 cpu) [1]
+     Total: 3.85017s (3.82345 cpu) [169]
+Discovering vector 172/300
+     Phase-: 0.0412951s (0.041276 cpu) [1]
+     Total: 3.89147s (3.86473 cpu) [170]
+Discovering vector 173/300
+     Phase-: 0.172318s (0.171971 cpu) [1]
+     Total: 4.06378s (4.0367 cpu) [171]
+Discovering vector 174/300
+     Phase-: 0.167911s (0.167199 cpu) [1]
+     Total: 4.23169s (4.2039 cpu) [172]
+Discovering vector 175/300
+     Phase-: 0.051681s (0.051676 cpu) [1]
+     Total: 4.28338s (4.25557 cpu) [173]
+Discovering vector 176/300
+     Phase-: 0.282292s (0.272215 cpu) [1]
+     Total: 4.56567s (4.52779 cpu) [174]
+Discovering vector 177/300
+     Phase-: 0.0863121s (0.085881 cpu) [1]
+     Total: 4.65198s (4.61367 cpu) [175]
+Discovering vector 178/300
+     Phase-: 0.033689s (0.033475 cpu) [1]
+     Total: 4.68567s (4.64714 cpu) [176]
+Discovering vector 179/300
+     Phase-: 0.135192s (0.134953 cpu) [1]
+     Total: 4.82086s (4.7821 cpu) [177]
+Discovering vector 180/300
+     Phase-: 0.30424s (0.302425 cpu) [1]
+     Total: 5.1251s (5.08452 cpu) [178]
+Discovering vector 181/300
+     Phase-: 0.19027s (0.1897 cpu) [1]
+     Total: 5.31537s (5.27422 cpu) [179]
+Discovering vector 182/300
+     Phase-: 0.0276451s (0.027584 cpu) [1]
+     Total: 5.34302s (5.3018 cpu) [180]
+Discovering vector 183/300
+     Phase-: 0.12553s (0.12549 cpu) [1]
+     Total: 5.46855s (5.42729 cpu) [181]
+Discovering vector 184/300
+     Phase-: 0.138416s (0.138356 cpu) [1]
+     Total: 5.60696s (5.56565 cpu) [182]
+Discovering vector 185/300
+     Phase-: 0.050544s (0.050539 cpu) [1]
+     Total: 5.65751s (5.61619 cpu) [183]
+Discovering vector 186/300
+     Phase-: 0.251976s (0.25183 cpu) [1]
+     Total: 5.90948s (5.86802 cpu) [184]
+Discovering vector 187/300
+     Phase-: 0.0866039s (0.086467 cpu) [1]
+     Total: 5.99609s (5.95449 cpu) [185]
+Discovering vector 188/300
+     Phase-: 0.139973s (0.139796 cpu) [1]
+     Total: 6.13606s (6.09428 cpu) [186]
+Discovering vector 189/300
+     Phase-: 0.15486s (0.154888 cpu) [1]
+     Total: 6.29092s (6.24917 cpu) [187]
+Discovering vector 190/300
+     Phase-: 0.428448s (0.418326 cpu) [1]
+     Total: 6.71937s (6.6675 cpu) [188]
+Discovering vector 191/300
+     Phase-: 0.0605142s (0.060484 cpu) [1]
+     Total: 6.77988s (6.72798 cpu) [189]
+Discovering vector 192/300
+     Phase-: 0.0821199s (0.082103 cpu) [1]
+     Total: 6.862s (6.81008 cpu) [190]
+Discovering vector 193/300
+     Phase-: 0.0558591s (0.055843 cpu) [1]
+     Total: 6.91786s (6.86593 cpu) [191]
+Discovering vector 194/300
+     Phase-: 0.210989s (0.210752 cpu) [1]
+     Total: 7.12885s (7.07668 cpu) [192]
+Discovering vector 195/300
+     Phase-: 0.157586s (0.157567 cpu) [1]
+     Total: 7.28643s (7.23425 cpu) [193]
+Discovering vector 196/300
+     Phase-: 0.112752s (0.112647 cpu) [1]
+     Total: 7.39919s (7.34689 cpu) [194]
+Discovering vector 197/300
+     Phase-: 0.395156s (0.39503 cpu) [1]
+     Total: 7.79434s (7.74192 cpu) [195]
+Discovering vector 198/300
+     Phase-: 0.096678s (0.096618 cpu) [1]
+     Total: 7.89102s (7.83854 cpu) [196]
+Discovering vector 199/300
+     Phase-: 0.175794s (0.175692 cpu) [1]
+     Total: 8.06681s (8.01423 cpu) [197]
+Discovering vector 200/300
+     Phase-: 0.052166s (0.05214 cpu) [1]
+     Total: 8.11898s (8.06637 cpu) [198]
+Discovering vector 201/300
+     Phase-: 0.0624201s (0.06241 cpu) [1]
+     Total: 8.1814s (8.12878 cpu) [199]
+Discovering vector 202/300
+     Phase-: 0.406088s (0.396187 cpu) [1]
+     Total: 8.58749s (8.52497 cpu) [200]
+Discovering vector 203/300
+     Phase-: 0.0332592s (0.033255 cpu) [1]
+     Total: 8.62075s (8.55822 cpu) [201]
+Discovering vector 204/300
+     Phase-: 0.181942s (0.181915 cpu) [1]
+     Total: 8.80269s (8.74014 cpu) [202]
+Discovering vector 205/300
+     Phase-: 0.0599921s (0.059986 cpu) [1]
+     Total: 8.86268s (8.80013 cpu) [203]
+Discovering vector 206/300
+     Phase-: 0.482314s (0.482043 cpu) [1]
+     Total: 9.345s (9.28217 cpu) [204]
+Discovering vector 207/300
+     Phase-: 0.34247s (0.342392 cpu) [1]
+     Total: 9.68747s (9.62456 cpu) [205]
+Discovering vector 208/300
+     Phase-: 0.0972681s (0.097249 cpu) [1]
+     Total: 9.78473s (9.72181 cpu) [206]
+Discovering vector 209/300
+     Phase-: 0.0288022s (0.0288 cpu) [1]
+     Total: 9.81354s (9.75061 cpu) [207]
+Discovering vector 210/300
+     Phase-: 0.51627s (0.515786 cpu) [1]
+     Total: 10.3298s (10.2664 cpu) [208]
+Discovering vector 211/300
+     Phase-: 0.202046s (0.193878 cpu) [1]
+     Total: 10.5319s (10.4603 cpu) [209]
+Discovering vector 212/300
+     Phase-: 0.262554s (0.26252 cpu) [1]
+     Total: 10.7944s (10.7228 cpu) [210]
+Discovering vector 213/300
+     Phase-: 0.0390649s (0.039061 cpu) [1]
+     Total: 10.8335s (10.7619 cpu) [211]
+Discovering vector 214/300
+     Phase-: 0.529338s (0.529133 cpu) [1]
+     Total: 11.3628s (11.291 cpu) [212]
+Discovering vector 215/300
+     Phase-: 0.182007s (0.181953 cpu) [1]
+     Total: 11.5448s (11.4729 cpu) [213]
+Discovering vector 216/300
+     Phase-: 0.170948s (0.170981 cpu) [1]
+     Total: 11.7158s (11.6439 cpu) [214]
+Discovering vector 217/300
+     Phase-: 0.194742s (0.194533 cpu) [1]
+     Total: 11.9105s (11.8385 cpu) [215]
+800000 tests
+Discovering vector 218/300
+     Phase-: 0.32865s (0.328103 cpu) [1]
+     Total: 12.2392s (12.1666 cpu) [216]
+Discovering vector 219/300
+     Phase-: 0.37943s (0.36913 cpu) [1]
+     Total: 12.6186s (12.5357 cpu) [217]
+Discovering vector 220/300
+     Phase-: 0.046314s (0.046278 cpu) [1]
+     Total: 12.6649s (12.582 cpu) [218]
+Discovering vector 221/300
+     Phase-: 0.207653s (0.207629 cpu) [1]
+     Total: 12.8726s (12.7896 cpu) [219]
+Discovering vector 222/300
+     Phase-: 0.105046s (0.104945 cpu) [1]
+     Total: 12.9776s (12.8945 cpu) [220]
+Discovering vector 223/300
+     Phase-: 0.673634s (0.662699 cpu) [1]
+     Total: 13.6512s (13.5572 cpu) [221]
+Discovering vector 224/300
+     Phase-: 0.382154s (0.381959 cpu) [1]
+     Total: 14.0334s (13.9392 cpu) [222]
+Discovering vector 225/300
+     Phase-: 0.427058s (0.417184 cpu) [1]
+     Total: 14.4604s (14.3564 cpu) [223]
+Discovering vector 226/300
+     Phase-: 0.166261s (0.166154 cpu) [1]
+     Total: 14.6267s (14.5225 cpu) [224]
+Discovering vector 227/300
+     Phase-: 0.0723941s (0.072387 cpu) [1]
+     Total: 14.6991s (14.5949 cpu) [225]
+Discovering vector 228/300
+     Phase-: 0.748023s (0.74717 cpu) [1]
+     Total: 15.4471s (15.3421 cpu) [226]
+Discovering vector 229/300
+     Phase-: 0.142471s (0.140243 cpu) [1]
+     Total: 15.5896s (15.4823 cpu) [227]
+Discovering vector 230/300
+     Phase-: 0.665871s (0.664739 cpu) [1]
+     Total: 16.2555s (16.1471 cpu) [228]
+Discovering vector 231/300
+     Phase-: 0.369982s (0.356695 cpu) [1]
+     Total: 16.6254s (16.5038 cpu) [229]
+Discovering vector 232/300
+     Phase-: 0.142866s (0.140656 cpu) [1]
+     Total: 16.7683s (16.6444 cpu) [230]
+Discovering vector 233/300
+     Phase-: 0.088017s (0.086815 cpu) [1]
+     Total: 16.8563s (16.7312 cpu) [231]
+Discovering vector 234/300
+     Phase-: 0.754747s (0.744062 cpu) [1]
+     Total: 17.6111s (17.4753 cpu) [232]
+Discovering vector 235/300
+     Phase-: 0.463416s (0.457453 cpu) [1]
+     Total: 18.0745s (17.9328 cpu) [233]
+Discovering vector 236/300
+     Phase-: 0.697006s (0.660011 cpu) [1]
+     Total: 18.7715s (18.5928 cpu) [234]
+Discovering vector 237/300
+     Phase-: 0.434268s (0.433279 cpu) [1]
+     Total: 19.2058s (19.026 cpu) [235]
+Discovering vector 238/300
+     Phase-: 0.165405s (0.165352 cpu) [1]
+     Total: 19.3712s (19.1914 cpu) [236]
+Discovering vector 239/300
+     Phase-: 0.257064s (0.256827 cpu) [1]
+     Total: 19.6282s (19.4482 cpu) [237]
+Discovering vector 240/300
+     Phase-: 0.531477s (0.530156 cpu) [1]
+     Total: 20.1597s (19.9784 cpu) [238]
+Discovering vector 241/300
+     Phase-: 0.11598s (0.115927 cpu) [1]
+     Total: 20.2757s (20.0943 cpu) [239]
+Discovering vector 242/300
+     Phase-: 0.102054s (0.100776 cpu) [1]
+     Total: 20.3777s (20.1951 cpu) [240]
+Discovering vector 243/300
+     Phase-: 0.681977s (0.673228 cpu) [1]
+     Total: 21.0597s (20.8683 cpu) [241]
+Discovering vector 244/300
+     Phase-: 0.490624s (0.490223 cpu) [1]
+     Total: 21.5503s (21.3585 cpu) [242]
+Discovering vector 245/300
+     Phase-: 0.314936s (0.31461 cpu) [1]
+     Total: 21.8653s (21.6731 cpu) [243]
+Discovering vector 246/300
+     Phase-: 0.158753s (0.158549 cpu) [1]
+     Total: 22.024s (21.8317 cpu) [244]
+Discovering vector 247/300
+     Phase-: 0.395758s (0.387419 cpu) [1]
+     Total: 22.4198s (22.2191 cpu) [245]
+Discovering vector 248/300
+     Phase-: 0.269344s (0.266971 cpu) [1]
+     Total: 22.6891s (22.4861 cpu) [246]
+Discovering vector 249/300
+     Phase-: 1.1516s (1.14063 cpu) [1]
+     Total: 23.8407s (23.6267 cpu) [247]
+Discovering vector 250/300
+     Phase-: 0.122141s (0.115968 cpu) [1]
+     Total: 23.9629s (23.7427 cpu) [248]
+Discovering vector 251/300
+     Phase-: 0.299693s (0.29857 cpu) [1]
+     Total: 24.2626s (24.0412 cpu) [249]
+Discovering vector 252/300
+     Phase-: 0.320388s (0.310749 cpu) [1]
+     Total: 24.583s (24.352 cpu) [250]
+Discovering vector 253/300
+     Phase-: 0.364493s (0.364263 cpu) [1]
+     Total: 24.9475s (24.7163 cpu) [251]
+Discovering vector 254/300
+     Phase-: 1.13677s (1.1359 cpu) [1]
+     Total: 26.0842s (25.8522 cpu) [252]
+Discovering vector 255/300
+     Phase-: 0.139429s (0.139287 cpu) [1]
+     Total: 26.2237s (25.9914 cpu) [253]
+Discovering vector 256/300
+     Phase-: 0.107807s (0.107771 cpu) [1]
+     Total: 26.3315s (26.0992 cpu) [254]
+Discovering vector 257/300
+     Phase-: 0.560718s (0.537633 cpu) [1]
+     Total: 26.8922s (26.6368 cpu) [255]
+Discovering vector 258/300
+     Phase-: 0.663812s (0.663273 cpu) [1]
+     Total: 27.556s (27.3001 cpu) [256]
+Discovering vector 259/300
+     Phase-: 0.198577s (0.198424 cpu) [1]
+     Total: 27.7546s (27.4985 cpu) [257]
+Discovering vector 260/300
+     Phase-: 0.285944s (0.280834 cpu) [1]
+     Total: 28.0405s (27.7794 cpu) [258]
+Discovering vector 261/300
+     Phase-: 0.122569s (0.121576 cpu) [1]
+     Total: 28.1631s (27.901 cpu) [259]
+Discovering vector 262/300
+     Phase-: 1.3954s (1.38418 cpu) [1]
+     Total: 29.5585s (29.2851 cpu) [260]
+Discovering vector 263/300
+     Phase-: 0.162413s (0.160617 cpu) [1]
+     Total: 29.7209s (29.4457 cpu) [261]
+Discovering vector 264/300
+     Phase-: 1.42836s (1.40242 cpu) [1]
+     Total: 31.1492s (30.8482 cpu) [262]
+Discovering vector 265/300
+     Phase-: 0.190593s (0.188775 cpu) [1]
+     Total: 31.3398s (31.0369 cpu) [263]
+Discovering vector 266/300
+     Phase-: 0.662676s (0.655431 cpu) [1]
+     Total: 32.0025s (31.6924 cpu) [264]
+Discovering vector 267/300
+     Phase-: 0.294832s (0.290808 cpu) [1]
+     Total: 32.2973s (31.9832 cpu) [265]
+Discovering vector 268/300
+     Phase-: 0.203635s (0.191849 cpu) [1]
+     Total: 32.501s (32.175 cpu) [266]
+Discovering vector 269/300
+     Phase-: 0.434342s (0.432429 cpu) [1]
+     Total: 32.9353s (32.6075 cpu) [267]
+Discovering vector 270/300
+     Phase-: 0.161806s (0.161481 cpu) [1]
+     Total: 33.0971s (32.7689 cpu) [268]
+Discovering vector 271/300
+     Phase-: 0.192335s (0.192263 cpu) [1]
+     Total: 33.2895s (32.9612 cpu) [269]
+Discovering vector 272/300
+     Phase-: 3.0221s (3.00043 cpu) [1]
+     Total: 36.3116s (35.9616 cpu) [270]
+Discovering vector 273/300
+     Phase-: 0.214369s (0.203898 cpu) [1]
+     Total: 36.5259s (36.1655 cpu) [271]
+Discovering vector 274/300
+     Phase-: 0.37373s (0.373132 cpu) [1]
+     Total: 36.8997s (36.5387 cpu) [272]
+Discovering vector 275/300
+     Phase-: 0.248631s (0.247685 cpu) [1]
+     Total: 37.1483s (36.7864 cpu) [273]
+1600000 tests
+Discovering vector 276/300
+     Phase-: 0.237173s (0.236811 cpu) [1]
+     Total: 37.3855s (37.0232 cpu) [274]
+Discovering vector 277/300
+     Phase-: 2.15223s (2.13842 cpu) [1]
+     Total: 39.5377s (39.1616 cpu) [275]
+Discovering vector 278/300
+     Phase-: 1.39556s (1.37929 cpu) [1]
+     Total: 40.9333s (40.5409 cpu) [276]
+Discovering vector 279/300
+     Phase-: 0.189374s (0.188779 cpu) [1]
+     Total: 41.1226s (40.7297 cpu) [277]
+Discovering vector 280/300
+     Phase-: 0.332145s (0.331028 cpu) [1]
+     Total: 41.4548s (41.0607 cpu) [278]
+Discovering vector 281/300
+     Phase-: 2.96654s (2.93441 cpu) [1]
+     Total: 44.4213s (43.9951 cpu) [279]
+Discovering vector 282/300
+     Phase-: 0.134874s (0.133371 cpu) [1]
+     Total: 44.5562s (44.1285 cpu) [280]
+Discovering vector 283/300
+     Phase-: 0.291309s (0.290314 cpu) [1]
+     Total: 44.8475s (44.4188 cpu) [281]
+Discovering vector 284/300
+     Phase-: 1.04433s (1.04092 cpu) [1]
+     Total: 45.8918s (45.4597 cpu) [282]
+Discovering vector 285/300
+     Phase-: 0.438649s (0.437187 cpu) [1]
+     Total: 46.3305s (45.8969 cpu) [283]
+Discovering vector 286/300
+     Phase-: 0.521239s (0.509561 cpu) [1]
+     Total: 46.8517s (46.4064 cpu) [284]
+Discovering vector 287/300
+     Phase-: 0.474103s (0.472438 cpu) [1]
+     Total: 47.3258s (46.8789 cpu) [285]
+Discovering vector 288/300
+     Phase-: 0.124359s (0.124054 cpu) [1]
+     Total: 47.4502s (47.0029 cpu) [286]
+Discovering vector 289/300
+     Phase-: 2.45636s (2.40922 cpu) [1]
+     Total: 49.9065s (49.4122 cpu) [287]
+Discovering vector 290/300
+     Phase-: 0.501999s (0.493018 cpu) [1]
+     Total: 50.4085s (49.9052 cpu) [288]
+Discovering vector 291/300
+     Phase-: 0.222883s (0.217805 cpu) [1]
+     Total: 50.6314s (50.123 cpu) [289]
+Discovering vector 292/300
+     Phase-: 1.2236s (1.2217 cpu) [1]
+     Total: 51.855s (51.3447 cpu) [290]
+Discovering vector 293/300
+     Phase-: 0.482666s (0.480898 cpu) [1]
+     Total: 52.3377s (51.8256 cpu) [291]
+Discovering vector 294/300
+     Phase-: 0.163277s (0.153191 cpu) [1]
+     Total: 52.501s (51.9788 cpu) [292]
+Discovering vector 295/300
+     Phase-: 2.59574s (2.57961 cpu) [1]
+     Total: 55.0967s (54.5584 cpu) [293]
+Discovering vector 296/300
+     Phase-: 0.89123s (0.888737 cpu) [1]
+     Total: 55.9879s (55.4471 cpu) [294]
+Discovering vector 297/300
+     Phase-: 0.623327s (0.613043 cpu) [1]
+     Total: 56.6113s (56.0602 cpu) [295]
+Discovering vector 298/300
+     Phase-: 0.330841s (0.330231 cpu) [1]
+     Total: 56.9421s (56.3904 cpu) [296]
+Discovering vector 299/300
+     Phase-: 0.756787s (0.735683 cpu) [1]
+     Total: 57.6989s (57.1261 cpu) [297]
+Discovering vector 300/300
+     Phase-: 3.70906s (3.63095 cpu) [1]
+     Total: 61.408s (60.757 cpu) [298]
+
+     Phase-: 1.07026s (1.03473 cpu) [1]
+     Total: 62.4782s (61.7918 cpu) [299]
+
+Testing reduction
+n = 300
+d = 300
+(Householder) delta is about 9.900400053e-1
+(Householder) ||b_1|| is 9.661054591e8
+(Householder) Vol(L) is about 4.460162448e1866
+eta : 4.999902736e-1     theta : 1.000000000e-5    alpha : 1.162444084
+Seems to be reduced (up to size-reduction)
+
+
+.. log 2 Frobenius norm cond: 41.2108
+.. Average diagonal ratio: 1.04156
+.. Max diagonal ratio: 1.15786
+.. First vector quality: 1.02143
+
+310
+--------------  HLLL
+
+Discovering vector 3/310
+     Phase-: 6.19888e-06s (5e-06 cpu) [1]
+     Total: 6.19888e-06s (5e-06 cpu) [1]
+Discovering vector 4/310
+     Phase-: 1.09673e-05s (9e-06 cpu) [1]
+     Total: 1.71661e-05s (1.4e-05 cpu) [2]
+Discovering vector 5/310
+     Phase-: 9.05991e-06s (8e-06 cpu) [1]
+     Total: 2.6226e-05s (2.2e-05 cpu) [3]
+Discovering vector 6/310
+     Phase-: 2.31266e-05s (2.3e-05 cpu) [1]
+     Total: 4.93526e-05s (4.5e-05 cpu) [4]
+Discovering vector 7/310
+     Phase-: 1.3113e-05s (1.3e-05 cpu) [1]
+     Total: 6.24657e-05s (5.8e-05 cpu) [5]
+Discovering vector 8/310
+     Phase-: 2.09808e-05s (2e-05 cpu) [1]
+     Total: 8.34465e-05s (7.8e-05 cpu) [6]
+Discovering vector 9/310
+     Phase-: 5.00679e-05s (5e-05 cpu) [1]
+     Total: 0.000133514s (0.000128 cpu) [7]
+Discovering vector 10/310
+     Phase-: 2.7895e-05s (2.7e-05 cpu) [1]
+     Total: 0.000161409s (0.000155 cpu) [8]
+Discovering vector 11/310
+     Phase-: 3.79086e-05s (3.8e-05 cpu) [1]
+     Total: 0.000199318s (0.000193 cpu) [9]
+Discovering vector 12/310
+     Phase-: 4.50611e-05s (4.4e-05 cpu) [1]
+     Total: 0.000244379s (0.000237 cpu) [10]
+Discovering vector 13/310
+     Phase-: 5.22137e-05s (5.1e-05 cpu) [1]
+     Total: 0.000296593s (0.000288 cpu) [11]
+Discovering vector 14/310
+     Phase-: 3.8147e-05s (3.7e-05 cpu) [1]
+     Total: 0.00033474s (0.000325 cpu) [12]
+Discovering vector 15/310
+     Phase-: 7.60555e-05s (7.4e-05 cpu) [1]
+     Total: 0.000410795s (0.000399 cpu) [13]
+Discovering vector 16/310
+     Phase-: 6.19888e-05s (6.1e-05 cpu) [1]
+     Total: 0.000472784s (0.00046 cpu) [14]
+Discovering vector 17/310
+     Phase-: 6.69956e-05s (6.6e-05 cpu) [1]
+     Total: 0.00053978s (0.000526 cpu) [15]
+Discovering vector 18/310
+     Phase-: 7.39098e-05s (7.4e-05 cpu) [1]
+     Total: 0.000613689s (0.0006 cpu) [16]
+Discovering vector 19/310
+     Phase-: 0.000133991s (0.000133 cpu) [1]
+     Total: 0.000747681s (0.000733 cpu) [17]
+Discovering vector 20/310
+     Phase-: 0.000179052s (0.000179 cpu) [1]
+     Total: 0.000926733s (0.000912 cpu) [18]
+Discovering vector 21/310
+     Phase-: 0.000111103s (0.000105 cpu) [1]
+     Total: 0.00103784s (0.001017 cpu) [19]
+Discovering vector 22/310
+     Phase-: 7.39098e-05s (7.4e-05 cpu) [1]
+     Total: 0.00111175s (0.001091 cpu) [20]
+Discovering vector 23/310
+     Phase-: 3.8147e-05s (3.7e-05 cpu) [1]
+     Total: 0.00114989s (0.001128 cpu) [21]
+Discovering vector 24/310
+     Phase-: 0.000306845s (0.000306 cpu) [1]
+     Total: 0.00145674s (0.001434 cpu) [22]
+Discovering vector 25/310
+     Phase-: 0.000245094s (0.000243 cpu) [1]
+     Total: 0.00170183s (0.001677 cpu) [23]
+Discovering vector 26/310
+     Phase-: 0.000282049s (0.000282 cpu) [1]
+     Total: 0.00198388s (0.001959 cpu) [24]
+Discovering vector 27/310
+     Phase-: 0.000298023s (0.000298 cpu) [1]
+     Total: 0.0022819s (0.002257 cpu) [25]
+Discovering vector 28/310
+     Phase-: 0.000291109s (0.00029 cpu) [1]
+     Total: 0.00257301s (0.002547 cpu) [26]
+Discovering vector 29/310
+     Phase-: 0.000180006s (0.00018 cpu) [1]
+     Total: 0.00275302s (0.002727 cpu) [27]
+Discovering vector 30/310
+     Phase-: 0.000183105s (0.000181 cpu) [1]
+     Total: 0.00293612s (0.002908 cpu) [28]
+Discovering vector 31/310
+     Phase-: 0.000201941s (0.000201 cpu) [1]
+     Total: 0.00313807s (0.003109 cpu) [29]
+Discovering vector 32/310
+     Phase-: 0.000464201s (0.000463 cpu) [1]
+     Total: 0.00360227s (0.003572 cpu) [30]
+Discovering vector 33/310
+     Phase-: 0.000319004s (0.000318 cpu) [1]
+     Total: 0.00392127s (0.00389 cpu) [31]
+Discovering vector 34/310
+     Phase-: 0.000298023s (0.000298 cpu) [1]
+     Total: 0.00421929s (0.004188 cpu) [32]
+Discovering vector 35/310
+     Phase-: 0.000249863s (0.000249 cpu) [1]
+     Total: 0.00446916s (0.004437 cpu) [33]
+Discovering vector 36/310
+     Phase-: 0.000748873s (0.000614 cpu) [1]
+     Total: 0.00521803s (0.005051 cpu) [34]
+Discovering vector 37/310
+     Phase-: 0.000327826s (0.000328 cpu) [1]
+     Total: 0.00554585s (0.005379 cpu) [35]
+Discovering vector 38/310
+     Phase-: 0.000844955s (0.000844 cpu) [1]
+     Total: 0.00639081s (0.006223 cpu) [36]
+Discovering vector 39/310
+     Phase-: 0.000568151s (0.000565 cpu) [1]
+     Total: 0.00695896s (0.006788 cpu) [37]
+Discovering vector 40/310
+     Phase-: 0.000468969s (0.000469 cpu) [1]
+     Total: 0.00742793s (0.007257 cpu) [38]
+Discovering vector 41/310
+     Phase-: 0.00172591s (0.001725 cpu) [1]
+     Total: 0.00915384s (0.008982 cpu) [39]
+Discovering vector 42/310
+     Phase-: 0.000671148s (0.00067 cpu) [1]
+     Total: 0.00982499s (0.009652 cpu) [40]
+Discovering vector 43/310
+     Phase-: 0.000298977s (0.000298 cpu) [1]
+     Total: 0.010124s (0.00995 cpu) [41]
+Discovering vector 44/310
+     Phase-: 0.000384092s (0.000382 cpu) [1]
+     Total: 0.0105081s (0.010332 cpu) [42]
+Discovering vector 45/310
+     Phase-: 0.00306201s (0.00304 cpu) [1]
+     Total: 0.0135701s (0.013372 cpu) [43]
+Discovering vector 46/310
+     Phase-: 0.000525951s (0.000525 cpu) [1]
+     Total: 0.014096s (0.013897 cpu) [44]
+Discovering vector 47/310
+     Phase-: 0.000317097s (0.000317 cpu) [1]
+     Total: 0.0144131s (0.014214 cpu) [45]
+Discovering vector 48/310
+     Phase-: 0.00216484s (0.00216 cpu) [1]
+     Total: 0.016578s (0.016374 cpu) [46]
+Discovering vector 49/310
+     Phase-: 0.000715017s (0.000715 cpu) [1]
+     Total: 0.017293s (0.017089 cpu) [47]
+Discovering vector 50/310
+     Phase-: 0.0018239s (0.001823 cpu) [1]
+     Total: 0.0191169s (0.018912 cpu) [48]
+Discovering vector 51/310
+     Phase-: 0.000682831s (0.000682 cpu) [1]
+     Total: 0.0197997s (0.019594 cpu) [49]
+Discovering vector 52/310
+     Phase-: 0.00212598s (0.002102 cpu) [1]
+     Total: 0.0219257s (0.021696 cpu) [50]
+Discovering vector 53/310
+     Phase-: 0.00121307s (0.001211 cpu) [1]
+     Total: 0.0231388s (0.022907 cpu) [51]
+Discovering vector 54/310
+     Phase-: 0.00262094s (0.002617 cpu) [1]
+     Total: 0.0257597s (0.025524 cpu) [52]
+Discovering vector 55/310
+     Phase-: 0.00069809s (0.000698 cpu) [1]
+     Total: 0.0264578s (0.026222 cpu) [53]
+Discovering vector 56/310
+     Phase-: 0.000871181s (0.00087 cpu) [1]
+     Total: 0.027329s (0.027092 cpu) [54]
+Discovering vector 57/310
+     Phase-: 0.0047369s (0.004711 cpu) [1]
+     Total: 0.0320659s (0.031803 cpu) [55]
+Discovering vector 58/310
+     Phase-: 0.00119901s (0.001198 cpu) [1]
+     Total: 0.0332649s (0.033001 cpu) [56]
+Discovering vector 59/310
+     Phase-: 0.000652075s (0.000651 cpu) [1]
+     Total: 0.033917s (0.033652 cpu) [57]
+Discovering vector 60/310
+     Phase-: 0.000653028s (0.000652 cpu) [1]
+     Total: 0.03457s (0.034304 cpu) [58]
+Discovering vector 61/310
+     Phase-: 0.0068059s (0.006704 cpu) [1]
+     Total: 0.0413759s (0.041008 cpu) [59]
+Discovering vector 62/310
+     Phase-: 0.000686884s (0.000687 cpu) [1]
+     Total: 0.0420628s (0.041695 cpu) [60]
+Discovering vector 63/310
+     Phase-: 0.0104229s (0.010286 cpu) [1]
+     Total: 0.0524857s (0.051981 cpu) [61]
+Discovering vector 64/310
+     Phase-: 0.00227094s (0.002224 cpu) [1]
+     Total: 0.0547566s (0.054205 cpu) [62]
+Discovering vector 65/310
+     Phase-: 0.00201201s (0.002012 cpu) [1]
+     Total: 0.0567687s (0.056217 cpu) [63]
+Discovering vector 66/310
+     Phase-: 0.000986099s (0.000986 cpu) [1]
+     Total: 0.0577548s (0.057203 cpu) [64]
+Discovering vector 67/310
+     Phase-: 0.00568104s (0.005646 cpu) [1]
+     Total: 0.0634358s (0.062849 cpu) [65]
+Discovering vector 68/310
+     Phase-: 0.00131893s (0.001314 cpu) [1]
+     Total: 0.0647547s (0.064163 cpu) [66]
+Discovering vector 69/310
+     Phase-: 0.00164795s (0.001647 cpu) [1]
+     Total: 0.0664027s (0.06581 cpu) [67]
+Discovering vector 70/310
+     Phase-: 0.0068481s (0.006766 cpu) [1]
+     Total: 0.0732508s (0.072576 cpu) [68]
+Discovering vector 71/310
+     Phase-: 0.005548s (0.005495 cpu) [1]
+     Total: 0.0787988s (0.078071 cpu) [69]
+Discovering vector 72/310
+     Phase-: 0.000880003s (0.000878 cpu) [1]
+     Total: 0.0796788s (0.078949 cpu) [70]
+Discovering vector 73/310
+     Phase-: 0.00192189s (0.001919 cpu) [1]
+     Total: 0.0816007s (0.080868 cpu) [71]
+Discovering vector 74/310
+     Phase-: 0.017839s (0.017692 cpu) [1]
+     Total: 0.0994396s (0.09856 cpu) [72]
+Discovering vector 75/310
+     Phase-: 0.00285792s (0.002823 cpu) [1]
+     Total: 0.102298s (0.101383 cpu) [73]
+Discovering vector 76/310
+     Phase-: 0.00428891s (0.004255 cpu) [1]
+     Total: 0.106586s (0.105638 cpu) [74]
+Discovering vector 77/310
+     Phase-: 0.00784922s (0.007812 cpu) [1]
+     Total: 0.114436s (0.11345 cpu) [75]
+Discovering vector 78/310
+     Phase-: 0.00145602s (0.001423 cpu) [1]
+     Total: 0.115892s (0.114873 cpu) [76]
+Discovering vector 79/310
+     Phase-: 0.00764012s (0.007577 cpu) [1]
+     Total: 0.123532s (0.12245 cpu) [77]
+Discovering vector 80/310
+     Phase-: 0.00247622s (0.002434 cpu) [1]
+     Total: 0.126008s (0.124884 cpu) [78]
+Discovering vector 81/310
+     Phase-: 0.00943303s (0.009392 cpu) [1]
+     Total: 0.135441s (0.134276 cpu) [79]
+Discovering vector 82/310
+     Phase-: 0.00544s (0.005379 cpu) [1]
+     Total: 0.140881s (0.139655 cpu) [80]
+Discovering vector 83/310
+     Phase-: 0.00448298s (0.00448 cpu) [1]
+     Total: 0.145364s (0.144135 cpu) [81]
+Discovering vector 84/310
+     Phase-: 0.00514579s (0.005079 cpu) [1]
+     Total: 0.15051s (0.149214 cpu) [82]
+Discovering vector 85/310
+     Phase-: 0.00392795s (0.003882 cpu) [1]
+     Total: 0.154438s (0.153096 cpu) [83]
+Discovering vector 86/310
+     Phase-: 0.0149772s (0.014878 cpu) [1]
+     Total: 0.169415s (0.167974 cpu) [84]
+Discovering vector 87/310
+     Phase-: 0.0152879s (0.015228 cpu) [1]
+     Total: 0.184703s (0.183202 cpu) [85]
+Discovering vector 88/310
+     Phase-: 0.00102401s (0.001023 cpu) [1]
+     Total: 0.185727s (0.184225 cpu) [86]
+Discovering vector 89/310
+     Phase-: 0.0217252s (0.021696 cpu) [1]
+     Total: 0.207452s (0.205921 cpu) [87]
+Discovering vector 90/310
+     Phase-: 0.00822496s (0.008223 cpu) [1]
+     Total: 0.215677s (0.214144 cpu) [88]
+Discovering vector 91/310
+     Phase-: 0.0167241s (0.016698 cpu) [1]
+     Total: 0.232401s (0.230842 cpu) [89]
+Discovering vector 92/310
+     Phase-: 0.00307608s (0.003077 cpu) [1]
+     Total: 0.235477s (0.233919 cpu) [90]
+Discovering vector 93/310
+     Phase-: 0.00212502s (0.002089 cpu) [1]
+     Total: 0.237602s (0.236008 cpu) [91]
+Discovering vector 94/310
+     Phase-: 0.00567198s (0.005671 cpu) [1]
+     Total: 0.243274s (0.241679 cpu) [92]
+Discovering vector 95/310
+     Phase-: 0.0324168s (0.032369 cpu) [1]
+     Total: 0.275691s (0.274048 cpu) [93]
+Discovering vector 96/310
+     Phase-: 0.00499701s (0.004994 cpu) [1]
+     Total: 0.280688s (0.279042 cpu) [94]
+Discovering vector 97/310
+     Phase-: 0.02158s (0.021458 cpu) [1]
+     Total: 0.302268s (0.3005 cpu) [95]
+Discovering vector 98/310
+     Phase-: 0.006459s (0.006431 cpu) [1]
+     Total: 0.308727s (0.306931 cpu) [96]
+Discovering vector 99/310
+     Phase-: 0.0125849s (0.012511 cpu) [1]
+     Total: 0.321312s (0.319442 cpu) [97]
+Discovering vector 100/310
+     Phase-: 0.00692701s (0.006885 cpu) [1]
+     Total: 0.328239s (0.326327 cpu) [98]
+Discovering vector 101/310
+     Phase-: 0.00940514s (0.009348 cpu) [1]
+     Total: 0.337644s (0.335675 cpu) [99]
+Discovering vector 102/310
+     Phase-: 0.00245714s (0.002425 cpu) [1]
+     Total: 0.340101s (0.3381 cpu) [100]
+Discovering vector 103/310
+     Phase-: 0.00520301s (0.004219 cpu) [1]
+     Total: 0.345304s (0.342319 cpu) [101]
+Discovering vector 104/310
+     Phase-: 0.076381s (0.074344 cpu) [1]
+     Total: 0.421685s (0.416663 cpu) [102]
+Discovering vector 105/310
+     Phase-: 0.00803518s (0.00799 cpu) [1]
+     Total: 0.42972s (0.424653 cpu) [103]
+Discovering vector 106/310
+     Phase-: 0.0072999s (0.007259 cpu) [1]
+     Total: 0.43702s (0.431912 cpu) [104]
+Discovering vector 107/310
+     Phase-: 0.0259461s (0.025872 cpu) [1]
+     Total: 0.462966s (0.457784 cpu) [105]
+Discovering vector 108/310
+     Phase-: 0.00668311s (0.006674 cpu) [1]
+     Total: 0.46965s (0.464458 cpu) [106]
+Discovering vector 109/310
+     Phase-: 0.00818777s (0.008186 cpu) [1]
+     Total: 0.477837s (0.472644 cpu) [107]
+Discovering vector 110/310
+     Phase-: 0.002841s (0.002841 cpu) [1]
+     Total: 0.480678s (0.475485 cpu) [108]
+Discovering vector 111/310
+     Phase-: 0.062681s (0.062641 cpu) [1]
+     Total: 0.543359s (0.538126 cpu) [109]
+Discovering vector 112/310
+     Phase-: 0.037601s (0.037597 cpu) [1]
+     Total: 0.58096s (0.575723 cpu) [110]
+Discovering vector 113/310
+     Phase-: 0.00656986s (0.006568 cpu) [1]
+     Total: 0.58753s (0.582291 cpu) [111]
+Discovering vector 114/310
+     Phase-: 0.0138149s (0.013814 cpu) [1]
+     Total: 0.601345s (0.596105 cpu) [112]
+Discovering vector 115/310
+     Phase-: 0.00660706s (0.006606 cpu) [1]
+     Total: 0.607952s (0.602711 cpu) [113]
+Discovering vector 116/310
+     Phase-: 0.00640893s (0.006404 cpu) [1]
+     Total: 0.614361s (0.609115 cpu) [114]
+Discovering vector 117/310
+     Phase-: 0.042804s (0.042786 cpu) [1]
+     Total: 0.657165s (0.651901 cpu) [115]
+Discovering vector 118/310
+     Phase-: 0.0338619s (0.033831 cpu) [1]
+     Total: 0.691027s (0.685732 cpu) [116]
+Discovering vector 119/310
+     Phase-: 0.0308211s (0.030792 cpu) [1]
+     Total: 0.721848s (0.716524 cpu) [117]
+Discovering vector 120/310
+     Phase-: 0.017956s (0.017952 cpu) [1]
+     Total: 0.739804s (0.734476 cpu) [118]
+Discovering vector 121/310
+     Phase-: 0.00811601s (0.00811 cpu) [1]
+     Total: 0.74792s (0.742586 cpu) [119]
+Discovering vector 122/310
+     Phase-: 0.047668s (0.047663 cpu) [1]
+     Total: 0.795588s (0.790249 cpu) [120]
+Discovering vector 123/310
+     Phase-: 0.0110071s (0.011003 cpu) [1]
+     Total: 0.806595s (0.801252 cpu) [121]
+Discovering vector 124/310
+     Phase-: 0.016166s (0.016156 cpu) [1]
+     Total: 0.822761s (0.817408 cpu) [122]
+Discovering vector 125/310
+     Phase-: 0.0207601s (0.020748 cpu) [1]
+     Total: 0.843521s (0.838156 cpu) [123]
+Discovering vector 126/310
+     Phase-: 0.00749707s (0.007494 cpu) [1]
+     Total: 0.851018s (0.84565 cpu) [124]
+Discovering vector 127/310
+     Phase-: 0.0127609s (0.012759 cpu) [1]
+     Total: 0.863779s (0.858409 cpu) [125]
+Discovering vector 128/310
+     Phase-: 0.00878811s (0.008695 cpu) [1]
+     Total: 0.872567s (0.867104 cpu) [126]
+Discovering vector 129/310
+     Phase-: 0.0993721s (0.099229 cpu) [1]
+     Total: 0.971939s (0.966333 cpu) [127]
+Discovering vector 130/310
+     Phase-: 0.0813329s (0.080798 cpu) [1]
+     Total: 1.05327s (1.04713 cpu) [128]
+Discovering vector 131/310
+     Phase-: 0.013356s (0.013288 cpu) [1]
+     Total: 1.06663s (1.06042 cpu) [129]
+Discovering vector 132/310
+     Phase-: 0.019789s (0.019538 cpu) [1]
+     Total: 1.08642s (1.07996 cpu) [130]
+Discovering vector 133/310
+     Phase-: 0.103935s (0.103658 cpu) [1]
+     Total: 1.19035s (1.18361 cpu) [131]
+Discovering vector 134/310
+     Phase-: 0.0109022s (0.010885 cpu) [1]
+     Total: 1.20125s (1.1945 cpu) [132]
+Discovering vector 135/310
+     Phase-: 0.0831871s (0.082641 cpu) [1]
+     Total: 1.28444s (1.27714 cpu) [133]
+Discovering vector 136/310
+     Phase-: 0.0250709s (0.024937 cpu) [1]
+     Total: 1.30951s (1.30208 cpu) [134]
+Discovering vector 137/310
+     Phase-: 0.0659339s (0.06571 cpu) [1]
+     Total: 1.37545s (1.36779 cpu) [135]
+Discovering vector 138/310
+     Phase-: 0.00548196s (0.005476 cpu) [1]
+     Total: 1.38093s (1.37326 cpu) [136]
+Discovering vector 139/310
+     Phase-: 0.029259s (0.029136 cpu) [1]
+     Total: 1.41019s (1.4024 cpu) [137]
+Discovering vector 140/310
+     Phase-: 0.0857589s (0.085083 cpu) [1]
+     Total: 1.49595s (1.48748 cpu) [138]
+Discovering vector 141/310
+     Phase-: 0.0615571s (0.051701 cpu) [1]
+     Total: 1.5575s (1.53918 cpu) [139]
+Discovering vector 142/310
+     Phase-: 0.0184882s (0.017968 cpu) [1]
+     Total: 1.57599s (1.55715 cpu) [140]
+Discovering vector 143/310
+     Phase-: 0.136102s (0.133897 cpu) [1]
+     Total: 1.71209s (1.69105 cpu) [141]
+Discovering vector 144/310
+     Phase-: 0.037097s (0.037004 cpu) [1]
+     Total: 1.74919s (1.72805 cpu) [142]
+Discovering vector 145/310
+     Phase-: 0.073308s (0.073296 cpu) [1]
+     Total: 1.8225s (1.80135 cpu) [143]
+Discovering vector 146/310
+     Phase-: 0.0631039s (0.062902 cpu) [1]
+     Total: 1.8856s (1.86425 cpu) [144]
+Discovering vector 147/310
+     Phase-: 0.067338s (0.06687 cpu) [1]
+     Total: 1.95294s (1.93112 cpu) [145]
+Discovering vector 148/310
+     Phase-: 0.00448704s (0.004419 cpu) [1]
+     Total: 1.95743s (1.93554 cpu) [146]
+Discovering vector 149/310
+     Phase-: 0.162531s (0.161295 cpu) [1]
+     Total: 2.11996s (2.09683 cpu) [147]
+Discovering vector 150/310
+     Phase-: 0.040323s (0.040046 cpu) [1]
+     Total: 2.16028s (2.13688 cpu) [148]
+Discovering vector 151/310
+     Phase-: 0.056251s (0.055877 cpu) [1]
+     Total: 2.21653s (2.19276 cpu) [149]
+Discovering vector 152/310
+     Phase-: 0.116888s (0.115976 cpu) [1]
+     Total: 2.33342s (2.30873 cpu) [150]
+Discovering vector 153/310
+     Phase-: 0.065393s (0.065112 cpu) [1]
+     Total: 2.39881s (2.37385 cpu) [151]
+Discovering vector 154/310
+     Phase-: 0.053154s (0.052935 cpu) [1]
+     Total: 2.45197s (2.42678 cpu) [152]
+Discovering vector 155/310
+     Phase-: 0.0232911s (0.023148 cpu) [1]
+     Total: 2.47526s (2.44993 cpu) [153]
+Discovering vector 156/310
+     Phase-: 0.125465s (0.124726 cpu) [1]
+     Total: 2.60072s (2.57465 cpu) [154]
+Discovering vector 157/310
+     Phase-: 0.022511s (0.022386 cpu) [1]
+     Total: 2.62323s (2.59704 cpu) [155]
+Discovering vector 158/310
+     Phase-: 0.0802209s (0.079678 cpu) [1]
+     Total: 2.70346s (2.67672 cpu) [156]
+Discovering vector 159/310
+     Phase-: 0.0315061s (0.031426 cpu) [1]
+     Total: 2.73496s (2.70814 cpu) [157]
+Discovering vector 160/310
+     Phase-: 0.0304151s (0.030341 cpu) [1]
+     Total: 2.76538s (2.73849 cpu) [158]
+Discovering vector 161/310
+     Phase-: 0.251378s (0.251206 cpu) [1]
+     Total: 3.01675s (2.98969 cpu) [159]
+Discovering vector 162/310
+     Phase-: 0.0192461s (0.019232 cpu) [1]
+     Total: 3.036s (3.00892 cpu) [160]
+Discovering vector 163/310
+     Phase-: 0.0715821s (0.071567 cpu) [1]
+     Total: 3.10758s (3.08049 cpu) [161]
+Discovering vector 164/310
+     Phase-: 0.043788s (0.04365 cpu) [1]
+     Total: 3.15137s (3.12414 cpu) [162]
+Discovering vector 165/310
+     Phase-: 0.0657821s (0.065541 cpu) [1]
+     Total: 3.21715s (3.18968 cpu) [163]
+Discovering vector 166/310
+     Phase-: 0.285962s (0.282963 cpu) [1]
+     Total: 3.50311s (3.47264 cpu) [164]
+Discovering vector 167/310
+     Phase-: 0.134689s (0.125254 cpu) [1]
+     Total: 3.6378s (3.5979 cpu) [165]
+Discovering vector 168/310
+     Phase-: 0.144069s (0.14345 cpu) [1]
+     Total: 3.78187s (3.74135 cpu) [166]
+Discovering vector 169/310
+     Phase-: 0.051471s (0.050963 cpu) [1]
+     Total: 3.83334s (3.79231 cpu) [167]
+Discovering vector 170/310
+     Phase-: 0.04005s (0.039931 cpu) [1]
+     Total: 3.87339s (3.83224 cpu) [168]
+Discovering vector 171/310
+     Phase-: 0.237165s (0.236299 cpu) [1]
+     Total: 4.11056s (4.06854 cpu) [169]
+Discovering vector 172/310
+     Phase-: 0.096853s (0.096395 cpu) [1]
+     Total: 4.20741s (4.16494 cpu) [170]
+Discovering vector 173/310
+     Phase-: 0.0451272s (0.044905 cpu) [1]
+     Total: 4.25254s (4.20984 cpu) [171]
+Discovering vector 174/310
+     Phase-: 0.281134s (0.280463 cpu) [1]
+     Total: 4.53367s (4.4903 cpu) [172]
+Discovering vector 175/310
+     Phase-: 0.0369341s (0.03697 cpu) [1]
+     Total: 4.57061s (4.52727 cpu) [173]
+Discovering vector 176/310
+     Phase-: 0.103017s (0.102962 cpu) [1]
+     Total: 4.67362s (4.63024 cpu) [174]
+Discovering vector 177/310
+     Phase-: 0.113425s (0.113411 cpu) [1]
+     Total: 4.78705s (4.74365 cpu) [175]
+Discovering vector 178/310
+     Phase-: 0.0297661s (0.029762 cpu) [1]
+     Total: 4.81681s (4.77341 cpu) [176]
+Discovering vector 179/310
+     Phase-: 0.11999s (0.117441 cpu) [1]
+     Total: 4.9368s (4.89085 cpu) [177]
+Discovering vector 180/310
+     Phase-: 0.0371251s (0.034897 cpu) [1]
+     Total: 4.97393s (4.92575 cpu) [178]
+Discovering vector 181/310
+     Phase-: 0.185567s (0.185372 cpu) [1]
+     Total: 5.1595s (5.11112 cpu) [179]
+Discovering vector 182/310
+     Phase-: 0.0789878s (0.07895 cpu) [1]
+     Total: 5.23848s (5.19007 cpu) [180]
+Discovering vector 183/310
+     Phase-: 0.215443s (0.215303 cpu) [1]
+     Total: 5.45393s (5.40537 cpu) [181]
+Discovering vector 184/310
+     Phase-: 0.03652s (0.036487 cpu) [1]
+     Total: 5.49045s (5.44186 cpu) [182]
+Discovering vector 185/310
+     Phase-: 0.325392s (0.309267 cpu) [1]
+     Total: 5.81584s (5.75113 cpu) [183]
+Discovering vector 186/310
+     Phase-: 0.05425s (0.054244 cpu) [1]
+     Total: 5.87009s (5.80537 cpu) [184]
+Discovering vector 187/310
+     Phase-: 0.070302s (0.064296 cpu) [1]
+     Total: 5.94039s (5.86967 cpu) [185]
+Discovering vector 188/310
+     Phase-: 0.214316s (0.214201 cpu) [1]
+     Total: 6.15471s (6.08387 cpu) [186]
+Discovering vector 189/310
+     Phase-: 0.313992s (0.313937 cpu) [1]
+     Total: 6.4687s (6.3978 cpu) [187]
+Discovering vector 190/310
+     Phase-: 0.0630651s (0.063042 cpu) [1]
+     Total: 6.53176s (6.46085 cpu) [188]
+Discovering vector 191/310
+     Phase-: 0.0664809s (0.06613 cpu) [1]
+     Total: 6.59825s (6.52698 cpu) [189]
+Discovering vector 192/310
+     Phase-: 0.19546s (0.19492 cpu) [1]
+     Total: 6.79371s (6.7219 cpu) [190]
+Discovering vector 193/310
+     Phase-: 0.0992799s (0.098642 cpu) [1]
+     Total: 6.89299s (6.82054 cpu) [191]
+Discovering vector 194/310
+     Phase-: 0.134738s (0.133887 cpu) [1]
+     Total: 7.02772s (6.95443 cpu) [192]
+Discovering vector 195/310
+     Phase-: 0.242327s (0.240847 cpu) [1]
+     Total: 7.27005s (7.19527 cpu) [193]
+Discovering vector 196/310
+     Phase-: 0.0479999s (0.047948 cpu) [1]
+     Total: 7.31805s (7.24322 cpu) [194]
+Discovering vector 197/310
+     Phase-: 0.0624411s (0.062361 cpu) [1]
+     Total: 7.38049s (7.30558 cpu) [195]
+Discovering vector 198/310
+     Phase-: 0.307194s (0.296736 cpu) [1]
+     Total: 7.68769s (7.60232 cpu) [196]
+Discovering vector 199/310
+     Phase-: 0.401539s (0.401464 cpu) [1]
+     Total: 8.08923s (8.00378 cpu) [197]
+Discovering vector 200/310
+     Phase-: 0.101992s (0.101961 cpu) [1]
+     Total: 8.19122s (8.10574 cpu) [198]
+Discovering vector 201/310
+     Phase-: 0.103706s (0.103633 cpu) [1]
+     Total: 8.29492s (8.20938 cpu) [199]
+Discovering vector 202/310
+     Phase-: 0.334636s (0.333041 cpu) [1]
+     Total: 8.62956s (8.54242 cpu) [200]
+Discovering vector 203/310
+     Phase-: 0.049958s (0.048482 cpu) [1]
+     Total: 8.67952s (8.5909 cpu) [201]
+Discovering vector 204/310
+     Phase-: 0.295289s (0.294993 cpu) [1]
+     Total: 8.97481s (8.88589 cpu) [202]
+Discovering vector 205/310
+     Phase-: 0.193328s (0.193218 cpu) [1]
+     Total: 9.16813s (9.07911 cpu) [203]
+Discovering vector 206/310
+     Phase-: 0.084877s (0.084817 cpu) [1]
+     Total: 9.25301s (9.16393 cpu) [204]
+Discovering vector 207/310
+     Phase-: 0.287276s (0.279665 cpu) [1]
+     Total: 9.54029s (9.44359 cpu) [205]
+Discovering vector 208/310
+     Phase-: 0.0799701s (0.077743 cpu) [1]
+     Total: 9.62026s (9.52133 cpu) [206]
+Discovering vector 209/310
+     Phase-: 0.119546s (0.119071 cpu) [1]
+     Total: 9.7398s (9.64041 cpu) [207]
+Discovering vector 210/310
+     Phase-: 0.530732s (0.527005 cpu) [1]
+     Total: 10.2705s (10.1674 cpu) [208]
+Discovering vector 211/310
+     Phase-: 0.049741s (0.049338 cpu) [1]
+     Total: 10.3203s (10.2167 cpu) [209]
+Discovering vector 212/310
+     Phase-: 0.659088s (0.654934 cpu) [1]
+     Total: 10.9794s (10.8717 cpu) [210]
+Discovering vector 213/310
+     Phase-: 0.57446s (0.562364 cpu) [1]
+     Total: 11.5538s (11.434 cpu) [211]
+Discovering vector 214/310
+     Phase-: 0.211181s (0.210462 cpu) [1]
+     Total: 11.765s (11.6445 cpu) [212]
+Discovering vector 215/310
+     Phase-: 0.104628s (0.103821 cpu) [1]
+     Total: 11.8696s (11.7483 cpu) [213]
+Discovering vector 216/310
+     Phase-: 0.0559061s (0.055862 cpu) [1]
+     Total: 11.9255s (11.8042 cpu) [214]
+Discovering vector 217/310
+     Phase-: 0.186143s (0.185237 cpu) [1]
+     Total: 12.1117s (11.9894 cpu) [215]
+Discovering vector 218/310
+     Phase-: 0.237399s (0.236181 cpu) [1]
+     Total: 12.3491s (12.2256 cpu) [216]
+Discovering vector 219/310
+     Phase-: 0.103955s (0.103718 cpu) [1]
+     Total: 12.453s (12.3293 cpu) [217]
+Discovering vector 220/310
+     Phase-: 0.0782111s (0.077904 cpu) [1]
+     Total: 12.5312s (12.4072 cpu) [218]
+800000 tests
+Discovering vector 221/310
+     Phase-: 0.232627s (0.232165 cpu) [1]
+     Total: 12.7639s (12.6394 cpu) [219]
+Discovering vector 222/310
+     Phase-: 0.124279s (0.124215 cpu) [1]
+     Total: 12.8882s (12.7636 cpu) [220]
+Discovering vector 223/310
+     Phase-: 0.949314s (0.93861 cpu) [1]
+     Total: 13.8375s (13.7022 cpu) [221]
+Discovering vector 224/310
+     Phase-: 0.240716s (0.240364 cpu) [1]
+     Total: 14.0782s (13.9426 cpu) [222]
+Discovering vector 225/310
+     Phase-: 0.154237s (0.151095 cpu) [1]
+     Total: 14.2324s (14.0937 cpu) [223]
+Discovering vector 226/310
+     Phase-: 0.058733s (0.058626 cpu) [1]
+     Total: 14.2912s (14.1523 cpu) [224]
+Discovering vector 227/310
+     Phase-: 0.102908s (0.10046 cpu) [1]
+     Total: 14.3941s (14.2528 cpu) [225]
+Discovering vector 228/310
+     Phase-: 0.865971s (0.860069 cpu) [1]
+     Total: 15.26s (15.1128 cpu) [226]
+Discovering vector 229/310
+     Phase-: 0.053138s (0.053071 cpu) [1]
+     Total: 15.3132s (15.1659 cpu) [227]
+Discovering vector 230/310
+     Phase-: 0.754906s (0.7175 cpu) [1]
+     Total: 16.0681s (15.8834 cpu) [228]
+Discovering vector 231/310
+     Phase-: 0.256s (0.255485 cpu) [1]
+     Total: 16.3241s (16.1389 cpu) [229]
+Discovering vector 232/310
+     Phase-: 0.472328s (0.460689 cpu) [1]
+     Total: 16.7964s (16.5996 cpu) [230]
+Discovering vector 233/310
+     Phase-: 0.155565s (0.155474 cpu) [1]
+     Total: 16.952s (16.7551 cpu) [231]
+Discovering vector 234/310
+     Phase-: 0.0743561s (0.073903 cpu) [1]
+     Total: 17.0263s (16.829 cpu) [232]
+Discovering vector 235/310
+     Phase-: 0.657398s (0.634618 cpu) [1]
+     Total: 17.6837s (17.4636 cpu) [233]
+Discovering vector 236/310
+     Phase-: 0.261177s (0.242769 cpu) [1]
+     Total: 17.9449s (17.7063 cpu) [234]
+Discovering vector 237/310
+     Phase-: 0.0820391s (0.081937 cpu) [1]
+     Total: 18.0269s (17.7883 cpu) [235]
+Discovering vector 238/310
+     Phase-: 0.0881121s (0.088104 cpu) [1]
+     Total: 18.1151s (17.8764 cpu) [236]
+Discovering vector 239/310
+     Phase-: 1.31775s (1.3039 cpu) [1]
+     Total: 19.4328s (19.1803 cpu) [237]
+Discovering vector 240/310
+     Phase-: 0.0372519s (0.037249 cpu) [1]
+     Total: 19.47s (19.2175 cpu) [238]
+Discovering vector 241/310
+     Phase-: 0.382057s (0.370127 cpu) [1]
+     Total: 19.8521s (19.5877 cpu) [239]
+Discovering vector 242/310
+     Phase-: 0.067205s (0.067184 cpu) [1]
+     Total: 19.9193s (19.6548 cpu) [240]
+Discovering vector 243/310
+     Phase-: 0.953003s (0.943141 cpu) [1]
+     Total: 20.8723s (20.598 cpu) [241]
+Discovering vector 244/310
+     Phase-: 0.22231s (0.222254 cpu) [1]
+     Total: 21.0946s (20.8202 cpu) [242]
+Discovering vector 245/310
+     Phase-: 0.21893s (0.218813 cpu) [1]
+     Total: 21.3136s (21.0391 cpu) [243]
+Discovering vector 246/310
+     Phase-: 0.360016s (0.330934 cpu) [1]
+     Total: 21.6736s (21.37 cpu) [244]
+Discovering vector 247/310
+     Phase-: 0.107592s (0.105938 cpu) [1]
+     Total: 21.7812s (21.4759 cpu) [245]
+Discovering vector 248/310
+     Phase-: 1.81547s (1.79008 cpu) [1]
+     Total: 23.5966s (23.266 cpu) [246]
+Discovering vector 249/310
+     Phase-: 0.103639s (0.103571 cpu) [1]
+     Total: 23.7003s (23.3696 cpu) [247]
+Discovering vector 250/310
+     Phase-: 0.192812s (0.192455 cpu) [1]
+     Total: 23.8931s (23.562 cpu) [248]
+Discovering vector 251/310
+     Phase-: 1.04328s (1.0242 cpu) [1]
+     Total: 24.9364s (24.5862 cpu) [249]
+Discovering vector 252/310
+     Phase-: 0.174411s (0.17378 cpu) [1]
+     Total: 25.1108s (24.76 cpu) [250]
+Discovering vector 253/310
+     Phase-: 0.163805s (0.163551 cpu) [1]
+     Total: 25.2746s (24.9236 cpu) [251]
+Discovering vector 254/310
+     Phase-: 0.376928s (0.365403 cpu) [1]
+     Total: 25.6515s (25.289 cpu) [252]
+Discovering vector 255/310
+     Phase-: 0.257388s (0.255467 cpu) [1]
+     Total: 25.9089s (25.5444 cpu) [253]
+Discovering vector 256/310
+     Phase-: 0.314209s (0.312883 cpu) [1]
+     Total: 26.2231s (25.8573 cpu) [254]
+Discovering vector 257/310
+     Phase-: 0.080164s (0.080014 cpu) [1]
+     Total: 26.3033s (25.9373 cpu) [255]
+Discovering vector 258/310
+     Phase-: 0.316777s (0.316224 cpu) [1]
+     Total: 26.62s (26.2535 cpu) [256]
+Discovering vector 259/310
+     Phase-: 0.144315s (0.144228 cpu) [1]
+     Total: 26.7644s (26.3978 cpu) [257]
+Discovering vector 260/310
+     Phase-: 1.86371s (1.85135 cpu) [1]
+     Total: 28.6281s (28.2491 cpu) [258]
+Discovering vector 261/310
+     Phase-: 0.122963s (0.122919 cpu) [1]
+     Total: 28.751s (28.372 cpu) [259]
+Discovering vector 262/310
+     Phase-: 0.128526s (0.128378 cpu) [1]
+     Total: 28.8796s (28.5004 cpu) [260]
+Discovering vector 263/310
+     Phase-: 1.85199s (1.83415 cpu) [1]
+     Total: 30.7315s (30.3346 cpu) [261]
+Discovering vector 264/310
+     Phase-: 0.104027s (0.103766 cpu) [1]
+     Total: 30.8356s (30.4383 cpu) [262]
+Discovering vector 265/310
+     Phase-: 0.71815s (0.706447 cpu) [1]
+     Total: 31.5537s (31.1448 cpu) [263]
+Discovering vector 266/310
+     Phase-: 0.152549s (0.152489 cpu) [1]
+     Total: 31.7063s (31.2973 cpu) [264]
+Discovering vector 267/310
+     Phase-: 0.855828s (0.855111 cpu) [1]
+     Total: 32.5621s (32.1524 cpu) [265]
+Discovering vector 268/310
+     Phase-: 1.23575s (1.22455 cpu) [1]
+     Total: 33.7978s (33.3769 cpu) [266]
+Discovering vector 269/310
+     Phase-: 0.0852408s (0.085109 cpu) [1]
+     Total: 33.8831s (33.462 cpu) [267]
+Discovering vector 270/310
+     Phase-: 0.798787s (0.7968 cpu) [1]
+     Total: 34.6819s (34.2588 cpu) [268]
+Discovering vector 271/310
+     Phase-: 0.52013s (0.519446 cpu) [1]
+     Total: 35.202s (34.7783 cpu) [269]
+Discovering vector 272/310
+     Phase-: 0.136574s (0.13649 cpu) [1]
+     Total: 35.3386s (34.9148 cpu) [270]
+1600000 tests
+Discovering vector 273/310
+     Phase-: 1.66286s (1.64772 cpu) [1]
+     Total: 37.0014s (36.5625 cpu) [271]
+Discovering vector 274/310
+     Phase-: 0.197971s (0.19785 cpu) [1]
+     Total: 37.1994s (36.7604 cpu) [272]
+Discovering vector 275/310
+     Phase-: 0.684199s (0.673912 cpu) [1]
+     Total: 37.8836s (37.4343 cpu) [273]
+Discovering vector 276/310
+     Phase-: 0.145167s (0.145153 cpu) [1]
+     Total: 38.0288s (37.5794 cpu) [274]
+Discovering vector 277/310
+     Phase-: 0.210602s (0.210509 cpu) [1]
+     Total: 38.2394s (37.7899 cpu) [275]
+Discovering vector 278/310
+     Phase-: 0.552971s (0.552875 cpu) [1]
+     Total: 38.7923s (38.3428 cpu) [276]
+Discovering vector 279/310
+     Phase-: 1.40764s (1.39622 cpu) [1]
+     Total: 40.2s (39.739 cpu) [277]
+Discovering vector 280/310
+     Phase-: 0.237374s (0.237182 cpu) [1]
+     Total: 40.4374s (39.9762 cpu) [278]
+Discovering vector 281/310
+     Phase-: 0.213057s (0.211646 cpu) [1]
+     Total: 40.6504s (40.1879 cpu) [279]
+Discovering vector 282/310
+     Phase-: 0.366234s (0.366162 cpu) [1]
+     Total: 41.0166s (40.554 cpu) [280]
+Discovering vector 283/310
+     Phase-: 1.23481s (1.22454 cpu) [1]
+     Total: 42.2515s (41.7786 cpu) [281]
+Discovering vector 284/310
+     Phase-: 0.409649s (0.408496 cpu) [1]
+     Total: 42.6611s (42.187 cpu) [282]
+Discovering vector 285/310
+     Phase-: 0.798345s (0.797915 cpu) [1]
+     Total: 43.4594s (42.985 cpu) [283]
+Discovering vector 286/310
+     Phase-: 0.405667s (0.39573 cpu) [1]
+     Total: 43.8651s (43.3807 cpu) [284]
+Discovering vector 287/310
+     Phase-: 2.07416s (2.06189 cpu) [1]
+     Total: 45.9393s (45.4426 cpu) [285]
+Discovering vector 288/310
+     Phase-: 0.236079s (0.236025 cpu) [1]
+     Total: 46.1754s (45.6786 cpu) [286]
+Discovering vector 289/310
+     Phase-: 0.211012s (0.211027 cpu) [1]
+     Total: 46.3864s (45.8896 cpu) [287]
+Discovering vector 290/310
+     Phase-: 2.35013s (2.32756 cpu) [1]
+     Total: 48.7365s (48.2172 cpu) [288]
+Discovering vector 291/310
+     Phase-: 0.147818s (0.147693 cpu) [1]
+     Total: 48.8843s (48.3649 cpu) [289]
+Discovering vector 292/310
+     Phase-: 0.162823s (0.162805 cpu) [1]
+     Total: 49.0471s (48.5277 cpu) [290]
+Discovering vector 293/310
+     Phase-: 1.24871s (1.21927 cpu) [1]
+     Total: 50.2959s (49.747 cpu) [291]
+Discovering vector 294/310
+     Phase-: 0.215198s (0.215146 cpu) [1]
+     Total: 50.5111s (49.9621 cpu) [292]
+Discovering vector 295/310
+     Phase-: 0.411354s (0.394727 cpu) [1]
+     Total: 50.9224s (50.3568 cpu) [293]
+Discovering vector 296/310
+     Phase-: 1.01111s (1.00092 cpu) [1]
+     Total: 51.9335s (51.3578 cpu) [294]
+Discovering vector 297/310
+     Phase-: 0.263957s (0.263346 cpu) [1]
+     Total: 52.1975s (51.6211 cpu) [295]
+Discovering vector 298/310
+     Phase-: 4.07497s (3.97767 cpu) [1]
+     Total: 56.2724s (55.5988 cpu) [296]
+Discovering vector 299/310
+     Phase-: 0.370247s (0.368333 cpu) [1]
+     Total: 56.6427s (55.9671 cpu) [297]
+Discovering vector 300/310
+     Phase-: 0.557662s (0.555354 cpu) [1]
+     Total: 57.2004s (56.5225 cpu) [298]
+Discovering vector 301/310
+     Phase-: 0.624306s (0.612069 cpu) [1]
+     Total: 57.8247s (57.1345 cpu) [299]
+Discovering vector 302/310
+     Phase-: 0.182419s (0.182223 cpu) [1]
+     Total: 58.0071s (57.3168 cpu) [300]
+Discovering vector 303/310
+     Phase-: 0.883643s (0.883155 cpu) [1]
+     Total: 58.8907s (58.1999 cpu) [301]
+Discovering vector 304/310
+     Phase-: 0.108615s (0.108604 cpu) [1]
+     Total: 58.9993s (58.3085 cpu) [302]
+Discovering vector 305/310
+     Phase-: 2.46254s (2.43788 cpu) [1]
+     Total: 61.4619s (60.7464 cpu) [303]
+Discovering vector 306/310
+     Phase-: 0.152897s (0.143114 cpu) [1]
+     Total: 61.6148s (60.8895 cpu) [304]
+Discovering vector 307/310
+     Phase-: 0.83509s (0.834486 cpu) [1]
+     Total: 62.4499s (61.724 cpu) [305]
+Discovering vector 308/310
+     Phase-: 1.55888s (1.54323 cpu) [1]
+     Total: 64.0088s (63.2672 cpu) [306]
+Discovering vector 309/310
+     Phase-: 2.38225s (2.37381 cpu) [1]
+     Total: 66.391s (65.641 cpu) [307]
+Discovering vector 310/310
+     Phase-: 0.404908s (0.404386 cpu) [1]
+     Total: 66.7959s (66.0454 cpu) [308]
+
+     Phase-: 0.516499s (0.515654 cpu) [1]
+     Total: 67.3124s (66.5611 cpu) [309]
+
+Testing reduction
+n = 310
+d = 310
+(Householder) delta is about 9.902709048e-1
+(Householder) ||b_1|| is 2.680567681e9
+(Householder) Vol(L) is about 1.270585326e1993
+eta : 5.000000041e-1     theta : 1.000000000e-5    alpha : 1.162270419
+Seems to be reduced (up to size-reduction)
+
+
+.. log 2 Frobenius norm cond: 42.1229
+.. Average diagonal ratio: 1.0427
+.. Max diagonal ratio: 1.1527
+.. First vector quality: 1.02252
+
+320
+--------------  HLLL
+
+Discovering vector 3/320
+     Phase-: 5.00679e-06s (5e-06 cpu) [1]
+     Total: 5.00679e-06s (5e-06 cpu) [1]
+Discovering vector 4/320
+     Phase-: 5.00679e-06s (5e-06 cpu) [1]
+     Total: 1.00136e-05s (1e-05 cpu) [2]
+Discovering vector 5/320
+     Phase-: 5.00679e-06s (5e-06 cpu) [1]
+     Total: 1.50204e-05s (1.5e-05 cpu) [3]
+Discovering vector 6/320
+     Phase-: 7.15256e-06s (6e-06 cpu) [1]
+     Total: 2.21729e-05s (2.1e-05 cpu) [4]
+Discovering vector 7/320
+     Phase-: 9.05991e-06s (9e-06 cpu) [1]
+     Total: 3.12328e-05s (3e-05 cpu) [5]
+Discovering vector 8/320
+     Phase-: 1.19209e-05s (1.2e-05 cpu) [1]
+     Total: 4.31538e-05s (4.2e-05 cpu) [6]
+Discovering vector 9/320
+     Phase-: 8.10623e-06s (7e-06 cpu) [1]
+     Total: 5.126e-05s (4.9e-05 cpu) [7]
+Discovering vector 10/320
+     Phase-: 1.40667e-05s (1.4e-05 cpu) [1]
+     Total: 6.53267e-05s (6.3e-05 cpu) [8]
+Discovering vector 11/320
+     Phase-: 1.09673e-05s (1.1e-05 cpu) [1]
+     Total: 7.62939e-05s (7.4e-05 cpu) [9]
+Discovering vector 12/320
+     Phase-: 1.69277e-05s (1.6e-05 cpu) [1]
+     Total: 9.32217e-05s (9e-05 cpu) [10]
+Discovering vector 13/320
+     Phase-: 4.69685e-05s (4.6e-05 cpu) [1]
+     Total: 0.00014019s (0.000136 cpu) [11]
+Discovering vector 14/320
+     Phase-: 3.91006e-05s (3.8e-05 cpu) [1]
+     Total: 0.000179291s (0.000174 cpu) [12]
+Discovering vector 15/320
+     Phase-: 4.41074e-05s (4.4e-05 cpu) [1]
+     Total: 0.000223398s (0.000218 cpu) [13]
+Discovering vector 16/320
+     Phase-: 3.69549e-05s (3.8e-05 cpu) [1]
+     Total: 0.000260353s (0.000256 cpu) [14]
+Discovering vector 17/320
+     Phase-: 7.58171e-05s (7.6e-05 cpu) [1]
+     Total: 0.00033617s (0.000332 cpu) [15]
+Discovering vector 18/320
+     Phase-: 4.50611e-05s (4.4e-05 cpu) [1]
+     Total: 0.000381231s (0.000376 cpu) [16]
+Discovering vector 19/320
+     Phase-: 6.38962e-05s (6.4e-05 cpu) [1]
+     Total: 0.000445127s (0.00044 cpu) [17]
+Discovering vector 20/320
+     Phase-: 8.10623e-05s (8.1e-05 cpu) [1]
+     Total: 0.00052619s (0.000521 cpu) [18]
+Discovering vector 21/320
+     Phase-: 7.48634e-05s (7.5e-05 cpu) [1]
+     Total: 0.000601053s (0.000596 cpu) [19]
+Discovering vector 22/320
+     Phase-: 7.82013e-05s (7.7e-05 cpu) [1]
+     Total: 0.000679255s (0.000673 cpu) [20]
+Discovering vector 23/320
+     Phase-: 5.00679e-05s (4.9e-05 cpu) [1]
+     Total: 0.000729322s (0.000722 cpu) [21]
+Discovering vector 24/320
+     Phase-: 0.000118017s (0.000117 cpu) [1]
+     Total: 0.00084734s (0.000839 cpu) [22]
+Discovering vector 25/320
+     Phase-: 0.000236988s (0.000236 cpu) [1]
+     Total: 0.00108433s (0.001075 cpu) [23]
+Discovering vector 26/320
+     Phase-: 0.000205994s (0.000206 cpu) [1]
+     Total: 0.00129032s (0.001281 cpu) [24]
+Discovering vector 27/320
+     Phase-: 0.000156879s (0.000156 cpu) [1]
+     Total: 0.0014472s (0.001437 cpu) [25]
+Discovering vector 28/320
+     Phase-: 0.000303984s (0.000303 cpu) [1]
+     Total: 0.00175118s (0.00174 cpu) [26]
+Discovering vector 29/320
+     Phase-: 0.000120163s (0.000119 cpu) [1]
+     Total: 0.00187135s (0.001859 cpu) [27]
+Discovering vector 30/320
+     Phase-: 7.29561e-05s (7.3e-05 cpu) [1]
+     Total: 0.0019443s (0.001932 cpu) [28]
+Discovering vector 31/320
+     Phase-: 0.000386s (0.000386 cpu) [1]
+     Total: 0.0023303s (0.002318 cpu) [29]
+Discovering vector 32/320
+     Phase-: 0.000183105s (0.000183 cpu) [1]
+     Total: 0.00251341s (0.002501 cpu) [30]
+Discovering vector 33/320
+     Phase-: 0.000494957s (0.000495 cpu) [1]
+     Total: 0.00300837s (0.002996 cpu) [31]
+Discovering vector 34/320
+     Phase-: 0.000181913s (0.000183 cpu) [1]
+     Total: 0.00319028s (0.003179 cpu) [32]
+Discovering vector 35/320
+     Phase-: 0.000520945s (0.000521 cpu) [1]
+     Total: 0.00371122s (0.0037 cpu) [33]
+Discovering vector 36/320
+     Phase-: 0.000342846s (0.000343 cpu) [1]
+     Total: 0.00405407s (0.004043 cpu) [34]
+Discovering vector 37/320
+     Phase-: 0.000722885s (0.000723 cpu) [1]
+     Total: 0.00477695s (0.004766 cpu) [35]
+Discovering vector 38/320
+     Phase-: 0.000543833s (0.000543 cpu) [1]
+     Total: 0.00532079s (0.005309 cpu) [36]
+Discovering vector 39/320
+     Phase-: 0.000254869s (0.000255 cpu) [1]
+     Total: 0.00557566s (0.005564 cpu) [37]
+Discovering vector 40/320
+     Phase-: 0.000778198s (0.000777 cpu) [1]
+     Total: 0.00635386s (0.006341 cpu) [38]
+Discovering vector 41/320
+     Phase-: 0.000144005s (0.000143 cpu) [1]
+     Total: 0.00649786s (0.006484 cpu) [39]
+Discovering vector 42/320
+     Phase-: 0.00106215s (0.001045 cpu) [1]
+     Total: 0.00756001s (0.007529 cpu) [40]
+Discovering vector 43/320
+     Phase-: 0.00105214s (0.001051 cpu) [1]
+     Total: 0.00861216s (0.00858 cpu) [41]
+Discovering vector 44/320
+     Phase-: 0.00161099s (0.001606 cpu) [1]
+     Total: 0.0102232s (0.010186 cpu) [42]
+Discovering vector 45/320
+     Phase-: 0.000509977s (0.000508 cpu) [1]
+     Total: 0.0107331s (0.010694 cpu) [43]
+Discovering vector 46/320
+     Phase-: 0.000380039s (0.000375 cpu) [1]
+     Total: 0.0111132s (0.011069 cpu) [44]
+Discovering vector 47/320
+     Phase-: 0.00174093s (0.001741 cpu) [1]
+     Total: 0.0128541s (0.01281 cpu) [45]
+Discovering vector 48/320
+     Phase-: 0.000937939s (0.000938 cpu) [1]
+     Total: 0.013792s (0.013748 cpu) [46]
+Discovering vector 49/320
+     Phase-: 0.000734091s (0.000732 cpu) [1]
+     Total: 0.0145261s (0.01448 cpu) [47]
+Discovering vector 50/320
+     Phase-: 0.000895023s (0.000881 cpu) [1]
+     Total: 0.0154212s (0.015361 cpu) [48]
+Discovering vector 51/320
+     Phase-: 0.00382805s (0.003827 cpu) [1]
+     Total: 0.0192492s (0.019188 cpu) [49]
+Discovering vector 52/320
+     Phase-: 0.00134778s (0.001348 cpu) [1]
+     Total: 0.020597s (0.020536 cpu) [50]
+Discovering vector 53/320
+     Phase-: 0.00282598s (0.002794 cpu) [1]
+     Total: 0.023423s (0.02333 cpu) [51]
+Discovering vector 54/320
+     Phase-: 0.000397921s (0.000397 cpu) [1]
+     Total: 0.0238209s (0.023727 cpu) [52]
+Discovering vector 55/320
+     Phase-: 0.00240183s (0.0024 cpu) [1]
+     Total: 0.0262227s (0.026127 cpu) [53]
+Discovering vector 56/320
+     Phase-: 0.000547886s (0.000544 cpu) [1]
+     Total: 0.0267706s (0.026671 cpu) [54]
+Discovering vector 57/320
+     Phase-: 0.00145888s (0.001459 cpu) [1]
+     Total: 0.0282295s (0.02813 cpu) [55]
+Discovering vector 58/320
+     Phase-: 0.00187397s (0.001874 cpu) [1]
+     Total: 0.0301034s (0.030004 cpu) [56]
+Discovering vector 59/320
+     Phase-: 0.00397706s (0.003968 cpu) [1]
+     Total: 0.0340805s (0.033972 cpu) [57]
+Discovering vector 60/320
+     Phase-: 0.00100803s (0.001007 cpu) [1]
+     Total: 0.0350885s (0.034979 cpu) [58]
+Discovering vector 61/320
+     Phase-: 0.00420499s (0.004146 cpu) [1]
+     Total: 0.0392935s (0.039125 cpu) [59]
+Discovering vector 62/320
+     Phase-: 0.00154805s (0.001544 cpu) [1]
+     Total: 0.0408416s (0.040669 cpu) [60]
+Discovering vector 63/320
+     Phase-: 0.00552607s (0.005518 cpu) [1]
+     Total: 0.0463676s (0.046187 cpu) [61]
+Discovering vector 64/320
+     Phase-: 0.0024929s (0.002483 cpu) [1]
+     Total: 0.0488605s (0.04867 cpu) [62]
+Discovering vector 65/320
+     Phase-: 0.00545382s (0.005449 cpu) [1]
+     Total: 0.0543144s (0.054119 cpu) [63]
+Discovering vector 66/320
+     Phase-: 0.00072813s (0.000713 cpu) [1]
+     Total: 0.0550425s (0.054832 cpu) [64]
+Discovering vector 67/320
+     Phase-: 0.00316095s (0.003158 cpu) [1]
+     Total: 0.0582035s (0.05799 cpu) [65]
+Discovering vector 68/320
+     Phase-: 0.00357509s (0.003572 cpu) [1]
+     Total: 0.0617785s (0.061562 cpu) [66]
+Discovering vector 69/320
+     Phase-: 0.00342298s (0.003402 cpu) [1]
+     Total: 0.0652015s (0.064964 cpu) [67]
+Discovering vector 70/320
+     Phase-: 0.000983953s (0.000983 cpu) [1]
+     Total: 0.0661855s (0.065947 cpu) [68]
+Discovering vector 71/320
+     Phase-: 0.00930405s (0.009291 cpu) [1]
+     Total: 0.0754895s (0.075238 cpu) [69]
+Discovering vector 72/320
+     Phase-: 0.00325012s (0.003224 cpu) [1]
+     Total: 0.0787396s (0.078462 cpu) [70]
+Discovering vector 73/320
+     Phase-: 0.00602388s (0.006019 cpu) [1]
+     Total: 0.0847635s (0.084481 cpu) [71]
+Discovering vector 74/320
+     Phase-: 0.00608206s (0.006075 cpu) [1]
+     Total: 0.0908456s (0.090556 cpu) [72]
+Discovering vector 75/320
+     Phase-: 0.00629187s (0.00628 cpu) [1]
+     Total: 0.0971375s (0.096836 cpu) [73]
+Discovering vector 76/320
+     Phase-: 0.00136709s (0.001367 cpu) [1]
+     Total: 0.0985045s (0.098203 cpu) [74]
+Discovering vector 77/320
+     Phase-: 0.00828695s (0.008253 cpu) [1]
+     Total: 0.106791s (0.106456 cpu) [75]
+Discovering vector 78/320
+     Phase-: 0.00909019s (0.009067 cpu) [1]
+     Total: 0.115882s (0.115523 cpu) [76]
+Discovering vector 79/320
+     Phase-: 0.0110331s (0.010996 cpu) [1]
+     Total: 0.126915s (0.126519 cpu) [77]
+Discovering vector 80/320
+     Phase-: 0.000905037s (0.000904 cpu) [1]
+     Total: 0.12782s (0.127423 cpu) [78]
+Discovering vector 81/320
+     Phase-: 0.011411s (0.01137 cpu) [1]
+     Total: 0.139231s (0.138793 cpu) [79]
+Discovering vector 82/320
+     Phase-: 0.0040369s (0.004036 cpu) [1]
+     Total: 0.143268s (0.142829 cpu) [80]
+Discovering vector 83/320
+     Phase-: 0.00879502s (0.008785 cpu) [1]
+     Total: 0.152063s (0.151614 cpu) [81]
+Discovering vector 84/320
+     Phase-: 0.009377s (0.009374 cpu) [1]
+     Total: 0.16144s (0.160988 cpu) [82]
+Discovering vector 85/320
+     Phase-: 0.00218415s (0.002183 cpu) [1]
+     Total: 0.163624s (0.163171 cpu) [83]
+Discovering vector 86/320
+     Phase-: 0.00736594s (0.007363 cpu) [1]
+     Total: 0.17099s (0.170534 cpu) [84]
+Discovering vector 87/320
+     Phase-: 0.000689983s (0.000689 cpu) [1]
+     Total: 0.17168s (0.171223 cpu) [85]
+Discovering vector 88/320
+     Phase-: 0.0035758s (0.003575 cpu) [1]
+     Total: 0.175256s (0.174798 cpu) [86]
+Discovering vector 89/320
+     Phase-: 0.0405691s (0.040493 cpu) [1]
+     Total: 0.215825s (0.215291 cpu) [87]
+Discovering vector 90/320
+     Phase-: 0.0047431s (0.004739 cpu) [1]
+     Total: 0.220568s (0.22003 cpu) [88]
+Discovering vector 91/320
+     Phase-: 0.015311s (0.015272 cpu) [1]
+     Total: 0.235879s (0.235302 cpu) [89]
+Discovering vector 92/320
+     Phase-: 0.00247598s (0.002465 cpu) [1]
+     Total: 0.238355s (0.237767 cpu) [90]
+Discovering vector 93/320
+     Phase-: 0.013047s (0.012985 cpu) [1]
+     Total: 0.251402s (0.250752 cpu) [91]
+Discovering vector 94/320
+     Phase-: 0.00338101s (0.003372 cpu) [1]
+     Total: 0.254783s (0.254124 cpu) [92]
+Discovering vector 95/320
+     Phase-: 0.0231221s (0.023038 cpu) [1]
+     Total: 0.277905s (0.277162 cpu) [93]
+Discovering vector 96/320
+     Phase-: 0.0114381s (0.011423 cpu) [1]
+     Total: 0.289343s (0.288585 cpu) [94]
+Discovering vector 97/320
+     Phase-: 0.003901s (0.003901 cpu) [1]
+     Total: 0.293244s (0.292486 cpu) [95]
+Discovering vector 98/320
+     Phase-: 0.00164223s (0.001622 cpu) [1]
+     Total: 0.294886s (0.294108 cpu) [96]
+Discovering vector 99/320
+     Phase-: 0.0121231s (0.012061 cpu) [1]
+     Total: 0.307009s (0.306169 cpu) [97]
+Discovering vector 100/320
+     Phase-: 0.010468s (0.010408 cpu) [1]
+     Total: 0.317477s (0.316577 cpu) [98]
+Discovering vector 101/320
+     Phase-: 0.00297713s (0.002965 cpu) [1]
+     Total: 0.320454s (0.319542 cpu) [99]
+Discovering vector 102/320
+     Phase-: 0.0356879s (0.035528 cpu) [1]
+     Total: 0.356142s (0.35507 cpu) [100]
+Discovering vector 103/320
+     Phase-: 0.0381501s (0.037527 cpu) [1]
+     Total: 0.394292s (0.392597 cpu) [101]
+Discovering vector 104/320
+     Phase-: 0.0146508s (0.014594 cpu) [1]
+     Total: 0.408943s (0.407191 cpu) [102]
+Discovering vector 105/320
+     Phase-: 0.00258303s (0.002582 cpu) [1]
+     Total: 0.411526s (0.409773 cpu) [103]
+Discovering vector 106/320
+     Phase-: 0.00308394s (0.003072 cpu) [1]
+     Total: 0.41461s (0.412845 cpu) [104]
+Discovering vector 107/320
+     Phase-: 0.0531261s (0.052945 cpu) [1]
+     Total: 0.467736s (0.46579 cpu) [105]
+Discovering vector 108/320
+     Phase-: 0.012418s (0.012376 cpu) [1]
+     Total: 0.480154s (0.478166 cpu) [106]
+Discovering vector 109/320
+     Phase-: 0.0115092s (0.011483 cpu) [1]
+     Total: 0.491663s (0.489649 cpu) [107]
+Discovering vector 110/320
+     Phase-: 0.0732338s (0.073023 cpu) [1]
+     Total: 0.564897s (0.562672 cpu) [108]
+Discovering vector 111/320
+     Phase-: 0.00877595s (0.008753 cpu) [1]
+     Total: 0.573673s (0.571425 cpu) [109]
+Discovering vector 112/320
+     Phase-: 0.0180461s (0.017984 cpu) [1]
+     Total: 0.591719s (0.589409 cpu) [110]
+Discovering vector 113/320
+     Phase-: 0.00439906s (0.004396 cpu) [1]
+     Total: 0.596118s (0.593805 cpu) [111]
+Discovering vector 114/320
+     Phase-: 0.104564s (0.104123 cpu) [1]
+     Total: 0.700683s (0.697928 cpu) [112]
+Discovering vector 115/320
+     Phase-: 0.00987506s (0.00986 cpu) [1]
+     Total: 0.710558s (0.707788 cpu) [113]
+Discovering vector 116/320
+     Phase-: 0.014024s (0.013978 cpu) [1]
+     Total: 0.724582s (0.721766 cpu) [114]
+Discovering vector 117/320
+     Phase-: 0.020381s (0.020288 cpu) [1]
+     Total: 0.744963s (0.742054 cpu) [115]
+Discovering vector 118/320
+     Phase-: 0.0310009s (0.030858 cpu) [1]
+     Total: 0.775964s (0.772912 cpu) [116]
+Discovering vector 119/320
+     Phase-: 0.0164831s (0.01643 cpu) [1]
+     Total: 0.792447s (0.789342 cpu) [117]
+Discovering vector 120/320
+     Phase-: 0.0362859s (0.036179 cpu) [1]
+     Total: 0.828732s (0.825521 cpu) [118]
+Discovering vector 121/320
+     Phase-: 0.0118482s (0.011799 cpu) [1]
+     Total: 0.840581s (0.83732 cpu) [119]
+Discovering vector 122/320
+     Phase-: 0.017349s (0.017288 cpu) [1]
+     Total: 0.85793s (0.854608 cpu) [120]
+Discovering vector 123/320
+     Phase-: 0.0111299s (0.0111 cpu) [1]
+     Total: 0.86906s (0.865708 cpu) [121]
+Discovering vector 124/320
+     Phase-: 0.095067s (0.094767 cpu) [1]
+     Total: 0.964127s (0.960475 cpu) [122]
+Discovering vector 125/320
+     Phase-: 0.0264199s (0.02633 cpu) [1]
+     Total: 0.990546s (0.986805 cpu) [123]
+Discovering vector 126/320
+     Phase-: 0.052412s (0.052243 cpu) [1]
+     Total: 1.04296s (1.03905 cpu) [124]
+Discovering vector 127/320
+     Phase-: 0.00607705s (0.006061 cpu) [1]
+     Total: 1.04904s (1.04511 cpu) [125]
+Discovering vector 128/320
+     Phase-: 0.0341561s (0.034051 cpu) [1]
+     Total: 1.08319s (1.07916 cpu) [126]
+Discovering vector 129/320
+     Phase-: 0.0988641s (0.098516 cpu) [1]
+     Total: 1.18206s (1.17768 cpu) [127]
+Discovering vector 130/320
+     Phase-: 0.0236871s (0.023584 cpu) [1]
+     Total: 1.20574s (1.20126 cpu) [128]
+Discovering vector 131/320
+     Phase-: 0.022619s (0.022519 cpu) [1]
+     Total: 1.22836s (1.22378 cpu) [129]
+Discovering vector 132/320
+     Phase-: 0.0744379s (0.074183 cpu) [1]
+     Total: 1.3028s (1.29796 cpu) [130]
+Discovering vector 133/320
+     Phase-: 0.028574s (0.028463 cpu) [1]
+     Total: 1.33137s (1.32642 cpu) [131]
+Discovering vector 134/320
+     Phase-: 0.050617s (0.050371 cpu) [1]
+     Total: 1.38199s (1.3768 cpu) [132]
+Discovering vector 135/320
+     Phase-: 0.03652s (0.036408 cpu) [1]
+     Total: 1.41851s (1.4132 cpu) [133]
+Discovering vector 136/320
+     Phase-: 0.0182691s (0.018232 cpu) [1]
+     Total: 1.43678s (1.43144 cpu) [134]
+Discovering vector 137/320
+     Phase-: 0.116081s (0.115756 cpu) [1]
+     Total: 1.55286s (1.54719 cpu) [135]
+Discovering vector 138/320
+     Phase-: 0.0188732s (0.018833 cpu) [1]
+     Total: 1.57173s (1.56602 cpu) [136]
+Discovering vector 139/320
+     Phase-: 0.0184672s (0.018423 cpu) [1]
+     Total: 1.5902s (1.58445 cpu) [137]
+Discovering vector 140/320
+     Phase-: 0.187697s (0.177386 cpu) [1]
+     Total: 1.7779s (1.76183 cpu) [138]
+Discovering vector 141/320
+     Phase-: 0.041322s (0.041209 cpu) [1]
+     Total: 1.81922s (1.80304 cpu) [139]
+Discovering vector 142/320
+     Phase-: 0.0553942s (0.055226 cpu) [1]
+     Total: 1.87461s (1.85827 cpu) [140]
+Discovering vector 143/320
+     Phase-: 0.0520511s (0.051941 cpu) [1]
+     Total: 1.92667s (1.91021 cpu) [141]
+Discovering vector 144/320
+     Phase-: 0.056905s (0.0569 cpu) [1]
+     Total: 1.98357s (1.96711 cpu) [142]
+Discovering vector 145/320
+     Phase-: 0.077184s (0.077174 cpu) [1]
+     Total: 2.06075s (2.04428 cpu) [143]
+Discovering vector 146/320
+     Phase-: 0.036756s (0.036752 cpu) [1]
+     Total: 2.09751s (2.08104 cpu) [144]
+Discovering vector 147/320
+     Phase-: 0.0774779s (0.077416 cpu) [1]
+     Total: 2.17499s (2.15845 cpu) [145]
+Discovering vector 148/320
+     Phase-: 0.082489s (0.082445 cpu) [1]
+     Total: 2.25748s (2.2409 cpu) [146]
+Discovering vector 149/320
+     Phase-: 0.030839s (0.030835 cpu) [1]
+     Total: 2.28832s (2.27173 cpu) [147]
+Discovering vector 150/320
+     Phase-: 0.0118599s (0.011858 cpu) [1]
+     Total: 2.30018s (2.28359 cpu) [148]
+Discovering vector 151/320
+     Phase-: 0.0379879s (0.037981 cpu) [1]
+     Total: 2.33816s (2.32157 cpu) [149]
+Discovering vector 152/320
+     Phase-: 0.0580831s (0.058056 cpu) [1]
+     Total: 2.39625s (2.37963 cpu) [150]
+Discovering vector 153/320
+     Phase-: 0.0201349s (0.020133 cpu) [1]
+     Total: 2.41638s (2.39976 cpu) [151]
+Discovering vector 154/320
+     Phase-: 0.083961s (0.08395 cpu) [1]
+     Total: 2.50034s (2.48371 cpu) [152]
+Discovering vector 155/320
+     Phase-: 0.00921106s (0.009209 cpu) [1]
+     Total: 2.50955s (2.49292 cpu) [153]
+Discovering vector 156/320
+     Phase-: 0.354172s (0.353411 cpu) [1]
+     Total: 2.86373s (2.84633 cpu) [154]
+Discovering vector 157/320
+     Phase-: 0.05532s (0.055113 cpu) [1]
+     Total: 2.91905s (2.90144 cpu) [155]
+Discovering vector 158/320
+     Phase-: 0.0389309s (0.038836 cpu) [1]
+     Total: 2.95798s (2.94028 cpu) [156]
+Discovering vector 159/320
+     Phase-: 0.032408s (0.032236 cpu) [1]
+     Total: 2.99039s (2.97251 cpu) [157]
+Discovering vector 160/320
+     Phase-: 0.0198131s (0.01978 cpu) [1]
+     Total: 3.0102s (2.99229 cpu) [158]
+Discovering vector 161/320
+     Phase-: 0.0217869s (0.02171 cpu) [1]
+     Total: 3.03199s (3.014 cpu) [159]
+Discovering vector 162/320
+     Phase-: 0.299442s (0.298402 cpu) [1]
+     Total: 3.33143s (3.31241 cpu) [160]
+Discovering vector 163/320
+     Phase-: 0.0659151s (0.065643 cpu) [1]
+     Total: 3.39734s (3.37805 cpu) [161]
+Discovering vector 164/320
+     Phase-: 0.0194638s (0.019367 cpu) [1]
+     Total: 3.41681s (3.39742 cpu) [162]
+Discovering vector 165/320
+     Phase-: 0.205726s (0.203485 cpu) [1]
+     Total: 3.62253s (3.6009 cpu) [163]
+Discovering vector 166/320
+     Phase-: 0.0518689s (0.043982 cpu) [1]
+     Total: 3.6744s (3.64488 cpu) [164]
+Discovering vector 167/320
+     Phase-: 0.171203s (0.170373 cpu) [1]
+     Total: 3.8456s (3.81526 cpu) [165]
+Discovering vector 168/320
+     Phase-: 0.065975s (0.065756 cpu) [1]
+     Total: 3.91158s (3.88101 cpu) [166]
+Discovering vector 169/320
+     Phase-: 0.059725s (0.059523 cpu) [1]
+     Total: 3.9713s (3.94054 cpu) [167]
+Discovering vector 170/320
+     Phase-: 0.128105s (0.12762 cpu) [1]
+     Total: 4.09941s (4.06816 cpu) [168]
+Discovering vector 171/320
+     Phase-: 0.178545s (0.178305 cpu) [1]
+     Total: 4.27795s (4.24646 cpu) [169]
+Discovering vector 172/320
+     Phase-: 0.0721049s (0.072099 cpu) [1]
+     Total: 4.35006s (4.31856 cpu) [170]
+Discovering vector 173/320
+     Phase-: 0.0649881s (0.064745 cpu) [1]
+     Total: 4.41505s (4.3833 cpu) [171]
+Discovering vector 174/320
+     Phase-: 0.0713799s (0.070814 cpu) [1]
+     Total: 4.48643s (4.45412 cpu) [172]
+Discovering vector 175/320
+     Phase-: 0.26899s (0.267983 cpu) [1]
+     Total: 4.75542s (4.7221 cpu) [173]
+Discovering vector 176/320
+     Phase-: 0.222063s (0.220947 cpu) [1]
+     Total: 4.97748s (4.94305 cpu) [174]
+Discovering vector 177/320
+     Phase-: 0.106867s (0.106497 cpu) [1]
+     Total: 5.08435s (5.04955 cpu) [175]
+Discovering vector 178/320
+     Phase-: 0.0281951s (0.028183 cpu) [1]
+     Total: 5.11254s (5.07773 cpu) [176]
+Discovering vector 179/320
+     Phase-: 0.285607s (0.282584 cpu) [1]
+     Total: 5.39815s (5.36031 cpu) [177]
+Discovering vector 180/320
+     Phase-: 0.124132s (0.12405 cpu) [1]
+     Total: 5.52228s (5.48436 cpu) [178]
+Discovering vector 181/320
+     Phase-: 0.035105s (0.035088 cpu) [1]
+     Total: 5.55739s (5.51945 cpu) [179]
+Discovering vector 182/320
+     Phase-: 0.0487061s (0.048487 cpu) [1]
+     Total: 5.60609s (5.56794 cpu) [180]
+Discovering vector 183/320
+     Phase-: 0.152332s (0.142136 cpu) [1]
+     Total: 5.75842s (5.71007 cpu) [181]
+Discovering vector 184/320
+     Phase-: 0.274932s (0.274238 cpu) [1]
+     Total: 6.03336s (5.98431 cpu) [182]
+Discovering vector 185/320
+     Phase-: 0.208702s (0.208461 cpu) [1]
+     Total: 6.24206s (6.19277 cpu) [183]
+Discovering vector 186/320
+     Phase-: 0.0805259s (0.080322 cpu) [1]
+     Total: 6.32258s (6.2731 cpu) [184]
+Discovering vector 187/320
+     Phase-: 0.052048s (0.051915 cpu) [1]
+     Total: 6.37463s (6.32501 cpu) [185]
+Discovering vector 188/320
+     Phase-: 0.15225s (0.151706 cpu) [1]
+     Total: 6.52688s (6.47672 cpu) [186]
+Discovering vector 189/320
+     Phase-: 0.0846448s (0.084594 cpu) [1]
+     Total: 6.61153s (6.56131 cpu) [187]
+Discovering vector 190/320
+     Phase-: 0.0837801s (0.083726 cpu) [1]
+     Total: 6.69531s (6.64504 cpu) [188]
+Discovering vector 191/320
+     Phase-: 0.0424139s (0.04241 cpu) [1]
+     Total: 6.73772s (6.68745 cpu) [189]
+Discovering vector 192/320
+     Phase-: 0.508436s (0.508211 cpu) [1]
+     Total: 7.24616s (7.19566 cpu) [190]
+Discovering vector 193/320
+     Phase-: 0.0821981s (0.082187 cpu) [1]
+     Total: 7.32836s (7.27784 cpu) [191]
+Discovering vector 194/320
+     Phase-: 0.251265s (0.250991 cpu) [1]
+     Total: 7.57962s (7.52884 cpu) [192]
+Discovering vector 195/320
+     Phase-: 0.0899301s (0.080863 cpu) [1]
+     Total: 7.66955s (7.6097 cpu) [193]
+Discovering vector 196/320
+     Phase-: 0.0664179s (0.065515 cpu) [1]
+     Total: 7.73597s (7.67521 cpu) [194]
+Discovering vector 197/320
+     Phase-: 0.186357s (0.186281 cpu) [1]
+     Total: 7.92233s (7.86149 cpu) [195]
+Discovering vector 198/320
+     Phase-: 0.0604951s (0.060489 cpu) [1]
+     Total: 7.98282s (7.92198 cpu) [196]
+Discovering vector 199/320
+     Phase-: 0.40108s (0.400738 cpu) [1]
+     Total: 8.3839s (8.32272 cpu) [197]
+Discovering vector 200/320
+     Phase-: 0.445389s (0.445344 cpu) [1]
+     Total: 8.82929s (8.76807 cpu) [198]
+Discovering vector 201/320
+     Phase-: 0.0437381s (0.04373 cpu) [1]
+     Total: 8.87303s (8.8118 cpu) [199]
+Discovering vector 202/320
+     Phase-: 0.324057s (0.323773 cpu) [1]
+     Total: 9.19708s (9.13557 cpu) [200]
+Discovering vector 203/320
+     Phase-: 0.0505569s (0.050434 cpu) [1]
+     Total: 9.24764s (9.186 cpu) [201]
+Discovering vector 204/320
+     Phase-: 0.102201s (0.102141 cpu) [1]
+     Total: 9.34984s (9.28814 cpu) [202]
+Discovering vector 205/320
+     Phase-: 0.26429s (0.263628 cpu) [1]
+     Total: 9.61413s (9.55177 cpu) [203]
+Discovering vector 206/320
+     Phase-: 0.138611s (0.129148 cpu) [1]
+     Total: 9.75274s (9.68092 cpu) [204]
+Discovering vector 207/320
+     Phase-: 0.15081s (0.150703 cpu) [1]
+     Total: 9.90355s (9.83162 cpu) [205]
+Discovering vector 208/320
+     Phase-: 0.275893s (0.275839 cpu) [1]
+     Total: 10.1794s (10.1075 cpu) [206]
+Discovering vector 209/320
+     Phase-: 0.078033s (0.077971 cpu) [1]
+     Total: 10.2575s (10.1854 cpu) [207]
+Discovering vector 210/320
+     Phase-: 0.426346s (0.42621 cpu) [1]
+     Total: 10.6838s (10.6116 cpu) [208]
+Discovering vector 211/320
+     Phase-: 0.05339s (0.053289 cpu) [1]
+     Total: 10.7372s (10.6649 cpu) [209]
+Discovering vector 212/320
+     Phase-: 0.053941s (0.053799 cpu) [1]
+     Total: 10.7912s (10.7187 cpu) [210]
+Discovering vector 213/320
+     Phase-: 0.837813s (0.830071 cpu) [1]
+     Total: 11.629s (11.5488 cpu) [211]
+Discovering vector 214/320
+     Phase-: 0.25497s (0.247417 cpu) [1]
+     Total: 11.8839s (11.7962 cpu) [212]
+Discovering vector 215/320
+     Phase-: 0.0406229s (0.040582 cpu) [1]
+     Total: 11.9246s (11.8368 cpu) [213]
+Discovering vector 216/320
+     Phase-: 0.511024s (0.507767 cpu) [1]
+     Total: 12.4356s (12.3446 cpu) [214]
+Discovering vector 217/320
+     Phase-: 0.0433061s (0.043275 cpu) [1]
+     Total: 12.4789s (12.3878 cpu) [215]
+800000 tests
+Discovering vector 218/320
+     Phase-: 0.375263s (0.375078 cpu) [1]
+     Total: 12.8542s (12.7629 cpu) [216]
+Discovering vector 219/320
+     Phase-: 0.157218s (0.157139 cpu) [1]
+     Total: 13.0114s (12.9201 cpu) [217]
+Discovering vector 220/320
+     Phase-: 0.554483s (0.554088 cpu) [1]
+     Total: 13.5659s (13.4741 cpu) [218]
+Discovering vector 221/320
+     Phase-: 0.101807s (0.092795 cpu) [1]
+     Total: 13.6677s (13.5669 cpu) [219]
+Discovering vector 222/320
+     Phase-: 0.411522s (0.40954 cpu) [1]
+     Total: 14.0792s (13.9765 cpu) [220]
+Discovering vector 223/320
+     Phase-: 0.377039s (0.376909 cpu) [1]
+     Total: 14.4562s (14.3534 cpu) [221]
+Discovering vector 224/320
+     Phase-: 0.055161s (0.055057 cpu) [1]
+     Total: 14.5114s (14.4084 cpu) [222]
+Discovering vector 225/320
+     Phase-: 0.0496302s (0.049625 cpu) [1]
+     Total: 14.561s (14.4581 cpu) [223]
+Discovering vector 226/320
+     Phase-: 0.352665s (0.352546 cpu) [1]
+     Total: 14.9137s (14.8106 cpu) [224]
+Discovering vector 227/320
+     Phase-: 0.108344s (0.10833 cpu) [1]
+     Total: 15.022s (14.9189 cpu) [225]
+Discovering vector 228/320
+     Phase-: 0.39108s (0.390917 cpu) [1]
+     Total: 15.4131s (15.3099 cpu) [226]
+Discovering vector 229/320
+     Phase-: 0.179379s (0.179355 cpu) [1]
+     Total: 15.5925s (15.4892 cpu) [227]
+Discovering vector 230/320
+     Phase-: 0.186048s (0.176515 cpu) [1]
+     Total: 15.7785s (15.6657 cpu) [228]
+Discovering vector 231/320
+     Phase-: 0.163607s (0.163437 cpu) [1]
+     Total: 15.9421s (15.8292 cpu) [229]
+Discovering vector 232/320
+     Phase-: 0.363343s (0.363299 cpu) [1]
+     Total: 16.3055s (16.1925 cpu) [230]
+Discovering vector 233/320
+     Phase-: 0.1719s (0.171827 cpu) [1]
+     Total: 16.4774s (16.3643 cpu) [231]
+Discovering vector 234/320
+     Phase-: 0.135838s (0.135793 cpu) [1]
+     Total: 16.6132s (16.5001 cpu) [232]
+Discovering vector 235/320
+     Phase-: 1.36515s (1.35525 cpu) [1]
+     Total: 17.9784s (17.8553 cpu) [233]
+Discovering vector 236/320
+     Phase-: 0.266496s (0.266415 cpu) [1]
+     Total: 18.2449s (18.1218 cpu) [234]
+Discovering vector 237/320
+     Phase-: 0.513609s (0.513459 cpu) [1]
+     Total: 18.7585s (18.6352 cpu) [235]
+Discovering vector 238/320
+     Phase-: 0.601843s (0.601608 cpu) [1]
+     Total: 19.3603s (19.2368 cpu) [236]
+Discovering vector 239/320
+     Phase-: 0.0995879s (0.099541 cpu) [1]
+     Total: 19.4599s (19.3364 cpu) [237]
+Discovering vector 240/320
+     Phase-: 0.101344s (0.101328 cpu) [1]
+     Total: 19.5613s (19.4377 cpu) [238]
+Discovering vector 241/320
+     Phase-: 0.0966611s (0.089107 cpu) [1]
+     Total: 19.6579s (19.5268 cpu) [239]
+Discovering vector 242/320
+     Phase-: 0.886989s (0.884371 cpu) [1]
+     Total: 20.5449s (20.4112 cpu) [240]
+Discovering vector 243/320
+     Phase-: 0.22388s (0.223806 cpu) [1]
+     Total: 20.7688s (20.635 cpu) [241]
+Discovering vector 244/320
+     Phase-: 0.138062s (0.138021 cpu) [1]
+     Total: 20.9068s (20.773 cpu) [242]
+Discovering vector 245/320
+     Phase-: 0.092665s (0.092636 cpu) [1]
+     Total: 20.9995s (20.8656 cpu) [243]
+Discovering vector 246/320
+     Phase-: 1.54746s (1.53696 cpu) [1]
+     Total: 22.547s (22.4026 cpu) [244]
+Discovering vector 247/320
+     Phase-: 0.128279s (0.128263 cpu) [1]
+     Total: 22.6752s (22.5309 cpu) [245]
+Discovering vector 248/320
+     Phase-: 0.230044s (0.229936 cpu) [1]
+     Total: 22.9053s (22.7608 cpu) [246]
+Discovering vector 249/320
+     Phase-: 0.281356s (0.28128 cpu) [1]
+     Total: 23.1866s (23.0421 cpu) [247]
+Discovering vector 250/320
+     Phase-: 0.215477s (0.215388 cpu) [1]
+     Total: 23.4021s (23.2575 cpu) [248]
+Discovering vector 251/320
+     Phase-: 0.733383s (0.723346 cpu) [1]
+     Total: 24.1355s (23.9808 cpu) [249]
+Discovering vector 252/320
+     Phase-: 0.396631s (0.396485 cpu) [1]
+     Total: 24.5321s (24.3773 cpu) [250]
+Discovering vector 253/320
+     Phase-: 0.567579s (0.567016 cpu) [1]
+     Total: 25.0997s (24.9443 cpu) [251]
+Discovering vector 254/320
+     Phase-: 0.163781s (0.163632 cpu) [1]
+     Total: 25.2635s (25.1079 cpu) [252]
+Discovering vector 255/320
+     Phase-: 0.129752s (0.129581 cpu) [1]
+     Total: 25.3932s (25.2375 cpu) [253]
+Discovering vector 256/320
+     Phase-: 0.424379s (0.414591 cpu) [1]
+     Total: 25.8176s (25.6521 cpu) [254]
+Discovering vector 257/320
+     Phase-: 1.94852s (1.92658 cpu) [1]
+     Total: 27.7662s (27.5787 cpu) [255]
+Discovering vector 258/320
+     Phase-: 0.203203s (0.201722 cpu) [1]
+     Total: 27.9694s (27.7804 cpu) [256]
+Discovering vector 259/320
+     Phase-: 0.944504s (0.941802 cpu) [1]
+     Total: 28.9139s (28.7222 cpu) [257]
+Discovering vector 260/320
+     Phase-: 0.142161s (0.142075 cpu) [1]
+     Total: 29.056s (28.8643 cpu) [258]
+Discovering vector 261/320
+     Phase-: 0.386612s (0.385729 cpu) [1]
+     Total: 29.4426s (29.25 cpu) [259]
+Discovering vector 262/320
+     Phase-: 0.141145s (0.141072 cpu) [1]
+     Total: 29.5838s (29.3911 cpu) [260]
+Discovering vector 263/320
+     Phase-: 0.363517s (0.352109 cpu) [1]
+     Total: 29.9473s (29.7432 cpu) [261]
+Discovering vector 264/320
+     Phase-: 0.194962s (0.193428 cpu) [1]
+     Total: 30.1423s (29.9366 cpu) [262]
+Discovering vector 265/320
+     Phase-: 0.243289s (0.243135 cpu) [1]
+     Total: 30.3855s (30.1798 cpu) [263]
+Discovering vector 266/320
+     Phase-: 1.06268s (1.06208 cpu) [1]
+     Total: 31.4482s (31.2418 cpu) [264]
+Discovering vector 267/320
+     Phase-: 0.647525s (0.634376 cpu) [1]
+     Total: 32.0957s (31.8762 cpu) [265]
+Discovering vector 268/320
+     Phase-: 0.118747s (0.118652 cpu) [1]
+     Total: 32.2145s (31.9949 cpu) [266]
+Discovering vector 269/320
+     Phase-: 0.316031s (0.315899 cpu) [1]
+     Total: 32.5305s (32.3108 cpu) [267]
+Discovering vector 270/320
+     Phase-: 0.172738s (0.17263 cpu) [1]
+     Total: 32.7033s (32.4834 cpu) [268]
+Discovering vector 271/320
+     Phase-: 0.085078s (0.084922 cpu) [1]
+     Total: 32.7883s (32.5683 cpu) [269]
+Discovering vector 272/320
+     Phase-: 0.0749948s (0.074976 cpu) [1]
+     Total: 32.8633s (32.6433 cpu) [270]
+Discovering vector 273/320
+     Phase-: 3.36966s (3.34228 cpu) [1]
+     Total: 36.233s (35.9856 cpu) [271]
+Discovering vector 274/320
+     Phase-: 0.60668s (0.58863 cpu) [1]
+     Total: 36.8397s (36.5742 cpu) [272]
+Discovering vector 275/320
+     Phase-: 0.609017s (0.60607 cpu) [1]
+     Total: 37.4487s (37.1803 cpu) [273]
+1600000 tests
+Discovering vector 276/320
+     Phase-: 1.81692s (1.79829 cpu) [1]
+     Total: 39.2656s (38.9786 cpu) [274]
+Discovering vector 277/320
+     Phase-: 0.328134s (0.327918 cpu) [1]
+     Total: 39.5937s (39.3065 cpu) [275]
+Discovering vector 278/320
+     Phase-: 0.216292s (0.205925 cpu) [1]
+     Total: 39.81s (39.5124 cpu) [276]
+Discovering vector 279/320
+     Phase-: 0.365263s (0.364827 cpu) [1]
+     Total: 40.1753s (39.8772 cpu) [277]
+Discovering vector 280/320
+     Phase-: 0.203967s (0.203778 cpu) [1]
+     Total: 40.3793s (40.081 cpu) [278]
+Discovering vector 281/320
+     Phase-: 0.322374s (0.317978 cpu) [1]
+     Total: 40.7016s (40.399 cpu) [279]
+Discovering vector 282/320
+     Phase-: 2.36731s (2.33097 cpu) [1]
+     Total: 43.0689s (42.73 cpu) [280]
+Discovering vector 283/320
+     Phase-: 0.276692s (0.275809 cpu) [1]
+     Total: 43.3456s (43.0058 cpu) [281]
+Discovering vector 284/320
+     Phase-: 1.34449s (1.32883 cpu) [1]
+     Total: 44.6901s (44.3346 cpu) [282]
+Discovering vector 285/320
+     Phase-: 0.21157s (0.211487 cpu) [1]
+     Total: 44.9017s (44.5461 cpu) [283]
+Discovering vector 286/320
+     Phase-: 0.420905s (0.420652 cpu) [1]
+     Total: 45.3226s (44.9667 cpu) [284]
+Discovering vector 287/320
+     Phase-: 2.43858s (2.4172 cpu) [1]
+     Total: 47.7612s (47.3839 cpu) [285]
+Discovering vector 288/320
+     Phase-: 0.171289s (0.171238 cpu) [1]
+     Total: 47.9325s (47.5552 cpu) [286]
+Discovering vector 289/320
+     Phase-: 1.15185s (1.15119 cpu) [1]
+     Total: 49.0843s (48.7064 cpu) [287]
+Discovering vector 290/320
+     Phase-: 0.170478s (0.170199 cpu) [1]
+     Total: 49.2548s (48.8766 cpu) [288]
+Discovering vector 291/320
+     Phase-: 1.52192s (1.5111 cpu) [1]
+     Total: 50.7767s (50.3877 cpu) [289]
+Discovering vector 292/320
+     Phase-: 0.402597s (0.402319 cpu) [1]
+     Total: 51.1793s (50.79 cpu) [290]
+Discovering vector 293/320
+     Phase-: 1.00725s (0.996444 cpu) [1]
+     Total: 52.1866s (51.7864 cpu) [291]
+Discovering vector 294/320
+     Phase-: 0.342156s (0.340823 cpu) [1]
+     Total: 52.5287s (52.1272 cpu) [292]
+Discovering vector 295/320
+     Phase-: 0.863246s (0.856082 cpu) [1]
+     Total: 53.392s (52.9833 cpu) [293]
+Discovering vector 296/320
+     Phase-: 0.501462s (0.488583 cpu) [1]
+     Total: 53.8934s (53.4719 cpu) [294]
+Discovering vector 297/320
+     Phase-: 1.63677s (1.61513 cpu) [1]
+     Total: 55.5302s (55.087 cpu) [295]
+Discovering vector 298/320
+     Phase-: 0.420557s (0.409042 cpu) [1]
+     Total: 55.9508s (55.4961 cpu) [296]
+Discovering vector 299/320
+     Phase-: 0.403541s (0.401463 cpu) [1]
+     Total: 56.3543s (55.8975 cpu) [297]
+Discovering vector 300/320
+     Phase-: 1.08165s (1.08006 cpu) [1]
+     Total: 57.436s (56.9776 cpu) [298]
+Discovering vector 301/320
+     Phase-: 0.277445s (0.267082 cpu) [1]
+     Total: 57.7134s (57.2447 cpu) [299]
+Discovering vector 302/320
+     Phase-: 2.28787s (2.25333 cpu) [1]
+     Total: 60.0013s (59.498 cpu) [300]
+Discovering vector 303/320
+     Phase-: 0.820748s (0.819632 cpu) [1]
+     Total: 60.822s (60.3177 cpu) [301]
+Discovering vector 304/320
+     Phase-: 1.88559s (1.87232 cpu) [1]
+     Total: 62.7076s (62.19 cpu) [302]
+Discovering vector 305/320
+     Phase-: 0.178843s (0.177329 cpu) [1]
+     Total: 62.8865s (62.3673 cpu) [303]
+Discovering vector 306/320
+     Phase-: 1.58911s (1.54982 cpu) [1]
+     Total: 64.4756s (63.9171 cpu) [304]
+Discovering vector 307/320
+     Phase-: 2.06274s (2.0198 cpu) [1]
+     Total: 66.5383s (65.9369 cpu) [305]
+Discovering vector 308/320
+     Phase-: 0.272463s (0.27106 cpu) [1]
+     Total: 66.8108s (66.208 cpu) [306]
+Discovering vector 309/320
+     Phase-: 1.77167s (1.75542 cpu) [1]
+     Total: 68.5824s (67.9634 cpu) [307]
+Discovering vector 310/320
+     Phase-: 0.386195s (0.38521 cpu) [1]
+     Total: 68.9686s (68.3486 cpu) [308]
+Discovering vector 311/320
+     Phase-: 0.793609s (0.78065 cpu) [1]
+     Total: 69.7622s (69.1293 cpu) [309]
+Discovering vector 312/320
+     Phase-: 0.837533s (0.83708 cpu) [1]
+     Total: 70.5998s (69.9663 cpu) [310]
+Discovering vector 313/320
+     Phase-: 1.1246s (1.11432 cpu) [1]
+     Total: 71.7244s (71.0807 cpu) [311]
+Discovering vector 314/320
+     Phase-: 0.370379s (0.370345 cpu) [1]
+     Total: 72.0948s (71.451 cpu) [312]
+Discovering vector 315/320
+     Phase-: 0.521824s (0.520389 cpu) [1]
+     Total: 72.6166s (71.9714 cpu) [313]
+2400000 tests
+Discovering vector 316/320
+     Phase-: 3.68611s (3.64128 cpu) [1]
+     Total: 76.3027s (75.6127 cpu) [314]
+Discovering vector 317/320
+     Phase-: 0.701371s (0.696332 cpu) [1]
+     Total: 77.0041s (76.309 cpu) [315]
+Discovering vector 318/320
+     Phase-: 2.58739s (2.57332 cpu) [1]
+     Total: 79.5914s (78.8823 cpu) [316]
+Discovering vector 319/320
+     Phase-: 0.477499s (0.467057 cpu) [1]
+     Total: 80.0689s (79.3494 cpu) [317]
+Discovering vector 320/320
+     Phase-: 0.935915s (0.934944 cpu) [1]
+     Total: 81.0049s (80.2843 cpu) [318]
+
+     Phase-: 0.147926s (0.147794 cpu) [1]
+     Total: 81.1528s (80.4321 cpu) [319]
+
+Testing reduction
+n = 320
+d = 320
+(Householder) delta is about 9.913203443e-1
+(Householder) ||b_1|| is 4.186801164e9
+(Householder) Vol(L) is about 4.987989257e2123
+eta : 4.999926449e-1     theta : 1.000000000e-5    alpha : 1.161441683
+Seems to be reduced (up to size-reduction)
+
