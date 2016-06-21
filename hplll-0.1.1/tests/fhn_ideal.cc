@@ -59,25 +59,25 @@ int main(int argc, char *argv[])  {
 
   //------------
 
-  s[k]=(char *) malloc(600);
-  strncpy(s[k], "collection/ideal/ideallatticedim54index81seed0.txt",599);
-  k+=1;
+  // s[k]=(char *) malloc(600);
+  // strncpy(s[k], "collection/ideal/ideallatticedim54index81seed0.txt",599);
+  // k+=1;
 
-  s[k]=(char *) malloc(600);
-  strncpy(s[k], "collection/ideal/ideallatticedim100index250seed0.txt",599);
-  k+=1;
+  // s[k]=(char *) malloc(600);
+  // strncpy(s[k], "collection/ideal/ideallatticedim100index250seed0.txt",599);
+  // k+=1;
 
-   s[k]=(char *) malloc(600);
-  strncpy(s[k], "collection/ideal/ideallatticedim164index332seed0.txt",599);
-  k+=1;
+  //  s[k]=(char *) malloc(600);
+  // strncpy(s[k], "collection/ideal/ideallatticedim164index332seed0.txt",599);
+  // k+=1;
 
-  s[k]=(char *) malloc(600);
-  strncpy(s[k], "collection/ideal/ideallatticedim224index696seed0.txt",599);
-  k+=1;
+  // s[k]=(char *) malloc(600);
+  // strncpy(s[k], "collection/ideal/ideallatticedim224index696seed0.txt",599);
+  // k+=1;
   
-   s[k]=(char *) malloc(600);
-  strncpy(s[k], "collection/ideal/ideallatticedim300index604seed0.txt",599);
-  k+=1;
+  //  s[k]=(char *) malloc(600);
+  // strncpy(s[k], "collection/ideal/ideallatticedim300index604seed0.txt",599);
+  // k+=1;
 
   s[k]=(char *) malloc(600);
   strncpy(s[k], "collection/ideal/ideallatticedim344index1038seed0.txt",599);
@@ -121,7 +121,8 @@ int main(int argc, char *argv[])  {
     os << endl << "FPLLL, HPLLL, NTL running times / ideal lattice challenge bases " << endl;   // ******** SPECIALIZE
     os << endl << "HPLLL wrapper dim_prec_1" << endl; 
     os << endl <<  "NTL XD infinite loop for 224, with G_LLL" << endl; 
-                                                                                    
+    os << endl <<  "   then NTL limited to less than 420" << endl;
+     
     os <<         "----------------------------------------------------------------" << endl << endl;
  
     for (int k=0; k<K; k++) { 
@@ -162,7 +163,7 @@ int main(int argc, char *argv[])  {
 	verboseDepth=1;
 	if (n <= DIM_PREC_1) status=B.hlll(delta); //* name
 	
-	else hlll<long>(tmpmat, A, 0.99, true, true);
+	else hlll<mpz_t>(tmpmat, A, 0.99, true, true);
       	verboseDepth=0;
 	time.stop();
 
@@ -222,7 +223,7 @@ int main(int argc, char *argv[])  {
 
 	if (n < 224) 
 	  LLL_XD(BN,0.99,0,0,1); 
-	else
+	else if  (n < 420) 
 	  G_LLL_XD(BN,0.99,0,0,1);
 	
 	time.stop();
@@ -241,7 +242,8 @@ int main(int argc, char *argv[])  {
   
 	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A,NO_TRANSFORM,DEF_REDUCTION);
 	verboseDepth=0;
-	T.isreduced(delta-0.1);
+	if  (n < 420)
+	  T.isreduced(delta-0.1);
 
 
 	os << "   ntl: " << time << endl << endl ;
