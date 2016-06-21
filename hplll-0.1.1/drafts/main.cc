@@ -59,35 +59,34 @@ int main(int argc, char *argv[])  {
 
   //------------
 
+  d[k]=300;
+  k+=1;
+
+  d[k]=320;
+  k+=1;
+
+  d[k]=330;
+  k+=1;
+
+  d[k]=335;
+  k+=1;
+
   d[k]=340;
   k+=1;
 
-  d[k]=360;
+  d[k]=345;
   k+=1;
 
-  d[k]=400;
+   d[k]=350;
   k+=1;
 
-  d[k]=410;
+   d[k]=355;
   k+=1;
 
-  d[k]=415;
+   d[k]=360;
   k+=1;
 
-  d[k]=420;
-  k+=1;
-
-   d[k]=425;
-  k+=1;
-
-   d[k]=430;
-  k+=1;
-
-   d[k]=435;
-  k+=1;
-
-  d[k]=440;
-  k+=1;
+  
   
   //-------------
 
@@ -138,7 +137,7 @@ int main(int argc, char *argv[])  {
       	os << endl << "------------------------------------------------ " << endl ;
 
 
-      	Lattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > B(Along,NO_TRANSFORM,SEYSEN_REDUCTION);  //* name 
+      	Lattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > B(Along,NO_TRANSFORM,DEF_REDUCTION);  //* name 
 
       	time.start();
 
