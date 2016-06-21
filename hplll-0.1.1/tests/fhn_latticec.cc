@@ -127,7 +127,7 @@ int main(int argc, char *argv[])  {
   
   Timer time;
 
-  int status;
+  int status=0;
 
     os << endl << "FPLLL, HPLLL, NTL running times / lattice challenge bases / long" << endl;   // ******** SPECIALIZE
     os << endl << "FPLLL stopped at dim 800, otherwise wrapper with mpfr too costly" << endl;
