@@ -35,7 +35,7 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
 
-  char results[]="resultats/hpal.results";    // ******** SPECIALIZE
+  char results[]="resultats/fpal.results";    // ******** SPECIALIZE
   
   filebuf fb;
   iostream os(&fb);
@@ -59,31 +59,31 @@ int main(int argc, char *argv[])  {
 
   //------------
 
-  d[k]=300;
+  d[k]=150;
   k+=1;
 
-  d[k]=320;
+  d[k]=155;
   k+=1;
 
-  d[k]=330;
+  d[k]=160;
   k+=1;
 
-  d[k]=335;
+  d[k]=165;
   k+=1;
 
-  d[k]=340;
+  d[k]=170;
   k+=1;
 
-  d[k]=345;
+  d[k]=175;
   k+=1;
 
-   d[k]=350;
+   d[k]=180;
   k+=1;
 
-   d[k]=355;
+   d[k]=185;
   k+=1;
 
-   d[k]=360;
+   d[k]=190;
   k+=1;
 
   
@@ -134,77 +134,78 @@ int main(int argc, char *argv[])  {
 
       {
 
-      	os << endl << "------------------------------------------------ " << endl ;
+      	// os << endl << "------------------------------------------------ " << endl ;
 
 
-      	Lattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > B(Along,NO_TRANSFORM,DEF_REDUCTION);  //* name 
+      	// Lattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > B(Along,NO_TRANSFORM,DEF_REDUCTION);  //* name 
 
-      	time.start();
+      	// time.start();
 
-      	verboseDepth=1;
-      	//if (n <= DIM_PREC_1)
-	status=B.hlll(delta); //* name
+      	// verboseDepth=1;
+      	// //if (n <= DIM_PREC_1)
+	// status=B.hlll(delta); //* name
 	
-      	//else hlll<long>(tmpmat, A, 0.99, true, true);
+      	// //else hlll<long>(tmpmat, A, 0.99, true, true);
 	
-      	verboseDepth=0;
+      	// verboseDepth=0;
 	
-      	time.stop();
+      	// time.stop();
 
 	 
-      	os << "Run " << run << "  with dim = " << n << ",   delta = " << delta <<  endl << endl;
-      	os << "    hlll: " << time << endl ;
-      	time.print(os);
-      	os << endl;
+      	// os << "Run " << run << "  with dim = " << n << ",   delta = " << delta <<  endl << endl;
+      	// os << "    hlll: " << time << endl ;
+      	// time.print(os);
+      	// os << endl;
 
-      	//if  (n <= DIM_PREC_1) matrix_cast(tmpmat,B.getbase());
-      	matrix_cast(tmpmat,B.getbase());
+      	// //if  (n <= DIM_PREC_1) matrix_cast(tmpmat,B.getbase());
+      	// matrix_cast(tmpmat,B.getbase());
 	
-      	if (status ==0) {
-      	  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(tmpmat,NO_TRANSFORM,DEF_REDUCTION); //* names
+      	// if (status ==0) {
+      	//   Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(tmpmat,NO_TRANSFORM,DEF_REDUCTION); //* names
 
-      	  T.isreduced(delta-0.1); //* name
+      	//   T.isreduced(delta-0.1); //* name
 
-      	  double t,u,v,w;
+      	//   double t,u,v,w;
 
-      	  ratio<mpz_t>(tmpmat,t,u,v,w);
+      	//   ratio<mpz_t>(tmpmat,t,u,v,w);
 
-      	  cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-      	  cout << ".. Average diagonal ratio: " << u << endl;
-      	  cout << ".. Max diagonal ratio: " << v << endl;
-      	  cout << ".. First vector quality: " << w << endl;
-      	}
+      	//   cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+      	//   cout << ".. Average diagonal ratio: " << u << endl;
+      	//   cout << ".. Max diagonal ratio: " << v << endl;
+      	//   cout << ".. First vector quality: " << w << endl;
+      	// }
 	
-      	cout << endl; 
+      	// cout << endl; 
 
       	// cout << "--------------  FPLLL WRAPPER VERBOSE " << endl << endl; 
 
-	// if (n <=200) {
-	//   time.start();
-	//   lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
-	//   time.stop();
+	//if (n <=200)
+	  {
+	  time.start();
+	  lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
+	  time.stop();
 	  
 
-	//   os << "   fplll: " << time << endl << endl ;
-	//   time.print(os);
-	//   os << endl;
+	  os << "   fplll: " << time << endl << endl ;
+	  time.print(os);
+	  os << endl;
 
-	//   tmpmat.resize(n,n);
+	  tmpmat.resize(n,n);
 	  
-	//   transpose(tmpmat,AT);
-	//   Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(tmpmat,NO_TRANSFORM,DEF_REDUCTION); //* name
-	//   T2.isreduced(delta-0.1); //* name
+	  transpose(tmpmat,AT);
+	  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(tmpmat,NO_TRANSFORM,DEF_REDUCTION); //* name
+	  T2.isreduced(delta-0.1); //* name
 
-	//   double t,u,v,w;
+	  double t,u,v,w;
 	   
-	//   ratio<mpz_t>(tmpmat,t,u,v,w);
+	  ratio<mpz_t>(tmpmat,t,u,v,w);
 
-	//   cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-	//   cout << ".. Average diagonal ratio: " << u << endl;
-	//   cout << ".. Max diagonal ratio: " << v << endl;
-	//   cout << ".. First vector quality: " << w << endl;
+	  cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+	  cout << ".. Average diagonal ratio: " << u << endl;
+	  cout << ".. Max diagonal ratio: " << v << endl;
+	  cout << ".. First vector quality: " << w << endl;
 	  
-	// }
+	}
 	
 	
 	
