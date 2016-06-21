@@ -35,7 +35,7 @@ using namespace hplll;
 
 int main(int argc, char *argv[])  {
 
-  char results[]="resultats/seysenal.results";    // ******** SPECIALIZE
+  char results[]="resultats/fpal.results";    // ******** SPECIALIZE
   
   filebuf fb;
   iostream os(&fb);
