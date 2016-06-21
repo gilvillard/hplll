@@ -15,4 +15,4 @@ perfpublisher : tests/perfpublisher
 tests/perfpublisher:
 	(cd tests; ${MAKE} perfpublisher)
 
-#EXTRA_DIST=README.html
+EXTRA_DIST= autogen.sh

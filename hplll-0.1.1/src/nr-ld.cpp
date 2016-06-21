@@ -294,7 +294,10 @@ inline int size_in_bits(Z_NR<long> data) {
 }
 
 inline int size_in_bits(Z_NR<__int128_t> data) {
-  __int128_t y = abs(data.GetData());
+  //__int128_t y = abs(data.GetData());
+  Z_NR<__int128_t> z;
+  z.abs(data);
+  __int128_t y = z.GetData();
   int resul = 0;
   if (y == 0) resul=1;
   else {
