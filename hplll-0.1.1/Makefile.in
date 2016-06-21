@@ -368,6 +368,7 @@ SUBDIRS = src  tests macros examples drafts
 nobase_dist_doc_DATA = COPYING.LESSER 
 include_hpllldir = $(includedir)/hplll
 AM_CXXFLAGS = -I $(srcdir)
+EXTRA_DIST = autogen.sh
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -883,8 +884,6 @@ perfpublisher : tests/perfpublisher
 
 tests/perfpublisher:
 	(cd tests; ${MAKE} perfpublisher)
-
-#EXTRA_DIST=README.html
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
