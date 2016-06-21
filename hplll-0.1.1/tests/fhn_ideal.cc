@@ -116,7 +116,7 @@ int main(int argc, char *argv[])  {
   
   Timer time;
 
-  int status;
+  int status=0;
 
     os << endl << "FPLLL, HPLLL, NTL running times / ideal lattice challenge bases " << endl;   // ******** SPECIALIZE
     os << endl << "HPLLL wrapper dim_prec_1" << endl; 
