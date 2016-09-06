@@ -73,9 +73,11 @@ int main(int argc, char *argv[]) {
 
   ff(C,delta,A);
 
-  // Unimodular 2x2 transformation 
-  ZZ_mat<mpz_t> C;
-  C.resize(d,d);
+  // Unimodular 2x2 transformation
+  ZZ_mat<mpz_t> U;
+  U.resize(2,2);
+  U(0,0)=4; U(0,1)=9; U(1,0)=33; U(1,1)=74;
+  
 
 
   
