@@ -71,6 +71,9 @@ int outmat(mpq_t p00,mpq_t p01,mpq_t p10,mpq_t p11) {
 }
 
 // **************************************************************
+//
+//  C, Gram, is square 
+//
 // updates the fraction free orthogonalization using a 2x2 matrix
 // corresponding to c++ indices kappa and kappa+1 
 //
@@ -80,7 +83,10 @@ int outmat(mpq_t p00,mpq_t p01,mpq_t p10,mpq_t p11) {
 
 int updateff(ZZ_mat<mpz_t>& C, vector< Z_NR<mpz_t> >& delta, int kappa, ZZ_mat<mpz_t> U) {
 
-
+  
+  // Computation of the left fraction free 2x2 transformation
+  // --------------------------------------------------------
+  
   mpq_t t1,t2,t3,t4;
   mpq_init(t1);
   mpq_init(t2);
@@ -193,14 +199,91 @@ int updateff(ZZ_mat<mpz_t>& C, vector< Z_NR<mpz_t> >& delta, int kappa, ZZ_mat<m
   mpq_mul(p11,p11,ndet);
   mpq_canonicalize(p11);
   
-  outmat(p00,p01,p10,p11);
-	  
-  // cas special indice 0 ?
-  // faire colonnes avant la diag
 
-  // Mettre à jour delta 
+  // The left 2x2 transformation numerators, denominator delta[kappa+1]
+  // ------------------------------------------------------------------
+  
+  ZZ_mat<mpz_t> PN;
+  PN.resize(2,2);
+
+  mpq_set_z(t2,delta[kappa+1].GetData());
+  
+  mpq_set(t1,p00);
+  mpq_mul(p00,p00,t2);
+  mpq_canonicalize(p00);
+  mpq_get_num(PN(0,0).GetData(),p00);
+  
+  mpq_set(t1,p10);
+  mpq_mul(p10,p10,t2);
+  mpq_canonicalize(p10);
+  mpq_get_num(PN(1,0).GetData(),p10);
+
+  mpq_set(t1,p01);
+  mpq_mul(p01,p01,t2);
+  mpq_canonicalize(p01);
+  mpq_get_num(PN(0,1).GetData(),p01);
+
+  mpq_set(t1,p11);
+  mpq_mul(p11,p11,t2);
+  mpq_canonicalize(p11);
+  mpq_get_num(PN(1,1).GetData(),p11);
 
 
+  // Update of the modified determinant
+  //   and we apply the transformations on integers than exact division by den
+  // -------------------------------------------------------------------
+  
+  Z_NR<mpz_t> den;
+  den=delta[kappa+1];
+  
+  mpq_get_num((delta[kappa+1]).GetData(),ndet);
+
+
+  int i,j;
+  
+  // U on the columns of C 
+  // ---------------------
+
+  ZZ_mat<mpz_t> tM;
+  tM.resize(kappa+2,2);
+
+  for (i=0; i<kappa+2; i++)
+    for (j=0; j<2; j++) 
+      tM(i,j)=C(i,j+kappa);
+  
+  matprod_in(tM,U);
+  
+  for (i=0; i<kappa+2; i++)
+    for (j=0; j<2; j++) 
+      C(i,j+kappa)=tM(i,j);
+  
+    
+  // PN on the rows
+  // --------------
+
+  int d;
+  d=C.getCols();
+  
+  tM.resize(2,d-kappa);
+
+  for (i=0; i<2; i++)
+    for (j=0; j<d-kappa; j++) 
+      tM(i,j)=C(i+kappa,j+kappa);
+  
+  matprod(tM,PN,tM);
+
+  // And exact division
+  // ------------------
+
+  for (i=0; i<2; i++)
+    for (j=0; j<d-kappa; j++) 
+      mpz_divexact(tM(i,j).GetData(),tM(i,j).GetData(),den.GetData());
+
+  for (i=0; i<2; i++)
+    for (j=0; j<d-kappa; j++) 
+      C(i+kappa,j+kappa)=tM(i,j);
+  
+  
   // mpq clear
   // ---------
   mpq_clear(t1);
@@ -222,6 +305,111 @@ int updateff(ZZ_mat<mpz_t>& C, vector< Z_NR<mpz_t> >& delta, int kappa, ZZ_mat<m
    
 } 
 
+// *************************************************************
+//
+// Parameters are allocated outside
+//
+//  LLL on the Gram-Schmidt fraction free matrix 
+//
+// *************************************************************
+
+// ***** Faire update
+
+int ffreduce(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> C, int kappa) {
+
+  int d;
+  d=C.getCols();
+
+  int col;
+
+  // Loop on the two columns to reduce
+  // ---------------------------------
+  
+  for (col=kappa; col<kappa+2; col++) {
+
+    for (i=
+
+  } // end loop 2 cols 
+
+
+}
+
+// ***** Faire update U avec V avant 
+
+
+// *************************************************************
+//
+//  kappa and kappa+1 size reduction 
+//
+// *************************************************************
+
+int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
+
+  int d;
+
+  setId(U);
+  
+  d=A.getCols();
+    
+  ZZ_mat<mpz_t> C;
+  C.resize(d,d);
+
+  vector< Z_NR<mpz_t> > delta;
+  delta.resize(d);
+
+  ff(C,delta,A);
+
+  // 2x2 matrix to reduce extracted from Gram-Schmidt 
+  ZZ_mat<mpz_t> B;
+  B.resize(2,2);
+
+  
+  // Unimodular 2x2 transformation
+  ZZ_mat<mpz_t> V;
+  V.resize(2,2);
+
+
+  // 2x2 lattice basis
+  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > L(B,TRANSFORM,DEF_REDUCTION);
+
+  // ------------------------------------
+  // Main dynamical LLL reduction loop
+  // ------------------------------------
+
+  int kappa;
+
+  // loop
+  // ****
+  kappa=0;
+
+  B(0,0).mul(C(kappa,kappa),delta[kappa+1]);
+  B(0,1).mul(C(kappa,kappa+1),delta[kappa+1]);
+  B(1,0).mul(C(kappa+1,kappa),delta[kappa]);
+  B(1,1).mul(C(kappa+1,kappa+1),delta[kappa]);
+
+  L.assign(B);
+  L.hlll(delta_lll);
+  V=L.getU();
+
+  updateff(C,delta,kappa,V);
+  
+  // Update U, par V ** modulo ? **
+
+  // Size reduction columns kappa and kappa+1
+  //  and corresponding update of U 
+  
+  print2maple(V,2,2);
+
+  print2maple(C,d,d);
+
+  // end loop
+  // ********
+  
+
+  return 0;
+  
+} 
+
 // ***********************************************************
        
 int main(int argc, char *argv[]) {
@@ -233,24 +421,11 @@ int main(int argc, char *argv[]) {
 
   command_line_basis(A, n, d, delta_lll, argc, argv); 
 
-  cout << A << endl << endl;
-
-  ZZ_mat<mpz_t> C;
-  C.resize(d,d);
-
-  vector< Z_NR<mpz_t> > delta;
-  delta.resize(d);
-
-  ff(C,delta,A);
-
-  // Unimodular 2x2 transformation
+  
   ZZ_mat<mpz_t> U;
-  U.resize(2,2);
-  U(0,0)=3; U(0,1)=1; U(1,0)=-32; U(1,1)=-11;
+  U.resize(d,d);
 
-  
-  
-  updateff(C,delta,4,U);
+  fflll(U,A,delta_lll);
   
  
   
