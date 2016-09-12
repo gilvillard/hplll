@@ -16,8 +16,7 @@ int ff(ZZ_mat<mpz_t>& C, vector< Z_NR<mpz_t> >& delta, ZZ_mat<mpz_t> A) {
   int d=A.getCols();
 
   matprod(C,transpose(A),A);
-
-
+  
   delta[0]=1;
 
   Z_NR<mpz_t> tz;
@@ -305,6 +304,139 @@ int updateff(ZZ_mat<mpz_t>& C, vector< Z_NR<mpz_t> >& delta, int kappa, ZZ_mat<m
    
 } 
 
+
+// *************************************************************
+//
+//  Schonhage 2x2 on the triangular gram matrix
+//     diagonal is positive 
+//
+// *************************************************************
+
+int schon(ZZ_mat<mpz_t> V, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2, Z_NR<mpz_t> B1, Z_NR<mpz_t> B2, Z_NR<mpz_t> mu, double delta_lll) {
+
+  setId(V);
+  
+  cout << B1 << endl;
+  cout << B2 << endl;
+  cout << mu << endl << endl; 
+
+  mpz_t mpq;
+  mpz_init(mpq);
+
+  mpz_t mpr;
+  mpz_init(mpr);
+  
+  Z_NR<mpz_t> q,B,tz,tz1,tz2;
+
+  Z_NR<mpz_t> one, two;
+  one = 1;
+  two = 2;
+     
+  bool stop = false;
+  
+  // Main loop
+  // ---------
+
+  while (stop == false)
+    {
+    
+    // size reduction
+    // --------------
+    
+    if ( (mpz_sgn(mu.GetData()) * mpz_sgn(B1.GetData()) ) == 1) {
+      // all positive in entry by assmumption 
+      cout << "POS " << endl; 
+      cout << mu << endl;
+      cout << B1 << endl;
+      
+      mpz_cdiv_qr (mpq, mpr, mu.GetData(), B1.GetData());
+
+      mpz_set(mu.GetData(),mpr);
+      mpz_set(q.GetData(),mpq);
+
+      tz.abs(mu);
+      tz.mul(tz,two);
+      
+      if (tz > B1) {
+	mu.add(mu,B1);
+	q.sub(q,one);
+      }
+         
+    }
+    else if ( (mpz_sgn(mu.GetData()) * mpz_sgn(B1.GetData()) ) == (-1) ) {
+      // mu negative in entry by assumption 
+      cout << "NEG " << endl;
+      cout << mu << endl;
+      cout << B1 << endl;
+      
+      mpz_fdiv_qr (mpq, mpr, mu.GetData(), B1.GetData());
+
+      mpz_set(mu.GetData(),mpr);
+      mpz_set(q.GetData(),mpq);
+      
+      tz.abs(mu);
+      tz.mul(tz,two);
+       
+      if (tz > B1) {
+	mu.sub(mu,B1);
+	q.add(q,one);
+      }
+
+    }
+
+
+    cout << mu << endl << endl;
+    
+    V(0,1).submul(V(0,0),q);
+    V(1,1).submul(V(1,0),q);
+
+    // Lovasz test
+    // -----------
+
+    // Swap
+
+    tz1.mul(d2,B1);
+    tz2.mul(d1,B2);
+    
+    if (tz1 > tz2) {
+
+      B.mul(mu,mu);
+      tz.mul(B2,d1);
+      B.add(B2,B);
+      mpz_divexact(B.GetData(),B.GetData(),B1.GetData());
+
+      B1=B;
+      d2=B;
+
+      tz=V(0,1);
+      V(0,1)=V(0,0);
+      V(0,0)=tz;
+
+      tz=V(1,1);
+      V(1,1)=V(1,0);
+      V(1,0)=tz;
+    
+    }
+    else {
+      stop = true; 
+    }
+    
+    cout << B1 << endl;
+    cout << B2 << endl;
+    cout << mu << endl << endl; 
+
+    print2maple(V,2,2);
+    
+  } // 2x2 LLL end loop  
+
+  mpz_clear(mpq);
+  mpz_clear(mpr);
+  
+  return(0);
+  
+}
+
+
 // *************************************************************
 //
 // Parameters are allocated outside
@@ -315,24 +447,24 @@ int updateff(ZZ_mat<mpz_t>& C, vector< Z_NR<mpz_t> >& delta, int kappa, ZZ_mat<m
 
 // ***** Faire update
 
-int ffreduce(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> C, int kappa) {
+// int ffreduce(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> C, int kappa) {
 
-  int d;
-  d=C.getCols();
+//   int d;
+//   d=C.getCols();
 
-  int col;
+//   int col;
 
-  // Loop on the two columns to reduce
-  // ---------------------------------
+//   // Loop on the two columns to reduce
+//   // ---------------------------------
   
-  for (col=kappa; col<kappa+2; col++) {
+//   for (col=kappa; col<kappa+2; col++) {
 
-    for (i=
+//     for (i=
 
-  } // end loop 2 cols 
+//   } // end loop 2 cols 
 
 
-}
+// }
 
 // ***** Faire update U avec V avant 
 
@@ -358,19 +490,10 @@ int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
   delta.resize(d);
 
   ff(C,delta,A);
-
-  // 2x2 matrix to reduce extracted from Gram-Schmidt 
-  ZZ_mat<mpz_t> B;
-  B.resize(2,2);
-
   
   // Unimodular 2x2 transformation
   ZZ_mat<mpz_t> V;
   V.resize(2,2);
-
-
-  // 2x2 lattice basis
-  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > L(B,TRANSFORM,DEF_REDUCTION);
 
   // ------------------------------------
   // Main dynamical LLL reduction loop
@@ -382,26 +505,18 @@ int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
   // ****
   kappa=0;
 
-  B(0,0).mul(C(kappa,kappa),delta[kappa+1]);
-  B(0,1).mul(C(kappa,kappa+1),delta[kappa+1]);
-  B(1,0).mul(C(kappa+1,kappa),delta[kappa]);
-  B(1,1).mul(C(kappa+1,kappa+1),delta[kappa]);
+  schon(V, delta[kappa], delta[kappa+1], C(kappa,kappa),C(kappa+1,kappa+1),C(kappa,kappa+1),delta_lll);
 
-  L.assign(B);
-  L.hlll(delta_lll);
-  V=L.getU();
-
+    
   updateff(C,delta,kappa,V);
   
   // Update U, par V ** modulo ? **
 
   // Size reduction columns kappa and kappa+1
   //  and corresponding update of U 
+
   
-  print2maple(V,2,2);
-
-  print2maple(C,d,d);
-
+  
   // end loop
   // ********
   
