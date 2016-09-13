@@ -80,7 +80,7 @@ int outmat(mpq_t p00,mpq_t p01,mpq_t p10,mpq_t p11) {
 //
 // *************************************************************
 
-int updateff(ZZ_mat<mpz_t>& C, vector< Z_NR<mpz_t> >& delta, int kappa, ZZ_mat<mpz_t> U) {
+int updateff(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t>& U, vector< Z_NR<mpz_t> >& delta, int kappa, ZZ_mat<mpz_t> V) {
 
   
   // Computation of the left fraction free 2x2 transformation
@@ -100,14 +100,14 @@ int updateff(ZZ_mat<mpz_t>& C, vector< Z_NR<mpz_t> >& delta, int kappa, ZZ_mat<m
   
   
   mpq_set_ui(p10,0,1);
-  mpq_set_z(p01,U(1,0).GetData());
+  mpq_set_z(p01,V(1,0).GetData());
 
   mpq_set_z(t1,C(kappa,kappa+1).GetData());
   mpq_set_z(t2,C(kappa,kappa).GetData());
   mpq_div(p00,t1,t2); // mu up to the sign
 
-  mpq_set_z(t1,U(1,0).GetData());
-  mpq_set_z(t2,U(0,0).GetData());
+  mpq_set_z(t1,V(1,0).GetData());
+  mpq_set_z(t2,V(0,0).GetData());
 
   mpq_mul(p00,p00,t1);
   mpq_add(p00,p00,t2);
@@ -122,16 +122,16 @@ int updateff(ZZ_mat<mpz_t>& C, vector< Z_NR<mpz_t> >& delta, int kappa, ZZ_mat<m
   mpq_init(g1);
   mpq_init(g2);
   
-  z1.mul(C(kappa,kappa),U(0,0));
-  z2.mul(C(kappa,kappa+1),U(1,0));
+  z1.mul(C(kappa,kappa),V(0,0));
+  z2.mul(C(kappa,kappa+1),V(1,0));
   z1.add(z1,z2);
   mpq_set_z(t1,z1.GetData());
   mpq_set_z(t2,delta[kappa].GetData());
   mpq_div(g1,t1,t2);
   mpq_canonicalize(g1);
 
-  z1.mul(C(kappa+1,kappa),U(0,0));
-  z2.mul(C(kappa+1,kappa+1),U(1,0));
+  z1.mul(C(kappa+1,kappa),V(0,0));
+  z2.mul(C(kappa+1,kappa+1),V(1,0));
   z1.add(z1,z2);
   mpq_set_z(t1,z1.GetData());
   mpq_set_z(t2,delta[kappa+1].GetData());
@@ -168,14 +168,14 @@ int updateff(ZZ_mat<mpz_t>& C, vector< Z_NR<mpz_t> >& delta, int kappa, ZZ_mat<m
   mpq_t ndet;
   mpq_init(ndet);
 
-  z1.mul(C(kappa,kappa),U(0,0));
-  z2.mul(C(kappa,kappa+1),U(1,0));
+  z1.mul(C(kappa,kappa),V(0,0));
+  z2.mul(C(kappa,kappa+1),V(1,0));
   z1.add(z1,z2);
   mpq_set_z(g1,z1.GetData());
   mpq_canonicalize(g1);
 
-  z1.mul(C(kappa+1,kappa),U(0,0));
-  z2.mul(C(kappa+1,kappa+1),U(1,0));
+  z1.mul(C(kappa+1,kappa),V(0,0));
+  z2.mul(C(kappa+1,kappa+1),V(1,0));
   z1.add(z1,z2);
   mpq_set_z(g2,z1.GetData());
   mpq_canonicalize(g2);
@@ -240,7 +240,7 @@ int updateff(ZZ_mat<mpz_t>& C, vector< Z_NR<mpz_t> >& delta, int kappa, ZZ_mat<m
 
   int i,j;
   
-  // U on the columns of C 
+  // V on the columns of C 
   // ---------------------
 
   ZZ_mat<mpz_t> tM;
@@ -250,7 +250,7 @@ int updateff(ZZ_mat<mpz_t>& C, vector< Z_NR<mpz_t> >& delta, int kappa, ZZ_mat<m
     for (j=0; j<2; j++) 
       tM(i,j)=C(i,j+kappa);
   
-  matprod_in(tM,U);
+  matprod_in(tM,V);
   
   for (i=0; i<kappa+2; i++)
     for (j=0; j<2; j++) 
@@ -282,7 +282,34 @@ int updateff(ZZ_mat<mpz_t>& C, vector< Z_NR<mpz_t> >& delta, int kappa, ZZ_mat<m
     for (j=0; j<d-kappa; j++) 
       C(i+kappa,j+kappa)=tM(i,j);
   
+
+  // V on the columns of U and positivity of the diagonal of C 
+  // ---------------------------------------------------------
+
   
+  tM.resize(d,2);
+
+  for (i=0; i<d; i++)
+    for (j=0; j<2; j++) 
+      tM(i,j)=U(i,j+kappa);
+  
+  matprod_in(tM,V);
+  
+  for (i=0; i<d; i++)
+    for (j=0; j<2; j++) 
+      U(i,j+kappa)=tM(i,j);
+
+  if (C(kappa,kappa) < 0)
+    for (j=kappa; j<d; j++)
+      C(kappa,j).neg(C(kappa,j));
+
+  if (C(kappa+1,kappa+1) < 0)
+    for (j=kappa+1; j<d; j++)
+      C(kappa+1,j).neg(C(kappa+1,j));
+
+  delta[kappa+1].abs(delta[kappa+1]);
+
+    
   // mpq clear
   // ---------
   mpq_clear(t1);
@@ -312,21 +339,17 @@ int updateff(ZZ_mat<mpz_t>& C, vector< Z_NR<mpz_t> >& delta, int kappa, ZZ_mat<m
 //
 // *************************************************************
 
-int schon(ZZ_mat<mpz_t> V, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2, Z_NR<mpz_t> B1, Z_NR<mpz_t> B2, Z_NR<mpz_t> mu, double delta_lll) {
+int schon(ZZ_mat<mpz_t>& V, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2, Z_NR<mpz_t> B1, Z_NR<mpz_t> B2, Z_NR<mpz_t> mu, double delta_lll) {
 
   setId(V);
   
-  cout << B1 << endl;
-  cout << B2 << endl;
-  cout << mu << endl << endl; 
-
   mpz_t mpq;
   mpz_init(mpq);
 
   mpz_t mpr;
   mpz_init(mpr);
   
-  Z_NR<mpz_t> q,B,tz,tz1,tz2;
+  Z_NR<mpz_t> q,B,tz,tz1,tz2,tz3;
 
   Z_NR<mpz_t> one, two;
   one = 1;
@@ -345,9 +368,6 @@ int schon(ZZ_mat<mpz_t> V, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2, Z_NR<mpz_t> B1, Z_NR<
     
     if ( (mpz_sgn(mu.GetData()) * mpz_sgn(B1.GetData()) ) == 1) {
       // all positive in entry by assmumption 
-      cout << "POS " << endl; 
-      cout << mu << endl;
-      cout << B1 << endl;
       
       mpz_cdiv_qr (mpq, mpr, mu.GetData(), B1.GetData());
 
@@ -365,9 +385,6 @@ int schon(ZZ_mat<mpz_t> V, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2, Z_NR<mpz_t> B1, Z_NR<
     }
     else if ( (mpz_sgn(mu.GetData()) * mpz_sgn(B1.GetData()) ) == (-1) ) {
       // mu negative in entry by assumption 
-      cout << "NEG " << endl;
-      cout << mu << endl;
-      cout << B1 << endl;
       
       mpz_fdiv_qr (mpq, mpr, mu.GetData(), B1.GetData());
 
@@ -384,25 +401,29 @@ int schon(ZZ_mat<mpz_t> V, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2, Z_NR<mpz_t> B1, Z_NR<
 
     }
 
-
-    cout << mu << endl << endl;
     
     V(0,1).submul(V(0,0),q);
     V(1,1).submul(V(1,0),q);
+
+    
 
     // Lovasz test
     // -----------
 
     // Swap
 
-    tz1.mul(d2,B1);
-    tz2.mul(d1,B2);
+    tz1.mul(B1,B1);
+    
+    tz2.mul(B2,d1);
+    tz3.mul(mu,mu);
+    tz2.add(tz2,tz3);
+   
     
     if (tz1 > tz2) {
 
       B.mul(mu,mu);
       tz.mul(B2,d1);
-      B.add(B2,B);
+      B.add(tz,B);
       mpz_divexact(B.GetData(),B.GetData(),B1.GetData());
 
       B1=B;
@@ -421,14 +442,10 @@ int schon(ZZ_mat<mpz_t> V, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2, Z_NR<mpz_t> B1, Z_NR<
       stop = true; 
     }
     
-    cout << B1 << endl;
-    cout << B2 << endl;
-    cout << mu << endl << endl; 
-
-    print2maple(V,2,2);
-    
   } // 2x2 LLL end loop  
 
+ 
+  
   mpz_clear(mpq);
   mpz_clear(mpr);
   
@@ -439,15 +456,15 @@ int schon(ZZ_mat<mpz_t> V, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2, Z_NR<mpz_t> B1, Z_NR<
 
 // *************************************************************
 //
-// Parameters are allocated outside
+//  Parameters are allocated outside
 //
-//  LLL on the Gram-Schmidt fraction free matrix 
+//  Size reduction for the two modified columns kappa and kappa+1
 //
 // *************************************************************
 
-// ***** Faire update
 
-// int ffreduce(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> C, int kappa) {
+
+int ffreduce(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> C, int kappa) {
 
 //   int d;
 //   d=C.getCols();
@@ -463,15 +480,15 @@ int schon(ZZ_mat<mpz_t> V, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2, Z_NR<mpz_t> B1, Z_NR<
 
 //   } // end loop 2 cols 
 
-
+//  // ET update de la transformation 
 // }
 
-// ***** Faire update U avec V avant 
+
 
 
 // *************************************************************
 //
-//  kappa and kappa+1 size reduction 
+// LLL reduction : computation of the transformation matrix 
 //
 // *************************************************************
 
@@ -501,24 +518,35 @@ int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
 
   int kappa;
 
-  // loop
-  // ****
-  kappa=0;
+  int K;
+  
+  // Main LLL loop
+  // -------------
 
-  schon(V, delta[kappa], delta[kappa+1], C(kappa,kappa),C(kappa+1,kappa+1),C(kappa,kappa+1),delta_lll);
+  for (K=0; K<d*d; K++) {
 
+    // Loop on the 2x2 Gauss application
+    // ---------------------------------
     
-  updateff(C,delta,kappa,V);
-  
-  // Update U, par V ** modulo ? **
+    for (kappa=d-2; kappa >=0; kappa--) {
+      
+      schon(V, delta[kappa], delta[kappa+1], C(kappa,kappa),C(kappa+1,kappa+1),C(kappa,kappa+1),delta_lll);
 
-  // Size reduction columns kappa and kappa+1
-  //  and corresponding update of U 
+      updateff(C,U,delta,kappa,V);
 
-  
-  
-  // end loop
-  // ********
+      print2maple(U,d,d);
+      
+      print2maple(C,d,d);
+
+      // Size reduction columns kappa and kappa+1
+      //  and corresponding update of U 
+      // Update U, par V ** modulo ? **
+
+    }
+
+  }
+  // end main LLL loop
+  // *****************
   
 
   return 0;
