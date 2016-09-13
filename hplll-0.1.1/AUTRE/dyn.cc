@@ -466,29 +466,98 @@ int schon(ZZ_mat<mpz_t>& V, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2, Z_NR<mpz_t> B1, Z_NR
 
 int ffreduce(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> C, int kappa) {
 
-//   int d;
-//   d=C.getCols();
+  int d;
+  d=C.getCols();
 
-//   int col;
+  int ck,i;
 
-//   // Loop on the two columns to reduce
-//   // ---------------------------------
+  mpz_t mpq;
+  mpz_init(mpq);
+
+  mpz_t mpr;
+  mpz_init(mpr);
   
-//   for (col=kappa; col<kappa+2; col++) {
+  Z_NR<mpz_t> q,r; 
 
-//     for (i=
+  Z_NR<mpz_t> one, two;
+  one = 1;
+  two = 2;
 
-//   } // end loop 2 cols 
+  Z_NR<mpz_t> mu, diag;
+  
+  // Loop on the two columns to reduce
+  // ---------------------------------
+  
+  for (ck=kappa; ck<kappa+2; col++) {
 
-//  // ET update de la transformation 
-// }
+    // loop within the column 
+    for (i=ck-1; i>=0; i--) {
+
+      // compare C(i,ck) with C(i,i)
+
+      mu = C(i,ck);
+      diag =  C(i,i);
+      
+      // quotient 
+      // --------
+    
+      if ( (mpz_sgn(mu.GetData()) * mpz_sgn(diag.GetData()) ) == 1) {
+	// all positive in entry by assmumption 
+	
+	mpz_cdiv_qr (mpq, mpr, mu.GetData(), diag.GetData());
+
+	mpz_set(mu.GetData(),mpr);
+	mpz_set(q.GetData(),mpq);
+
+	tz.abs(mu);
+	tz.mul(tz,two);
+      
+	if (tz > diag) {
+	  mu.add(mu,diag);
+	  q.sub(q,one);
+	}
+         
+      }
+      else if ( (mpz_sgn(mu.GetData()) * mpz_sgn(diag.GetData()) ) == (-1) ) {
+	// mu negative in entry by assumption 
+      
+	mpz_fdiv_qr (mpq, mpr, mu.GetData(), diag.GetData());
+	
+	mpz_set(mu.GetData(),mpr);
+	mpz_set(q.GetData(),mpq);
+	
+	tz.abs(mu);
+	tz.mul(tz,two);
+	
+	if (tz > diag) {
+	  mu.sub(mu,diag);
+	  q.add(q,one);
+	}
+	
+      }
+
+
+
+
+
+
+      
+      
+
+    } // end within the column 
+    
+
+  } // end loop 2 cols 
+  
+    <// ET update de la transformation 
+}
 
 
 
 
 // *************************************************************
 //
-// LLL reduction : computation of the transformation matrix 
+// LLL reduction : computation of the transformation matrix U
 //
 // *************************************************************
 
