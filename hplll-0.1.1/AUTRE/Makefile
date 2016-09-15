@@ -1,6 +1,6 @@
 #! /bin/sh
 
-CXXFLAGS += -O2 -Wall 
+CXXFLAGS += -O3 -Wall 
 
 
 

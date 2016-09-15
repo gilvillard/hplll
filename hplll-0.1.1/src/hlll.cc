@@ -200,6 +200,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 	descendu[kappa]=0;
 
 	nbswaps+=1;
+
+	// DYN
+	//cout << "++++++++++++++++++++++++++++++++++++++++ swap " << kappa << "   " << kappa+1<< endl; 
        
 	B.colswap(kappa-1,kappa);
 	
