@@ -126,11 +126,6 @@ int updateff(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t>& U, vector< Z_NR<mpz_t> >& delta, i
     C(kappa,kappa)=newd;
     delta[kappa+1]=newd;
 
-    //mpz_divexact(C(k,j).GetData(),C(k,j).GetData(),delta[i].GetData());
-    
-    // U en colonne
-    // C ligne et colonne et diag 
-    // delta 
     
   }
   else { 
@@ -158,7 +153,7 @@ int updateff(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t>& U, vector< Z_NR<mpz_t> >& delta, i
     mpq_set_z(t1,C(kappa,kappa+1).GetData());
     mpq_set_z(t2,C(kappa,kappa).GetData());
     mpq_div(p00,t1,t2); // mu up to the sign
-   
+    
     mpq_set_z(t1,V(1,0).GetData());
     mpq_set_z(t2,V(0,0).GetData());
 
@@ -462,7 +457,10 @@ int schon(ZZ_mat<mpz_t>& V, int& swapsloc, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2,
 	mu.add(mu,B1);
 	q.sub(q,one);
       }
-         
+
+      V(0,1).submul(V(0,0),q);
+      V(1,1).submul(V(1,0),q);
+          
     }
     else if ( (mpz_sgn(mu.GetData()) * mpz_sgn(B1.GetData()) ) == (-1) ) {
       // mu negative in entry by assumption 
@@ -480,14 +478,11 @@ int schon(ZZ_mat<mpz_t>& V, int& swapsloc, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2,
 	q.add(q,one);
       }
 
+      V(0,1).submul(V(0,0),q);
+      V(1,1).submul(V(1,0),q);
     }
 
     
-    V(0,1).submul(V(0,0),q);
-    V(1,1).submul(V(1,0),q);
-
-    
-
     // Lovasz test
     // -----------
 
@@ -506,9 +501,6 @@ int schon(ZZ_mat<mpz_t>& V, int& swapsloc, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2,
     if (tz1 > tz2) {
 
       swapsloc+=1;
-      
-      // DYN
-      //cout << "++++++++++++++++++++++++++++++++++++++++ swap " << kappa+1 << "   " << kappa+2 << endl; 
       
       B.mul(mu,mu);
       tz.mul(B2,d1);
@@ -555,6 +547,7 @@ int schon(ZZ_mat<mpz_t>& V, int& swapsloc, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2,
 
 int ffreduce(ZZ_mat<mpz_t>& C,  ZZ_mat<mpz_t>& U, int kappa) {
 
+    
   int d;
   d=C.getCols();
 
@@ -605,7 +598,17 @@ int ffreduce(ZZ_mat<mpz_t>& C,  ZZ_mat<mpz_t>& U, int kappa) {
 	  mu.add(mu,diag);
 	  q.sub(q,one);
 	}
-         
+
+
+	// Not use variable index i here !!
+	// Application of the transformation on C and U 
+	
+	for (k=i; k>=0; k--)
+	  C(k,ck).submul(C(k,i),q);
+	
+	for (k=0; k<d; k++)
+	  U(k,ck).submul(U(k,i),q);
+
       }
       else if ( (mpz_sgn(mu.GetData()) * mpz_sgn(diag.GetData()) ) == (-1) ) {
 	// mu negative in entry by assumption 
@@ -622,26 +625,25 @@ int ffreduce(ZZ_mat<mpz_t>& C,  ZZ_mat<mpz_t>& U, int kappa) {
 	  mu.sub(mu,diag);
 	  q.add(q,one);
 	}
+
+	// Not use variable index i here !!
+	// Application of the transformation on C and U 
+
+	for (k=i; k>=0; k--)
+	  C(k,ck).submul(C(k,i),q);
 	
+	for (k=0; k<d; k++)
+	  U(k,ck).submul(U(k,i),q);
+	 
       }
-
-      // Not index i here !!
-      // Application of the transformation on C and U 
-
-      for (k=i; k>=0; k--)
-	C(k,ck).submul(C(k,i),q);
-	
-      for (k=0; k<d; k++)
-	U(k,ck).submul(U(k,i),q);
-     
 
     } // end within the column 
     
 
   } // end loop 2 cols 
-  
-   // ET update de la transformation
 
+  
+ 
   return(0); 
 }
 
@@ -701,27 +703,25 @@ int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
     
     for (kappa=d-2; kappa >=0; kappa--) {
 
-   
       schon(V, swapsloc, delta[kappa], delta[kappa+1], C(kappa,kappa),C(kappa+1,kappa+1),C(kappa,kappa+1),kappa,delta_lll);
 
           
       nbswaps += swapsloc;
       swapsiter += swapsloc;
- 
-    
-      updateff(C,U,delta,kappa,V);
- 
-      ffreduce(C,U,kappa);
 
      
       
+      updateff(C,U,delta,kappa,V);
+
+      ffreduce(C,U,kappa);
+
     }
 
-      
     cout << "Iteration " << K << endl;
     cout << "       swaps : " << swapsiter << endl;
     cout << "       total : " << nbswaps << endl;
 
+    
     // Early termination
     // -----------------
     if (swapsiter==0) {
