@@ -671,6 +671,44 @@ int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
   delta.resize(d);
 
   ff(C,delta,A);
+
+  // For Heckler & Thiele (log_2, c=2)
+  vector<FP_NR<mpfr_t> > v;
+  v.resize(d);
+
+  vector<FP_NR<mpfr_t> > cv; // Constant part of v_i
+  cv.resize(d);
+
+  Z_NR<mpz_t> tz;
+  FP_NR<mpfr_t> tf,tf2;
+  
+  for (int i=1; i<=d; i++) {
+   
+    tz=-i*(d-i);
+    tf.set_z(tz);
+    tf.mul_2si(tf,-1);
+
+    cv[i-1]=tf;
+    
+    tz=C(d-1,d-1);
+    tf.set_z(tz);
+    mpfr_log2(tf.getData(),tf.getData(),GMP_RNDN); 
+ 
+    tz=-i;
+    tf2.set_z(tz);
+    tf.mul(tf,tf2);
+    
+    tz=d;
+    tf2.set_z(tz);
+
+    tf.div(tf,tf2);
+
+    cv[i-1].add(cv[i-1],tf);
+
+  }
+  // -- end HT
+
+   cout << cv << endl; 
   
   // Unimodular 2x2 transformation
   ZZ_mat<mpz_t> V;
@@ -722,6 +760,32 @@ int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
     cout << "       total : " << nbswaps << endl;
 
     
+    
+    // Heckler & Thiele
+    // ----------------
+    for (int i=0; i<d; i++) {
+
+      tz=C(i,i);
+      tz.abs(tz);
+      tf.set_z(tz);
+      mpfr_log2(tf.getData(),tf.getData(),GMP_RNDN); 
+
+      v[i]=tf;
+      v[i].add(cv[i],v[i]);
+
+    
+    }
+
+    tf=v[0];
+    
+    for (int i=1; i<d; i++)
+      if (tf < v[i]) tf=v[i];
+    mpfr_exp2(tf.getData(),tf.getData(),GMP_RNDN); 
+
+    cout  << "       HT " << tf << endl << endl;
+    
+  // -- end HT
+
     // Early termination
     // -----------------
     if (swapsiter==0) {
@@ -731,6 +795,7 @@ int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
     }
 
     swapsiter=0;
+
 
   }  // end main LLL loop
  
