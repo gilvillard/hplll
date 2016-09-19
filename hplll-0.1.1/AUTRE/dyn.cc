@@ -673,6 +673,8 @@ int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
   ff(C,delta,A);
 
   // For Heckler & Thiele (log_2, c=2)
+  // ---------------------------------
+  
   vector<FP_NR<mpfr_t> > v;
   v.resize(d);
 
