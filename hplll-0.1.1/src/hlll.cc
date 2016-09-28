@@ -38,7 +38,18 @@ namespace hplll {
 template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) { 
 
- 
+
+  // STATS dyn LLL only
+  // ------------------
+
+  int nech=100;
+  vector< int > ech;
+  ech.resize(nech);
+
+  for (int i=0; i<nech; i++)
+    ech[i]=0;
+  
+  // end stats 
   
   if (verbose) 
     verboseDepth-=1;
@@ -195,15 +206,40 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
       else {
 
+	// STATS
+	// -----
+
+	{
+	  FP_NR<FT> tq,qq,rho;
+
+	  fp_norm(rho,R.getcol(kappa,kappa),structure[kappa]+1-kappa);
+	  rho.mul(rho,rho);
+	  
+	  tq.mul(R.get(kappa-1,kappa),R.get(kappa-1,kappa));
+	  
+	  rho.add(rho,tq);
+
+	  qq.mul(R.get(kappa-1,kappa-1),R.get(kappa-1,kappa-1));
+	  
+	  rho.div(rho,qq);
+
+	  double tf;
+	  tf=rho.get_d();
+
+	  ech[((int) (tf*nech))]+=1; 
+	  
+	  //cout << "******* Ratio LLL at " << kappa-1 << " : " << rho.get_d() << endl; 
+	
+      } // End stats 
+	
+	
 	if (kappa==1) descendu[0]=0 ;
 	else descendu[kappa-1]=descendu[kappa]+1;
 	descendu[kappa]=0;
 
 	nbswaps+=1;
 
-	// DYN
-	//cout << "++++++++++++++++++++++++++++++++++++++++ swap " << kappa << "   " << kappa+1<< endl; 
-       
+	
 	B.colswap(kappa-1,kappa);
 	
 	if (transf) U.colswap(kappa-1,kappa);
@@ -224,7 +260,18 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
     } // End main LLL loop 
 
   if (verbose) 
-    verboseDepth+=1;  // Segment à commenter 
+    verboseDepth+=1;  // Segment à commenter
+
+  // STATS
+  cout << endl << endl << "LLL repartition " << endl << endl;
+
+  cout << "[";
+  for (int i=0; i<nech-2; i++)
+    cout << "[ " << i << "," << ech[i] << " ],";
+  cout << "[ " << nech-2 << "," << ech[nech-2] << " ]";
+  cout << "]" << endl; 
+ 
+  
   return 0;
   
 };

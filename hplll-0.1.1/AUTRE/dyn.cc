@@ -405,10 +405,13 @@ int updateff(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t>& U, vector< Z_NR<mpz_t> >& delta, i
 //  Schonhage 2x2 on the triangular gram matrix
 //     diagonal is positive 
 //
+//    last two parameters : for stats only
+//
 // *************************************************************
 
 int schon(ZZ_mat<mpz_t>& V, int& swapsloc, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2,
-	  Z_NR<mpz_t> B1, Z_NR<mpz_t> B2, Z_NR<mpz_t> mu, int kappa, double delta_lll) {
+	  Z_NR<mpz_t> B1, Z_NR<mpz_t> B2, Z_NR<mpz_t> mu, int kappa, double delta_lll,
+	  int nech, vector<int>& ech) {
 
   setId(V);
 
@@ -507,6 +510,33 @@ int schon(ZZ_mat<mpz_t>& V, int& swapsloc, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2,
       B.add(tz,B);
       mpz_divexact(B.GetData(),B.GetData(),B1.GetData());
 
+
+      // STATS
+      // -----
+
+      {
+	mpq_t qq,rho;
+	mpq_init(qq);
+	mpq_init(rho);
+
+	mpq_set_z(rho,B.GetData());
+	mpq_set_z(qq,B1.GetData());
+
+	mpq_div(rho,rho,qq); // mu up to the sign
+
+	double tf;
+	tf=mpq_get_d(rho);
+
+       	
+	ech[((int) (tf*nech))]+=1; 
+	  
+	  //cout << "******* Ratio dyn at " << kappa << " : " << mpq_get_d(rho) << endl; 
+
+	mpq_clear(qq);
+	mpq_clear(rho);
+	
+      } // End stats 
+      
       B1=B;
       d2=B;
 
@@ -517,7 +547,9 @@ int schon(ZZ_mat<mpz_t>& V, int& swapsloc, Z_NR<mpz_t> d1, Z_NR<mpz_t> d2,
       tz=V(1,1);
       V(1,1)=V(1,0);
       V(1,0)=tz;
-    
+
+     
+      
     }
     else {
       stop = true; 
@@ -658,6 +690,14 @@ int ffreduce(ZZ_mat<mpz_t>& C,  ZZ_mat<mpz_t>& U, int kappa) {
 
 int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
 
+  // for STATS
+  int nech=100;
+  vector< int > ech;
+  ech.resize(nech);
+
+  for (int i=0; i<nech; i++)
+    ech[i]=0;
+  
   int d;
 
   setId(U);
@@ -708,9 +748,9 @@ int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
     cv[i-1].add(cv[i-1],tf);
 
   }
-  // -- end HT
+  // --------- end HT
 
-   cout << cv << endl; 
+  
   
   // Unimodular 2x2 transformation
   ZZ_mat<mpz_t> V;
@@ -743,7 +783,8 @@ int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
     
     for (kappa=d-2; kappa >=0; kappa--) {
 
-      schon(V, swapsloc, delta[kappa], delta[kappa+1], C(kappa,kappa),C(kappa+1,kappa+1),C(kappa,kappa+1),kappa,delta_lll);
+      schon(V, swapsloc, delta[kappa], delta[kappa+1], C(kappa,kappa),C(kappa+1,kappa+1),C(kappa,kappa+1),
+	    kappa,delta_lll,nech,ech);
 
           
       nbswaps += swapsloc;
@@ -786,7 +827,7 @@ int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
 
     cout  << "       HT " << tf << endl << endl;
     
-  // -- end HT
+    // ------- end HT
 
     // Early termination
     // -----------------
@@ -800,8 +841,15 @@ int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
 
 
   }  // end main LLL loop
- 
 
+  // STATS
+  cout << endl << endl << "Dyn repartition " << endl << endl;
+
+  cout << "[";
+  for (int i=0; i<nech-2; i++)
+    cout << "[ " << i << "," << ech[i] << " ],";
+  cout << "[ " << nech-2 << "," << ech[nech-2] << " ]";
+  cout << "]" << endl; 
   
   // Final size reduction ??
   // --------------------
@@ -843,11 +891,11 @@ int main(int argc, char *argv[]) {
   double ta,ua,va,wa;
   
   matprod_in(A,U);   // *** erases A
-  ratio<mpz_t>(A,ta,ua,va,wa);
+  hplll::ratio<mpz_t>(A,ta,ua,va,wa);
   
   double tb,ub,vb,wb;
   
-  ratio<mpz_t>(B.getbase(),tb,ub,vb,wb);
+  hplll::ratio<mpz_t>(B.getbase(),tb,ub,vb,wb);
 
   cout << endl << ".. log 2 Frobenius norm cond: " << ta << endl;
   cout         << "                              " << tb << endl;
@@ -865,6 +913,8 @@ int main(int argc, char *argv[]) {
   cout << endl << "Dyn swaps: " << dynswaps << endl;
   cout << endl << "LLL swaps: " << B.nbswaps << endl << endl;
 
-  
+  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A,NO_TRANSFORM,DEF_REDUCTION);
+  verboseDepth=0;
+  T.isreduced(delta_lll-0.1);
   
 }
