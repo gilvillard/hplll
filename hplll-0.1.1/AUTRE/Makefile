@@ -27,10 +27,10 @@ LOADLIBES +=  ${FPLLL_LIBS} ${MPFR_LIBS} ${GMP_LIBS}
 .SUFFIXES: .o .c .cc  
 
 .cc.o:
-	g++  -o $@ -c $<   ${CXXFLAGS}
+	clang++  -o $@ -c $<   ${CXXFLAGS}
  
 .cc:
-	g++  -o $@ $<   ${CXXFLAGS}  ${LDFLAGS} ${LOADLIBES} 
+	clang++  -o $@ $<   ${CXXFLAGS}  ${LDFLAGS} ${LOADLIBES} 
 
 
  
