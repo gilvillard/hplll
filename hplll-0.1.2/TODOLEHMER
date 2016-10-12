@@ -1,0 +1,13 @@
+
+- affecter un double à Z_NR<double> 
+
+-mettre matprod_in comme membre de la classe matrix 
+
+- en pas remultiplier quand gardé tous les chiffres ou explicite shift 
+- mettre FPLLL ou HLLL partout 
+
+- relations_lll dans le même fichier que nullspace pour l'instant 
+
+- mettre nbrel et size rel ? 
+
+- spécialiser en double les matrices en basse précision 
