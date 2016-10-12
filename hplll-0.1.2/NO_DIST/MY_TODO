@@ -1,0 +1,57 @@
+
+Transpose poru affectation des matrices 
+
+Hermite chez IML 
+
+Des prec séparée via variables globales dans chaque truc avec changement à chaque op ? 
+Cf fp_nr getprec est celle globale de mpfr pas attachée à un élément 
+
+Les setprec mprf à faire génériques 
+
+#define a la place de tests pour dec 
+
+Besoin de l'heuristique d'arret rel size ET precision du résidu ?
+
+voir efficacité du calcul de Y dans decomp, projetter si 
+ grand nb de colonnes ? Spécialement cas entier ? 
+
+supprimer les if eg transform, Y etc. 
+
+fmasub et div : mettre col ??? 
+
+régler targetsize : peut calculer une un peu plus grande que la limite 
+
+Jeu de quelle transformations à calculer U ou W dans decomp 
+
+*** test d'anomalie numérique comme pour hlll ? ===> en poussant la dimension 
+en supposant que kappa=maxh-1 réduit par rapport à maxh donc monte 
+si à nouveau utilisation de maxh alors c'est que ça redescend, donc même test 
+
+decomp pour relation : raffraichir F à l'aide de la transformation V=(U^(-1))^T
+et du vecteur initial car on ne peut pas sinon faire un vrai style L2 et problème de stabilité globale 
+avec les erreurs sur F 
+
+un mode verbose pour imprimer des trucs (ex etapes de boucle, isreduced) 
+
+Matrix flottante et entiere : interface matrix 
+
+Decomp à la fois mpfr et entiers 
+et mat et mat exp en interne 
+
+Interface matrix pour les entiers 
+
+Accélérer les op matrices de base, submulcol vs fmasub ... 
+
+Namespace 
+
+#define global pour le approx de la réduction 
+
+flag_reduce ds hsizereduce de decomp 
+
+_ui dans reduction  hlll et decomp 
+
+Vérifier la qualité de la réduction 
+
+Colkept à 0 ds seysen  et alpha ds isreduced 
+
+Conversion de float à float (rajouté set_mpfr) 
