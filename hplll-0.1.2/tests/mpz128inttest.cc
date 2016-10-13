@@ -50,13 +50,15 @@ int main(int argc, char *argv[])  {
   Z_NR<__int128_t> r,oone;
   oone = 1;
       
-  for (i=1; i<1000; i++) {
+  for (i=1; i<34; i++) {
 
+    
+    
     // Positive 
     for (k=1; k<=127; k++) {
 
       a.randb(k);
-
+      
       mpz_set_128int(r,a); 
 
       r.sub(r,oone);

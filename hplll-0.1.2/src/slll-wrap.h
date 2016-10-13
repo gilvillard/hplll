@@ -46,8 +46,8 @@ slll_wrap_gap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int gap_position, int S, double delta
 
   int gap_status;
 
-  int n=A.getRows();
-  int d=A.getCols();
+  int n=A.get_rows();
+  int d=A.get_cols();
 
   // First part of the basis
   // -----------------------
@@ -58,7 +58,7 @@ slll_wrap_gap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int gap_position, int S, double delta
 
   for (i=0; i<n; i++)
     for (j=0; j<gap_position; j++)
-      B.Set(i,j,A(i,j));
+      B(i,j)=A(i,j);
   
   // Reduction of the first part
   // ---------------------------
@@ -89,11 +89,11 @@ slll_wrap_gap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int gap_position, int S, double delta
 
   for (j=0; j<gap_position; j++)
     for (i=0; i<n; i++)
-      C.Set(i,j,B(i,j));
+      C(i,j)=B(i,j);
 
   for (j=gap_position; j<d; j++)
     for (i=0; i<n; i++)
-      C.Set(i,j,A(i,j));
+      C(i,j)=A(i,j);
   
   Lattice<ZT, FT,  MatrixZT, MatrixFT>  LC(C,NO_TRANSFORM,reduction_method);
   
@@ -131,8 +131,8 @@ slll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, int S, double delta, int 
   
   int i,j,k;
 
-  int n=A.getRows();
-  int d=A.getCols();
+  int n=A.get_rows();
+  int d=A.get_cols();
 
   ZZ_mat<ZT> B;
 
@@ -147,7 +147,7 @@ slll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, int S, double delta, int 
 
   for (i=0; i<n; i++)
     for (j=0; j<d1; j++)
-      B.Set(i,j,A(i,j));
+      B(i,j)=A(i,j);
 
  
   Lattice<ZT, FT,  MatrixZT, MatrixFT>  L(B,NO_TRANSFORM,reduction_method);
@@ -176,10 +176,10 @@ slll_wrap(ZZ_mat<ZT>& C, ZZ_mat<ZT> A, int dthreshold, int S, double delta, int 
     
     for (i=0; i<n; i++)
       for (j=0; j<k-1; j++)
-	B.Set(i,j,C(i,j));
+	B(i,j)=C(i,j);
     
     for (i=0; i<n; i++)
-      B.Set(i,k-1,A(i,k-1));
+      B(i,k-1)=A(i,k-1);
     
     if (verboseDepth >= 0) 
       cout << "Discovering+ vector " << k  << "/" << d << endl;

@@ -42,8 +42,8 @@ int main(int argc, char *argv[])  {
 
   AT.read(cin);
 
-  int d=AT.getRows();
-  int n=AT.getCols();
+  int d=AT.get_rows();
+  int n=AT.get_cols();
 
   A.resize(n,d);
   
