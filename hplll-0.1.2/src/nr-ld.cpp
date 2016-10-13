@@ -42,8 +42,8 @@ inline void get_round(FP_NR<dpe_t>& x, int&xs, long& lx, long& expo, const FP_NR
   DPE_DOUBLE qmant;
   DPE_EXP_T  qexp;
 
-  qmant = DPE_MANT(a.getData()) / DPE_MANT(b.getData());
-  qexp = DPE_EXP(a.getData()) - DPE_EXP(b.getData());
+  qmant = DPE_MANT(a.get_data()) / DPE_MANT(b.get_data());
+  qexp = DPE_EXP(a.get_data()) - DPE_EXP(b.get_data());
 
   // Normalization 
   DPE_EXP_T e;
@@ -73,8 +73,8 @@ inline void get_round(FP_NR<dpe_t>& x, int&xs, long& lx, long& expo, const FP_NR
 	lx = static_cast<long>(ldexp(static_cast<double>(lx), expo));
 	expo=0;
       } 
-      LDPE_MANT(x.getData())=qmant; 
-      LDPE_EXP(x.getData())=qexp;
+      LDPE_MANT(x.get_data())=qmant; 
+      LDPE_EXP(x.get_data())=qexp;
       
 
     } // End integer case   
@@ -86,12 +86,12 @@ inline void get_round(FP_NR<dpe_t>& x, int&xs, long& lx, long& expo, const FP_NR
       lx = static_cast<long>(qmant);
       expo = 0; 
 
-      LDPE_MANT(x.getData())=qmant; 
-      LDPE_EXP(x.getData())=0;
+      LDPE_MANT(x.get_data())=qmant; 
+      LDPE_EXP(x.get_data())=0;
       // Puis normaliser ? 
       qmant = DPE_FREXP (qmant, &e);
-      LDPE_MANT(x.getData())=qmant; 
-      LDPE_EXP(x.getData())=e;
+      LDPE_MANT(x.get_data())=qmant; 
+      LDPE_EXP(x.get_data())=e;
 
      
     } 
@@ -109,9 +109,9 @@ inline void set_mpfr(FP_NR<dpe_t>& x, const FP_NR<mpfr_t> xf){
 
   long e;
 
-  DPE_MANT(x.getData())=mpfr_get_d_2exp(&e, xf.getData(),GMP_RNDN); 
-  DPE_EXP(x.getData())=e;
-  dpe_normalize(x.getData());
+  DPE_MANT(x.get_data())=mpfr_get_d_2exp(&e, xf.get_data(),GMP_RNDN); 
+  DPE_EXP(x.get_data())=e;
+  dpe_normalize(x.get_data());
 }
 
 #ifdef HPLLL_WITH_LONG_DOUBLE
@@ -120,9 +120,9 @@ inline void set_mpfr(FP_NR<ldpe_t>& x, const FP_NR<mpfr_t> xf){
 
   long e;
 
-  LDPE_MANT(x.getData())=mpfr_get_ld_2exp(&e, xf.getData(),GMP_RNDN); 
-  LDPE_EXP(x.getData())=e;
-  ldpe_normalize(x.getData());
+  LDPE_MANT(x.get_data())=mpfr_get_ld_2exp(&e, xf.get_data(),GMP_RNDN); 
+  LDPE_EXP(x.get_data())=e;
+  ldpe_normalize(x.get_data());
 }
 #endif 
 
@@ -135,13 +135,13 @@ inline void set_mpfr(FP_NR<mpfr_t>& x, const FP_NR<mpfr_t> xf){
 
 inline void set_mpfr(FP_NR<double>& x, const FP_NR<mpfr_t> xf){
 
-  x.getData() = xf.get_d();
+  x.get_data() = xf.get_d();
 }
 
 #ifdef HPLLL_WITH_LONG_DOUBLE
 inline void set_mpfr(FP_NR<long double>& x, const FP_NR<mpfr_t> xf){
 
-  x.getData()= mpfr_get_ld(xf.getData(),GMP_RNDN);
+  x.get_data()= mpfr_get_ld(xf.get_data(),GMP_RNDN);
 }
 #endif 
 
@@ -159,7 +159,7 @@ template<class ZT, class FT> inline void set_f(Z_NR<ZT>& xz, const FP_NR<FT> x) 
 
 template<> template<>
 inline void FP_NR<ldpe_t>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
-  ldpe_set_ld(data, static_cast<long double>(a.getData())); 
+  ldpe_set_ld(data, static_cast<long double>(a.get_data())); 
 }
 
 
@@ -167,7 +167,7 @@ inline void FP_NR<ldpe_t>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
 template<> inline void set_f(Z_NR<mpz_t>& xz, const FP_NR<long double> xx) {
 
   long double x;
-  x=lround(xx.getData());
+  x=lround(xx.get_data());
 
   int l;
   if (x==0) l=2;
@@ -179,7 +179,7 @@ template<> inline void set_f(Z_NR<mpz_t>& xz, const FP_NR<long double> xx) {
 
   sprintf(xc,"%.0Lf",x);
 
-  mpz_set_str(xz.getData(),xc,10);
+  mpz_set_str(xz.get_data(),xc,10);
 
 }
 #endif 
@@ -188,14 +188,14 @@ template<> inline void set_f(Z_NR<mpz_t>& xz, const FP_NR<long double> xx) {
 template<> inline void set_f(Z_NR<mpz_t>& xz, const FP_NR<ldpe_t> xx) {
 
   // pb dpe get_z en long double ?
-  //ldpe_get_z(xz.getData(), const_cast<ldpe_t&>(x.GetData()));
+  //ldpe_get_z(xz.get_data(), const_cast<ldpe_t&>(x.get_data()));
 
   long double x;
   int l;
 
-  if ( LDPE_EXP(xx.getData()) >= 64) { // We have an integer 
+  if ( LDPE_EXP(xx.get_data()) >= 64) { // We have an integer 
 
-    x=ldexpl(LDPE_MANT(xx.getData()), 64); 
+    x=ldexpl(LDPE_MANT(xx.get_data()), 64); 
   
     if (x==0.0) l=2;
     else if (x > 0) 
@@ -206,14 +206,14 @@ template<> inline void set_f(Z_NR<mpz_t>& xz, const FP_NR<ldpe_t> xx) {
 
     sprintf(xc,"%.0Lf",x);
   
-    mpz_set_str(xz.getData(),xc,10);
+    mpz_set_str(xz.get_data(),xc,10);
 
-    mpz_mul_2exp (xz.getData(), xz.getData(), LDPE_EXP(xx.getData()) - 64);
+    mpz_mul_2exp (xz.get_data(), xz.get_data(), LDPE_EXP(xx.get_data()) - 64);
 
   }
   else {
 
-    x=ldexpl(LDPE_MANT(xx.getData()), LDPE_EXP(xx.getData()) ); 
+    x=ldexpl(LDPE_MANT(xx.get_data()), LDPE_EXP(xx.get_data()) ); 
 
     x=lround(x); // added April 10, 2013 - Needed ? Was required and missing in set_f from long double to mpz_t
 
@@ -226,7 +226,7 @@ template<> inline void set_f(Z_NR<mpz_t>& xz, const FP_NR<ldpe_t> xx) {
 
     sprintf(xc,"%.0Lf",x);
   
-    mpz_set_str(xz.getData(),xc,10);
+    mpz_set_str(xz.get_data(),xc,10);
 
   }  
 }
@@ -243,7 +243,7 @@ template<class ZT, class FT> inline void set_z(FP_NR<FT>& x, const Z_NR<ZT> xz) 
 template<> inline void set_z(FP_NR<ldpe_t>& x, const Z_NR<mpz_t> xz){
 
   // cf pb set_z dpe en long double ? 
-  //   ldpe_set_z(x.getData(), const_cast<mpz_t&>(xz.GetData()));
+  //   ldpe_set_z(x.get_data(), const_cast<mpz_t&>(xz.get_data()));
 
   mpfr_t xzf;
 
@@ -251,10 +251,10 @@ template<> inline void set_z(FP_NR<ldpe_t>& x, const Z_NR<mpz_t> xz){
 
   long e;
 
-  mpfr_set_z(xzf,xz.getData(),GMP_RNDN);
+  mpfr_set_z(xzf,xz.get_data(),GMP_RNDN);
 
-  LDPE_MANT(x.getData())=mpfr_get_ld_2exp(&e, xzf,GMP_RNDN); 
-  LDPE_EXP(x.getData())=e;
+  LDPE_MANT(x.get_data())=mpfr_get_ld_2exp(&e, xzf,GMP_RNDN); 
+  LDPE_EXP(x.get_data())=e;
 
   mpfr_clear(xzf);
 
@@ -268,9 +268,9 @@ template<> inline void set_z(FP_NR<long double>& x, const Z_NR<mpz_t> xz){
 
   mpfr_init2(xzf,80);  // À voir 
 
-  mpfr_set_z(xzf,xz.getData(),GMP_RNDN);
+  mpfr_set_z(xzf,xz.get_data(),GMP_RNDN);
 
-  x.getData()=mpfr_get_ld(xzf,GMP_RNDN); 
+  x.get_data()=mpfr_get_ld(xzf,GMP_RNDN); 
 
  mpfr_clear(xzf);
 
@@ -281,7 +281,7 @@ template<> inline void set_z(FP_NR<long double>& x, const Z_NR<mpz_t> xz){
 // --------
 
 inline int size_in_bits(Z_NR<long> data) {
-  long y = abs(data.GetData());
+  long y = labs(data.get_data());
   int resul = 0;
   if (y == 0) resul=1;
   else {
@@ -294,10 +294,10 @@ inline int size_in_bits(Z_NR<long> data) {
 }
 
 inline int size_in_bits(Z_NR<__int128_t> data) {
-  //__int128_t y = abs(data.GetData());
+  //__int128_t y = abs(data.get_data());
   Z_NR<__int128_t> z;
   z.abs(data);
-  __int128_t y = z.GetData();
+  __int128_t y = z.get_data();
   int resul = 0;
   if (y == 0) resul=1;
   else {
@@ -312,7 +312,7 @@ inline int size_in_bits(Z_NR<__int128_t> data) {
 inline int size_in_bits(Z_NR<mpz_t> data) {
  
   int l;
-  l= mpz_sizeinbase(data.getData(),2); 
+  l= mpz_sizeinbase(data.get_data(),2); 
   return l;
 }
 
@@ -330,8 +330,8 @@ template<class FT> inline void hplllprint(const FP_NR<FT> a);
 template<> inline void hplllprint(const FP_NR<dpe_t> a) {
 
 
-  DPE_DOUBLE d = DPE_MANT(a.getData());
-  DPE_EXP_T e2 = DPE_EXP(a.getData());
+  DPE_DOUBLE d = DPE_MANT(a.get_data());
+  DPE_EXP_T e2 = DPE_EXP(a.get_data());
   int e10 = 0;
   char sign = ' ';
   
@@ -390,8 +390,8 @@ template<> inline void hplllprint(const FP_NR<dpe_t> a) {
 template<> inline void hplllprint(const FP_NR<ldpe_t> a) {
 
 
-  LDPE_DOUBLE d = LDPE_MANT(a.getData());
-  LDPE_EXP_T e2 = LDPE_EXP(a.getData());
+  LDPE_DOUBLE d = LDPE_MANT(a.get_data());
+  LDPE_EXP_T e2 = LDPE_EXP(a.get_data());
   int e10 = 0;
   char sign = ' ';
   
@@ -476,31 +476,16 @@ const int PREC_LONGDOUBLE=64;
 
 #ifdef HPLLL_WITH_LONG_DOUBLE
 
-template<> inline void FP_NR<long double>::set(const FP_NR<long double>& s)
-{
-  data=s.getData();
-}
 
 
-template<> inline void FP_NR<long double>::mul_2ui(const FP_NR<long double>& b, unsigned int c)
-{
-  data = ldexpl(b.GetData(), c);
-}
-
-template<> inline void FP_NR<long double>::div_2ui(const FP_NR<long double>& b, unsigned int c)
-{
-  data = ldexpl(b.GetData(), -c);
-}
-
-
-template<> inline int FP_NR<long double>::exp() const
-{
-  return ilogbl(data)+1;
-}
-template<> inline int FP_NR<long double>::zero_p() const
-{
-  return (data==0);
-}
+// template<> inline int FP_NR<long double>::exp() const
+// {
+//   return ilogbl(data)+1;
+// }
+// template<> inline int FP_NR<long double>::zero_p() const
+// {
+//   return (data==0);
+// }
 
 #endif 
 
@@ -527,21 +512,21 @@ template<> inline FP_NR<ldpe_t>::~FP_NR()
   ldpe_clear(data);
 }
 
-template<> inline void FP_NR<ldpe_t>::print() const
-{
-  ldpe_out_str(stdout,10, ldpe_ncref(data));
-  fflush(stdout);
-}
-template<> inline void FP_NR<ldpe_t>::printerr() const
-{
-  ldpe_out_str(stderr,10, ldpe_ncref(data));
-  fflush(stderr);
-}
+// template<> inline void FP_NR<ldpe_t>::print() const
+// {
+//   ldpe_out_str(stdout,10, ldpe_ncref(data));
+//   fflush(stdout);
+// }
+// template<> inline void FP_NR<ldpe_t>::printerr() const
+// {
+//   ldpe_out_str(stderr,10, ldpe_ncref(data));
+//   fflush(stderr);
+// }
 
-template<> inline double FP_NR<ldpe_t>::get() const
-{
-  return ldpe_get_d(ldpe_ncref(data));
-}
+// template<> inline double FP_NR<ldpe_t>::get() const
+// {
+//   return ldpe_get_d(ldpe_ncref(data));
+// }
 template<> inline double FP_NR<ldpe_t>::get_d(mp_rnd_t rnd) const
 {
   return ldpe_get_d(ldpe_ncref(data));
@@ -567,18 +552,20 @@ inline long FP_NR<ldpe_t>::get_si_exp(long& expo) const {
   return result;
 }
 
-template<> inline void FP_NR<ldpe_t>::set(const FP_NR<ldpe_t>& f)
-{
-  ldpe_set(data, ldpe_ncref(f.data));
-}
-template<> inline void FP_NR<ldpe_t>::set(double d)
-{
-  ldpe_set_d(data, d);
-}
-template<> inline void FP_NR<ldpe_t>::set(unsigned int s)
-{
-  ldpe_set_d(data, static_cast<double>(s));
-}
+// template<> inline void FP_NR<ldpe_t>::set(const FP_NR<ldpe_t>& f)
+// {
+//   ldpe_set(data, ldpe_ncref(f.data));
+// }
+// template<> inline void FP_NR<ldpe_t>::set(double d)
+// {
+//   ldpe_set_d(data, d);
+// }
+// template<> inline void FP_NR<ldpe_t>::set(unsigned int s)
+// {
+//   ldpe_set_d(data, static_cast<double>(s));
+// }
+
+
 template<> inline void FP_NR<ldpe_t>::operator=(const FP_NR<ldpe_t>& f)
 {
   ldpe_set(data, ldpe_ncref(f.data));
@@ -608,18 +595,18 @@ template<> inline void FP_NR<ldpe_t>::mul_2si(const FP_NR<ldpe_t>& a, long b)
 {
   ldpe_mul_2si(data, ldpe_ncref(a.data),b);
 }
-template<> inline void FP_NR<ldpe_t>::mul_2ui(const FP_NR<ldpe_t>& a, unsigned int b)
-{
-  ldpe_mul_2exp(data, ldpe_ncref(a.data),b);
-}
+// template<> inline void FP_NR<ldpe_t>::mul_2ui(const FP_NR<ldpe_t>& a, unsigned int b)
+// {
+//   ldpe_mul_2exp(data, ldpe_ncref(a.data),b);
+// }
 template<> inline void FP_NR<ldpe_t>::div(const FP_NR<ldpe_t>& a, const FP_NR<ldpe_t>& b, mp_rnd_t rnd)
 {
   ldpe_div(data, ldpe_ncref(a.data), ldpe_ncref(b.data));
 }
-template<> inline void FP_NR<ldpe_t>::div_2ui(const FP_NR<ldpe_t>& a, unsigned int b)
-{
-  ldpe_div_2exp(data, ldpe_ncref(a.data),b);
-}
+// template<> inline void FP_NR<ldpe_t>::div_2ui(const FP_NR<ldpe_t>& a, unsigned int b)
+// {
+//   ldpe_div_2exp(data, ldpe_ncref(a.data),b);
+// }
 
 template<> inline int FP_NR<ldpe_t>::cmp(const FP_NR<ldpe_t>& a) const
 {
@@ -663,10 +650,10 @@ template<> inline void FP_NR<ldpe_t>::rnd(const FP_NR<ldpe_t>& a)
 {
   ldpe_round(data, ldpe_ncref(a.data));
 }
-template<> inline int FP_NR<ldpe_t>::exp() const
-{
-  return LDPE_EXP(data);
-}
+// template<> inline int FP_NR<ldpe_t>::exp() const
+// {
+//   return LDPE_EXP(data);
+// }
 template<> inline int FP_NR<ldpe_t>::zero_p() const
 {
   return ldpe_zero_p(ldpe_ncref(data));
@@ -691,14 +678,14 @@ inline void FP_NR<ldpe_t>::swap(FP_NR<ldpe_t>& a) {
 }
 
 template<>
-inline unsigned int FP_NR<ldpe_t>::getprec() {
+inline unsigned int FP_NR<ldpe_t>::get_prec() {
   return LDPE_BITSIZE;
 }
 
 template<>
-inline unsigned int FP_NR<ldpe_t>::setprec(unsigned int prec) {
+inline unsigned int FP_NR<ldpe_t>::set_prec(unsigned int prec) {
   // ignored
-  return getprec();
+  return get_prec();
 }
 
 #undef ldpe_ncref

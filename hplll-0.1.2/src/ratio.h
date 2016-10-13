@@ -125,7 +125,7 @@ template<class ZT> int ratio(ZZ_mat<ZT> B, double& lfcond,  double& av_ratio,  d
   
   cc.sqrt(cc); 
 
-  mpfr_log2(cc.getData(),cc.getData(),GMP_RNDN);
+  mpfr_log2(cc.get_data(),cc.get_data(),GMP_RNDN);
 
   lfcond = cc.get_d();
 
@@ -161,7 +161,7 @@ template<class ZT> int ratio(ZZ_mat<ZT> B, double& lfcond,  double& av_ratio,  d
 
 
   // First vector 
-  mpfr_log2(t.getData(),(aR(0,0)).getData(),GMP_RNDN);
+  mpfr_log2(t.get_data(),(aR(0,0)).get_data(),GMP_RNDN);
   
   // Volume
   
@@ -169,7 +169,7 @@ template<class ZT> int ratio(ZZ_mat<ZT> B, double& lfcond,  double& av_ratio,  d
 
   v=aR(0,0);
   for (i=1; i<d; i++) v.mul(v,aR(i,i));
-  mpfr_log2(v.getData(),v.getData(),GMP_RNDN);
+  mpfr_log2(v.get_data(),v.get_data(),GMP_RNDN);
 
   tt= ((double) d);
   v.div(v,tt);

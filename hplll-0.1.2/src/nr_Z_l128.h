@@ -4,7 +4,7 @@
  *********************************/
 
 #ifndef HPLLL_NR_Z_L128_H
-#define FPLLL_NR_Z_L128_H
+#define HPLLL_NR_Z_L128_H
 
 #include"defs.h"
 
@@ -22,12 +22,12 @@ inline void mpz_set_128int(Z_NR< __int128_t>& r, const Z_NR<mpz_t> a){
   mpz_init(lmp);
   mpz_init(ump);
 
-  mpz_fdiv_q_2exp (ump, a.getData(), 64);
-  mpz_fdiv_r_2exp (lmp, a.getData(), 64);
+  mpz_fdiv_q_2exp (ump, a.get_data(), 64);
+  mpz_fdiv_r_2exp (lmp, a.get_data(), 64);
 
-  r.getData()=mpz_get_si(ump);
-  r.getData()<<=64;
-  r.getData()+=mpz_get_ui(lmp);
+  r.get_data()=mpz_get_si(ump);
+  r.get_data()<<=64;
+  r.get_data()+=mpz_get_ui(lmp);
 }
 
 // long on 64 bits 
@@ -38,12 +38,12 @@ inline void mpz_get_128int(Z_NR<mpz_t>& a, const Z_NR< __int128_t> r){
   mpz_init(data);
 
   mpz_init(data);
-  mpz_set_si(data,r.getData()>>64);
+  mpz_set_si(data,r.get_data()>>64);
   mpz_mul_2exp(data,data,64);
 
-  mpz_set(a.getData(),data);
+  mpz_set(a.get_data(),data);
 
-  mpz_add_ui(a.getData(),a.getData(),(r.getData()<<64)>>64);
+  mpz_add_ui(a.get_data(),a.get_data(),(r.get_data()<<64)>>64);
 
 }
 
@@ -142,14 +142,14 @@ inline void Z_NR<__int128_t>::operator=(long a) {
 template<> template<>
 inline void Z_NR<__int128_t>::set_f(const FP_NR<double>& a) {
   //data = a.get_si();
-  data = static_cast<__int128_t>(a.getData());
+  data = static_cast<__int128_t>(a.get_data());
 }
 
 
 // Mettre ds nr-ld 
 template<> template<>
 inline void Z_NR<__int128_t>::set_f(const FP_NR<long double>& a) {
-    data = static_cast<__int128_t>(a.getData());
+    data = static_cast<__int128_t>(a.get_data());
 }
 
 
@@ -167,18 +167,18 @@ inline void Z_NR<__int128_t>::set_f(const FP_NR<dpe_t>& a) {
   
 //template<> template<>
 //inline void FP_NR<mpfr_t>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
-//mpfr_set_d(data, static_cast<double>(a.getData()), rnd);
+//mpfr_set_d(data, static_cast<double>(a.get_data()), rnd);
 //}
 
 template<> template<>
 inline void FP_NR<double>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
-  data=static_cast<double>(a.getData());
+  data=static_cast<double>(a.get_data());
 }
 
 // Mettre ds nr-ld 
 template<> template<>
 inline void FP_NR<long double>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
-  data=static_cast<long double>(a.getData());
+  data=static_cast<long double>(a.get_data());
 }
 
 
@@ -351,7 +351,7 @@ template<>
 inline void Z_NR<__int128_t>::randb(int bits) {
   mpz_t temp;
   mpz_init(temp);
-  mpz_urandomb(temp, RandGen::getGMPState(), bits);
+  mpz_urandomb(temp, RandGen::gmp_state, bits);
   data = mpz_get_si(temp); 
   mpz_clear(temp);
 }
@@ -437,7 +437,7 @@ inline void Z_NR<__int128_t>::randb(int bits) {
 template<>
 inline ostream& operator<<(ostream& os, const Z_NR<__int128_t>& x) {
 
-__int128_t value= x.getData();
+__int128_t value= x.get_data();
 
     std::ostream::sentry s( os );
     if ( s ) {
@@ -465,7 +465,7 @@ __int128_t value= x.getData();
 
 /* template<> */
 /* inline istream& operator>>(istream& is, Z_NR<__int128_t>& x) { */
-/*   return is >> x.getData(); */
+/*   return is >> x.get_data(); */
 /* } */
 
 

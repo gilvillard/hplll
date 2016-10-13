@@ -120,9 +120,9 @@ int main(int argc, char *argv[])  {
     
     for (j=0; j<d; j++)
       for (i=0; i<n; i++)
-	//Af(i,j).getData()=AR(i,j).getData(); // Affectation problématique
-	// si pas getData à gauche donne des entiers
-	Af(i,j).getData()=A(i,j).get_d();
+	//Af(i,j).get_data()=AR(i,j).get_data(); // Affectation problématique
+	// si pas get_data à gauche donne des entiers
+	Af(i,j).get_data()=A(i,j).get_d();
     
     SLattice<double, double, matrix<Z_NR<double> >, matrix<FP_NR<double> > > B(Af,TRANSFORM,DEF_REDUCTION);
 
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])  {
     U.resize(d,d);
     for (j=0; j<d; j++)
       for (i=0; i<d; i++) {
-	tf = Uf(i,j).getData();  // Pour long double ou autre, vérifier et passer par set_z ? 
+	tf = Uf(i,j).get_data();  // Pour long double ou autre, vérifier et passer par set_z ? 
 	U(i,j).set_f(tf);
       }
 

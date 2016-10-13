@@ -68,8 +68,8 @@ int main(int argc, char *argv[])  {
 
   for (i=0; i<d; i++)
   for (j=0; j<d ; j++) {
-    Ap(i,j)=mpz_get_si(A(i,j).getData());
-    Bp(i,j)=mpz_get_si(B(i,j).getData());
+    Ap(i,j)=mpz_get_si(A(i,j).get_data());
+    Bp(i,j)=mpz_get_si(B(i,j).get_data());
   }
 
 
@@ -80,8 +80,8 @@ int main(int argc, char *argv[])  {
 
   for (i=0; i<d; i++)
   for (j=0; j<d ; j++) {
-    Af(i,j)=((double) Ap(i,j).getData());
-    Bf(i,j)=((double) Bp(i,j).getData());
+    Af(i,j)=((double) Ap(i,j).get_data());
+    Bf(i,j)=((double) Bp(i,j).get_data());
   }
 
     

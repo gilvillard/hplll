@@ -363,7 +363,7 @@ ZFgas<ZT, FT, MatrixZT, MatrixFT>::hsizereduce(int kappa) {
 	  R.submulcol(kappa,i,x,i);
 	  F.submulcol(kappa,i,xz,d);
 
-	  //if (DPE_EXP(x.getData()) < 31) {
+	  //if (DPE_EXP(x.get_data()) < 31) {
 
 	    //int ii;
 	    //ii=xz.get_si();

@@ -734,7 +734,7 @@ int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
     
     tz=C(d-1,d-1);
     tf.set_z(tz);
-    mpfr_log2(tf.getData(),tf.getData(),GMP_RNDN); 
+    mpfr_log2(tf.get_data(),tf.get_data(),GMP_RNDN); 
  
     tz=-i;
     tf2.set_z(tz);
@@ -811,7 +811,7 @@ int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
       tz=C(i,i);
       tz.abs(tz);
       tf.set_z(tz);
-      mpfr_log2(tf.getData(),tf.getData(),GMP_RNDN); 
+      mpfr_log2(tf.get_data(),tf.get_data(),GMP_RNDN); 
 
       v[i]=tf;
       v[i].add(cv[i],v[i]);
@@ -823,7 +823,7 @@ int fflll(ZZ_mat<mpz_t>& U,  ZZ_mat<mpz_t> A, double delta_lll) {
     
     for (int i=1; i<d; i++)
       if (tf < v[i]) tf=v[i];
-    mpfr_exp2(tf.getData(),tf.getData(),GMP_RNDN); 
+    mpfr_exp2(tf.get_data(),tf.get_data(),GMP_RNDN); 
 
     cout  << "       HT " << tf << endl << endl;
     
