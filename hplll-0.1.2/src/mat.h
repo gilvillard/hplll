@@ -218,7 +218,7 @@ public:
   inline void setcol(int j, Z_NR<double>* b, int beg, int l) {
 
     for (int i=beg; i<beg+l; i++) 
-      M[j][i].getData()=b[i].getData();
+      M[j][i].get_data()=b[i].get_data();
 
  }
   
@@ -559,7 +559,7 @@ inline void set(Matrix<T>& A)
    for (int j=0; j<bdim; j++) {
      si = ii*bdim; 
      for (int i=0; i<bdim; i++) {
-       B(i,j).getData()=A(si+diagdec,sj+diagdec).getData(); // TO CHECK IN GENERAL 
+       B(i,j).get_data()=A(si+diagdec,sj+diagdec).get_data(); // TO CHECK IN GENERAL 
        si +=1;
      }
      sj+=1;
@@ -949,7 +949,7 @@ template<class T> inline void vector_fmasub(T* v,  const T* w, const T* z, const
 
 template<class T> inline  void shift_in(Matrix<T>& B, const int lalpha, const int nrows) { 
   
-   for (int j=0; j<B.GetNumCols(); j++) 
+   for (int j=0; j<B.get_cols(); j++) 
      for (int i=0; i<nrows; i++) 
        (B(i,j)).mul_2si(B(i,j),lalpha);
       
@@ -1138,9 +1138,9 @@ template<class T> void matprod(Matrix<T>& C,  Matrix<T> B, Matrix<T> U)
  
   int n,d,dres,i,j,k;
 
-  n= B.GetNumRows();
-  d= B.GetNumCols();
-  dres=U.GetNumCols();
+  n= B.get_rows();
+  d= B.get_cols();
+  dres=U.get_cols();
 
   for (i=0; i<n; i++)  {
     
@@ -1163,8 +1163,8 @@ template<class T> void matprod_in(Matrix<T>& C, Matrix<T> U)
 
   int m,n,i,j,k;
 
-  m= C.GetNumRows();
-  n= C.GetNumCols();
+  m= C.get_rows();
+  n= C.get_cols();
 
   Matrix<T> tmat;
   tmat.resize(m,n);
@@ -1187,8 +1187,8 @@ template<class T> void matprod_in(Matrix<T>& C, Matrix<T> U)
 
   int m,n,i,j,k;
 
-  m= C.GetNumRows();
-  n= C.GetNumCols();
+  m= C.get_rows();
+  n= C.get_cols();
 
   ZZ_mat<mpz_t> tmat;
   tmat.resize(m,n);
@@ -1213,8 +1213,8 @@ template<class T> void matprod_in(Matrix<T>& C, Matrix<T> U)
 
   int m,n;
 
-  m= C.GetNumRows();
-  n= C.GetNumCols();
+  m= C.get_rows();
+  n= C.get_cols();
 
 
 #ifdef _OPENMP
@@ -1266,17 +1266,17 @@ inline void matprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U)
 
   int m,n,i,j,k;
 
-  m= C.GetNumRows();
-  n= C.GetNumCols();
+  m= C.get_rows();
+  n= C.get_cols();
 
   Matrix<Z_NR<mpz_t> > tmat;
   tmat.resize(m,n);
 
   for (i=0; i<m; i++) 
     for (j=0; j<n; j++) {
-      tmat(i,j).mul_si(C(i,0),U(0,j).GetData());
+      tmat(i,j).mul_si(C(i,0),U(0,j).get_data());
       for (k=1; k<n; k++) {
-	tmat(i,j).addmul_si(C(i,k),U(k,j).GetData());
+	tmat(i,j).addmul_si(C(i,k),U(k,j).get_data());
       }
     }
 
@@ -1291,8 +1291,8 @@ inline void matprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U)
 
   int m,n;
 
-  m= C.GetNumRows();
-  n= C.GetNumCols();
+  m= C.get_rows();
+  n= C.get_cols();
 
 
 #ifdef _OPENMP
@@ -1322,9 +1322,9 @@ inline void matprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U)
     
     for (i=0; i<mloc; i++) 
       for (j=0; j<n; j++) {
-	tmat(i,j).mul_si(C(i+ibeg,0),U(0,j).GetData());
+	tmat(i,j).mul_si(C(i+ibeg,0),U(0,j).get_data());
 	for (k=1; k<n; k++) {
-	  tmat(i,j).addmul_si(C(i+ibeg,k),U(k,j).GetData());
+	  tmat(i,j).addmul_si(C(i+ibeg,k),U(k,j).get_data());
 	}
       }
     
@@ -1346,7 +1346,7 @@ inline void matprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<__int128_t> U)
 
   int n,i,j;
 
-  n= U.GetNumRows();
+  n= U.get_rows();
 
   ZZ_mat<mpz_t> V;
   V.resize(n,n);
@@ -1372,8 +1372,8 @@ inline void matprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<__int128_t> U)
 
   int m,n;
 
-  m= C.GetNumRows();
-  n= C.GetNumCols();
+  m= C.get_rows();
+  n= C.get_cols();
 
 
   ZZ_mat<mpz_t> V;
@@ -1437,17 +1437,17 @@ inline void matprod_in_si(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U)
 
   int m,n,i,j,k;
 
-  m= C.GetNumRows();
-  n= C.GetNumCols();
+  m= C.get_rows();
+  n= C.get_cols();
 
   Matrix<Z_NR<mpz_t> > tmat;
   tmat.resize(m,n);
 
   for (i=0; i<m; i++) 
     for (j=0; j<n; j++) {
-      tmat(i,j).mul_si(C(i,0),U(0,j).GetData());
+      tmat(i,j).mul_si(C(i,0),U(0,j).get_data());
       for (k=1; k<n; k++) {
-	tmat(i,j).addmul_si(C(i,k),U(k,j).GetData());
+	tmat(i,j).addmul_si(C(i,k),U(k,j).get_data());
       }
     }
 
@@ -1469,9 +1469,9 @@ inline void matprod_in_si(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U)
 
   for (i=0; i<m; i++) 
     for (j=0; j<n; j++) {
-      tmat(i,j).mul_si(C(i,0),U(0,j).GetData());
+      tmat(i,j).mul_si(C(i,0),U(0,j).get_data());
       for (k=1; k<n; k++) {
-	tmat(i,j).addmul_si(C(i,k),U(k,j).GetData());
+	tmat(i,j).addmul_si(C(i,k),U(k,j).get_data());
       }
     }
 
@@ -1686,7 +1686,7 @@ template<class T> void matprod_in(matrix<T>& C, Matrix<T> U)
   m= C.getRows();
   n= C.getCols();
 
-  int nU=U.GetNumCols();
+  int nU=U.get_cols();
 
   Matrix<T> tmat;
   tmat.resize(m,nU);
@@ -1711,8 +1711,8 @@ template<class T> void matprod(Matrix<T>& B, Matrix<T> U)
 
   int n,d,i,j,k;
 
-  n= B.GetNumRows();
-  d= B.GetNumCols();
+  n= B.get_rows();
+  d= B.get_cols();
 
   Matrix<T> C;
   C.resize(n,d);
@@ -1740,8 +1740,8 @@ template<class T> void transpose(Matrix<T>& B, Matrix<T> A)
 
   int m,n,i,j;
 
-  m= A.GetNumRows();
-  n= A.GetNumCols();
+  m= A.get_rows();
+  n= A.get_cols();
 
   for (i=0; i<m; i++)
     for (j=0; j<n; j++)
@@ -1755,8 +1755,8 @@ template<class T> void transpose(Matrix<T>& B, Matrix<T> A)
 
   int m,n,i,j;
 
-  m= A.GetNumRows();
-  n= A.GetNumCols();
+  m= A.get_rows();
+  n= A.get_cols();
 
   Matrix<T> B;
   B.resize(n,m);
@@ -1943,14 +1943,14 @@ template<> void trunc_sigma(matrix<Z_NR<mpz_t> >& B, ZZ_mat<mpz_t> A, long n, lo
   for (i=0; i<m; i++)
     for (j=0; j<d; j++)  {
 
-      mpz_tdiv_q(B(i,j).getData(), A(i,j).getData(), pow10);
+      mpz_tdiv_q(B(i,j).get_data(), A(i,j).get_data(), pow10);
 
-      max2=max(max2,(long) mpz_sizeinbase(B(i,j).getData(),2)); 
+      max2=max(max2,(long) mpz_sizeinbase(B(i,j).get_data(),2)); 
     }
 
   for (i=m; i<n; i++)  
     for (j=0; j<d; j++)
-      max2=max(max2,(long) mpz_sizeinbase(A(i,j).getData(),2)); 
+      max2=max(max2,(long) mpz_sizeinbase(A(i,j).get_data(),2)); 
 
 
   // On tronque en en gardant msb t  
@@ -1991,18 +1991,18 @@ template<> void trunc_sigma(matrix<Z_NR<mpz_t> >& B, ZZ_mat<mpz_t> A, long n, lo
 
     for (i=0; i<m; i++)
       for (j=0; j<d; j++)
-	mpz_tdiv_q(B(i,j).getData(), B(i,j).getData(), pow10);
+	mpz_tdiv_q(B(i,j).get_data(), B(i,j).get_data(), pow10);
 
     for (i=m; i<n; i++)  
       for (j=0; j<d; j++)
-	mpz_tdiv_q(B(i,j).getData(), A(i,j).getData(), pow10);
+	mpz_tdiv_q(B(i,j).get_data(), A(i,j).get_data(), pow10);
   }
 
   // Check to comment 
   //max2=0;
   //for (i=0; i<n; i++)  
     //for (j=0; j<d; j++)
-      //max2=max(max2,(long) mpz_sizeinbase(B(i,j).getData(),2)); 
+      //max2=max(max2,(long) mpz_sizeinbase(B(i,j).get_data(),2)); 
 
   //cout << "***** max bit after shift and truncation " << max2 << endl << endl; 
   // Compare max2 and t 
@@ -2031,8 +2031,8 @@ void lift_truncate(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long def, long bits) {
 
    int i,j;
    
-   int n=A.getRows();
-   int d=A.getCols();
+   int n=A.get_rows();
+   int d=A.get_cols();
 
    
    for (j=0; j<d; j++) 
@@ -2095,8 +2095,8 @@ void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
   
   int i,j;
    
-   int n=A.getRows();
-   int d=A.getCols();
+   int n=A.get_rows();
+   int d=A.get_cols();
 
    ZZ_mat<mpz_t> C;
    C.resize(n,d);
@@ -2150,7 +2150,7 @@ void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
    
    for (i=0; i<n; i++)
      for (j=0; j<d; j++)
-       C_out(i,j)=mpz_get_si(C(i,j).getData());
+       C_out(i,j)=mpz_get_si(C(i,j).get_data());
 
 }; 
 
@@ -2160,8 +2160,8 @@ void lift_truncate(ZZ_mat<__int128_t>& C_out, ZZ_mat<mpz_t> A, long def, long bi
   
   int i,j;
    
-   int n=A.getRows();
-   int d=A.getCols();
+   int n=A.get_rows();
+   int d=A.get_cols();
 
    ZZ_mat<mpz_t> C;
    C.resize(n,d);
@@ -2283,8 +2283,8 @@ template<class ZT, class MatrixZT> void trunc(MatrixZT& B, ZZ_mat<ZT> A, long d,
     
     for (i=0; i<d; i++)
       for (j=0; j<n; j++)  {
-	mpz_tdiv_q(B(i,j).getData(), A(i,j).getData(), pow10);
-	max2=max(max2,(long) mpz_sizeinbase(B(i,j).getData(),2));
+	mpz_tdiv_q(B(i,j).get_data(), A(i,j).get_data(), pow10);
+	max2=max(max2,(long) mpz_sizeinbase(B(i,j).get_data(),2));
       }
   }
   else {
@@ -2293,7 +2293,7 @@ template<class ZT, class MatrixZT> void trunc(MatrixZT& B, ZZ_mat<ZT> A, long d,
 	
 	B(i,j)=A(i,j);
 	//B.set(i,j,A(i,j)); 
-	max2=max(max2,(long) mpz_sizeinbase(B(i,j).getData(),2));
+	max2=max(max2,(long) mpz_sizeinbase(B(i,j).get_data(),2));
       }
   }
 
@@ -2301,7 +2301,7 @@ template<class ZT, class MatrixZT> void trunc(MatrixZT& B, ZZ_mat<ZT> A, long d,
 
     for (i=d; i<m; i++)  
       for (j=0; j<n; j++)
-	max2=max(max2,(long) mpz_sizeinbase(A(i,j).getData(),2)); 
+	max2=max(max2,(long) mpz_sizeinbase(A(i,j).get_data(),2)); 
   }
 
   // Truncation that keeps t bits  
@@ -2338,11 +2338,11 @@ template<class ZT, class MatrixZT> void trunc(MatrixZT& B, ZZ_mat<ZT> A, long d,
 
     for (i=0; i<d; i++)
       for (j=0; j<n; j++)
-	mpz_tdiv_q(B(i,j).getData(), B(i,j).getData(), pow10);
+	mpz_tdiv_q(B(i,j).get_data(), B(i,j).get_data(), pow10);
 
     for (i=d; i<m; i++)  
       for (j=0; j<n; j++)
-	mpz_tdiv_q(B(i,j).getData(), A(i,j).getData(), pow10);
+	mpz_tdiv_q(B(i,j).get_data(), A(i,j).get_data(), pow10);
   }
   
 };
@@ -2409,8 +2409,8 @@ void set_f(ZZ_mat<mpz_t>& B, matrix<FP_NR<mpfr_t> > R, long condbits)
 
   int n,d;
 
-  n= B.getRows();
-  d= B.getCols();
+  n= B.get_rows();
+  d= B.get_cols();
 
   FP_NR<mpfr_t> norm,minval;
 
@@ -2471,12 +2471,12 @@ inline  unsigned int maxbitsize(const ZZ_mat<mpz_t>& B) {
 
   int l=0;
 
-  int n=B.getRows();
-  int d=B.getCols();
+  int n=B.get_rows();
+  int d=B.get_cols();
 
   for (int i=0; i<n ; i++) 
     for (int j=0; j<d; j++)
-      l=max(l, (int) mpz_sizeinbase(B(i,j).getData(),2)); 
+      l=max(l, (int) mpz_sizeinbase(B(i,j).get_data(),2)); 
 
   return l;
 
@@ -2529,8 +2529,8 @@ unsigned int maxbitsize(const matrix<T>& B) {
  
  template<> void matrix_cast(ZZ_mat<mpz_t>& B, ZZ_mat<mpz_t> A) {
 
-   int n= A.getRows();
-   int d= A.getCols();
+   int n= A.get_rows();
+   int d= A.get_cols();
 
    B.resize(n,d);
    
@@ -2554,13 +2554,13 @@ unsigned int maxbitsize(const matrix<T>& B) {
  
   template<> void matrix_cast(ZZ_mat<long>& B, ZZ_mat<mpz_t> A) {
 
-   int n= A.getRows();
-   int d= A.getCols();
+   int n= A.get_rows();
+   int d= A.get_cols();
 
    
    B.resize(n,d);
 
-   if (maxbitsize(A) > ((8*sizeof(B(0,0).getData())) -1))
+   if (maxbitsize(A) > ((8*sizeof(B(0,0).get_data())) -1))
        cerr << endl << "** Error in matrix cast **" << endl; 
 			  
    for (int i=0; i<n; i++) 
@@ -2572,27 +2572,27 @@ unsigned int maxbitsize(const matrix<T>& B) {
 
  void matrix_cast(ZZ_mat<mpz_t>& B, ZZ_mat<long> A) {
 
-   int n= A.getRows();
-   int d= A.getCols();
+   int n= A.get_rows();
+   int d= A.get_cols();
 
    
    B.resize(n,d);
 
    for (int i=0; i<n; i++) 
      for (int j=0; j<d; j++) 
-       B(i,j)=A(i,j).getData();
+       B(i,j)=A(i,j).get_data();
 
  }
   
  template<> void matrix_cast(ZZ_mat<__int128_t>& B, ZZ_mat<mpz_t> A) {
 
-   int n= A.getRows();
-   int d= A.getCols();
+   int n= A.get_rows();
+   int d= A.get_cols();
 
    
    B.resize(n,d);
 
-   if (maxbitsize(A) > ((8*sizeof(B(0,0).getData())) -1))
+   if (maxbitsize(A) > ((8*sizeof(B(0,0).get_data())) -1))
      cerr << endl << "** Error in matrix cast **" << endl; 
 
    Z_NR<__int128_t> tz;
@@ -2612,7 +2612,7 @@ unsigned int maxbitsize(const matrix<T>& B) {
    
    B.resize(n,d);
 
-   if (maxbitsize(A) > ((8*sizeof(B(0,0).getData())) -1))
+   if (maxbitsize(A) > ((8*sizeof(B(0,0).get_data())) -1))
      cerr << endl << "** Error in matrix cast **" << endl; 
 
    Z_NR<__int128_t> tz;
@@ -2628,8 +2628,8 @@ unsigned int maxbitsize(const matrix<T>& B) {
 
    void matrix_cast(ZZ_mat<mpz_t>& B, ZZ_mat<__int128_t> A) {
 
-   int n= A.getRows();
-   int d= A.getCols();
+   int n= A.get_rows();
+   int d= A.get_cols();
 
    
    B.resize(n,d);
@@ -2653,7 +2653,7 @@ unsigned int maxbitsize(const matrix<T>& B) {
    
    B.resize(n,d);
 
-   if (maxbitsize(A) > ((8*sizeof(B(0,0).getData())) -1))
+   if (maxbitsize(A) > ((8*sizeof(B(0,0).get_data())) -1))
        cerr << endl << "** Error in matrix cast **" << endl; 
 			  
    for (int i=0; i<n; i++) 
@@ -2708,7 +2708,7 @@ inline void next2prime(Z_NR<mpz_t>& p, long bits) {
   mpz_init(mpzp);
   mpz_set_si(mpzp,1);
   mpz_mul_2exp(mpzp, mpzp, bits+1);
-  mpz_nextprime(p.getData(),mpzp);
+  mpz_nextprime(p.get_data(),mpzp);
 
 }
 
@@ -2722,14 +2722,14 @@ inline  void  zzmat_to_ntlp(mat_ZZ_p& Ap, const ZZ_mat<mpz_t> A, Z_NR<mpz_t> p) 
 
   mpz_t zp;
   mpz_init(zp);
-  mpz_set(zp,p.getData());
+  mpz_set(zp,p.get_data());
 
   // Mod p reduction and to NTL
   // --------------------------
 
   int n,m;
-  n=A.getRows();
-  m=A.getCols();
+  n=A.get_rows();
+  m=A.get_cols();
 
   int i,j;
 
@@ -2747,7 +2747,7 @@ inline  void  zzmat_to_ntlp(mat_ZZ_p& Ap, const ZZ_mat<mpz_t> A, Z_NR<mpz_t> p) 
       if (A(i,j).sgn()==0)
 	Ap(i+1,j+1) = zero;
       else { 
-	mpz_mod(zx,A(i,j).getData(),zp);
+	mpz_mod(zx,A(i,j).get_data(),zp);
 	if (mpz_sgn(zx) ==0) 
 	  Ap(i+1,j+1) = zero;
 	else { 
@@ -2782,7 +2782,7 @@ inline  void  ntlp_to_zzmat(ZZ_mat<mpz_t>& A, mat_ZZ_p Ap, Z_NR<mpz_t> p, long b
       if (IsZero(x)) 
 	A(i,j)=0;
       else 
-	zztompz(A(i,j).getData(),x);
+	zztompz(A(i,j).get_data(),x);
     }
 
   
@@ -2825,7 +2825,7 @@ inline  void  NTL_inv(ZZ_mat<mpz_t>& V, const ZZ_mat<mpz_t> U) {
   for (i=0; i<n; i++)
     for (j=0; j<n; j++) {
 
-      mpz_get_str (str, 10, U(i,j).getData());
+      mpz_get_str (str, 10, U(i,j).get_data());
       Untl(i+1,j+1)=to_ZZ(str);
 
     }
@@ -2858,7 +2858,7 @@ inline  void  NTL_inv(ZZ_mat<mpz_t>& V, const ZZ_mat<mpz_t> U) {
       k= osmat.str(); 
       strcpy(y, k.c_str()); 
       
-      mpz_set_str((V(i,j).getData()),y,10); 
+      mpz_set_str((V(i,j).get_data()),y,10); 
     }
 
 

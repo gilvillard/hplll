@@ -63,12 +63,12 @@ int main(int argc, char *argv[])  {
   vector<double>  wf;
   wf.resize(n);
   for (i=0; i<n; i++)
-    wf[i]=w[i].getData(); 
+    wf[i]=w[i].get_data(); 
 
   vector<double>  vf;
   vf.resize(n);
   for (i=0; i<n; i++)
-    vf[i]=v[i].getData(); 
+    vf[i]=v[i].get_data(); 
 
 int K=0;
  int N=16000;

@@ -89,7 +89,7 @@ int main(int argc, char *argv[])  {
   
   for (int i=0; i<d+1; i++)
     for (int j=0; j<d ; j++) 
-      Ap(i,j)=(double) mpz_get_si(A(i,j).getData());
+      Ap(i,j)=(double) mpz_get_si(A(i,j).get_data());
 
 
   Lattice<double, dpe_t,  matrix<Z_NR<double> >, MatrixPE<double, dpe_t> > Bp(Ap,NO_TRANSFORM,DEF_REDUCTION);
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])  {
 
   // for (int i=0; i<d+1; i++)
   //   for (int j=0; j<d ; j++) 
-  //     C(i,j)=Ap(i,j).getData();
+  //     C(i,j)=Ap(i,j).get_data();
   
   // Lattice<mpz_t, mpfr_t,  matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > Bptest(C,NO_TRANSFORM,DEF_REDUCTION);
   // Bptest.isreduced(delta-0.1);

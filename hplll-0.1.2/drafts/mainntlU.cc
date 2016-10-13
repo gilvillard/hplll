@@ -273,7 +273,7 @@ B.assign(A);
     next2prime(p,sizeofU);
 
     ZZ ntlp;
-    mpztozz(ntlp,p.getData());
+    mpztozz(ntlp,p.get_data());
     ZZ_p::init(ntlp);
     
     mat_ZZ_p Bp;

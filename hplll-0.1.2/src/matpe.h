@@ -419,7 +419,7 @@ template<>  inline void MatrixPE<double,dpe_t>::fmasub(const int j, const int k,
       int i; 
 
       double manta;     // double et long double 
-      manta = DPE_MANT(a.getData());
+      manta = DPE_MANT(a.get_data());
 
       if ( manta == 0.0) {    // Vrai test cf add dpe   wexp > expprod + DPE_BITSIZE ? 
 	exp[j]=wexp;
@@ -428,7 +428,7 @@ template<>  inline void MatrixPE<double,dpe_t>::fmasub(const int j, const int k,
       }
       else { // Le scalaire a est non nul 
 
-	int expprod = DPE_EXP(a.getData())+zexp;
+	int expprod = DPE_EXP(a.get_data())+zexp;
 	
 	d=wexp-expprod;
   
@@ -477,7 +477,7 @@ template<>  inline void MatrixPE<long double,ldpe_t>::fmasub(const int j, const 
       int i; 
  
       long double manta;     // double et long double 
-      manta = LDPE_MANT(a.getData());
+      manta = LDPE_MANT(a.get_data());
 
       if ( manta == 0.0) {    // Vrai test cf add dpe   wexp > expprod + DPE_BITSIZE ? 
 	exp[j]=wexp;
@@ -486,7 +486,7 @@ template<>  inline void MatrixPE<long double,ldpe_t>::fmasub(const int j, const 
       }
       else { // Le scalaire a est non nul 
 
-	int expprod = LDPE_EXP(a.getData())+zexp;
+	int expprod = LDPE_EXP(a.get_data())+zexp;
 	
 	d=wexp-expprod;
   
@@ -528,7 +528,7 @@ template<>  inline void MatrixPE<double,dpe_t>::set(int i, int j, FP_NR<dpe_t> x
     int k;
 
     double x;
-    x=DPE_MANT(xdpe.getData());
+    x=DPE_MANT(xdpe.get_data());
 
     if (x==0.0)
       M[j][i]=0.0;
@@ -536,7 +536,7 @@ template<>  inline void MatrixPE<double,dpe_t>::set(int i, int j, FP_NR<dpe_t> x
       
       M[j][i]=x;
 
-      tmpexp=DPE_EXP(xdpe.getData());
+      tmpexp=DPE_EXP(xdpe.get_data());
       d=tmpexp-exp[j];
 
       if (d >=0) {
@@ -558,7 +558,7 @@ template<>  inline void MatrixPE<long double,ldpe_t>::set(int i, int j, FP_NR<ld
     int k;
 
     long double x;
-    x=LDPE_MANT(xdpe.getData());
+    x=LDPE_MANT(xdpe.get_data());
 
     if (x==0.0)
       M[j][i]=0.0;
@@ -566,7 +566,7 @@ template<>  inline void MatrixPE<long double,ldpe_t>::set(int i, int j, FP_NR<ld
       
       M[j][i]=x;
 
-      tmpexp=LDPE_EXP(xdpe.getData());
+      tmpexp=LDPE_EXP(xdpe.get_data());
       d=tmpexp-exp[j];
 
       if (d >=0) {
@@ -586,9 +586,9 @@ template<>  inline void MatrixPE<long double,ldpe_t>::set(int i, int j, FP_NR<ld
 template<>  inline  FP_NR<dpe_t>  MatrixPE<double,dpe_t>::get(int i, int j) { 
 
     FP_NR<dpe_t> x;
-    DPE_MANT(x.getData()) = M[j][i];
-    DPE_EXP(x.getData()) = exp[j];
-    dpe_normalize (x.getData());
+    DPE_MANT(x.get_data()) = M[j][i];
+    DPE_EXP(x.get_data()) = exp[j];
+    dpe_normalize (x.get_data());
     
     return x;
 
@@ -598,9 +598,9 @@ template<>  inline  FP_NR<dpe_t>  MatrixPE<double,dpe_t>::get(int i, int j) {
 template<>  inline  FP_NR<ldpe_t>  MatrixPE<long double, ldpe_t>::get(int i, int j) { 
 
     FP_NR<ldpe_t> x;
-    LDPE_MANT(x.getData()) = M[j][i];
-    LDPE_EXP(x.getData()) = exp[j];
-    ldpe_normalize (x.getData());
+    LDPE_MANT(x.get_data()) = M[j][i];
+    LDPE_EXP(x.get_data()) = exp[j];
+    ldpe_normalize (x.get_data());
     
     return x;
 
@@ -610,8 +610,8 @@ template<>  inline  FP_NR<ldpe_t>  MatrixPE<long double, ldpe_t>::get(int i, int
 template<>  inline FP_NR<dpe_t>   MatrixPE<double, dpe_t>::get_non_normalized(int i, int j) {
 
     FP_NR<dpe_t> x;
-    DPE_MANT(x.getData()) = M[j][i];
-    DPE_EXP(x.getData()) = exp[j];
+    DPE_MANT(x.get_data()) = M[j][i];
+    DPE_EXP(x.get_data()) = exp[j];
     
     return x;
 
@@ -623,9 +623,9 @@ template<>  inline FP_NR<dpe_t>   MatrixPE<double, dpe_t>::get_non_normalized(in
 template<>  inline FP_NR<ldpe_t>   MatrixPE<long double, ldpe_t>::get_non_normalized(int i, int j) { // voir double ou long double 
 
     FP_NR<ldpe_t> x;
-    LDPE_MANT(x.getData()) = M[j][i];
-    LDPE_EXP(x.getData()) = exp[j];
-    //dpe_normalize (x.getData());
+    LDPE_MANT(x.get_data()) = M[j][i];
+    LDPE_EXP(x.get_data()) = exp[j];
+    //dpe_normalize (x.get_data());
     
     return x;
 
@@ -645,9 +645,9 @@ template<>  inline void MatrixPE<double,dpe_t>::submulcol(const int j, const int
       int i; 
 
       double manta;     // double et long double 
-      manta=DPE_MANT(a.getData());
+      manta=DPE_MANT(a.get_data());
 
-      int expprod = DPE_EXP(a.getData())+exp[k];
+      int expprod = DPE_EXP(a.get_data())+exp[k];
       d=exp[j]-expprod;
   
       if (d >=0) {
@@ -675,9 +675,9 @@ template<>  inline void MatrixPE<long double,ldpe_t>::submulcol(const int j, con
       int i; 
 
       long double manta;     // double et long double 
-      manta=LDPE_MANT(a.getData());
+      manta=LDPE_MANT(a.get_data());
 
-      int expprod = LDPE_EXP(a.getData())+exp[k];
+      int expprod = LDPE_EXP(a.get_data())+exp[k];
       d=exp[j]-expprod;
   
       if (d >=0) {
@@ -782,7 +782,7 @@ template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, Z_NR<mpz_t>* b, in
 
     for (int i=beg; i<beg+l; i++) {
 
-      M[j][i]=mpz_get_d_2exp (&tmpexp[i], b[i].getData());
+      M[j][i]=mpz_get_d_2exp (&tmpexp[i], b[i].get_data());
 
       maxexp=max(maxexp,tmpexp[i]);
     }
@@ -808,7 +808,7 @@ template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, Z_NR<mpz_t>* b, in
 
      for (int i=beg; i<beg+l; i++) {
 
-       mpfr_set_z(xzf, b[i].getData(),GMP_RNDN);
+       mpfr_set_z(xzf, b[i].get_data(),GMP_RNDN);
 
        M[j][i]=mpfr_get_ld_2exp (&tmpexp[i], xzf,GMP_RNDN);
   
@@ -834,12 +834,15 @@ template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, Z_NR<mpz_t>* b, in
  template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, Z_NR<long>* b, int beg, int l) {  
 
    if (l !=0) {
-     long maxexp=INT_MIN;
-     vector<long> tmpexp(beg+l);
+     int maxexp=INT_MIN;   // Pas long ici ??? cf avec int* dans frexp
+     vector<int> tmpexp(beg+l);
 
      for (int i=beg; i<beg+l; i++) {
 
-       M[j][i]=b[i].get_d_2exp (&tmpexp[i]);
+
+       M[j][i]=frexp(static_cast<double> ((b[i]).get_data()), &tmpexp[i]);
+       
+       //M[j][i]=b[i].get_d_2exp (&tmpexp[i]);
 
        maxexp=max(maxexp,tmpexp[i]);
      }
@@ -860,7 +863,7 @@ template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, Z_NR<mpz_t>* b, in
 
      for (int i=beg; i<beg+l; i++) {
 
-       M[j][i]=frexp(static_cast<double>((b[i]).getData()), &tmpexp[i]);
+       M[j][i]=frexp(static_cast<double>((b[i]).get_data()), &tmpexp[i]);
 
        maxexp=max(maxexp,tmpexp[i]);
      }
@@ -882,7 +885,7 @@ template<>  inline void MatrixPE<long double,ldpe_t>::setcol(int j, Z_NR<__int12
 
      for (int i=beg; i<beg+l; i++) {
 
-       M[j][i]=frexp(static_cast<long double>((b[i]).getData()), &tmpexp[i]);
+       M[j][i]=frexp(static_cast<long double>((b[i]).get_data()), &tmpexp[i]);
 
        maxexp=max(maxexp,tmpexp[i]);
      }
@@ -900,12 +903,14 @@ template<>  inline void MatrixPE<long double,ldpe_t>::setcol(int j, Z_NR<__int12
  template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, Z_NR<double>* b, int beg, int l) {  
   
    if (l !=0) {
-     long maxexp=INT_MIN;
-     vector<long> tmpexp(beg+l);
+     int maxexp=INT_MIN;  
+     vector<int> tmpexp(beg+l);    // Pas long ici ??? cf avec int* dans frexp
 
      for (int i=beg; i<beg+l; i++) {
 
-       M[j][i]=b[i].get_d_2exp (&tmpexp[i]);
+       M[j][i]=frexp(static_cast<double> ((b[i]).get_data()), &tmpexp[i]);
+	
+       //M[j][i]=b[i].get_d_2exp (&tmpexp[i]);
        
        maxexp=max(maxexp,tmpexp[i]);
      }
@@ -928,8 +933,9 @@ template<>  inline void MatrixPE<double,dpe_t>::setcol(int j, FP_NR<mpfr_t>* b, 
     vector<long> tmpexp(beg+l);
 
     for (int i=beg; i<beg+l; i++) {
-
-      M[j][i]=mpfr_get_d_2exp (&tmpexp[i], b[i].getData(),GMP_RNDN);
+      
+      M[j][i]=mpfr_get_d_2exp (&tmpexp[i], b[i].get_data(),GMP_RNDN);
+      
       if (tmpexp[i] > maxexp) maxexp=tmpexp[i];
 
     }
@@ -951,7 +957,7 @@ template<>  inline void MatrixPE<long double, ldpe_t>::setcol(int j, FP_NR<mpfr_
 
     for (int i=beg; i<beg+l; i++) {
 
-      M[j][i]=mpfr_get_ld_2exp (&tmpexp[i], b[i].getData(),GMP_RNDN);
+      M[j][i]=mpfr_get_ld_2exp (&tmpexp[i], b[i].get_data(),GMP_RNDN);
       if (tmpexp[i] > maxexp) maxexp=tmpexp[i];
 
     }
@@ -988,9 +994,9 @@ template<> inline void  MatrixPE<double,dpe_t>::setcol(int j, const FP_NR<dpe_t>
     d=INT_MIN;
     
     for (int i=0; i<nmax; i++) {
-      v_exp[i]=DPE_EXP(vd[i].getData());
+      v_exp[i]=DPE_EXP(vd[i].get_data());
       d=max(d,v_exp[i]);
-      v_mant[i]=DPE_MANT(vd[i].getData());
+      v_mant[i]=DPE_MANT(vd[i].get_data());
     }
         
     for (int i=0; i<nmax; i++) {
@@ -1027,7 +1033,7 @@ template<>  inline void MatrixPE<double, dpe_t>::setcol(int j, const mixed_col<F
 
     for (int i=beg; ((i<beg+l) && (i<dR)); i++) {
 
-      M[j][i]=mpfr_get_d_2exp (&tmpexp[i], vR[i].getData(),GMP_RNDN);
+      M[j][i]=mpfr_get_d_2exp (&tmpexp[i], vR[i].get_data(),GMP_RNDN);
       if (tmpexp[i] > maxexp) maxexp=tmpexp[i];
 
     }
@@ -1037,7 +1043,7 @@ template<>  inline void MatrixPE<double, dpe_t>::setcol(int j, const mixed_col<F
 
     for (int i=0; i < l+beg-dR; i++) {
 
-      M[j][i+dR]=mpz_get_d_2exp (&tmpexp[i+dR], vZ[i].getData());
+      M[j][i+dR]=mpz_get_d_2exp (&tmpexp[i+dR], vZ[i].get_data());
       if (tmpexp[i+dR] > maxexp) maxexp=tmpexp[i+dR];
 
     }
@@ -1082,7 +1088,7 @@ template<>  inline void MatrixPE<long double, ldpe_t>::setcol(int j, const mixed
 
     for (int i=beg; ((i<beg+l) && (i<dR)); i++) {
 
-      M[j][i]=mpfr_get_ld_2exp (&tmpexp[i], vR[i].getData(),GMP_RNDN);
+      M[j][i]=mpfr_get_ld_2exp (&tmpexp[i], vR[i].get_data(),GMP_RNDN);
       if (tmpexp[i] > maxexp) maxexp=tmpexp[i];
 
     }
@@ -1093,7 +1099,7 @@ template<>  inline void MatrixPE<long double, ldpe_t>::setcol(int j, const mixed
 
     for (int i=0; i < l+beg-dR; i++) {
       
-      mpfr_set_z(xzf, vZ[i].getData(),GMP_RNDN);
+      mpfr_set_z(xzf, vZ[i].get_data(),GMP_RNDN);
       M[j][i+dR]=mpfr_get_ld_2exp (&tmpexp[i+dR], xzf,GMP_RNDN);
 
       if (tmpexp[i+dR] > maxexp) maxexp=tmpexp[i+dR];
@@ -1131,9 +1137,9 @@ template<> inline void  MatrixPE<long double, ldpe_t>::setcol(int j, const FP_NR
     d=INT_MIN;
     
     for (int i=0; i<nmax; i++) {
-      v_exp[i]=LDPE_EXP(vd[i].getData());
+      v_exp[i]=LDPE_EXP(vd[i].get_data());
       d=max(d,v_exp[i]);
-      v_mant[i]=LDPE_MANT(vd[i].getData());
+      v_mant[i]=LDPE_MANT(vd[i].get_data());
     }
         
     for (int i=0; i<nmax; i++) {
@@ -1160,9 +1166,9 @@ template<> inline void  MatrixPE<double,dpe_t>::div(const int j, const int k,
 
       double* v = &M[j][k];
 
-      exp[j]=wexp-DPE_EXP(a.getData());
+      exp[j]=wexp-DPE_EXP(a.get_data());
 
-      const double b=1.0/DPE_MANT(a.getData());
+      const double b=1.0/DPE_MANT(a.get_data());
 
       for (int i=0; i<nmax; i++)  
 	v[i]=w[i]*b;
@@ -1180,9 +1186,9 @@ template<> inline void  MatrixPE<long double, ldpe_t>::div(const int j, const in
 
       long double* v = &M[j][k];
 
-      exp[j]=wexp-LDPE_EXP(a.getData());
+      exp[j]=wexp-LDPE_EXP(a.get_data());
 
-      const long double b=1.0/LDPE_MANT(a.getData());
+      const long double b=1.0/LDPE_MANT(a.get_data());
 
       for (int i=0; i<nmax; i++)  
 	v[i]=w[i]*b;
@@ -1210,15 +1216,15 @@ template<> inline void fp_norm(FP_NR<dpe_t>& nn, const colexp<double> vcol, cons
 
   if (nmax !=0) {
 
-    DPE_EXP(nn.getData()) = 2*vexp;
+    DPE_EXP(nn.get_data()) = 2*vexp;
     
     tmpnn=v[0]*v[0]; 
     for (int i=1; i<nmax; i++)  tmpnn+=v[i]*v[i];
 
-    DPE_MANT(nn.getData())=tmpnn;
-    dpe_normalize (nn.getData());
+    DPE_MANT(nn.get_data())=tmpnn;
+    dpe_normalize (nn.get_data());
 
-    dpe_sqrt(nn.getData(),nn.getData());
+    dpe_sqrt(nn.get_data(),nn.get_data());
 
   }
 }; 
@@ -1233,15 +1239,15 @@ template<> inline void fp_norm(FP_NR<ldpe_t>& nn, const colexp<long double> vcol
 
   if (nmax !=0) {
 
-    LDPE_EXP(nn.getData()) = 2*vexp;
+    LDPE_EXP(nn.get_data()) = 2*vexp;
     
     tmpnn=v[0]*v[0]; 
     for (int i=1; i<nmax; i++)  tmpnn+=v[i]*v[i];
 
-    LDPE_MANT(nn.getData())=tmpnn;
-    ldpe_normalize (nn.getData());
+    LDPE_MANT(nn.get_data())=tmpnn;
+    ldpe_normalize (nn.get_data());
 
-    ldpe_sqrt(nn.getData(),nn.getData());
+    ldpe_sqrt(nn.get_data(),nn.get_data());
 
   }
 }; 
@@ -1260,15 +1266,15 @@ template<> inline void fp_norm_sq(FP_NR<dpe_t>& nn, const colexp<double> vcol, c
     double tmpnn;
 
     if (nmax !=0) {
-      DPE_EXP(nn.getData()) = 2*vexp;
+      DPE_EXP(nn.get_data()) = 2*vexp;
     
       tmpnn=v[0]*v[0]; 
       for (int i=1; i<nmax; i++)  {
            tmpnn+=v[i]*v[i];
           }
 
-      DPE_MANT(nn.getData()) = tmpnn; 
-      dpe_normalize (nn.getData());
+      DPE_MANT(nn.get_data()) = tmpnn; 
+      dpe_normalize (nn.get_data());
     }
 }; 
 
@@ -1281,13 +1287,13 @@ template<> inline void fp_norm_sq(FP_NR<ldpe_t>& nn, const colexp<long double> v
     long double tmpnn;
 
     if (nmax !=0) {
-      LDPE_EXP(nn.getData()) = 2*vexp;
+      LDPE_EXP(nn.get_data()) = 2*vexp;
     
       tmpnn=v[0]*v[0]; 
       for (int i=1; i<nmax; i++)  tmpnn+=v[i]*v[i];
 
-      LDPE_MANT(nn.getData()) = tmpnn; 
-      ldpe_normalize (nn.getData());
+      LDPE_MANT(nn.get_data()) = tmpnn; 
+      ldpe_normalize (nn.get_data());
     }
 }; 
 #endif 
@@ -1310,9 +1316,9 @@ template<> inline void scalarprod(FP_NR<dpe_t>& nn, const colexp<double> vcol, c
       for (int i=0; i<nmax; i++) 
 	tmpnn+=v[i]*w[i]; 
 
-      DPE_EXP(nn.getData())=vcol.exp+wcol.exp;
-      DPE_MANT(nn.getData()) = tmpnn; 
-      dpe_normalize (nn.getData());
+      DPE_EXP(nn.get_data())=vcol.exp+wcol.exp;
+      DPE_MANT(nn.get_data()) = tmpnn; 
+      dpe_normalize (nn.get_data());
     }
 };
 
@@ -1332,9 +1338,9 @@ template<> inline void scalarprod(FP_NR<ldpe_t>& nn, const colexp<long double> v
       for (int i=0; i<nmax; i++) 
 	tmpnn+=v[i]*w[i]; 
 
-      LDPE_EXP(nn.getData())=vcol.exp+wcol.exp;
-      LDPE_MANT(nn.getData()) = tmpnn; 
-      ldpe_normalize (nn.getData());
+      LDPE_EXP(nn.get_data())=vcol.exp+wcol.exp;
+      LDPE_MANT(nn.get_data()) = tmpnn; 
+      ldpe_normalize (nn.get_data());
     }
 };
 #endif 

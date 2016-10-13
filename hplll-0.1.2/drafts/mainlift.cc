@@ -112,7 +112,7 @@ using namespace hplll;
 	for (j=0; j<d; j++) {
 	  tz.mul_2si(L(i,j),new_def);
 	 
-	  Af(i,j).getData()=tz.get_d();  // long double ?
+	  Af(i,j).get_data()=tz.get_d();  // long double ?
 	  
 	}
 
@@ -144,7 +144,7 @@ using namespace hplll;
       
       for (i=0; i<d; i++) 
 	for (j=0; j<d; j++) {
-	  tf = Vf(i,j).getData();  // Pour long double ou autre, vérifier et passer par set_z ? 
+	  tf = Vf(i,j).get_data();  // Pour long double ou autre, vérifier et passer par set_z ? 
 	  V(i,j).set_f(tf);
 
 	}
@@ -247,7 +247,7 @@ using namespace hplll;
     
       for (i=0; i<d; i++)
      	for (j=0; j<d ; j++) 
-	  Tf(i,j).getData()=A_in(m+i,j).get_d(); // long double ?
+	  Tf(i,j).get_data()=A_in(m+i,j).get_d(); // long double ?
 
       setId(U);
       

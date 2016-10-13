@@ -331,7 +331,7 @@ inline  int maxbitsizeRT() {
 
   for (int i=0; i<d ; i++) 
     for (int j=0; j<n; j++) {
-      mpfr_get_z(data, (F.get(i,j)).getData(), GMP_RNDN);
+      mpfr_get_z(data, (F.get(i,j)).get_data(), GMP_RNDN);
       l=max(l, (int) mpz_sizeinbase(data,2)); 
     }
   return l;
@@ -344,7 +344,7 @@ inline  int maxbitsizeZT() {
 
   for (int i=0; i<m ; i++) 
     for (int j=0; j<n; j++)
-      l=max(l, (int) mpz_sizeinbase((A.get(i,j)).getData(),2)); 
+      l=max(l, (int) mpz_sizeinbase((A.get(i,j)).get_data(),2)); 
 
   return l;
 
@@ -458,7 +458,7 @@ template<template <class T> class MatrixT, class RT, class ZT>
     tmp=((double) tau)*0.301029995;
     exp10=(long) tmp;
     mpz_pow_ui(pow10, ten, exp10);
-    mpz_pow_ui(zpow10.getData(), ten, exp10);
+    mpz_pow_ui(zpow10.get_data(), ten, exp10);
     set_z(mpow10,zpow10);
 
    
@@ -519,7 +519,7 @@ template<template <class T> class MatrixT, class RT, class ZT>
     exp10= max((long) 0, (long) tmp);
     mpz_pow_ui(pow10, ten, exp10);
 
-    mpz_pow_ui(zpow10.getData(), ten, exp10);
+    mpz_pow_ui(zpow10.get_data(), ten, exp10);
     set_z(mpow10,zpow10);
 
     for (i=0; i<d; i++)
@@ -532,7 +532,7 @@ template<template <class T> class MatrixT, class RT, class ZT>
     for (i=0; i<m; i++)  
       for (j=0; j<n; j++) {
 	tz=A.getZT(i,j);
-	mpz_tdiv_q(tzz.getData(), tz.getData(), pow10);
+	mpz_tdiv_q(tzz.get_data(), tz.get_data(), pow10);
 	B.setZT(i,j,tzz); 
       }
   }
