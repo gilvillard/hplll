@@ -85,8 +85,8 @@ namespace hplll {
     int m,d;
     int i,j;
   
-    m=A.getRows();
-    d=A.getCols();
+    m=A.get_rows();
+    d=A.get_cols();
     
     ZZ_mat<mpz_t> A_in;
     A_in.resize(m+d,d);
@@ -228,8 +228,8 @@ namespace hplll {
     int m,d;
     int i,j;
   
-    m=L_in.getRows();
-    d=L_in.getCols();
+    m=L_in.get_rows();
+    d=L_in.get_cols();
 
     // Toujours mpz_t
     ZZ_mat<mpz_t> L;
@@ -332,7 +332,7 @@ namespace hplll {
 	
       	setId(VfT);
 
-      	lllReduction(AfT, VfT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+      	lll_reduction(AfT, VfT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
 
       	transpose(Af,AfT);
 	
@@ -488,8 +488,8 @@ namespace hplll {
     int m,d;
     int i,j;
   
-    m=A.getRows();
-    d=A.getCols();
+    m=A.get_rows();
+    d=A.get_cols();
 
     ZZ_mat<mpz_t> A_in;
     A_in.resize(m+d,d);
@@ -576,7 +576,7 @@ namespace hplll {
 
 	setId(UT);
 	  
-	lllReduction(TT, UT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+	lll_reduction(TT, UT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
 	
 	transpose(U,UT);
 	

@@ -56,8 +56,8 @@ namespace hplll {
       
       verboseDepth-=1;
       
-      int n=A.getRows();
-      int d=A.getCols();
+      int n=A.get_rows();
+      int d=A.get_cols();
       
 
       int d1=DIM_PREC_1;
@@ -236,8 +236,8 @@ namespace hplll {
       
       verboseDepth-=1;
       
-      int n=A.getRows();
-      int d=A.getCols();
+      int n=A.get_rows();
+      int d=A.get_cols();
 
       
       int d1=DIM_PREC_1;
@@ -417,8 +417,8 @@ namespace hplll {
       
       verboseDepth-=1;
       
-      int n=A.getRows();
-      int d=A.getCols();
+      int n=A.get_rows();
+      int d=A.get_cols();
       
 
       int d1=DIM_PREC_1;
@@ -628,8 +628,8 @@ namespace hplll {
       
       verboseDepth-=1;
       
-      int n=A.getRows();
-      int d=A.getCols();
+      int n=A.get_rows();
+      int d=A.get_cols();
       
 
       int d1=DIM_PREC_1;

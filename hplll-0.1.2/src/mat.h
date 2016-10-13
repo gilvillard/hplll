@@ -129,7 +129,7 @@ public:
 
     for (j=0; j<d; j++) 
       for (i=0; i<n; i++) 
-	M[j][i]=0;
+	M[j][i]=((long) 0);
 
   }
 
@@ -534,7 +534,7 @@ inline void set(Matrix<T>& A)
    for (int j=0; j<bdim; j++) {
      si = ii*bdim; 
      for (int i=0; i<bdim; i++) {
-       B(i,j).set(A(si+diagdec,sj+diagdec));
+       B(i,j)=A(si+diagdec,sj+diagdec);
        si +=1;
      }
      sj+=1;
@@ -648,8 +648,8 @@ inline void set(Matrix<T>& A)
     Matrix<Z_NR<T> > B;
    
 
-    int m= A.getRows();
-    int n= A.getCols();
+    int m= A.get_rows();
+    int n= A.get_cols();
 
     // Block dimensions
 
@@ -789,7 +789,7 @@ inline void set(Matrix<T>& A)
  template<class T> inline  int putblock(Matrix<T>& A, Matrix<T> B, const int ii, const int jj, const int nbb, const int diagdec)   {
     
    
-   int n= A.getRows();
+   int n= A.get_rows();
 
    long bdim = n/nbb;
 
@@ -982,8 +982,8 @@ template<class T> void setId(Matrix<T>& A)
 
   int m,n,i,j;
 
-  m= A.getRows();
-  n= A.getCols();
+  m= A.get_rows();
+  n= A.get_cols();
 
    for (i=0; i<m; i++) 
     for (j=0; j<n; j++) 
@@ -1025,8 +1025,8 @@ template<class T> bool isId(Matrix<T> A)
 
   int m,n,i,j;
 
-  m= A.getRows();
-  n= A.getCols();
+  m= A.get_rows();
+  n= A.get_cols();
 
   T one,zero;
   one = 1;
@@ -1729,7 +1729,7 @@ template<class T> void matprod(Matrix<T>& B, Matrix<T> U)
       }
     }
     for (j=0; j<d; j++) 
-      B.Set(i,j,C(i,j));
+      B(i,j)=C(i,j);
   }
 
 };
@@ -1745,7 +1745,7 @@ template<class T> void transpose(Matrix<T>& B, Matrix<T> A)
 
   for (i=0; i<m; i++)
     for (j=0; j<n; j++)
-      B.Set(j,i,A(i,j));
+      B(j,i)=A(i,j);
 
 
 };
@@ -1763,7 +1763,7 @@ template<class T> void transpose(Matrix<T>& B, Matrix<T> A)
   
   for (i=0; i<m; i++)
     for (j=0; j<n; j++)
-      B.Set(j,i,A(i,j));
+      B(j,i)=A(i,j);
 
   return B;
 
@@ -1801,18 +1801,18 @@ int matcmp (Matrix<T> B1, Matrix<T> B2, int c, int r)
 
   for (i=0; i<r; i++){
     sg = 1;
-    tmp1.abs(B1.Get(i,0));
-    tmp2.abs(B2.Get(i,0));
+    tmp1.abs(B1(i,0));
+    tmp2.abs(B2(i,0));
     if (tmp1.cmp(tmp2)!=0){
       //cerr << r << ", 0     " << tmp1 << "  " << tmp2 << "\n";
       test = 0;
     }
-    if (tmp1.cmp(B1.Get(i,0))!=0) sg *=-1;
-    if (tmp1.cmp(B2.Get(i,0))!=0) sg *=-1;
+    if (tmp1.cmp(B1(i,0))!=0) sg *=-1;
+    if (tmp1.cmp(B2(i,0))!=0) sg *=-1;
 
     if (sg == 1){
       for (j=1; j<c; j++){
-        if (B1.Get(i,j).cmp(B2.Get(i,j))!=0){
+        if (B1(i,j).cmp(B2(i,j))!=0){
           //cerr << i << " " << j << "     " << B1.Get(i,j) << "  " << B2.Get(i,j) << "\n";
           test = 0;
         }
@@ -1820,8 +1820,8 @@ int matcmp (Matrix<T> B1, Matrix<T> B2, int c, int r)
     }
     else{
       for (j=1; j<c; j++){
-        tmp1.mul_si(B1.Get(i,j),-1);
-        if (tmp1.cmp(B2.Get(i,j))!=0){
+        tmp1.mul_si(B1(i,j),-1);
+        if (tmp1.cmp(B2(i,j))!=0){
           //cerr << i << " " << j << "     " << B1.Get(i,j) << "  " << B2.Get(i,j) << "\n";
           test = 0;
         }

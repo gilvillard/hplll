@@ -1461,8 +1461,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder_v(int kappa)
 
  int i;
   FP_NR<FT> s,norm,w,tmpdpe; 
-  s=0;
-  tmpdpe=0;
+  s=0.0;
+  tmpdpe=0.0;
  
   //R.normalize(kappa,nmaxkappa);  // voir si nécessaire ? Rajouter en dummy si besoin aussi mpfr 
 
@@ -1541,7 +1541,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::setprec(unsigned int prec) {
   R.clear();
   R.resize(n,d);
   unsigned newprec;
-  newprec=(R.get(0,0)).getprec(); 
+  newprec=(R.get(0,0)).get_prec(); 
   if (newprec == oldprec) cout << "Warning: in function setprec hlll, the change of precision has no effect" << endl; 
 
   Rkept.clear();
@@ -1570,7 +1570,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::setprec(unsigned int prec) {
 template<class ZT,class FT, class MatrixZT, class MatrixFT> inline unsigned int 
 Lattice<ZT,FT, MatrixZT, MatrixFT>::getprec() {
 
-  return (R.get(0,0)).getprec(); 
+  return (R.get(0,0)).get_prec(); 
   
 }
 
@@ -1579,7 +1579,8 @@ template<class ZT,class FT,class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> Lat
 {
    ZZ_mat<ZT> BB(n,d);
    for (int i=0; i<n; i++) 
-     for (int j=0; j<d; j++) BB.Set(i,j,B(i,j)); // reprendre boucle sur les colonnes 
+     for (int j=0; j<d; j++)
+       BB(i,j)=B(i,j); // reprendre boucle sur les colonnes 
 
   
   return BB;
@@ -1598,7 +1599,7 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> La
   if (transf) { 
     ZZ_mat<ZT> UU(d,d); 
     for (int i=0; i<d; i++) 
-      for (int j=0; j<d; j++) UU.Set(i,j,U.get(i,j)); // reprendre boucle sur les colonnes 
+      for (int j=0; j<d; j++) UU(i,j)=U.get(i,j); // reprendre boucle sur les colonnes 
     return UU;
   }
   else {
@@ -1676,8 +1677,8 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT>
 Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reduction_method, int long_flag) {
 
   
-  n=A.getRows();
-  d=A.getCols();
+  n=A.get_rows();
+  d=A.get_cols();
 
   init(n,d, forU); 
 
@@ -1687,7 +1688,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reducti
 
   for (i=0; i<n; i++) 
     for (j=0; j<d; j++) 
-      B(i,j)=A.Get(i,j);
+      B(i,j)=A(i,j);
 
 
   if (transf) {    // Not in init for the mixed matrix case also 
@@ -1770,7 +1771,7 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(ZZ_mat<ZT> A) {
 
   for (int i=0; i<n; i++) 
     for (int j=0; j<d; j++) 
-      B(i,j)=A.Get(i,j);
+      B(i,j)=A(i,j);
   
   matrix_structure(structure, B, n,d);
   
@@ -1978,7 +1979,8 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
   cout << "n = "<< n << endl;
   cout << "d = "<< d << endl;
   cout << "(Householder) delta is about "; 
-  delta.print(); 
+  //delta.print();
+  cout << delta; 
   cout << endl;
 
   fp_norm_sq(nb1,B.getcol(0),n);
@@ -1986,7 +1988,8 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
   s.sqrt(s);
       
   cout << "(Householder) ||b_1|| is ";
-  s.print();
+  //s.print();
+  cout << s; 
   cout  << endl; 
 
   s=R(0,0);
@@ -1995,7 +1998,8 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
 
   s.abs(s);
   cout << "(Householder) Vol(L) is about ";
-  s.print();
+  //s.print();
+  cout << s; 
   cout  << endl; 
 
   FP_NR<FT> eta,theta,alpha;  // Pas mpfr 
@@ -2039,11 +2043,14 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
 
 
   cout << "eta : ";
-  eta.print();
+  //eta.print();
+  cout << eta;
   cout << "     theta : ";
-  theta.print();
+  //theta.print();
+  cout << theta;
   cout << "    alpha : "; 
-  alpha.print(); 
+  //alpha.print();
+  cout << alpha; 
   cout << endl; 
 
   // Reduction  
@@ -2083,7 +2090,8 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
     }
 
     cout << "(further with " << nblov-d+1 << " tests) " << "delta is about "; 
-    delta.print(); 
+    //delta.print();
+    cout << delta; 
     cout << endl;
 
 
@@ -2092,7 +2100,8 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
     s.sqrt(s);
       
     cout << "(further with " << nblov-d+1 << " tests) " << "||b_1|| is ";
-    s.print();
+    //s.print();
+    cout << s; 
     cout  << endl; 
 
 
@@ -2102,7 +2111,8 @@ template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void Lattice<
 
     s.abs(s);
     cout << "(further with " << nblov-d+1 << " tests) " << "Vol(L) is about ";
-    s.print();
+    //s.print();
+    cout << s; 
     cout  << endl; 
 
     
@@ -2401,8 +2411,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
   int i,k,kappa;
   FP_NR<FT> nrtmp,s,w; 
   
-  nrtmp=0;
-  s=0;
+  nrtmp=((long) 0);
+  s=((long) 0);
 
   
 

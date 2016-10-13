@@ -43,7 +43,7 @@ template<class ZT> int ratio(ZZ_mat<ZT> B, double& lfcond,  double& av_ratio,  d
 
 
   //int n=B.getRows();
-  int d=B.getCols();
+  int d=B.get_cols();
   
   mpfr_set_default_prec(2*d);
   

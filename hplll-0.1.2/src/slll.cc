@@ -1667,8 +1667,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::householder_v(int kappa)
 
  int i;
   FP_NR<FT> s,norm,w,tmpdpe; 
-  s=0;
-  tmpdpe=0;
+  s=0.0;
+  tmpdpe=0.0;
  
   //R.normalize(kappa,nmaxkappa);  // voir si nécessaire ? Rajouter en dummy si besoin aussi mpfr 
 
@@ -1724,7 +1724,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::getbase()
 {
    ZZ_mat<ZT> BB(norigin,dorigin);
    for (int i=0; i<norigin; i++) 
-     for (int j=0; j<dorigin; j++) BB.Set(i,j,B(i,j)); // reprendre boucle sur les colonnes 
+     for (int j=0; j<dorigin; j++)
+       BB(i,j)=B(i,j); // reprendre boucle sur les colonnes 
 
    return BB;
 }
@@ -1829,10 +1830,10 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int S, bool forU, in
 
   int i,j;
 
-  norigin=A.getRows();
-  n=A.getRows();
-  dorigin=A.getCols();
-  d=A.getCols();
+  norigin=A.get_rows();
+  n=A.get_rows();
+  dorigin=A.get_cols();
+  d=A.get_cols();
 
         
   if (d%K !=0) {
@@ -1889,7 +1890,7 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int S, bool forU, in
 
     for (i=0; i<n; i++) 
       for (j=0; j<d; j++) 
-	B(i,j)=A.Get(i,j);
+	B(i,j)=A(i,j);
     
   }
 
@@ -1938,8 +1939,8 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::householder(int dmax)
   int i,k,kappa;
   FP_NR<FT> nrtmp,s,w; 
   
-  nrtmp=0;
-  s=0;
+  nrtmp=0.0;
+  s=0.0;
 
   int dk;
 
