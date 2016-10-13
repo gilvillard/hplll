@@ -54,17 +54,18 @@ int main(int argc, char *argv[])  {
   
   // HLLL ------------------------------------------
    
+  int status;
   
-  //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
+  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
 
-  // verboseDepth = 1;
-  // th.start();
-  // status=B.hlll(delta);
-  // th.stop();
+  verboseDepth = 0;
+  th.start();
+  status=B.hlll(delta);
+  th.stop();
   
   verboseDepth = 1;
   
-  th=hlll<mpz_t>(C, A, 0.99, true, false);
+  //th=hlll<mpz_t>(C, A, 0.99, true, false);
     
   //th=hlll<__int128_t>(C, A, 0.99, true,true); 
   //hlll<long>(C, A, 0.99, false, true); 
