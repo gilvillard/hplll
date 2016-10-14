@@ -974,7 +974,10 @@ GLattice<ZT,FT, MatrixZT, MatrixFT>::setprec(unsigned int prec) {
 
   Bfp.clear();
   Bfp.resize(n,d);
-
+  for (int i=0; i<n; i++) 
+    for (int j=0; j<d; j++) 
+      Bfp.set(i,j,0.0);
+ 
   normB2.clear();
   normB2.resize(d); 
   
@@ -1074,6 +1077,9 @@ GLattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
   Rkept.resize(n,d);
 
   Bfp.resize(n,d);
+  for (i=0; i<n; i++)
+    for (j=0; j<d; j++) 
+      Bfp.set(i,j,0.0);
 
   normB2.resize(d);
   toR.resize(n);

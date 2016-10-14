@@ -43,8 +43,8 @@ if test -r "$FPLLL_HOME/include/fplll/defs.h"; then
 		FPLLL_CFLAGS="-I${FPLLL_HOME}/include"
 		FPLLL_LIBS="-L${FPLLL_HOME}/lib -lfplll"
 	else
-		FPLLL_CFLAGS=
-		FPLLL_LIBS="-lfplll"
+		FPLLL_CFLAGS="-I/usr/local/include"
+		FPLLL_LIBS="-L/usr/local/lib -lfplll"
 	fi
 	CXXFLAGS="${BACKUP_CXXFLAGS} ${FPLLL_CFLAGS}"
 	LDFLAGS="${BACKUP_LIBS} ${FPLLL_LIBS} -Wl,-rpath,${FPLLL_HOME}/lib"

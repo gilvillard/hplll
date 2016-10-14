@@ -1796,7 +1796,10 @@ SLattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
   Rkept.resize(n,d);
 
   Bfp.resize(n,d);
-
+  for (i=0; i<n; i++) 
+    for (j=0; j<d; j++) 
+      Bfp.set(i,j,0.0);
+ 
   normB2.resize(d);
   toR.resize(n);
   

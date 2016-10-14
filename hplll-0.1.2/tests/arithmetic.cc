@@ -71,10 +71,13 @@ int main(int argc, char *argv[])  {
   AT.gen_intrel(6);
   transpose(A,AT);
 
+  print2maple(A,d+1,d);
   
   Lattice<integer_t, mpfr_t, MatrixZT, matrix<FP_NR<mpfr_t> > > B1(A,NO_TRANSFORM,DEF_REDUCTION);
   B1.hlll(delta);
 
+  print2maple(B1.getbase(),d+1,d);
+  
   transpose(AT,B1.getbase());
 
   TT.resize(d,d+1);
