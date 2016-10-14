@@ -1555,6 +1555,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::setprec(unsigned int prec) {
 
   Bfp.clear();
   Bfp.resize(n,d);
+  for (int i=0; i<n; i++) 
+    for (int j=0; j<d; j++) 
+      Bfp.set(i,j,0.0);
 
   normB2.clear();
   normB2.resize(d); 
@@ -1651,15 +1654,21 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
 
  
   R.resize(n,d);
-
+  
   Rkept.resize(n,d);
 
   Bfp.resize(n,d);
-
+  for (i=0; i<n; i++) // Mandatory here bug ? since not put to zero in matrix resize Jeu 13 oct 2016 16:36:38 CEST
+    for (j=0; j<d; j++) 
+      Bfp.set(i,j,0.0);
+ 
   normB2.resize(d);
   toR.resize(n);
   
   V.resize(n,d);
+
+ 
+    
   
   col_kept.resize(d+1); // +1 for the discovery test 
   descendu.resize(d);
@@ -2411,8 +2420,8 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::householder()
   int i,k,kappa;
   FP_NR<FT> nrtmp,s,w; 
   
-  nrtmp=((long) 0);
-  s=((long) 0);
+  nrtmp=0.0;
+  s=0.0;
 
   
 

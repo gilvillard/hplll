@@ -127,9 +127,9 @@ public:
 
     for (j=0; j<d; j++) M[j].resize(n);      
 
-    for (j=0; j<d; j++) 
-      for (i=0; i<n; i++) 
-	M[j][i]=((long) 0);
+    //for (j=0; j<d; j++)  // Commented pb no 0 for both Z_NR and FP_NR 
+    //for (i=0; i<n; i++)  //  Jeu 13 oct 2016 16:36:38 CEST
+    //	M[j][i]=0;
 
   }
 
