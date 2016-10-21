@@ -263,13 +263,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
     verboseDepth+=1;  // Segment à commenter
 
   // STATS
-  cout << endl << endl << "LLL repartition " << endl << endl;
+  // cout << endl << endl << "LLL repartition " << endl << endl;
 
-  cout << "[";
-  for (int i=0; i<nech-2; i++)
-    cout << "[ " << i << "," << ech[i] << " ],";
-  cout << "[ " << nech-2 << "," << ech[nech-2] << " ]";
-  cout << "]" << endl; 
+  // cout << "[";
+  // for (int i=0; i<nech-2; i++)
+  //   cout << "[ " << i << "," << ech[i] << " ],";
+  // cout << "[ " << nech-2 << "," << ech[nech-2] << " ]";
+  // cout << "]" << endl; 
  
   
   return 0;
