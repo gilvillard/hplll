@@ -138,21 +138,21 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
  /opt/local/include/gcc5/c++/bits/ostream.tcc \
  /opt/local/include/gcc5/c++/bits/istream.tcc \
  /opt/local/include/gcc5/c++/bits/sstream.tcc \
- /opt/local/include/gcc5/c++/iostream /usr/local/include/gmp.h \
+ /opt/local/include/gcc5/c++/iostream /opt/local/include/gmp.h \
  /opt/local/lib/gcc5/gcc/x86_64-apple-darwin16/5.4.0/include/stddef.h \
  /opt/local/lib/gcc5/gcc/x86_64-apple-darwin16/5.4.0/include-fixed/limits.h \
  /opt/local/lib/gcc5/gcc/x86_64-apple-darwin16/5.4.0/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/machine/limits.h \
  /usr/include/i386/limits.h /usr/include/i386/_limits.h \
- /usr/include/sys/syslimits.h /usr/local/include/mpfr.h \
- /usr/local/include/fplll.h /usr/local/include/fplll/fplll.h \
- /usr/local/include/fplll/util.h /usr/local/include/fplll/nr/matrix.h \
- /usr/local/include/fplll/nr/numvect.h /usr/local/include/fplll/nr/nr.h \
- /usr/local/include/fplll/nr/../defs.h \
- /opt/local/include/gcc5/c++/cstddef /opt/local/include/gcc5/c++/cstring \
- /usr/include/string.h /usr/include/strings.h \
- /opt/local/include/gcc5/c++/climits /opt/local/include/gcc5/c++/ctime \
- /opt/local/include/gcc5/c++/limits /opt/local/include/gcc5/c++/algorithm \
+ /usr/include/sys/syslimits.h /opt/local/include/mpfr.h \
+ /opt/local/include/fplll.h /opt/local/include/fplll/fplll.h \
+ /opt/local/include/fplll/util.h /opt/local/include/fplll/nr/matrix.h \
+ /opt/local/include/fplll/nr/numvect.h /opt/local/include/fplll/nr/nr.h \
+ /opt/local/include/fplll/defs.h /opt/local/include/gcc5/c++/cstddef \
+ /opt/local/include/gcc5/c++/cstring /usr/include/string.h \
+ /usr/include/strings.h /opt/local/include/gcc5/c++/climits \
+ /opt/local/include/gcc5/c++/ctime /opt/local/include/gcc5/c++/limits \
+ /opt/local/include/gcc5/c++/algorithm \
  /opt/local/include/gcc5/c++/utility \
  /opt/local/include/gcc5/c++/bits/stl_relops.h \
  /opt/local/include/gcc5/c++/bits/stl_algo.h \
@@ -176,35 +176,34 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
  /usr/include/sys/_types/_seek_set.h /usr/include/sys/_types/_gid_t.h \
  /usr/include/sys/_types/_useconds_t.h /usr/include/sys/select.h \
  /usr/include/sys/_types/_uuid_t.h /usr/include/gethostuuid.h \
- /usr/local/include/fplll/nr/../fplll_config.h \
- /usr/local/include/fplll/nr/../nr/dpe.h \
- /usr/local/include/fplll/nr/nr_rand.inl \
- /usr/local/include/fplll/nr/nr_Z.inl \
- /usr/local/include/fplll/nr/nr_Z_l.inl \
- /usr/local/include/fplll/nr/nr_Z_d.inl \
- /usr/local/include/fplll/nr/nr_Z_mpz.inl \
- /usr/local/include/fplll/nr/nr_FP.inl \
- /usr/local/include/fplll/nr/nr_FP_d.inl \
- /usr/local/include/fplll/nr/nr_FP.inl \
- /usr/local/include/fplll/nr/nr_FP_ld.inl \
- /usr/local/include/fplll/nr/nr_FP_dpe.inl \
- /usr/local/include/fplll/nr/nr_FP_mpfr.inl \
- /usr/local/include/fplll/nr/nr_Z_misc.inl \
- /usr/local/include/fplll/nr/nr_FP_misc.inl \
+ /opt/local/include/fplll/fplll_config.h \
+ /opt/local/include/fplll/nr/dpe.h \
+ /opt/local/include/fplll/nr/nr_rand.inl \
+ /opt/local/include/fplll/nr/nr_Z.inl \
+ /opt/local/include/fplll/nr/nr_Z_l.inl \
+ /opt/local/include/fplll/nr/nr_Z_d.inl \
+ /opt/local/include/fplll/nr/nr_Z_mpz.inl \
+ /opt/local/include/fplll/nr/nr_FP.inl \
+ /opt/local/include/fplll/nr/nr_FP_d.inl \
+ /opt/local/include/fplll/nr/nr_FP.inl \
+ /opt/local/include/fplll/nr/nr_FP_ld.inl \
+ /opt/local/include/fplll/nr/nr_FP_dpe.inl \
+ /opt/local/include/fplll/nr/nr_FP_mpfr.inl \
+ /opt/local/include/fplll/nr/nr_Z_misc.inl \
+ /opt/local/include/fplll/nr/nr_FP_misc.inl \
  /opt/local/include/gcc5/c++/vector \
  /opt/local/include/gcc5/c++/bits/stl_uninitialized.h \
  /opt/local/include/gcc5/c++/bits/stl_vector.h \
  /opt/local/include/gcc5/c++/bits/stl_bvector.h \
  /opt/local/include/gcc5/c++/bits/vector.tcc \
- /usr/local/include/fplll/nr/matrix.cpp \
- /usr/local/include/fplll/nr/matrix.h /usr/local/include/fplll/svpcvp.h \
- /usr/local/include/fplll/bkz_param.h /usr/local/include/fplll/defs.h \
- /usr/local/include/fplll/bkz.h /usr/local/include/fplll/enum/evaluator.h \
- /usr/local/include/fplll/enum/../util.h \
- /opt/local/include/gcc5/c++/deque \
+ /opt/local/include/fplll/nr/matrix.cpp \
+ /opt/local/include/fplll/nr/matrix.h /opt/local/include/fplll/svpcvp.h \
+ /opt/local/include/fplll/bkz_param.h /opt/local/include/fplll/defs.h \
+ /opt/local/include/fplll/bkz.h /opt/local/include/fplll/enum/evaluator.h \
+ /opt/local/include/fplll/util.h /opt/local/include/gcc5/c++/deque \
  /opt/local/include/gcc5/c++/bits/stl_deque.h \
  /opt/local/include/gcc5/c++/bits/deque.tcc \
- /usr/local/include/fplll/enum/enumerate.h \
+ /opt/local/include/fplll/enum/enumerate.h \
  /opt/local/include/gcc5/c++/array /opt/local/include/gcc5/c++/memory \
  /opt/local/include/gcc5/c++/bits/stl_raw_storage_iter.h \
  /opt/local/include/gcc5/c++/typeinfo \
@@ -219,12 +218,12 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
  /opt/local/include/gcc5/c++/bits/shared_ptr_atomic.h \
  /opt/local/include/gcc5/c++/bits/atomic_base.h \
  /opt/local/include/gcc5/c++/backward/auto_ptr.h \
- /usr/local/include/fplll/gso.h /usr/local/include/fplll/enum/evaluator.h \
- /usr/local/include/fplll/enum/enumerate_base.h \
+ /opt/local/include/fplll/gso.h /opt/local/include/fplll/enum/evaluator.h \
+ /opt/local/include/fplll/enum/enumerate_base.h \
  /opt/local/include/gcc5/c++/cfenv /opt/local/include/gcc5/c++/fenv.h \
- /usr/include/fenv.h /usr/local/include/fplll/fplll_config.h \
- /usr/local/include/fplll/lll.h /usr/local/include/fplll/gso.h \
- /usr/local/include/fplll/wrapper.h /usr/local/include/fplll/pruner.h \
+ /usr/include/fenv.h /opt/local/include/fplll/fplll_config.h \
+ /opt/local/include/fplll/lll.h /opt/local/include/fplll/gso.h \
+ /opt/local/include/fplll/wrapper.h /opt/local/include/fplll/pruner.h \
  ../src/givtimer.C ../src/givtimer.h ../src/nr_Z_l128.h ../src/ldpe.h \
  ../src/nr-ld.cpp ../src/mat.h ../src/mixed-col.h ../src/matpe.h \
  ../src/matmixed.h ../src/hlll.cc ../src/ratio.h ../src/matgen.h \
@@ -607,7 +606,7 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 
 /opt/local/include/gcc5/c++/iostream:
 
-/usr/local/include/gmp.h:
+/opt/local/include/gmp.h:
 
 /opt/local/lib/gcc5/gcc/x86_64-apple-darwin16/5.4.0/include/stddef.h:
 
@@ -625,21 +624,21 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 
 /usr/include/sys/syslimits.h:
 
-/usr/local/include/mpfr.h:
+/opt/local/include/mpfr.h:
 
-/usr/local/include/fplll.h:
+/opt/local/include/fplll.h:
 
-/usr/local/include/fplll/fplll.h:
+/opt/local/include/fplll/fplll.h:
 
-/usr/local/include/fplll/util.h:
+/opt/local/include/fplll/util.h:
 
-/usr/local/include/fplll/nr/matrix.h:
+/opt/local/include/fplll/nr/matrix.h:
 
-/usr/local/include/fplll/nr/numvect.h:
+/opt/local/include/fplll/nr/numvect.h:
 
-/usr/local/include/fplll/nr/nr.h:
+/opt/local/include/fplll/nr/nr.h:
 
-/usr/local/include/fplll/nr/../defs.h:
+/opt/local/include/fplll/defs.h:
 
 /opt/local/include/gcc5/c++/cstddef:
 
@@ -723,35 +722,35 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 
 /usr/include/gethostuuid.h:
 
-/usr/local/include/fplll/nr/../fplll_config.h:
+/opt/local/include/fplll/fplll_config.h:
 
-/usr/local/include/fplll/nr/../nr/dpe.h:
+/opt/local/include/fplll/nr/dpe.h:
 
-/usr/local/include/fplll/nr/nr_rand.inl:
+/opt/local/include/fplll/nr/nr_rand.inl:
 
-/usr/local/include/fplll/nr/nr_Z.inl:
+/opt/local/include/fplll/nr/nr_Z.inl:
 
-/usr/local/include/fplll/nr/nr_Z_l.inl:
+/opt/local/include/fplll/nr/nr_Z_l.inl:
 
-/usr/local/include/fplll/nr/nr_Z_d.inl:
+/opt/local/include/fplll/nr/nr_Z_d.inl:
 
-/usr/local/include/fplll/nr/nr_Z_mpz.inl:
+/opt/local/include/fplll/nr/nr_Z_mpz.inl:
 
-/usr/local/include/fplll/nr/nr_FP.inl:
+/opt/local/include/fplll/nr/nr_FP.inl:
 
-/usr/local/include/fplll/nr/nr_FP_d.inl:
+/opt/local/include/fplll/nr/nr_FP_d.inl:
 
-/usr/local/include/fplll/nr/nr_FP.inl:
+/opt/local/include/fplll/nr/nr_FP.inl:
 
-/usr/local/include/fplll/nr/nr_FP_ld.inl:
+/opt/local/include/fplll/nr/nr_FP_ld.inl:
 
-/usr/local/include/fplll/nr/nr_FP_dpe.inl:
+/opt/local/include/fplll/nr/nr_FP_dpe.inl:
 
-/usr/local/include/fplll/nr/nr_FP_mpfr.inl:
+/opt/local/include/fplll/nr/nr_FP_mpfr.inl:
 
-/usr/local/include/fplll/nr/nr_Z_misc.inl:
+/opt/local/include/fplll/nr/nr_Z_misc.inl:
 
-/usr/local/include/fplll/nr/nr_FP_misc.inl:
+/opt/local/include/fplll/nr/nr_FP_misc.inl:
 
 /opt/local/include/gcc5/c++/vector:
 
@@ -763,21 +762,21 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 
 /opt/local/include/gcc5/c++/bits/vector.tcc:
 
-/usr/local/include/fplll/nr/matrix.cpp:
+/opt/local/include/fplll/nr/matrix.cpp:
 
-/usr/local/include/fplll/nr/matrix.h:
+/opt/local/include/fplll/nr/matrix.h:
 
-/usr/local/include/fplll/svpcvp.h:
+/opt/local/include/fplll/svpcvp.h:
 
-/usr/local/include/fplll/bkz_param.h:
+/opt/local/include/fplll/bkz_param.h:
 
-/usr/local/include/fplll/defs.h:
+/opt/local/include/fplll/defs.h:
 
-/usr/local/include/fplll/bkz.h:
+/opt/local/include/fplll/bkz.h:
 
-/usr/local/include/fplll/enum/evaluator.h:
+/opt/local/include/fplll/enum/evaluator.h:
 
-/usr/local/include/fplll/enum/../util.h:
+/opt/local/include/fplll/util.h:
 
 /opt/local/include/gcc5/c++/deque:
 
@@ -785,7 +784,7 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 
 /opt/local/include/gcc5/c++/bits/deque.tcc:
 
-/usr/local/include/fplll/enum/enumerate.h:
+/opt/local/include/fplll/enum/enumerate.h:
 
 /opt/local/include/gcc5/c++/array:
 
@@ -819,11 +818,11 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 
 /opt/local/include/gcc5/c++/backward/auto_ptr.h:
 
-/usr/local/include/fplll/gso.h:
+/opt/local/include/fplll/gso.h:
 
-/usr/local/include/fplll/enum/evaluator.h:
+/opt/local/include/fplll/enum/evaluator.h:
 
-/usr/local/include/fplll/enum/enumerate_base.h:
+/opt/local/include/fplll/enum/enumerate_base.h:
 
 /opt/local/include/gcc5/c++/cfenv:
 
@@ -831,15 +830,15 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 
 /usr/include/fenv.h:
 
-/usr/local/include/fplll/fplll_config.h:
+/opt/local/include/fplll/fplll_config.h:
 
-/usr/local/include/fplll/lll.h:
+/opt/local/include/fplll/lll.h:
 
-/usr/local/include/fplll/gso.h:
+/opt/local/include/fplll/gso.h:
 
-/usr/local/include/fplll/wrapper.h:
+/opt/local/include/fplll/wrapper.h:
 
-/usr/local/include/fplll/pruner.h:
+/opt/local/include/fplll/pruner.h:
 
 ../src/givtimer.C:
 
