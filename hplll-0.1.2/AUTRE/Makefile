@@ -29,11 +29,9 @@ LOADLIBES +=  ${FPLLL_LIBS} ${MPFR_LIBS} ${GMP_LIBS}
 .SUFFIXES: .o .c .cc  
 
 .cc.o:
-	#/opt/local/bin/g++  -o $@ -c $<   ${CXXFLAGS}
-	clang++ -o $@ -c $<   ${CXXFLAGS}
+	g++  -o $@ -c $<   ${CXXFLAGS}
  
 .cc:
-	#/opt/local/bin/g++  -o $@ $<   ${CXXFLAGS}  ${LDFLAGS} ${LOADLIBES} 
-	clang++ -o $@ $<   ${CXXFLAGS}  ${LDFLAGS} ${LOADLIBES}
+	g++  -o $@ $<   ${CXXFLAGS}  ${LDFLAGS} ${LOADLIBES} 
 
  
