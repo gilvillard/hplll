@@ -1,23 +1,22 @@
-main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
- /opt/local/include/gcc5/c++/cmath \
+main.o: main.cc /opt/local/include/fplll.h \
+ /opt/local/include/fplll/fplll.h /opt/local/include/fplll/util.h \
+ /opt/local/include/fplll/nr/matrix.h \
+ /opt/local/include/fplll/nr/numvect.h /opt/local/include/fplll/nr/nr.h \
+ /opt/local/include/gcc5/c++/iostream \
  /opt/local/include/gcc5/c++/x86_64-apple-darwin16/bits/c++config.h \
  /opt/local/include/gcc5/c++/x86_64-apple-darwin16/bits/os_defines.h \
  /opt/local/include/gcc5/c++/x86_64-apple-darwin16/bits/cpu_defines.h \
- /opt/local/include/gcc5/c++/bits/cpp_type_traits.h \
- /opt/local/include/gcc5/c++/ext/type_traits.h \
- /opt/local/lib/gcc5/gcc/x86_64-apple-darwin16/5.4.0/include-fixed/math.h \
- /usr/include/sys/cdefs.h /usr/include/sys/_symbol_aliasing.h \
- /usr/include/sys/_posix_availability.h /usr/include/Availability.h \
- /usr/include/AvailabilityInternal.h /opt/local/include/gcc5/c++/sstream \
- /opt/local/include/gcc5/c++/istream /opt/local/include/gcc5/c++/ios \
+ /opt/local/include/gcc5/c++/ostream /opt/local/include/gcc5/c++/ios \
  /opt/local/include/gcc5/c++/iosfwd \
  /opt/local/include/gcc5/c++/bits/stringfwd.h \
  /opt/local/include/gcc5/c++/bits/memoryfwd.h \
  /opt/local/include/gcc5/c++/bits/postypes.h \
  /opt/local/include/gcc5/c++/cwchar /usr/include/wchar.h \
- /usr/include/_types.h /usr/include/sys/_types.h \
- /usr/include/machine/_types.h /usr/include/i386/_types.h \
- /usr/include/sys/_pthread/_pthread_types.h \
+ /usr/include/_types.h /usr/include/sys/_types.h /usr/include/sys/cdefs.h \
+ /usr/include/sys/_symbol_aliasing.h \
+ /usr/include/sys/_posix_availability.h /usr/include/machine/_types.h \
+ /usr/include/i386/_types.h /usr/include/sys/_pthread/_pthread_types.h \
+ /usr/include/Availability.h /usr/include/AvailabilityInternal.h \
  /usr/include/sys/_types/_null.h /usr/include/sys/_types/_size_t.h \
  /usr/include/sys/_types/_mbstate_t.h \
  /usr/include/sys/_types/_ct_rune_t.h /usr/include/sys/_types/_rune_t.h \
@@ -38,6 +37,8 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
  /opt/local/include/gcc5/c++/bits/char_traits.h \
  /opt/local/include/gcc5/c++/bits/stl_algobase.h \
  /opt/local/include/gcc5/c++/bits/functexcept.h \
+ /opt/local/include/gcc5/c++/bits/cpp_type_traits.h \
+ /opt/local/include/gcc5/c++/ext/type_traits.h \
  /opt/local/include/gcc5/c++/ext/numeric_traits.h \
  /opt/local/include/gcc5/c++/bits/stl_pair.h \
  /opt/local/include/gcc5/c++/bits/move.h \
@@ -134,25 +135,19 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
  /opt/local/include/gcc5/c++/x86_64-apple-darwin16/bits/ctype_inline.h \
  /opt/local/include/gcc5/c++/bits/locale_facets.tcc \
  /opt/local/include/gcc5/c++/bits/basic_ios.tcc \
- /opt/local/include/gcc5/c++/ostream \
  /opt/local/include/gcc5/c++/bits/ostream.tcc \
+ /opt/local/include/gcc5/c++/istream \
  /opt/local/include/gcc5/c++/bits/istream.tcc \
- /opt/local/include/gcc5/c++/bits/sstream.tcc \
- /opt/local/include/gcc5/c++/iostream /opt/local/include/gmp.h \
+ /opt/local/include/fplll/defs.h /opt/local/include/gcc5/c++/cstddef \
  /opt/local/lib/gcc5/gcc/x86_64-apple-darwin16/5.4.0/include/stddef.h \
+ /opt/local/include/gcc5/c++/cstring /usr/include/string.h \
+ /usr/include/strings.h /opt/local/include/gcc5/c++/climits \
  /opt/local/lib/gcc5/gcc/x86_64-apple-darwin16/5.4.0/include-fixed/limits.h \
  /opt/local/lib/gcc5/gcc/x86_64-apple-darwin16/5.4.0/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/machine/limits.h \
  /usr/include/i386/limits.h /usr/include/i386/_limits.h \
- /usr/include/sys/syslimits.h /opt/local/include/mpfr.h \
- /opt/local/include/fplll.h /opt/local/include/fplll/fplll.h \
- /opt/local/include/fplll/util.h /opt/local/include/fplll/nr/matrix.h \
- /opt/local/include/fplll/nr/numvect.h /opt/local/include/fplll/nr/nr.h \
- /opt/local/include/fplll/defs.h /opt/local/include/gcc5/c++/cstddef \
- /opt/local/include/gcc5/c++/cstring /usr/include/string.h \
- /usr/include/strings.h /opt/local/include/gcc5/c++/climits \
- /opt/local/include/gcc5/c++/ctime /opt/local/include/gcc5/c++/limits \
- /opt/local/include/gcc5/c++/algorithm \
+ /usr/include/sys/syslimits.h /opt/local/include/gcc5/c++/ctime \
+ /opt/local/include/gcc5/c++/limits /opt/local/include/gcc5/c++/algorithm \
  /opt/local/include/gcc5/c++/utility \
  /opt/local/include/gcc5/c++/bits/stl_relops.h \
  /opt/local/include/gcc5/c++/bits/stl_algo.h \
@@ -161,11 +156,15 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
  /opt/local/include/gcc5/c++/bits/stl_tempbuf.h \
  /opt/local/include/gcc5/c++/bits/stl_construct.h \
  /opt/local/include/gcc5/c++/bits/uniform_int_dist.h \
+ /opt/local/include/gcc5/c++/cmath \
+ /opt/local/lib/gcc5/gcc/x86_64-apple-darwin16/5.4.0/include-fixed/math.h \
  /opt/local/include/gcc5/c++/fstream \
  /opt/local/include/gcc5/c++/bits/codecvt.h \
  /opt/local/include/gcc5/c++/x86_64-apple-darwin16/bits/basic_file.h \
  /opt/local/include/gcc5/c++/x86_64-apple-darwin16/bits/c++io.h \
- /opt/local/include/gcc5/c++/bits/fstream.tcc /usr/include/sys/time.h \
+ /opt/local/include/gcc5/c++/bits/fstream.tcc \
+ /opt/local/include/gcc5/c++/sstream \
+ /opt/local/include/gcc5/c++/bits/sstream.tcc /usr/include/sys/time.h \
  /usr/include/sys/_types/_fd_def.h /usr/include/sys/_types/_timeval64.h \
  /usr/include/sys/_types/_suseconds_t.h \
  /usr/include/sys/_types/_fd_setsize.h /usr/include/sys/_types/_fd_set.h \
@@ -176,6 +175,7 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
  /usr/include/sys/_types/_seek_set.h /usr/include/sys/_types/_gid_t.h \
  /usr/include/sys/_types/_useconds_t.h /usr/include/sys/select.h \
  /usr/include/sys/_types/_uuid_t.h /usr/include/gethostuuid.h \
+ /opt/local/include/gmp.h /opt/local/include/mpfr.h \
  /opt/local/include/fplll/fplll_config.h \
  /opt/local/include/fplll/nr/dpe.h \
  /opt/local/include/fplll/nr/nr_rand.inl \
@@ -223,20 +223,21 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
  /opt/local/include/gcc5/c++/cfenv /opt/local/include/gcc5/c++/fenv.h \
  /usr/include/fenv.h /opt/local/include/fplll/fplll_config.h \
  /opt/local/include/fplll/lll.h /opt/local/include/fplll/gso.h \
- /opt/local/include/fplll/wrapper.h /opt/local/include/fplll/pruner.h \
- ../src/givtimer.C ../src/givtimer.h ../src/nr_Z_l128.h ../src/ldpe.h \
- ../src/nr-ld.cpp ../src/mat.h ../src/mixed-col.h ../src/matpe.h \
- ../src/matmixed.h ../src/hlll.cc ../src/ratio.h ../src/matgen.h \
- ../src/tools.h ../src/matgen.cc ../src/wrappers.h ../src/slll-wrap.h \
- ../src/slll.h ../src/slll.cc
+ /opt/local/include/fplll/wrapper.h /opt/local/include/fplll/pruner.h
 
-../src/hplll.h:
+/opt/local/include/fplll.h:
 
-../src/hlll.h:
+/opt/local/include/fplll/fplll.h:
 
-../src/defs.h:
+/opt/local/include/fplll/util.h:
 
-/opt/local/include/gcc5/c++/cmath:
+/opt/local/include/fplll/nr/matrix.h:
+
+/opt/local/include/fplll/nr/numvect.h:
+
+/opt/local/include/fplll/nr/nr.h:
+
+/opt/local/include/gcc5/c++/iostream:
 
 /opt/local/include/gcc5/c++/x86_64-apple-darwin16/bits/c++config.h:
 
@@ -244,25 +245,7 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 
 /opt/local/include/gcc5/c++/x86_64-apple-darwin16/bits/cpu_defines.h:
 
-/opt/local/include/gcc5/c++/bits/cpp_type_traits.h:
-
-/opt/local/include/gcc5/c++/ext/type_traits.h:
-
-/opt/local/lib/gcc5/gcc/x86_64-apple-darwin16/5.4.0/include-fixed/math.h:
-
-/usr/include/sys/cdefs.h:
-
-/usr/include/sys/_symbol_aliasing.h:
-
-/usr/include/sys/_posix_availability.h:
-
-/usr/include/Availability.h:
-
-/usr/include/AvailabilityInternal.h:
-
-/opt/local/include/gcc5/c++/sstream:
-
-/opt/local/include/gcc5/c++/istream:
+/opt/local/include/gcc5/c++/ostream:
 
 /opt/local/include/gcc5/c++/ios:
 
@@ -282,11 +265,21 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 
 /usr/include/sys/_types.h:
 
+/usr/include/sys/cdefs.h:
+
+/usr/include/sys/_symbol_aliasing.h:
+
+/usr/include/sys/_posix_availability.h:
+
 /usr/include/machine/_types.h:
 
 /usr/include/i386/_types.h:
 
 /usr/include/sys/_pthread/_pthread_types.h:
+
+/usr/include/Availability.h:
+
+/usr/include/AvailabilityInternal.h:
 
 /usr/include/sys/_types/_null.h:
 
@@ -345,6 +338,10 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 /opt/local/include/gcc5/c++/bits/stl_algobase.h:
 
 /opt/local/include/gcc5/c++/bits/functexcept.h:
+
+/opt/local/include/gcc5/c++/bits/cpp_type_traits.h:
+
+/opt/local/include/gcc5/c++/ext/type_traits.h:
 
 /opt/local/include/gcc5/c++/ext/numeric_traits.h:
 
@@ -596,19 +593,25 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 
 /opt/local/include/gcc5/c++/bits/basic_ios.tcc:
 
-/opt/local/include/gcc5/c++/ostream:
-
 /opt/local/include/gcc5/c++/bits/ostream.tcc:
+
+/opt/local/include/gcc5/c++/istream:
 
 /opt/local/include/gcc5/c++/bits/istream.tcc:
 
-/opt/local/include/gcc5/c++/bits/sstream.tcc:
+/opt/local/include/fplll/defs.h:
 
-/opt/local/include/gcc5/c++/iostream:
-
-/opt/local/include/gmp.h:
+/opt/local/include/gcc5/c++/cstddef:
 
 /opt/local/lib/gcc5/gcc/x86_64-apple-darwin16/5.4.0/include/stddef.h:
+
+/opt/local/include/gcc5/c++/cstring:
+
+/usr/include/string.h:
+
+/usr/include/strings.h:
+
+/opt/local/include/gcc5/c++/climits:
 
 /opt/local/lib/gcc5/gcc/x86_64-apple-darwin16/5.4.0/include-fixed/limits.h:
 
@@ -623,32 +626,6 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 /usr/include/i386/_limits.h:
 
 /usr/include/sys/syslimits.h:
-
-/opt/local/include/mpfr.h:
-
-/opt/local/include/fplll.h:
-
-/opt/local/include/fplll/fplll.h:
-
-/opt/local/include/fplll/util.h:
-
-/opt/local/include/fplll/nr/matrix.h:
-
-/opt/local/include/fplll/nr/numvect.h:
-
-/opt/local/include/fplll/nr/nr.h:
-
-/opt/local/include/fplll/defs.h:
-
-/opt/local/include/gcc5/c++/cstddef:
-
-/opt/local/include/gcc5/c++/cstring:
-
-/usr/include/string.h:
-
-/usr/include/strings.h:
-
-/opt/local/include/gcc5/c++/climits:
 
 /opt/local/include/gcc5/c++/ctime:
 
@@ -672,6 +649,10 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 
 /opt/local/include/gcc5/c++/bits/uniform_int_dist.h:
 
+/opt/local/include/gcc5/c++/cmath:
+
+/opt/local/lib/gcc5/gcc/x86_64-apple-darwin16/5.4.0/include-fixed/math.h:
+
 /opt/local/include/gcc5/c++/fstream:
 
 /opt/local/include/gcc5/c++/bits/codecvt.h:
@@ -681,6 +662,10 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 /opt/local/include/gcc5/c++/x86_64-apple-darwin16/bits/c++io.h:
 
 /opt/local/include/gcc5/c++/bits/fstream.tcc:
+
+/opt/local/include/gcc5/c++/sstream:
+
+/opt/local/include/gcc5/c++/bits/sstream.tcc:
 
 /usr/include/sys/time.h:
 
@@ -721,6 +706,10 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 /usr/include/sys/_types/_uuid_t.h:
 
 /usr/include/gethostuuid.h:
+
+/opt/local/include/gmp.h:
+
+/opt/local/include/mpfr.h:
 
 /opt/local/include/fplll/fplll_config.h:
 
@@ -839,39 +828,3 @@ main.o: main.cc ../src/hplll.h ../src/hlll.h ../src/defs.h \
 /opt/local/include/fplll/wrapper.h:
 
 /opt/local/include/fplll/pruner.h:
-
-../src/givtimer.C:
-
-../src/givtimer.h:
-
-../src/nr_Z_l128.h:
-
-../src/ldpe.h:
-
-../src/nr-ld.cpp:
-
-../src/mat.h:
-
-../src/mixed-col.h:
-
-../src/matpe.h:
-
-../src/matmixed.h:
-
-../src/hlll.cc:
-
-../src/ratio.h:
-
-../src/matgen.h:
-
-../src/tools.h:
-
-../src/matgen.cc:
-
-../src/wrappers.h:
-
-../src/slll-wrap.h:
-
-../src/slll.h:
-
-../src/slll.cc:
