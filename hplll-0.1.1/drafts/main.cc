@@ -19,8 +19,6 @@ int main(int argc, char *argv[])  {
 
   int start_time,run_time;
 
-  cout << A << endl;
-  
   start_time=cputime();
   
   lllReduction(A, 0.99, 0.501, LM_FAST, FT_DEFAULT,0, LLL_VERBOSE);
