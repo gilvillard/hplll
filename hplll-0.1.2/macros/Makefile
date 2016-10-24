@@ -135,13 +135,13 @@ AUTOMAKE = ${SHELL} /Users/gvillard/hplll-0.1.2/missing automake-1.15
 AWK = awk
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS =  -O3 -Wall
+CFLAGS = -O3 -Wall
 CPP = gcc -E
 CPPFLAGS = 
 CXX = /opt/local/bin/g++
 CXXCPP = /opt/local/bin/g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -std=c++11 -I/opt/local/include -I/opt/local/include -I/usr/local/include 
+CXXFLAGS = -std=c++11 -I/opt/local/include -I/opt/local/include -I/opt/local/include
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -161,9 +161,9 @@ INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LD = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld
-LDFLAGS =  -L/opt/local/lib -Wl,-rpath,/opt/local/lib -L/opt/local/lib -Wl,-rpath,/opt/local/lib -L/usr/local/lib -lfplll -Wl,-rpath,/usr/local/lib -lntl
+LDFLAGS =  -L/opt/local/lib -Wl,-rpath,/opt/local/lib -L/opt/local/lib -Wl,-rpath,/opt/local/lib -L/opt/local/lib -lfplll -Wl,-rpath,/opt/local/lib
 LIBOBJS = 
-LIBS = -lmpfr -lgmp -lmpfr -lgmp  -lfplll -lntl
+LIBS = -lmpfr -lgmp -lmpfr -lgmp  -lfplll
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = lipo
 LN_S = ln -s
