@@ -53,18 +53,25 @@ int main(int argc, char *argv[])  {
   Timer th,tf;
   
   // HLLL ------------------------------------------
-   
+  cout << "--------------  HPLLL WRAPPER" << endl << endl;
   
-  //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
-
-  // verboseDepth = 1;
-  // th.start();
-  // status=B.hlll(delta);
-  // th.stop();
+  int status;
+  
+  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
+  //Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
+ 
+  verboseDepth = 0;
+  th.start();
+  status=B.hlll(delta);
+  th.stop();
   
   verboseDepth = 1;
+
+  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > TB(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
+  verboseDepth=0;
+  TB.isreduced(delta-0.1);
   
-  th=hlll<mpz_t>(C, A, 0.99, true, false);
+  //th=hlll<mpz_t>(C, A, 0.99, true, false);
     
   //th=hlll<__int128_t>(C, A, 0.99, true,true); 
   //hlll<long>(C, A, 0.99, false, true); 

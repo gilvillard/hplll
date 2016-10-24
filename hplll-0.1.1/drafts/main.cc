@@ -36,71 +36,58 @@ using namespace hplll;
 int main(int argc, char *argv[])  {
   
   
-  ZZ_mat<mpz_t> A;
 
-  ZZ_mat<mpz_t> C;
+  int i,n;
+
+
+  cout << " n > ";
+  cin >> n;
+
   
-  ZZ_mat<mpz_t> AT;
- 
-  // ---------------------------------------------------------------------
+  vector<Z_NR<mpz_t> >  v;
+  v.resize(n);
 
-  int n,d;
-  double delta;
+  vector<Z_NR<mpz_t> >  w;
+  w.resize(n);
 
-  command_line_basis(A, n, d, delta, argc, argv); 
+  Z_NR<mpz_t>  z;
 
+  for (i=0; i<n; i++) {
+    v[i].randb(8);
+    w[i].randb(8);
+  }
+
+  z=0;
+
+
+  
  
   Timer th,tf;
   
-  // HLLL ------------------------------------------
-  cout << "--------------  HPLLL WRAPPER" << endl << endl;
-  
-  int status;
-  
-  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
-  //Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
  
-  verboseDepth = 0;
   th.start();
-  status=B.hlll(delta);
+  
+  for (i=0; i<n; i++)
+    w[i].addmul(w[i],v[i]);
+  
   th.stop();
   
-  verboseDepth = 1;
 
-  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > TB(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-  verboseDepth=0;
-  TB.isreduced(delta-0.1);
-  
-  //th=hlll<mpz_t>(C, A, 0.99, true, false);
-    
-  //th=hlll<__int128_t>(C, A, 0.99, true,true); 
-  //hlll<long>(C, A, 0.99, false, true); 
  
-  cout << endl; 
-
-  cout << "--------------  FPLLL WRAPPER" << endl << endl;
-  
-  AT.resize(d,n);
-  
-  transpose(AT,A);
-  
   tf.start();
-  
-  lllReduction(AT, delta, 0.501, LM_FAST, FT_DEFAULT,0); //,LLL_VERBOSE);
+
+  for (i=0; i<n; i++)
+    z.addmul(v[i],v[i]); 
   
   tf.stop();
   
-  transpose(A,AT);
   
-  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A,NO_TRANSFORM,DEF_REDUCTION);
-  verboseDepth=0;
-  T.isreduced(delta-0.1);
 
   //  cout << "-----------------------" << endl;
 
-   cout << "HLLL: " << th << endl;
+   cout << "A : " << th << endl;
   
-   cout << "FPLLL :" << tf << endl;
+   cout << "B :" << tf << endl;
   
 
   return 0;
