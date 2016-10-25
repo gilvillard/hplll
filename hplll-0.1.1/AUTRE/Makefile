@@ -1,6 +1,6 @@
 #! /bin/sh
 
-CXXFLAGS += -O2 -std=c++11 -Wall  
+CXXFLAGS += -O2 -Wall  
 
 CXXFLAGS += -I/usr/local/include 
 LDFLAGS += -L/usr/local/lib
