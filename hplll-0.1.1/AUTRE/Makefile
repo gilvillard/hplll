@@ -1,7 +1,9 @@
 #! /bin/sh
 
-CXXFLAGS += -O3 -Wall 
+CXXFLAGS += -O2 -std=c++11 -Wall  
 
+CXXFLAGS += -I/usr/local/include 
+LDFLAGS += -L/usr/local/lib
 
 
 # TODO EX: setenv LD_LIBRARY_PATH ${HOME}/Soft/lib
@@ -27,10 +29,10 @@ LOADLIBES +=  ${FPLLL_LIBS} ${MPFR_LIBS} ${GMP_LIBS}
 .SUFFIXES: .o .c .cc  
 
 .cc.o:
-	clang++  -o $@ -c $<   ${CXXFLAGS}
+	/opt/local/bin/g++  -o $@ -c $<   ${CXXFLAGS}
  
 .cc:
-	clang++  -o $@ $<   ${CXXFLAGS}  ${LDFLAGS} ${LOADLIBES} 
+	/opt/local/bin/g++  -o $@ $<   ${CXXFLAGS}  ${LDFLAGS} ${LOADLIBES} 
 
 
  
