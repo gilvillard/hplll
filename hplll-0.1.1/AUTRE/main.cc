@@ -9,46 +9,26 @@
 
    ********************************************** */
 
-using namespace fplll; 
-
 int main(int argc, char *argv[])  {
+
+
+  int start_time,run_time;
+
+   
+   ZZ_mat<mpz_t>  L;
+
+   L.read(cin);
+
+   start_time=cputime();
   
-  // ZZ_mat<mpz_t>  A;
+   lllReduction(L, 0.99, 0.501, LM_FAST, FT_DEFAULT,0, LLL_VERBOSE);
 
-  // A.read(cin);
-
-  // int start_time,run_time;
-
-  // start_time=cputime();
-  
-  // lllReduction(A, 0.99, 0.501, LM_FAST, FT_DEFAULT,0, LLL_VERBOSE);
-
-  // run_time=cputime()-start_time;
+   run_time=cputime()-start_time;
 
 
-  // cout << endl << "Time : " << run_time << endl << endl;
-
-
-  int n,i;
-
-  cout << "n > ";
-  cin >> n;
-
-  Z_NR<
-  vector<FP_NR<double> >  v,w;
-
-  v.resize(n);
-  w.resize(n);
+   cout << endl << "Time : " << run_time << endl << endl;
 
   
-  
-
-
-
-
-  
-  
-
    
   return 0;
 }
