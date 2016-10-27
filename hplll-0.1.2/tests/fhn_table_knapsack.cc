@@ -144,7 +144,7 @@ int main(int argc, char *argv[])  {
 
 	  double t,u,v,w;
 
-	  ratio<mpz_t>(B.getbase(),t,u,v,w);
+	  hplll::ratio<mpz_t>(B.getbase(),t,u,v,w);
 
 	  cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
 	  cout << ".. Average diagonal ratio: " << u << endl;
@@ -156,7 +156,7 @@ int main(int argc, char *argv[])  {
       	cout << "--------------  FPLLL WRAPPER VERBOSE " << endl << endl; 
     
       	time.start();
-      	lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
+      	lll_reduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
       	time.stop();
   
 

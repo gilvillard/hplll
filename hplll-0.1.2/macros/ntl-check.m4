@@ -21,9 +21,9 @@ AC_ARG_WITH(ntl,
 	     [if test "$withval" = yes ; then
 			# The "/" bad trick for forcing the warning at the end 
 			# to be modified 
-			NTL_HOME_PATH="/usr /usr/local /"
+			NTL_HOME_PATH="/usr /usr/local"
 	      elif test "$withval" != no ; then
-			NTL_HOME_PATH="$withval /usr /usr/local /"
+			NTL_HOME_PATH="$withval /usr /usr/local"
 	     fi],
 	     [NTL_HOME_PATH="/usr /usr/local"])
 

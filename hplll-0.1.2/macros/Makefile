@@ -89,7 +89,8 @@ build_triplet = x86_64-apple-darwin16.1.0
 host_triplet = x86_64-apple-darwin16.1.0
 subdir = macros
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/macros/fplll-check.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/macros/ax_cxx_compile_stdcxx.m4 \
+	$(top_srcdir)/macros/fplll-check.m4 \
 	$(top_srcdir)/macros/libtool.m4 \
 	$(top_srcdir)/macros/ltoptions.m4 \
 	$(top_srcdir)/macros/ltsugar.m4 \
@@ -135,13 +136,13 @@ AUTOMAKE = ${SHELL} /Users/gvillard/hplll-0.1.2/missing automake-1.15
 AWK = awk
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -O3 -Wall
+CFLAGS = -g -O2
 CPP = gcc -E
 CPPFLAGS = 
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -std=c++11 -flto -I/usr/local/include -I/usr/local/include -I/usr/local/include
+CXXFLAGS = -std=c++11 -flto -I/usr/local/include 
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -155,15 +156,16 @@ EGREP = /usr/bin/grep -E
 EXEEXT = 
 FGREP = /usr/bin/grep -F
 GREP = /usr/bin/grep
+HAVE_CXX11 = 1
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LD = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld
-LDFLAGS =  -L/usr/local/lib -Wl,-rpath,/usr/local/lib -L/usr/local/lib -Wl,-rpath,/usr/local/lib -L/usr/local/lib -lfplll -Wl,-rpath,/usr/local/lib
+LDFLAGS =  -L/usr/local/lib -lfplll -Wl,-rpath,/usr/local/lib -lntl
 LIBOBJS = 
-LIBS = -lmpfr -lgmp -lmpfr -lgmp  -lfplll
+LIBS = -lmpfr -lgmp -lmpfr -lgmp  -lfplll -lntl
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = lipo
 LN_S = ln -s
@@ -182,10 +184,10 @@ OTOOL64 = :
 PACKAGE = hplll
 PACKAGE_BUGREPORT = 
 PACKAGE_NAME = hplll
-PACKAGE_STRING = hplll 0.1.1
+PACKAGE_STRING = hplll 0.1.2
 PACKAGE_TARNAME = hplll
 PACKAGE_URL = 
-PACKAGE_VERSION = 0.1.1
+PACKAGE_VERSION = 0.1.2
 PATH_SEPARATOR = :
 POW_LIB = 
 RANLIB = ranlib
@@ -193,14 +195,14 @@ SED = /usr/bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = strip
-VERSION = 0.1.1
+VERSION = 0.1.2
 abs_builddir = /Users/gvillard/hplll-0.1.2/macros
 abs_srcdir = /Users/gvillard/hplll-0.1.2/macros
 abs_top_builddir = /Users/gvillard/hplll-0.1.2
 abs_top_srcdir = /Users/gvillard/hplll-0.1.2
 ac_ct_AR = ar
 ac_ct_CC = gcc
-ac_ct_CXX = 
+ac_ct_CXX = g++
 ac_ct_DUMPBIN = 
 am__include = include
 am__leading_dot = .

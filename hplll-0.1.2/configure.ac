@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.69])
 AC_CONFIG_MACRO_DIR([macros])
-AC_INIT([hplll],[0.1.1])
+AC_INIT([hplll],[0.1.2])
 AC_CONFIG_SRCDIR([src/hlll.cc])
 AM_INIT_AUTOMAKE
 
@@ -12,37 +12,39 @@ AM_MAINTAINER_MODE(enable)
 
 AC_CONFIG_HEADER(config.h)
 
-#DEFAULT_CFLAGS=" -O3 -Wall -march=native"
 DEFAULT_CFLAGS="-O3 -Wall"
 
 
-CFLAGS=${CFLAGS:-$DEFAULT_CFLAGS}
 CXXFLAGS=${CXXFLAGS:-$DEFAULT_CFLAGS}
 
-#AC_DISABLE_SHARED
 LT_INIT 
-#AC_PROG_LIBTOOL
 
 AC_PROG_INSTALL
 
 # Checks for programs.
-AC_LANG([C++])
+#AC_LANG([C++])
+AC_LANG_CPLUSPLUS
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_MAKE_SET
+AX_CXX_COMPILE_STDCXX([11],[noext],[mandatory])
 
 AC_ARG_WITH(mpfr,
    [  --with-mpfr=DIR          MPFR install directory ], [
+     if test "$withval" != "" ; then
       CXXFLAGS="$CXXFLAGS -I$withval/include"
        LDFLAGS="$LDFLAGS -L$withval/lib -Wl,-rpath,$withval/lib"
        mpfr_lib_path="$withval/lib"
+      fi
    ])
 
 AC_ARG_WITH(gmp,
    [  --with-gmp=DIR          GMP install directory ], [
+      if test "$withval" != "" ; then
       CXXFLAGS="$CXXFLAGS -I$withval/include"
        LDFLAGS="$LDFLAGS -L$withval/lib -Wl,-rpath,$withval/lib"
        gmp_lib_path="$withval/lib"
+       fi
    ])
 
 
@@ -52,8 +54,6 @@ AC_CHECK_LIB(gmp, __gmpz_init, , [AC_MSG_ERROR(
 
 AC_CHECK_LIB(mpfr, mpfr_add, , [AC_MSG_ERROR(
 [MPFR not found, see http://www.mpfr.org])])
-
-
 
 AC_ARG_ENABLE(omp, 
    [ --enable-omp Enables OpenMP], [
@@ -82,6 +82,7 @@ AC_CHECK_LIB(gmp, __gmp_get_memory_functions, , [AC_MSG_ERROR(
 
 AC_CHECK_LIB(mpfr, mpfr_fms, , [AC_MSG_ERROR(
 [MPFR version too old, need >= 2.3.0, see http://www.mpfr.org])])
+
 
 LB_CHECK_FPLLL 
 

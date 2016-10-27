@@ -109,7 +109,7 @@ int main(int argc, char *argv[])  {
       A.resize(d[k],d[k]);
       tmpmat.resize(d[k],d[k]);
       
-      AT.gen_ajtai(alpha[k]);
+      AT.gen_trg(alpha[k]);
       
       transpose(A,AT);
 
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])  {
 	cout << "--------------  FPLLL WRAPPER VERBOSE " << endl << endl; 
     
 	time.start();
-	lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
+	lll_reduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
 	time.stop();
   
 
