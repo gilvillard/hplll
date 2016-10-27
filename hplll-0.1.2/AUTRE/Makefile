@@ -1,6 +1,6 @@
 #! /bin/sh
 
-CXXFLAGS += -O2  -std=c++11    -Wall  
+CXXFLAGS += -O2  -std=c++11 -flto    -Wall  
 
 CXXFLAGS += -I/usr/local/include 
 LDFLAGS += -L/usr/local/lib
@@ -29,9 +29,9 @@ LOADLIBES +=  ${FPLLL_LIBS} ${MPFR_LIBS} ${GMP_LIBS}
 .SUFFIXES: .o .c .cc  
 
 .cc.o:
-	/opt/local/bin/g++  -o $@ -c $<   ${CXXFLAGS}
+	g++  -o $@ -c $<   ${CXXFLAGS}
  
 .cc:
-	/opt/local/bin/g++  -o $@ $<   ${CXXFLAGS}  ${LDFLAGS} ${LOADLIBES} 
+	g++  -o $@ $<   ${CXXFLAGS}  ${LDFLAGS} ${LOADLIBES} 
 
  
