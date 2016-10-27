@@ -90,7 +90,8 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/macros/fplll-check.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/macros/ax_cxx_compile_stdcxx.m4 \
+	$(top_srcdir)/macros/fplll-check.m4 \
 	$(top_srcdir)/macros/libtool.m4 \
 	$(top_srcdir)/macros/ltoptions.m4 \
 	$(top_srcdir)/macros/ltsugar.m4 \
@@ -270,6 +271,7 @@ EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
 GREP = @GREP@
+HAVE_CXX11 = @HAVE_CXX11@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@

@@ -151,8 +151,8 @@ int main(int argc, char *argv[])  {
       fb.close();
       fb.open (results,ios::app);    
 
-      int d=AT.getRows();
-      int n=AT.getCols();
+      int d=AT.get_rows();
+      int n=AT.get_cols();
 
       A.resize(n,d);
       
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])  {
 
 	  double t,u,v,w;
 
-	  ratio<mpz_t>(A,t,u,v,w);
+	  hplll::ratio<mpz_t>(A,t,u,v,w);
 
 	  cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
 	  cout << ".. Average diagonal ratio: " << u << endl;
@@ -204,7 +204,7 @@ int main(int argc, char *argv[])  {
 
 	if (n <=800) {
 	  time.start();
-	  lllReduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
+	  lll_reduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
 	  time.stop();
 	  
 
