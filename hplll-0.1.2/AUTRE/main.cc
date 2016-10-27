@@ -21,6 +21,7 @@ int main(int argc, char *argv[])  {
 
    start_time=cputime();
   
+   //lllReduction(L, 0.99, 0.501, LM_FAST, FT_DEFAULT,0, LLL_VERBOSE);
    lll_reduction(L, 0.99, 0.501, LM_FAST, FT_DEFAULT,0, LLL_VERBOSE);
 
    run_time=cputime()-start_time;
