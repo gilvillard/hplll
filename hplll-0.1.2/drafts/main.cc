@@ -1,7 +1,6 @@
-/* 
+/* integer relations test file  
 
-Created Dim  7 avr 2013 16:54:03 CEST
-Copyright (C) 2013-2016      Gilles Villard 
+Copyright (C) 2013      Gilles Villard 
 
 This file is part of the hplll Library 
 
@@ -20,10 +19,10 @@ along with the hplll Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#include "matgen.h"
+#include "relations.h" 
 
-#include "hplll.h"
-
-#include "wrappers.h"
+using namespace hplll;
 
 /* ***********************************************
 
@@ -31,76 +30,87 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
    ********************************************** */
 
-using namespace hplll; 
 
 int main(int argc, char *argv[])  {
-  
-  
-  ZZ_mat<mpz_t> A;
-
-  ZZ_mat<mpz_t> C;
-  
-  ZZ_mat<mpz_t> AT;
  
-  // ---------------------------------------------------------------------
+  int n;
+  
+  int found;
 
-  int n,d;
-  double delta;
+  int difference; 
 
-  command_line_basis(A, n, d, delta, argc, argv); 
+  int succeed=0;
+  int nbtest=0;
+
+  filebuf fb;
+  iostream os(&fb);
+
+  int nbrel;
+
+  long setprec;
+
+  //  *****************************************************  
+  cout <<  "Relation finder" << endl; 
+  //  *****************************************************  
+
+  matrix<FP_NR<mpfr_t> > A;   // Input matrix 
+
+  typedef mpz_t integer_t;
+  
+  ZZ_mat<integer_t> C;  // Output relations 
+  ZZ_mat<integer_t> Ccheck;  // Output relations 
 
  
-  Timer th,tf;
+  //  -------------------- TEST i --------------------------------
+  nbtest+=1;
+
   
-  // HLLL ------------------------------------------
-  cout << "--------------  HPLLL WRAPPER" << endl << endl;
+
+  ZZ_mat<mpz_t> AZ;
   
-  int status;
+  fb.open ("alpha.in",ios::in);
+  os >> setprec ;
+  os >> n;
+  AZ.resize(1,n);
+  os >> AZ;
+  fb.close();
+
   
-  Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A,NO_TRANSFORM,DEF_REDUCTION);
-  //Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A,NO_TRANSFORM,DEF_REDUCTION);
+  mpfr_set_default_prec(setprec);
  
-  verboseDepth = 0;
-  th.start();
-  status=B.hlll(delta);
-  th.stop();
-  
-  verboseDepth = 1;
 
-  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > TB(B.getbase(),NO_TRANSFORM,DEF_REDUCTION);
-  verboseDepth=0;
-  TB.isreduced(delta-0.1);
-  
-  //th=hlll<mpz_t>(C, A, 0.99, true, false);
-    
-  //th=hlll<__int128_t>(C, A, 0.99, true,true); 
-  //hlll<long>(C, A, 0.99, false, true); 
- 
-  cout << endl; 
+  FP_NR<mpfr_t> tmp;
+  A.resize(1,n);
+  for (int j=0; j<n; j++) {
+    set_z(tmp,AZ(0,j));
+    tmp.mul_2si(tmp,-setprec);
+    A.set(0,j,tmp);
+  }
 
-  cout << "--------------  FPLLL WRAPPER" << endl << endl;
-  
-  AT.resize(d,n);
-  
-  transpose(AT,A);
-  
-  tf.start();
-  
-  lll_reduction(AT, delta, 0.501, LM_FAST, FT_DEFAULT,0); //,LLL_VERBOSE);
-  
-  tf.stop();
-  
-  transpose(A,AT);
-  
-  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A,NO_TRANSFORM,DEF_REDUCTION);
-  verboseDepth=0;
-  T.isreduced(delta-0.1);
 
-  //  cout << "-----------------------" << endl;
-
-   cout << "HLLL: " << th << endl;
+  print2maple(A,1,n);
   
-   cout << "FPLLL :" << tf << endl;
+  nbrel=1;
+  cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl;
+
+  //print2maple(A,1,n);
+
+  verboseDepth=1;
+
+  Timer time;
+
+  // ---------------------
+  time.start();
+  
+  found = relation_f<long, double>(C, A,240,60,800,20);
+
+  time.stop();
+  // ---------------------
+  
+  print2maple(C,n,1);
+
+  cout << "Time : " << time << endl; 
+  
   
 
   return 0;
