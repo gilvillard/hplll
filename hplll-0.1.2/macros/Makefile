@@ -142,7 +142,7 @@ CPPFLAGS =
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -std=c++11 -flto -I/usr/local/include 
+CXXFLAGS = -std=c++11 -flto -I/usr/local/include -I/usr/local/include -I/usr/local/include 
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -163,7 +163,7 @@ INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LD = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld
-LDFLAGS =  -L/usr/local/lib -lfplll -Wl,-rpath,/usr/local/lib -lntl
+LDFLAGS =  -L/usr/local/lib -Wl,-rpath,/usr/local/lib -L/usr/local/lib -Wl,-rpath,/usr/local/lib -L/usr/local/lib -lfplll -Wl,-rpath,/usr/local/lib -lntl
 LIBOBJS = 
 LIBS = -lmpfr -lgmp -lmpfr -lgmp  -lfplll -lntl
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
