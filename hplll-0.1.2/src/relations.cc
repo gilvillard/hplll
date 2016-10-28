@@ -58,6 +58,7 @@ namespace hplll {
     int found;
 
     found=relation_f_z<ZT, FT> (C, L, alpha, confidence_gap, shift, increment, lllmethod, delta);
+
   
     return found;
     
@@ -161,7 +162,8 @@ namespace hplll {
 	
 	return 1;
       }
-      
+
+      //print2maple(A_in,d+1,d);
     }
 
     // Relation bound
@@ -192,7 +194,7 @@ namespace hplll {
 
     mpfr_set_default_prec(oldprec);
 
-    // print2maple(A_in,d+1,d);
+    
    
     return found; // 0 here 
     
@@ -279,7 +281,7 @@ namespace hplll {
     confidence.mul_2si(confidence,-confidence_gap); // > que increment !!! (fct taille de U ?)  
 
     FP_NR<mpfr_t> epsilon;
-    epsilon = 10.0; // Relation to d 
+    epsilon = 100000.0; // Relation to d 
     
 
     // -----------
@@ -380,6 +382,7 @@ namespace hplll {
 	xz.abs(L(0,0)); 
       new_quot.set_z(xz);
 
+
       
       Z_NR<FT> tmpz,maxcol;
       
@@ -397,13 +400,17 @@ namespace hplll {
       gap.div(new_quot,quot);
       gap.abs(gap); 
 
-           
-      // cout << "     gap : " << gap << endl; 
-      // cout << "     quot : " << new_quot << endl; 
-      // cout << "     maxcol : " << maxcol << endl;
-      // cout << "L: " << L(0,0) << endl;
+      // ICI
+      // print2maple(L,1,d);
+      cout << endl; 
+      cout << "     gap : " << gap << endl; 
+       cout << "     quot : " << new_quot << endl; 
+      //  cout << "     maxcol : " << maxcol << endl;
+      //  cout << "L: " << L(0,0) << endl;
+      //   cout << "L: " << L(0,1) << endl;
       // cout << "Af: " << Af(0,0) << endl << endl;
-
+      // 	cout << "Af: " << Af(0,1) << endl << endl;
+      //  cout << "Af: " << Af(1,0) << endl;
       
       // Mettre avant possible
       // if (L(0,0).sgn() ==0) {
@@ -413,7 +420,8 @@ namespace hplll {
       // }
  
       if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
-       
+       // Si epsilon mettre à la valeur max quotient des nombres au départ 
+       //if ((gap.cmp(confidence) == -1) ) {
 	HPLLL_INFO("Candidate relation found with confidence: ",gap); 
        	return 1;
 	

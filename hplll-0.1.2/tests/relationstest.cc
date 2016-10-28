@@ -71,11 +71,13 @@ int main(int argc, char *argv[])  {
   n=r*s+1;
   
   
-  setprec=320;
+  setprec=2000;
   mpfr_set_default_prec(setprec);
 
   gen3r2s(A,n,r,s);
 
+  print2maple(A,1,n);
+  
   nbrel=1;
 
   cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl; 
@@ -122,7 +124,7 @@ int main(int argc, char *argv[])  {
   s=7;
   n=r*s+1;
  
-  setprec=1660;
+  setprec=2000;
   mpfr_set_default_prec(setprec);
 
   gen3r2s(A,n,r,s);
@@ -133,8 +135,9 @@ int main(int argc, char *argv[])  {
 
  
    
-  found=relation_f<long, double>(C, A, setprec); 
+  found=relation_f<long, double>(C, A, setprec,80,200,20); 
 
+  print2maple(C,n,1);
   
   Ccheck.resize(n,1);
   fb.open ("C2_out",ios::in);
@@ -186,9 +189,8 @@ int main(int argc, char *argv[])  {
   cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl;
 
   found = relation_f<long, double>(C, A, 240, 60, 800, 40, FPLLL,0.99);
-
-  //print2maple(C,n,1);
-  
+ 
+ 
   Ccheck.resize(n,1);
   fb.open ("C3_out",ios::in);
   os >> Ccheck ;
