@@ -545,7 +545,7 @@ namespace hplll {
     // For testing 1/gap < confidence
     confidence = 1.0;
     // relié, plus petit,  au shift sur S (ex 80) 
-    confidence.mul_2si(confidence,-confidence_gap-shift);  // > shift  !!!  
+    confidence.mul_2si(confidence,-confidence_gap-shift);  // La baisse absolue est plus petite que le shift 
 
     FP_NR<mpfr_t> epsilon;
     epsilon = 10.0; 
@@ -595,7 +595,7 @@ namespace hplll {
       } 
 
       // ICI
-      print2maple(A_in,4,4);
+      //print2maple(A_in,4,4);
       
       // Test
       // ----
@@ -630,9 +630,9 @@ namespace hplll {
 
 
       // ICI
-      cout << "Gap : " << gap << endl;
-      cout << "Newquot : " << new_quot << endl;
-      cout << "Digits : " << def +alpha << endl;
+      //cout << "Gap : " << gap << endl;
+      //cout << "Newquot : " << new_quot << endl;
+      //cout << "Digits : " << def +alpha << endl;
       
       //if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
        if (gap.cmp(confidence) == -1) {
@@ -641,6 +641,7 @@ namespace hplll {
 	  C(j,0)=A_in(m+j,0);
 
 	gap.mul_2si(gap,shift);
+	
 	HPLLL_INFO("Candidate relation found with confidence: ",gap);
 	
 	return 1;
