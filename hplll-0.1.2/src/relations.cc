@@ -536,7 +536,8 @@ namespace hplll {
 
     FP_NR<mpfr_t> quot,new_quot,tf;
     new_quot = 1.0;  // new_quot should be bigger after the first iteration of the loop 
-
+    new_quot.mul_2si(new_quot,alpha);
+    
     FP_NR<mpfr_t> gap;
     gap=1.0;
 
@@ -544,7 +545,7 @@ namespace hplll {
     // For testing 1/gap < confidence
     confidence = 1.0;
     // relié, plus petit,  au shift sur S (ex 80) 
-    confidence.mul_2si(confidence,-confidence_gap);  // > shift  !!!  
+    confidence.mul_2si(confidence,-confidence_gap-shift);  // > shift  !!!  
 
     FP_NR<mpfr_t> epsilon;
     epsilon = 10.0; 
@@ -593,6 +594,9 @@ namespace hplll {
 	//cout << "****** sizeof U: " << maxbitsize(U,0,d,d) << endl;
       } 
 
+      // ICI
+      print2maple(A_in,4,4);
+      
       // Test
       // ----
 
@@ -624,13 +628,19 @@ namespace hplll {
       gap.div(new_quot,quot);
       gap.abs(gap); 
 
-            
-      if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
-       
+
+      // ICI
+      cout << "Gap : " << gap << endl;
+      cout << "Newquot : " << new_quot << endl;
+      cout << "Digits : " << def +alpha << endl;
+      
+      //if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
+       if (gap.cmp(confidence) == -1) {
 	C.resize(d,1);
 	for (j=0; j<d; j++)
 	  C(j,0)=A_in(m+j,0);
 
+	gap.mul_2si(gap,shift);
 	HPLLL_INFO("Candidate relation found with confidence: ",gap);
 	
 	return 1;
