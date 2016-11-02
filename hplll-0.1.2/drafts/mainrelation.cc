@@ -1,6 +1,5 @@
-/* Integer matrix nullspace test file  
+/* integer relations test file  
 
-Created Dim  7 avr 2013 16:54:03 CEST
 Copyright (C) 2013      Gilles Villard 
 
 This file is part of the hplll Library 
@@ -20,13 +19,10 @@ along with the hplll Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-
-#include "hlll.h"
-#include "lehmer.cc"
 #include "matgen.h"
-#include "relations.h"
+#include "relations.h" 
 
-#include "tools.h"
+using namespace hplll;
 
 /* ***********************************************
 
@@ -34,49 +30,105 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
    ********************************************** */
 
-using namespace hplll; 
 
 int main(int argc, char *argv[])  {
-  
-
-  matrix<FP_NR<mpfr_t> > A;   // Input matrix 
-  ZZ_mat<mpz_t> C;
  
-  int r=8; 
-  int s=8; 
-  int n=r*s+1;
-
-  int setprec=2800;
-  mpfr_set_default_prec(setprec);
-
-  gen3r2s(A,n,r,s);
-
+  int n;
+  
   int found;
 
-  verboseDepth = 1;
+  int difference; 
+
+  int succeed=0;
+  int nbtest=0;
+
+  filebuf fb;
+  iostream os(&fb);
+
+  int nbrel;
+
+  long setprec;
+
+  //  *****************************************************  
+  cout <<  "Relation finder" << endl; 
+  //  *****************************************************  
+
+  matrix<FP_NR<mpfr_t> > A;   // Input matrix 
+
+  typedef mpz_t integer_t;
+  
+  ZZ_mat<integer_t> C;  // Output relations 
+  ZZ_mat<integer_t> Ccheck;  // Output relations 
+
+ 
+  //  -------------------- TEST i --------------------------------
+  nbtest+=1;
+
+
+  // matrix<FP_NR<mpfr_t> > A;   // Input matrix
+  // ZZ_mat<mpz_t> C;
+
+  // int r=8;
+  // int s=8;
+  // int n=r*s+1;
+
+  // int setprec=2800;
+  // mpfr_set_default_prec(setprec);
+
+  // gen3r2s(A,n,r,s);
+
 
   
-  // Alpha must be less than prec by a factor of ||F|| for having alpha bits
+
+  ZZ_mat<mpz_t> AZ;
+
+  fb.open ("alpha.in",ios::in);
+  os >> setprec ;
+  os >> n;
+  //AZ.resize(1,n);
+  os >> AZ;
+  fb.close();
+
+  
+  mpfr_set_default_prec(setprec);
+ 
+
+  FP_NR<mpfr_t> tmp;
+  A.resize(1,n);
+  for (int j=0; j<n; j++) {
+    set_z(tmp,AZ(0,j));
+    tmp.mul_2si(tmp,-setprec);
+    A.set(0,j,tmp);
+  }
+
+
+  print2maple(A,1,n);
+  
+  nbrel=1;
+  cout << endl;
+
+  //print2maple(A,1,n);
+
+  verboseDepth=0;
 
   Timer time;
 
+  // ---------------------
   time.start();
-  found=relation_f<long, double>(C, A, setprec, 60, 200, 20);
-  time.stop();
-
-  cout << "Fast method " << endl;
-  time.print(cout);
-  cout << endl; 
-
-  time.start();
-  found=relation_lll<dpe_t, MatrixPE<double, dpe_t> > (C, A, setprec, 400, 300);
-  time.stop();
-
-  cout << "Relation lll " << endl;
-  time.print(cout);
   
-  //if (found ==1)  print2maple(C,n,1);
+  //found = relation_f<long, double>(C, A,240,60,800,20);
 
-        
+  found = relation_lll<dpe_t, MatrixPE<double, dpe_t> >(C, A,setprec,80,20,FPLLL);
+  
+
+  time.stop();
+  // ---------------------
+  
+  print2maple(C,n,1);
+
+  cout << "Time : " << time << endl; 
+  
+  
+
   return 0;
 }
