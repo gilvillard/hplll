@@ -42,9 +42,6 @@ int main(int argc, char *argv[])  {
   int succeed=0;
   int nbtest=0;
 
-  filebuf fb;
-  iostream os(&fb);
-
   int nbrel;
 
   long setprec;
@@ -77,29 +74,25 @@ int main(int argc, char *argv[])  {
 
   // gen3r2s(A,n,r,s);
 
-
   
-
-  ZZ_mat<mpz_t> AZ;
-
+  filebuf fb;
+  iostream os(&fb);
+  
+  static string s;
+  
   fb.open ("alpha.in",ios::in);
+
   os >> setprec ;
   os >> n;
-  //AZ.resize(1,n);
-  os >> AZ;
-  fb.close();
 
-  
   mpfr_set_default_prec(setprec);
- 
-
-  FP_NR<mpfr_t> tmp;
   A.resize(1,n);
-  for (int j=0; j<n; j++) {
-    set_z(tmp,AZ(0,j));
-    tmp.mul_2si(tmp,-setprec);
-    A.set(0,j,tmp);
+  for (int i=0; i<n; i++) {
+    os >> s;
+    mpfr_set_str (A(0,i).get_data(), s.c_str(), 10, GMP_RNDN);
   }
+
+  fb.close();
 
 
   print2maple(A,1,n);
@@ -118,7 +111,7 @@ int main(int argc, char *argv[])  {
   
   //found = relation_f<long, double>(C, A,240,60,800,20);
 
-  found = relation_lll<dpe_t, MatrixPE<double, dpe_t> >(C, A,setprec,80,20,FPLLL);
+  found = relation_lll<dpe_t, MatrixPE<double, dpe_t> >(C, A,setprec,80,80,FPLLL);
   
 
   time.stop();
