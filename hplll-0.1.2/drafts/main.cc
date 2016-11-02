@@ -64,14 +64,28 @@ int main(int argc, char *argv[])  {
   //  -------------------- TEST i --------------------------------
   nbtest+=1;
 
+
+  // matrix<FP_NR<mpfr_t> > A;   // Input matrix
+  // ZZ_mat<mpz_t> C;
+
+  // int r=8;
+  // int s=8;
+  // int n=r*s+1;
+
+  // int setprec=2800;
+  // mpfr_set_default_prec(setprec);
+
+  // gen3r2s(A,n,r,s);
+
+
   
 
   ZZ_mat<mpz_t> AZ;
-  
+
   fb.open ("alpha.in",ios::in);
   os >> setprec ;
   os >> n;
-  AZ.resize(1,n);
+  //AZ.resize(1,n);
   os >> AZ;
   fb.close();
 
@@ -91,11 +105,11 @@ int main(int argc, char *argv[])  {
   print2maple(A,1,n);
   
   nbrel=1;
-  cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl;
+  cout << endl;
 
   //print2maple(A,1,n);
 
-  verboseDepth=1;
+  verboseDepth=0;
 
   Timer time;
 
@@ -104,7 +118,7 @@ int main(int argc, char *argv[])  {
   
   //found = relation_f<long, double>(C, A,240,60,800,20);
 
-  found = relation_lll<dpe_t, MatrixPE<double, dpe_t> >(C, A,setprec,20,200);
+  found = relation_lll<dpe_t, MatrixPE<double, dpe_t> >(C, A,setprec,80,20,FPLLL);
   
 
   time.stop();

@@ -1703,6 +1703,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reducti
   if (transf) {    // Not in init for the mixed matrix case also 
     
     U.resize(d,d);
+    for (int i=0; i<d; i++)
+        for (int j=0; j<d; j++)
+	  U(i,j)=0;
     for (i=0; i<d; i++) U(i,i)=1;     
   }
 
@@ -1790,6 +1793,10 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(ZZ_mat<ZT> A) {
   if (transf) {
     
     U.resize(d,d);
+    for (int i=0; i<d; i++)
+        for (int j=0; j<d; j++)
+	  U(i,j)=0;
+    
     for (int i=0; i<d; i++) U(i,i)=1; 
    
   }
@@ -1812,6 +1819,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(MatrixZT A) {
   if (transf) {
     
     U.resize(d,d);
+    for (int i=0; i<d; i++)
+        for (int j=0; j<d; j++)
+	  U(i,j)=0;
     for (int i=0; i<d; i++) U(i,i)=1; 
    
   }
@@ -1845,6 +1855,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::shift_assign(ZZ_mat<ZT> A, vector<int> shift
   if (transf) {
     
     U.resize(d,d);
+    for (int i=0; i<d; i++)
+        for (int j=0; j<d; j++)
+	  U(i,j)=0;
     for (int i=0; i<d; i++) U(i,i)=1; 
    
   }
@@ -1871,6 +1884,9 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::put(ZZ_mat<ZT> A, long upperdim, long t, lon
   if (transf) {
 
     U.resize(d,d);
+    for (int i=0; i<d; i++)
+        for (int j=0; j<d; j++)
+	  U(i,j)=0;
     for (int i=0; i<d; i++) U(i,i)=1; 
 
   }

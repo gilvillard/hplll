@@ -2070,7 +2070,7 @@ void lift_truncate(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long def, long bits) {
        }
        mmin = min(mmin, mmax);
      }
-
+     
      // Truncation 
 
      if (mmin > bits) {

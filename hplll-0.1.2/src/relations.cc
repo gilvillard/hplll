@@ -493,6 +493,13 @@ namespace hplll {
   relation_lll_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long alpha,
 		 long confidence_gap, long shift, int lllmethod, double delta) {
 
+    Timer time;
+    
+    Timer tlll;
+    Timer tprod;
+    tlll.clear();
+    tprod.clear();
+    
     int m,d;
     int i,j;
   
@@ -516,17 +523,7 @@ namespace hplll {
   
     // For assigning the truncated basis at each step
 
-    
-    ZZ_mat<mpz_t> T,TT;
-    
-    T.resize(m+d,d);
-    TT.resize(d,m+d);
  
-    
-    ZZ_mat<mpz_t> U,UT;
-    
-    U.resize(d,d);
-    UT.resize(d,d);
  
     int def = -bitsize;
 
@@ -553,8 +550,19 @@ namespace hplll {
     
     Z_NR<mpz_t> tz,maxcol;
 
-   
-    Lattice<mpz_t, FT, matrix<Z_NR<mpz_t> >, MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION);
+    typedef mpz_t ZT; // Long ici ne servirait à rien : la base tronquée doit tenir dans un long 
+    
+    ZZ_mat<ZT> T,TT;
+    
+    T.resize(m+d,d);
+    TT.resize(d,m+d);
+    
+    Lattice<ZT, FT, matrix<Z_NR<ZT> >, MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION);
+    
+    ZZ_mat<ZT> U,UT;
+    
+    U.resize(d,d);
+    UT.resize(d,d);
    
        
     // Main loop on the shifts
@@ -567,15 +575,16 @@ namespace hplll {
 	def=target_def;
       else def+=shift;
 
-      lift_truncate(T, A_in, def, shift+2*d);
-
+      //lift_truncate(T, A_in, def, shift+2*d);
+      lift_truncate(T, A_in, def, 0);
+ 
       if (lllmethod == HLLL) {
 
 	Bp.assign(T);
 	
 	Bp.hlll(delta);
 
-	matprod_in(A_in,Bp.getU());
+	//matprod_in(A_in,Bp.getU());
 	//avec long: matprod_in_si(A_in,U);
       }
 
@@ -584,13 +593,23 @@ namespace hplll {
 	transpose(TT,T);
 
 	setId(UT);
-	  
+
+	//time.start();
 	lll_reduction(TT, UT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+	//time.stop();
+
+	//tlll+=time;
 	
+	//time.start();
 	transpose(U,UT);
 	
 	matprod_in(A_in,U);
+	//matprod_in_si(A_in,U);
 	//avec long: matprod_in_si(A_in,U);
+	//time.stop();
+
+	//tprod+=time;
+	
 	//cout << "****** sizeof U: " << maxbitsize(U,0,d,d) << endl;
       } 
 
@@ -641,9 +660,13 @@ namespace hplll {
 	  C(j,0)=A_in(m+j,0);
 
 	gap.mul_2si(gap,shift);
-	
-	HPLLL_INFO("Candidate relation found with confidence: ",gap);
-	
+
+	cout << endl;
+	HPLLL_INFO(def+bitsize, " bits used");
+	HPLLL_INFO("Candidate relation found with bit confidence: ",-gap.exponent());
+
+	//cout << "LLL : " << tlll << endl; 
+	//cout << "Products : " << tprod << endl; 
 	return 1;
     
       } 
@@ -651,6 +674,7 @@ namespace hplll {
       
     } // End while 
 
+    HPLLL_INFO(alpha, " digits used");
 
     // Relation bound
     // --------------
