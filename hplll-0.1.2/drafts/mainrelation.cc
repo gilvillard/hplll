@@ -89,6 +89,28 @@ int main(int argc, char *argv[])  {
   os >> AZ;
   fb.close();
 
+
+ static string s;
+  
+  filebuf fb;
+  iostream os(&fb);
+
+ 
+  FP_NR<mpfr_t> f;   // Input matrix 
+  
+ 
+  fb.open ("t.in",ios::in);
+
+  os >> s;
+
+  fb.close();
+
+  cout << s << endl;
+
+  mpfr_set_str (f.get_data(), s.c_str(), 10, GMP_RNDN);
+
+  cout << f << endl; :w
+
   
   mpfr_set_default_prec(setprec);
  
