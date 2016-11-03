@@ -239,6 +239,14 @@ template<class ZT, class FT> inline void set_z(FP_NR<FT>& x, const Z_NR<ZT> xz) 
 
 }
 
+template<class ZT, class FT> inline void set_z(Z_NR<FT>& x, const Z_NR<ZT> xz) {
+
+  FP_NR<FT> tf;
+  tf.set_z(xz);
+  x.get_data()=tf.get_data();
+
+}
+
 #ifdef HPLLL_WITH_LONG_DOUBLE
 template<> inline void set_z(FP_NR<ldpe_t>& x, const Z_NR<mpz_t> xz){
 

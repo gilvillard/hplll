@@ -37,6 +37,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "nr_Z_l128.h"
 
+#include "nr_Z_ld.h"
+
 #ifndef __CYGWIN__
 #define HPLLL_WITH_LONG_DOUBLE
 #endif
