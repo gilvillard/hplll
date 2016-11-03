@@ -221,6 +221,14 @@ public:
       M[j][i].get_data()=b[i].get_data();
 
  }
+
+  // Assumed to replace the whole column  
+  inline void setcol(int j, Z_NR<long double>* b, int beg, int l) {
+
+    for (int i=beg; i<beg+l; i++) 
+      M[j][i].get_data()=b[i].get_data();
+
+ }
   
   // Assumed to replace the whole column 
   inline void setcol(int j, FP_NR<mpfr_t>* b, int beg, int l) {

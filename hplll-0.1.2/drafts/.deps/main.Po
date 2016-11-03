@@ -183,10 +183,10 @@ main.o: main.cc ../src/matgen.h ../src/defs.h \
   /usr/local/include/fplll/gso.h /usr/local/include/fplll/lll.h \
   /usr/local/include/fplll/pruner.h /usr/local/include/fplll/svpcvp.h \
   /usr/local/include/fplll/wrapper.h ../src/givtimer.C ../src/givtimer.h \
-  ../src/nr_Z_l128.h ../src/ldpe.h ../src/nr-ld.cpp ../src/tools.h \
-  ../src/mat.h ../src/mixed-col.h ../src/matpe.h ../src/matgen.cc \
-  ../src/relations.h ../src/hlll.h ../src/matmixed.h ../src/hlll.cc \
-  ../src/ratio.h ../src/relations.cc
+  ../src/nr_Z_l128.h ../src/nr_Z_ld.h ../src/ldpe.h ../src/nr-ld.cpp \
+  ../src/tools.h ../src/mat.h ../src/mixed-col.h ../src/matpe.h \
+  ../src/matgen.cc ../src/relations.h ../src/hlll.h ../src/matmixed.h \
+  ../src/hlll.cc ../src/ratio.h ../src/relations.cc
 
 ../src/matgen.h:
 
@@ -705,6 +705,8 @@ main.o: main.cc ../src/matgen.h ../src/defs.h \
 ../src/givtimer.h:
 
 ../src/nr_Z_l128.h:
+
+../src/nr_Z_ld.h:
 
 ../src/ldpe.h:
 

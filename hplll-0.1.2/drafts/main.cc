@@ -109,9 +109,9 @@ int main(int argc, char *argv[])  {
   // ---------------------
   time.start();
   
-  //found = relation_f<long, double>(C, A,240,60,800,20);
+  found = relation_f<long, long double>(C, A,setprec,60,400,40,HLLL);
 
-  found = relation_lll<dpe_t, MatrixPE<double, dpe_t> >(C, A,setprec,80,80,FPLLL);
+  //found = relation_lll<dpe_t, MatrixPE<double, dpe_t> >(C, A,setprec,60,10,FPLLL);
   
 
   time.stop();

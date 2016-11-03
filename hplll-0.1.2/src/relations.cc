@@ -124,6 +124,7 @@ namespace hplll {
 
     FP_NR<mpfr_t> new_quot;
     new_quot = 1.0;
+    new_quot.mul_2si(new_quot,alpha); 
 
     int intern_shift = shift;
     
@@ -142,8 +143,11 @@ namespace hplll {
     
       for (i=0; i<d; i++)
      	for (j=0; j<d ; j++) 
-	  Tf(i,j).get_data()=A_in(m+i,j).get_d(); // long double ?
+	  set_z(Tf(i,j),A_in(m+i,j));
 
+      // ICI
+      cout << "Ain size : " << maxbitsize(A_in,1,d,d) << endl;
+      
       setId(U);
       
       found=detect_lift_f_z<ZT, FT>(U, L, Tf, new_def, def, target_def, new_quot,
@@ -155,7 +159,9 @@ namespace hplll {
       matprod_in_si(A_in,U);
 
       if (found == 1) {
-       
+
+	HPLLL_INFO(def+bitsize, " bits used"); // le défaut considère alpha au départ, ici nb chiffres après la virgule
+	 
 	C.resize(d,1);
 	for (j=0; j<d; j++)
 	  C(j,0)=A_in(m+j,0);
@@ -166,6 +172,8 @@ namespace hplll {
       //print2maple(A_in,d+1,d);
     }
 
+    HPLLL_INFO(alpha, " bits used");
+    
     // Relation bound
     // --------------
 
@@ -278,7 +286,7 @@ namespace hplll {
     // For testing 1/gap < confidence
     confidence = 1.0;
     // relié, plus petit,  au shift sur S (ex 80) 
-    confidence.mul_2si(confidence,-confidence_gap); // > que increment !!! (fct taille de U ?)  
+    confidence.mul_2si(confidence,-confidence_gap-shift); 
 
     FP_NR<mpfr_t> epsilon;
     epsilon = 100000.0; // Relation to d 
@@ -311,10 +319,10 @@ namespace hplll {
      
       for (i=0; i<m; i++) 
 	for (j=0; j<d; j++) {
-	  tz.mul_2si(L(i,j),new_def);
-	 
-	  Af(i,j).get_data()=tz.get_d();  // long double ?
 	  
+	  tz.mul_2si(L(i,j),new_def);
+
+	  set_z(Af(i,j),tz);  	  
 	}
 
      
@@ -334,7 +342,7 @@ namespace hplll {
 	
       	setId(VfT);
 
-      	lll_reduction(AfT, VfT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+      	//lll_reduction(AfT, VfT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
 
       	transpose(Af,AfT);
 	
@@ -344,7 +352,7 @@ namespace hplll {
       
       for (i=0; i<d; i++) 
 	for (j=0; j<d; j++) {
-	  tf = Vf(i,j).get_data();  // Pour long double ou autre, vérifier et passer par set_z ? 
+	  tf = Vf(i,j).get_data();  // Vérifier pour long double ou autre et passer par set_z ? 
 	  V(i,j).set_f(tf);
 
 	}
@@ -402,9 +410,9 @@ namespace hplll {
 
       // ICI
       // print2maple(L,1,d);
-      cout << endl; 
-      cout << "     gap : " << gap << endl; 
-       cout << "     quot : " << new_quot << endl; 
+      //cout << endl; 
+      //cout << "     gap : " << gap << endl; 
+      //cout << "     quot : " << new_quot << endl; 
       //  cout << "     maxcol : " << maxcol << endl;
       //  cout << "L: " << L(0,0) << endl;
       //   cout << "L: " << L(0,1) << endl;
@@ -419,10 +427,12 @@ namespace hplll {
       // 	return 0; 
       // }
  
-      if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
+      //if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
        // Si epsilon mettre à la valeur max quotient des nombres au départ 
-       //if ((gap.cmp(confidence) == -1) ) {
-	HPLLL_INFO("Candidate relation found with confidence: ",gap); 
+       if ((gap.cmp(confidence) == -1) ) {
+	 
+	 HPLLL_INFO("Candidate relation found with bit confidence: ",-gap.exponent());    //  heuristique nb de bits du gap 
+ 
        	return 1;
 	
       } 
@@ -576,8 +586,10 @@ namespace hplll {
       else def+=shift;
 
       //lift_truncate(T, A_in, def, shift+2*d);
-      lift_truncate(T, A_in, def, 0);
- 
+      lift_truncate(T, A_in, def, 24);
+      // ICI
+      cout << "Size T : " << maxbitsize(T,1,d,d) << endl;
+      
       if (lllmethod == HLLL) {
 
 	Bp.assign(T);
@@ -594,21 +606,21 @@ namespace hplll {
 
 	setId(UT);
 
-	//time.start();
+	time.start();
 	lll_reduction(TT, UT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
-	//time.stop();
+	time.stop();
 
-	//tlll+=time;
+	tlll+=time;
 	
-	//time.start();
+	time.start();
 	transpose(U,UT);
 	
 	matprod_in(A_in,U);
 	//matprod_in_si(A_in,U);
 	//avec long: matprod_in_si(A_in,U);
-	//time.stop();
+	time.stop();
 
-	//tprod+=time;
+	tprod+=time;
 	
 	//cout << "****** sizeof U: " << maxbitsize(U,0,d,d) << endl;
       } 
@@ -665,8 +677,8 @@ namespace hplll {
 	HPLLL_INFO(def+bitsize, " bits used");
 	HPLLL_INFO("Candidate relation found with bit confidence: ",-gap.exponent());
 
-	//cout << "LLL : " << tlll << endl; 
-	//cout << "Products : " << tprod << endl; 
+	cout << "LLL : " << tlll << endl; 
+	cout << "Products : " << tprod << endl; 
 	return 1;
     
       } 
