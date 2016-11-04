@@ -146,7 +146,7 @@ namespace hplll {
 	  set_z(Tf(i,j),A_in(m+i,j));
 
       // ICI
-      cout << "Ain size : " << maxbitsize(A_in,1,d,d) << endl;
+      cout << "Basis size : " << maxbitsize(A_in,1,d,d) << endl;
       
       setId(U);
       
@@ -342,7 +342,7 @@ namespace hplll {
 	
       	setId(VfT);
 
-      	lll_reduction(AfT, VfT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+      	//lll_reduction(AfT, VfT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
 
       	transpose(Af,AfT);
 	
@@ -594,7 +594,7 @@ namespace hplll {
 	lift_truncate(T, A_in, def, truncate);
 
       
-      //cout << "Size T : " << maxbitsize(T,1,d,d) << endl;
+      cout << "Size T : " << maxbitsize(T,1,d,d) << endl;
       
       if (lllmethod == HLLL) {
 
@@ -604,8 +604,9 @@ namespace hplll {
 
 	matprod_in_int(A_in,Bp.getU());
 	//avec long: matprod_in_si(A_in,U);
-	//cout << "sizeof U: " << maxbitsize(Bp.getU(),0,d,d) << endl;
+	cout << "sizeof U: " << maxbitsize(Bp.getU(),0,d,d) << endl;
 	
+
       }
 
       else if (lllmethod == FPLLL) {
@@ -615,7 +616,7 @@ namespace hplll {
 	setId(UT);
 
 	time.start();
-	lll_reduction(TT, UT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+	//lll_reduction(TT, UT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
 	time.stop();
 
 	tlll+=time;
