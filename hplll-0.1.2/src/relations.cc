@@ -342,7 +342,7 @@ namespace hplll {
 	
       	setId(VfT);
 
-      	//lll_reduction(AfT, VfT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+      	lll_reduction(AfT, VfT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
 
       	transpose(Af,AfT);
 	
@@ -458,12 +458,16 @@ namespace hplll {
 
    TODO: tune the parameters according to input data types 
 
+    truncate = -1 : no truncation 
+             = 0 : automatic choice 
+             > 0 : this number of bits 
+
   **************************************************************************************/ 
 
     
-  template<class FT, class MatrixFT> int 
-  relation_lll(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long alpha,
-	       long confidence_gap, long shift, int lllmethod, double delta) {
+  template<class ZT, class FT, class MatrixFT> int 
+  relation(ZZ_mat<mpz_t>& C, const matrix<FP_NR<mpfr_t> > A, long alpha,
+	   long confidence_gap,  long shift, int truncate, int lllmethod, double delta) {
 
     int n=A.getCols();
 
@@ -479,29 +483,27 @@ namespace hplll {
 
     int found;
 
-    found=relation_lll_z<FT, MatrixFT> (C, L, alpha, confidence_gap, shift, lllmethod, delta);
-
+    found=relation_lll_z<ZT, FT, MatrixFT> (C, L, alpha, confidence_gap, shift, truncate, lllmethod, delta);
+ 
     return found;
     
   } 
 
   /***********************************************************************************
 
-      Companion to relation_lll 
+      Companion to relation_lll   
       Relation from an integer matrix 
       
       Calls LLL with successive lifts on mpz_t and FT bases
 
       alpha correct bits
 
-      TODO: 
-
   **************************************************************************************/ 
   
   
-  template<class FT, class MatrixFT> int  
+  template<class ZT, class FT, class MatrixFT> int  
   relation_lll_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long alpha,
-		 long confidence_gap, long shift, int lllmethod, double delta) {
+		 long confidence_gap, long shift, int truncate, int lllmethod, double delta) {
 
     Timer time;
     
@@ -559,24 +561,22 @@ namespace hplll {
     
     
     Z_NR<mpz_t> tz,maxcol;
-
-    typedef mpz_t ZT; // Long ici ne servirait à rien : la base tronquée doit tenir dans un long 
     
-    ZZ_mat<ZT> T,TT;
+    ZZ_mat<ZT> T,TT;   
     
     T.resize(m+d,d);
     TT.resize(d,m+d);
     
     Lattice<ZT, FT, matrix<Z_NR<ZT> >, MatrixFT> Bp(T,TRANSFORM,DEF_REDUCTION);
     
-    ZZ_mat<ZT> U,UT;
+    ZZ_mat<ZT> U,UT;  
     
     U.resize(d,d);
     UT.resize(d,d);
    
        
-    // Main loop on the shifts
-    // -----------------------
+    // Main loop on the shifts no truncation 
+    // -------------------------------------
     while (def < target_def) {
 
       HPLLL_INFO("Current default: ",def);
@@ -585,10 +585,16 @@ namespace hplll {
 	def=target_def;
       else def+=shift;
 
-      //lift_truncate(T, A_in, def, shift+2*d);
-      lift_truncate(T, A_in, def, 24);
-      // ICI
-      cout << "Size T : " << maxbitsize(T,1,d,d) << endl;
+
+      if (truncate == -1)
+	lift_truncate(T, A_in, def, 0);
+      else if (truncate == 0)
+	lift_truncate(T, A_in, def, shift+2*d);
+      else 
+	lift_truncate(T, A_in, def, truncate);
+
+      
+      //cout << "Size T : " << maxbitsize(T,1,d,d) << endl;
       
       if (lllmethod == HLLL) {
 
@@ -596,8 +602,10 @@ namespace hplll {
 	
 	Bp.hlll(delta);
 
-	//matprod_in(A_in,Bp.getU());
+	matprod_in_int(A_in,Bp.getU());
 	//avec long: matprod_in_si(A_in,U);
+	//cout << "sizeof U: " << maxbitsize(Bp.getU(),0,d,d) << endl;
+	
       }
 
       else if (lllmethod == FPLLL) {
@@ -615,7 +623,7 @@ namespace hplll {
 	time.start();
 	transpose(U,UT);
 	
-	matprod_in(A_in,U);
+	matprod_in_int(A_in,U);
 	//matprod_in_si(A_in,U);
 	//avec long: matprod_in_si(A_in,U);
 	time.stop();
@@ -625,8 +633,6 @@ namespace hplll {
 	//cout << "****** sizeof U: " << maxbitsize(U,0,d,d) << endl;
       } 
 
-      // ICI
-      //print2maple(A_in,4,4);
       
       // Test
       // ----
@@ -684,7 +690,7 @@ namespace hplll {
       } 
     
       
-    } // End while 
+    } // End loop on teh shift 
 
     HPLLL_INFO(alpha, " digits used");
 
@@ -721,7 +727,6 @@ namespace hplll {
 
         
   };
-
 
 
   

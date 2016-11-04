@@ -56,7 +56,7 @@ int main(int argc, char *argv[])  {
   cout <<  "Testing relation finder" << endl; 
   //  *****************************************************  
 
-  matrix<FP_NR<mpfr_t> > A;   // Input matrix 
+ 
 
   typedef mpz_t integer_t;
   
@@ -66,149 +66,253 @@ int main(int argc, char *argv[])  {
   //  -------------------- TEST i --------------------------------
   nbtest+=1;
 
-  r=4; 
-  s=4; 
-  n=r*s+1;
+  { // for changing the mpfr prec in A
+
+    matrix<FP_NR<mpfr_t> > A;   // Input matrix
+  
+    r=4; 
+    s=4; 
+    n=r*s+1;
   
   
-  setprec=2000;
-  mpfr_set_default_prec(setprec);
+    setprec=280;
+    mpfr_set_default_prec(setprec);
 
-  gen3r2s(A,n,r,s);
+    gen3r2s(A,n,r,s);
 
-  print2maple(A,1,n);
+    print2maple(A,1,n);
   
-  nbrel=1;
+    nbrel=1;
 
-  cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl; 
+    cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl; 
 
+
+    found=relation<mpz_t, dpe_t, MatrixPE<double, dpe_t> >(C, A,setprec,20,20,-1, FPLLL);
+    //found=relation_f<long, double>(C, A,setprec,20,20,10,FPLLL);
  
+    cout << C << endl; 
   
-  found=relation_f<long, double>(C, A, setprec); 
+    Ccheck.resize(n,1);
+    fb.open ("C1_out",ios::in);
+    os >> Ccheck ;
+    fb.close();
 
+    if (found != 1)
+      cerr << "*** Problem in relation test, no relation found" << endl;
   
-  Ccheck.resize(n,1);
-  fb.open ("C1_out",ios::in);
-  os >> Ccheck ;
-  fb.close();
-
-  if (found != 1)
-    cerr << "*** Problem in relation test, no relation found" << endl;
-  
-  if (nbrel==1) {
-    difference = !matcmp(C, Ccheck, 1, n);
-    if (difference) {
-      cerr << "*** Invalid matrix comparison in relation test" << endl;
+    if (nbrel==1) {
+      difference = !matcmp(C, Ccheck, 1, n);
+      if (difference) {
+	cerr << "*** Invalid matrix comparison in relation test" << endl;
+      }
+      else 
+	succeed+=1;
     }
-    else 
-      succeed+=1;
+
   }
 
-#ifdef HPLLL_WITH_LONG_DOUBLE
+  //  -------------------- TEST i --------------------------------
+  nbtest+=1;
+
+  { // for changing the mpfr prec in A
+
+    matrix<FP_NR<mpfr_t> > A;   // Input matrix
+    
+    r=7;
+    s=7;
+    n=r*s+1;
+ 
+    setprec=1800;
+    mpfr_set_default_prec(setprec);
+    
+    gen3r2s(A,n,r,s);
+
+    print2maple(A,1,n);
+  
+    nbrel=1;
+
+    cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl; 
+
+
+    found=relation<mpz_t, dpe_t, MatrixPE<double, dpe_t> >(C, A,setprec,60,200,-1, FPLLL);
+    //found=relation_f<long, double>(C, A,setprec,20,20,10,FPLLL);
+ 
+    cout << C << endl; 
+  
+    Ccheck.resize(n,1);
+    fb.open ("C2_out",ios::in);
+    os >> Ccheck ;
+    fb.close();
+
+    if (found != 1)
+      cerr << "*** Problem in relation test, no relation found" << endl;
+  
+    if (nbrel==1) {
+      difference = !matcmp(C, Ccheck, 1, n);
+      if (difference) {
+	cerr << "*** Invalid matrix comparison in relation test" << endl;
+      }
+      else 
+	succeed+=1;
+    }
+
+  }
+
    //  -------------------- TEST i --------------------------------
-#endif 
-  
-  //  -------------------- TEST i --------------------------------
   nbtest+=1;
 
-  // int t,u;
+  { // for changing the mpfr prec in A
 
-  // t=3;
-  // u=2;
-  // n=r*s+t*u+1;
-  // setprec=660;
+    matrix<FP_NR<mpfr_t> > A;   // Input matrix
+
+     ZZ_mat<mpz_t> AZ;
+  
+     fb.open ("C3_in",ios::in);
+     os >> setprec ;
+     os >> n;
+     AZ.resize(1,n);
+     os >> AZ;
+     fb.close();
+
+  
+     mpfr_set_default_prec(setprec);
+ 
+     
+     FP_NR<mpfr_t> tmp;
+     A.resize(1,n);
+     for (int j=0; j<n; j++) {
+       set_z(tmp,AZ(0,j));
+       tmp.mul_2si(tmp,-setprec);
+       A.set(0,j,tmp);
+     }
+
+    print2maple(A,1,n);
+  
+    nbrel=1;
+
+    cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl; 
+
+
+    found=relation_f<long, double>(C, A,setprec,80,20,10,HLLL);
+ 
+    cout << C << endl; 
+  
+    Ccheck.resize(n,1);
+    fb.open ("C3_out",ios::in);
+    os >> Ccheck ;
+    fb.close();
+
+    if (found != 1)
+      cerr << "*** Problem in relation test, no relation found" << endl;
+  
+    if (nbrel==1) {
+      difference = !matcmp(C, Ccheck, 1, n);
+      if (difference) {
+	cerr << "*** Invalid matrix comparison in relation test" << endl;
+      }
+      else 
+	succeed+=1;
+    }
+
+  }
+
+
+   //  -------------------- TEST i --------------------------------
+  nbtest+=1;
+
+  { // for changing the mpfr prec in A
+
+    matrix<FP_NR<mpfr_t> > A;   // Input matrix
+    
+    r=8;
+    s=8;
+    n=r*s+1;
+ 
+    setprec=2800;
+    mpfr_set_default_prec(setprec);
+    
+    gen3r2s(A,n,r,s);
+
+    print2maple(A,1,n);
+  
+    nbrel=1;
+
+    cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl; 
+
+
+    found=relation_f<long, double>(C, A,setprec,60,200,20,FPLLL);
+ 
+    cout << C << endl; 
+  
+    Ccheck.resize(n,1);
+    fb.open ("C4_out",ios::in);
+    os >> Ccheck ;
+    fb.close();
+
+    if (found != 1)
+      cerr << "*** Problem in relation test, no relation found" << endl;
+  
+    if (nbrel==1) {
+      difference = !matcmp(C, Ccheck, 1, n);
+      if (difference) {
+	cerr << "*** Invalid matrix comparison in relation test" << endl;
+      }
+      else 
+	succeed+=1;
+    }
+
+  }
+
+  // //  -------------------- TEST i --------------------------------
+  // nbtest+=1;
+
+  
+
+  // ZZ_mat<mpz_t> AZ;
+  
+  // fb.open ("C3_in",ios::in);
+  // os >> setprec ;
+  // os >> n;
+  // AZ.resize(1,n);
+  // os >> AZ;
+  // fb.close();
+
+  
   // mpfr_set_default_prec(setprec);
-  // gen3r2s7t5u(A,n,r,s,t,u); 
-
-  r=7;
-  s=7;
-  n=r*s+1;
  
-  setprec=2000;
-  mpfr_set_default_prec(setprec);
 
-  gen3r2s(A,n,r,s);
+  // FP_NR<mpfr_t> tmp;
+  // A.resize(1,n);
+  // for (int j=0; j<n; j++) {
+  //   set_z(tmp,AZ(0,j));
+  //   tmp.mul_2si(tmp,-setprec);
+  //   A.set(0,j,tmp);
+  // }
+  
+  // nbrel=1;
+  // cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl;
 
-  nbrel=1;
-
-  cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl; 
-
+  // found = relation_f<long, double>(C, A, 240, 60, 800, 40, FPLLL,0.99);
  
-   
-  found=relation_f<long, double>(C, A, setprec,80,200,20); 
+ 
+  // Ccheck.resize(n,1);
+  // fb.open ("C3_out",ios::in);
+  // os >> Ccheck ;
+  // fb.close();
 
-  print2maple(C,n,1);
-  
-  Ccheck.resize(n,1);
-  fb.open ("C2_out",ios::in);
-  os >> Ccheck ;
-  fb.close();
+  // if (found != 1)
+  //   cerr << "*** Problem in relation test, no relation found" << endl;
+  // else if (nbrel==1) {
+  //   difference = !matcmp(C, Ccheck, 1, n);
 
-  if (found != 1)
-    cerr << "*** Problem in relation test, no relation found" << endl;
-  
-  if (nbrel==1) {
-    difference = !matcmp(C, Ccheck, 1, n);
-
-    status |= difference;
+  //   status |= difference;
      
-    if (difference) {
-      cerr << "*** Invalid matrix comparison in relation test" << endl;
-    }
-    else 
-      succeed+=1;
-  }
-
-  //  -------------------- TEST i --------------------------------
-  nbtest+=1;
-
-  
-
-  ZZ_mat<mpz_t> AZ;
-  
-  fb.open ("C3_in",ios::in);
-  os >> setprec ;
-  os >> n;
-  AZ.resize(1,n);
-  os >> AZ;
-  fb.close();
-
-  
-  mpfr_set_default_prec(setprec);
- 
-
-  FP_NR<mpfr_t> tmp;
-  A.resize(1,n);
-  for (int j=0; j<n; j++) {
-    set_z(tmp,AZ(0,j));
-    tmp.mul_2si(tmp,-setprec);
-    A.set(0,j,tmp);
-  }
-  
-  nbrel=1;
-  cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl;
-
-  found = relation_f<long, double>(C, A, 240, 60, 800, 40, FPLLL,0.99);
- 
- 
-  Ccheck.resize(n,1);
-  fb.open ("C3_out",ios::in);
-  os >> Ccheck ;
-  fb.close();
-
-  if (found != 1)
-    cerr << "*** Problem in relation test, no relation found" << endl;
-  else if (nbrel==1) {
-    difference = !matcmp(C, Ccheck, 1, n);
-
-    status |= difference;
-     
-    if (difference) {
-      cerr << "*** Invalid matrix comparison in relation test" << endl;
-    }
-    else 
-      succeed+=1;   
-  }
+  //   if (difference) {
+  //     cerr << "*** Invalid matrix comparison in relation test" << endl;
+  //   }
+  //   else 
+  //     succeed+=1;   
+  // }
  
   
   //  *****************************************************  

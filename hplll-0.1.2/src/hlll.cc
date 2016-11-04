@@ -1793,11 +1793,13 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(ZZ_mat<ZT> A) {
   if (transf) {
     
     U.resize(d,d);
+    
     for (int i=0; i<d; i++)
         for (int j=0; j<d; j++)
 	  U(i,j)=0;
     
-    for (int i=0; i<d; i++) U(i,i)=1; 
+    for (int i=0; i<d; i++)
+      U(i,i)=1; 
    
   }
   
@@ -1819,9 +1821,11 @@ Lattice<ZT,FT, MatrixZT, MatrixFT>::assign(MatrixZT A) {
   if (transf) {
     
     U.resize(d,d);
+    
     for (int i=0; i<d; i++)
         for (int j=0; j<d; j++)
 	  U(i,j)=0;
+    
     for (int i=0; i<d; i++) U(i,i)=1; 
    
   }

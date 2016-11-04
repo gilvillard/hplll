@@ -51,16 +51,16 @@ namespace hplll {
   
   // Underlying lll calls with same template parameters 
   
-  template<class FT, class MatrixFT>
-    int relation_lll(ZZ_mat<mpz_t>& C,  const matrix<FP_NR<mpfr_t> > L, long alpha,
-		     long confidence_gap = 60, long shift = 10, int lllmethod=FPLLL, double delta = 0.99);
+  template<class ZT, class FT, class MatrixFT>
+    int relation(ZZ_mat<mpz_t>& C,  const matrix<FP_NR<mpfr_t> > L, long alpha,
+		 long confidence_gap = 60, long shift = 10, int truncate=-1, int lllmethod=FPLLL, double delta = 0.99);
 
   
-  template<class FT, class MatrixFT>
+  template<class ZT, class FT, class MatrixFT>
     int relation_lll_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long alpha,
-		       long confidence_gap = 60, long shift=10, int lllmethod=FPLLL, double delta = 0.99);
+		       long confidence_gap = 60, long shift=10, int truncate=-1, int lllmethod=FPLLL, double delta = 0.99);
 
-
+ 
 } // end namespace hplll
 
 
