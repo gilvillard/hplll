@@ -64,28 +64,24 @@ int main(int argc, char *argv[])  {
   //  -------------------- TEST i --------------------------------
   nbtest+=1;
 
-  
-
-  ZZ_mat<mpz_t> AZ;
+  static string s;
   
   fb.open ("C_huge_in",ios::in);
+
   os >> setprec ;
   os >> n;
-  AZ.resize(1,n);
-  os >> AZ;
-  fb.close();
 
-  
   mpfr_set_default_prec(setprec);
- 
-
-  FP_NR<mpfr_t> tmp;
+  
   A.resize(1,n);
-  for (int j=0; j<n; j++) {
-    set_z(tmp,AZ(0,j));
-    tmp.mul_2si(tmp,-setprec);
-    A.set(0,j,tmp);
+  for (int i=0; i<n; i++) {
+    os >> s;
+    mpfr_set_str (A(0,i).get_data(), s.c_str(), 10, GMP_RNDN);
   }
+
+  fb.close();
+  
+  
   
   nbrel=1;
   cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl;
@@ -94,7 +90,7 @@ int main(int argc, char *argv[])  {
 
   verboseDepth=1;
   
-  found = relation_f<long, double>(C, A, 30400, 60, 800);
+  found = relation_f<long, double>(C, A, 30400, 60, 800,20,FPLLL);
 
   print2maple(C,n,1);
   
