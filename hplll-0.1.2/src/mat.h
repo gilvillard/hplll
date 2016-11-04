@@ -2118,6 +2118,7 @@ void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
        C(i,j)=A(i,j);
 
 
+   
    // Min max norms of the columns 
    int mmax,mmin,maxloc;
   
@@ -2217,7 +2218,7 @@ void lift_truncate(ZZ_mat<__int128_t>& C_out, ZZ_mat<mpz_t> A, long def, long bi
 
 
    // !!! One should check for max bit sizes now : less than long ?
-   cout << "Bits before conversion " << mmax + bits -mmin << endl;
+   cout << "Bits bound before conversion" << mmax + bits -mmin << endl;
    
    // Conversion to 128 int 
    
