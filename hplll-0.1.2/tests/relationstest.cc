@@ -165,27 +165,26 @@ int main(int argc, char *argv[])  {
 
     matrix<FP_NR<mpfr_t> > A;   // Input matrix
 
-     ZZ_mat<mpz_t> AZ;
+    
+     static string s;
   
      fb.open ("C3_in",ios::in);
+
      os >> setprec ;
      os >> n;
-     AZ.resize(1,n);
-     os >> AZ;
-     fb.close();
 
-  
      mpfr_set_default_prec(setprec);
- 
-     
-     FP_NR<mpfr_t> tmp;
+  
      A.resize(1,n);
-     for (int j=0; j<n; j++) {
-       set_z(tmp,AZ(0,j));
-       tmp.mul_2si(tmp,-setprec);
-       A.set(0,j,tmp);
+     for (int i=0; i<n; i++) {
+       os >> s;
+       mpfr_set_str (A(0,i).get_data(), s.c_str(), 10, GMP_RNDN);
      }
 
+     fb.close();
+
+
+  
     print2maple(A,1,n);
   
     nbrel=1;
