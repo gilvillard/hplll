@@ -1,7 +1,7 @@
 
 AUTOMAKE_OPTIONS = gnu
 
-EXTRA_DIST= 416_in 2_in 3_in C1_out  C2_out C3_in C3_out  \
+EXTRA_DIST= 416_in 2_in 3_in C1_out  C2_out C3_in C3_out  C4_out\
              C_huge_in C_huge_out r128int collection benchmarks_results \
              perfpublisher.sh 
 
