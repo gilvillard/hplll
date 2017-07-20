@@ -574,13 +574,15 @@ inline long FP_NR<ldpe_t>::get_si_exp(long& expo) const {
 // }
 
 
-template<> inline void FP_NR<ldpe_t>::operator=(const FP_NR<ldpe_t>& f)
+template<> inline FP_NR<ldpe_t>&  FP_NR<ldpe_t>::operator=(const FP_NR<ldpe_t>& f)
 {
   ldpe_set(data, ldpe_ncref(f.data));
+  return *this;
 }
-template<> inline void FP_NR<ldpe_t>::operator=(double d)
+template<> inline FP_NR<ldpe_t>&  FP_NR<ldpe_t>::operator=(double d)
 {
   ldpe_set_d(data, d);
+  return *this;
 }
 
 template<> inline void FP_NR<ldpe_t>::add(const FP_NR<ldpe_t>& a, const FP_NR<ldpe_t>& b, mp_rnd_t rnd)

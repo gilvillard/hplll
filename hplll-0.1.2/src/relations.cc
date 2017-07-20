@@ -110,9 +110,8 @@ namespace hplll {
     ZZ_mat<FT> Tf;
     Tf.resize(d,d);
 
-    ZZ_mat<ZT> U,UT;
+    ZZ_mat<ZT> U;
     U.resize(d,d);
-    UT.resize(d,d);
  
     int def = -bitsize;
 
@@ -616,7 +615,7 @@ namespace hplll {
 	setId(UT);
 
 	time.start();
-	//lll_reduction(TT, UT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+	lll_reduction(TT, UT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
 	time.stop();
 
 	tlll+=time;

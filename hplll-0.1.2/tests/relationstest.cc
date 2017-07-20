@@ -254,7 +254,7 @@ int main(int argc, char *argv[])  {
     if (nbrel==1) {
       difference = !matcmp(C, Ccheck, 1, n);
       if (difference) {
-	cerr << "*** Invalid matrix comparison in relation test" << endl;
+	    cerr << "*** Invalid matrix comparison in relation test" << endl;
       }
       else 
 	succeed+=1;
@@ -318,5 +318,15 @@ int main(int argc, char *argv[])  {
   cout << endl << "     " << succeed << " relations tests ok over " << nbtest << endl; 
   //  *****************************************************  
 
-  return status;
+  if (succeed == nbtest) 
+    return 0;
+  else   
+    return -1;
+
+  //return status;
 }
+
+
+
+
+
