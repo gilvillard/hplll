@@ -341,7 +341,7 @@ namespace hplll {
 	
       	setId(VfT);
 
-      	//lll_reduction(AfT, VfT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
+      	lll_reduction(AfT, VfT, delta, 0.51, LM_FAST,FT_DEFAULT,0);
 
       	transpose(Af,AfT);
 	
