@@ -29,7 +29,7 @@ int main(void) {
 
   cout << endl << B.getbase() << endl; 
 
-  lllReduction(AT, 0.99, 0.501, LM_WRAPPER);
+  lll_reduction(AT, 0.99, 0.501, LM_WRAPPER);
 
   cout << endl << AT << endl; 
   

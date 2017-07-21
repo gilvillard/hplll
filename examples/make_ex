@@ -1,8 +1,7 @@
 #! /bin/sh
 
 
-CXXFLAGS += -std=c++11 -flto -O2 -Wall -I/usr/local/include 
-LDFLAGS =  -L/usr/local/lib
+CXXFLAGS += -std=c++11 -flto -O2 -Wall 
 
 # TODO EX: setenv LD_LIBRARY_PATH ${HOME}/Soft/lib
 
