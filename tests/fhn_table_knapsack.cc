@@ -63,6 +63,8 @@ int main(int argc, char *argv[])  {
 
 //------------
 
+    d[k] = 20;
+    k += 1;
 
     d[k] = 200;
     k += 1;
@@ -175,49 +177,49 @@ int main(int argc, char *argv[])  {
 
         cout << "--------------  NTL  " << endl << endl;
 
-        Mat<ZZ> BN;
+        // Mat<ZZ> BN;
 
-        // Input basis
+        // // Input basis
 
-        fb.close();
-        fb.open ("tmp.txt", ios::out);
-        os <<  transpose(A) ;
-        fb.close();
-        fb.open ("tmp.txt", ios::in);
-        os >> BN;
-        fb.close();
-        system("rm tmp.txt");
-        fb.open (results, ios::app);
-
-
-        time.start();
-
-        LLL_FP(BN, 0.99, 0, 0, 1);
-
-        time.stop();
-
-        fb.close();
-        fb.open ("tmp.txt", ios::out);
-        os <<  BN ;
-        fb.close();
-        fb.open ("tmp.txt", ios::in);
-        os >> AT;
-        fb.close();
-        system("rm tmp.txt");
-        fb.open (results, ios::app);
+        // fb.close();
+        // fb.open ("tmp.txt", ios::out);
+        // os <<  transpose(A) ;
+        // fb.close();
+        // fb.open ("tmp.txt", ios::in);
+        // os >> BN;
+        // fb.close();
+        // system("rm tmp.txt");
+        // fb.open (results, ios::app);
 
 
+        // time.start();
 
-        transpose(tmpmat, AT);
+        // LLL_XD(BN, 0.99, 0, 0, 1);
 
-        Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(tmpmat, NO_TRANSFORM, DEF_REDUCTION);
-        verboseDepth = 0;
-        T.isreduced(delta - 0.1);
+        // time.stop();
+
+        // fb.close();
+        // fb.open ("tmp.txt", ios::out);
+        // os <<  BN ;
+        // fb.close();
+        // fb.open ("tmp.txt", ios::in);
+        // os >> AT;
+        // fb.close();
+        // system("rm tmp.txt");
+        // fb.open (results, ios::app);
 
 
-        os << "   ntl: " << time << endl << endl ;
-        time.print(os);
-        os << endl;
+
+        // transpose(tmpmat, AT);
+
+        // Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(tmpmat, NO_TRANSFORM, DEF_REDUCTION);
+        // verboseDepth = 0;
+        // T.isreduced(delta - 0.1);
+
+
+        // os << "   ntl: " << time << endl << endl ;
+        // time.print(os);
+        // os << endl;
 
 
     }// End on runs, k loop
