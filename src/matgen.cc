@@ -107,19 +107,19 @@ namespace hplll {
 
     ZZ_mat<mpz_t> AT;
 
-    char type[]="r";
-    char knapsack[]="r";
-    char block[]="rb";
-    char ajtai[]="t";
-    char ntru[]="n";
-    char ntruq[]="nq";
-    char ntru2[]="N"; // Shi bai May 3rd 2016
-    char ntru2q[]="Nq"; // Shi bai May 3rd 2016
-    char line[]="cin";
-    char copp[]="c";
-    char unif[]="u";
-    char dec[]="dec";
-    char al[]="al";
+    char type[8]="r";
+    char knapsack[8]="r";
+    char block[8]="rb";
+    char ajtai[8]="t";
+    char ntru[8]="n";
+    char ntruq[8]="nq";
+    char ntru2[8]="N"; // Shi bai May 3rd 2016
+    char ntru2q[8]="Nq"; // Shi bai May 3rd 2016
+    char line[8]="cin";
+    char copp[8]="c";
+    char unif[8]="u";
+    char dec[8]="dec";
+    char al[8]="al";
      
     int nbbits=10;
     double alpha=1.4;
@@ -149,6 +149,7 @@ namespace hplll {
       MATCH_MAIN_ARGID("-shift",shift);
       
     }
+
 
     // Knapsack 
     // --------

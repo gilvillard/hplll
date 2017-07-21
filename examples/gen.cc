@@ -1,7 +1,6 @@
 
 #include <hplll.h>
 
-
 int main(int argc, char *argv[]) {
 
   ZZ_mat<mpz_t> A;

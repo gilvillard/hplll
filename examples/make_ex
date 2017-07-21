@@ -1,8 +1,8 @@
 #! /bin/sh
 
-CXXFLAGS += -O2 -Wall 
 
-
+CXXFLAGS += -std=c++11 -flto -O2 -Wall -I/usr/local/include 
+LDFLAGS =  -L/usr/local/lib
 
 # TODO EX: setenv LD_LIBRARY_PATH ${HOME}/Soft/lib
 
@@ -11,18 +11,17 @@ CXXFLAGS += -O2 -Wall
 
 #PREFIX = ${HOME}/Soft
 
-#CXXFLAGS += -O2 -Wall -I${PREFIX}/include
+#CXXFLAGS += -std=c++11 -flto -O2 -Wall -I${PREFIX}/include
 #LDFLAGS += -L${PREFIX}/lib
 
 # Here with standard installation directories
 #  otherwise modify the compilation variables
 
-FPLLL_LIBS += -lfplll
-MPFR_LIBS +=  -lmpfr
 GMP_LIBS   += -lgmp
+MPFR_LIBS +=  -lmpfr
+FPLLL_LIBS += -lfplll
 
-LOADLIBES +=  ${FPLLL_LIBS} ${MPFR_LIBS} ${GMP_LIBS} 
-
+LOADLIBES +=  ${GMP_LIBS}  ${MPFR_LIBS} ${FPLLL_LIBS} 
 
 
 .SUFFIXES: .o .c .cc  

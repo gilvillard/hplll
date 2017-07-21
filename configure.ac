@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.69])
 AC_CONFIG_MACRO_DIR([macros])
-AC_INIT([hplll],[0.1.2])
+AC_INIT([hplll],[1.0.0])
 AC_CONFIG_SRCDIR([src/hlll.cc])
 AM_INIT_AUTOMAKE
 
