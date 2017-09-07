@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
 	AT.resize(d, n);
 	transpose(AT, A);
 
-	cout << AT << endl;
+	//cout << AT << endl;
 
 	timed.start();
 	lll_reduction(AT, delta, 0.501, LM_FAST, FT_DOUBLE, 0, LLL_VERBOSE);
@@ -36,10 +36,10 @@ int main(int argc, char *argv[]) {
 	AT.resize(d, n);
 	transpose(AT, A);
 
-	cout << AT << endl;
+	//cout << AT << endl;
 
 	timedd.start();
-	lll_reduction(AT, delta, 0.501, LM_FAST, FT_DD, 0, LLL_VERBOSE);
+	lll_reduction(AT, delta, 0.501, LM_FAST, FT_QD, 0, LLL_VERBOSE);
 	timedd.stop();
 
 
@@ -52,7 +52,8 @@ int main(int argc, char *argv[]) {
 	time.stop();
 
 
-	cout << endl << endl << "   hplll double : " << time << endl << endl ;
+	cout << endl << endl << "   hplll double : " << time << endl ;
+	cout << "   Householder: " << B.dbg << endl << endl ;
 	cout  << "   fplll double : " << timed << endl << endl ;
 	cout << "   fplll dd : " << timedd << endl << endl ;
 	cout << endl;

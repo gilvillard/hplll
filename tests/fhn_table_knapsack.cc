@@ -48,7 +48,7 @@ int main(int argc, char *argv[])  {
     ZZ_mat<mpz_t> A; // For hpLLL
 
 
-    ZZ_mat<mpz_t> AT, tmpmat; // fpLLL
+    ZZ_mat<mpz_t> AT, tmpmat, TAT; // fpLLL
 
 // ---------------------------------------------------------------------
 
@@ -63,14 +63,14 @@ int main(int argc, char *argv[])  {
 
 //------------
 
-    // d[k] = 20;
-    // k += 1;
+    d[k] = 20;
+    k += 1;
 
-    // d[k] = 200;
-    // k += 1;
+    d[k] = 200;
+    k += 1;
 
-    // d[k] = 240;
-    // k += 1;
+    d[k] = 240;
+    k += 1;
 
     d[k] = 280;
     k += 1;
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])  {
     d[k] = 300;
     k += 1;
 
-    d[k] = 300;
+    d[k] = 320;
     k += 1;
 
     d[k] = 340;
@@ -127,10 +127,34 @@ int main(int argc, char *argv[])  {
 
         os << endl << "------------------------------------------------ " << endl ;
 
-        Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, NO_TRANSFORM, DEF_REDUCTION); //* name
+
+        // Temporairement hlll comme dans un wrapper avec fplll et pas isolément
+
+
+        //Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, NO_TRANSFORM, DEF_REDUCTION); //* name
+
+        //time.start();
+        //status = B.hlll(delta); //* name
+        //time.stop();
+
+        TAT.resize(d[k], d[k] + 1);
+        transpose(TAT, A);
 
         time.start();
-        status = B.hlll(delta); //* name
+
+        status = lll_reduction(TAT, delta, 0.501, LM_FAST, FT_DOUBLE, 0, LLL_VERBOSE);
+
+        transpose(A, TAT);
+
+        Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, NO_TRANSFORM, DEF_REDUCTION); //* name
+
+        if (status != 0) {
+
+            status = B.hlll(delta); //* name
+
+        }
+
+
         time.stop();
 
 

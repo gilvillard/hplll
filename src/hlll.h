@@ -89,6 +89,9 @@ public:
 
   // Timings 
   // ******* 
+
+  Timer dbg; 
+  
   unsigned int tps_reduce;
   unsigned int tps_householder;
   unsigned int tps_prepare;
