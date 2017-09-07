@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 	//cout << AT << endl;
 
 	timedd.start();
-	lll_reduction(AT, delta, 0.501, LM_FAST, FT_QD, 0, LLL_VERBOSE);
+	lll_reduction(AT, delta, 0.501, LM_FAST, FT_DD, 0, LLL_VERBOSE);
 	timedd.stop();
 
 
