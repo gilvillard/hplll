@@ -120,7 +120,8 @@ public:
   // Met à zéro
   void resize(int rows, int cols) {
 
-    int i,j;
+    //int i,j;
+    int j;
     n = rows;
     d = cols;
     M.resize(d);

@@ -131,7 +131,7 @@ CPPFLAGS =
 CXX = g++ -std=c++11
 CXXCPP = g++ -E -std=c++11
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -O3 -Wall -I/home/gvillard/Soft/include -I/home/gvillard/Soft/include -I/home/gvillard/Soft/include -I/home/gvillard/Soft/include
+CXXFLAGS = -O3 -Wall -I/home/gvillard/Soft/include -I/home/gvillard/Soft/include  -fopenmp -I/home/gvillard/Soft/include -I/home/gvillard/Soft/include
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
