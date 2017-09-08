@@ -1,8 +1,8 @@
-/* 
+/*
 Ven  3 jui 2016 15:04:49 CEST
-Copyright (C) 2016      Gilles Villard 
+Copyright (C) 2016      Gilles Villard
 
-This file is part of the hplll Library 
+This file is part of the hplll Library
 
 The hplll Library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -29,216 +29,225 @@ using namespace NTL;
 
 /* ***********************************************
 
-          MAIN   
+          MAIN
 
    ********************************************** */
 
-using namespace hplll; 
+using namespace hplll;
 
 int main(int argc, char *argv[])  {
 
-  char results[]="benchmarks_results/fhn_ajtai.results";    // ******** SPECIALIZE
-  
+  char results[] = "benchmarks_results/fhn_ajtai.results";  // ******** SPECIALIZE
+
   filebuf fb;
   iostream os(&fb);
-  fb.open (results,ios::out);           
+  fb.open (results, ios::out);
 
 
-  
-  ZZ_mat<mpz_t> A; // For hpLLL 
-  ZZ_mat<mpz_t> AT,tmpmat;  // fpLLL  
+
+  ZZ_mat<mpz_t> A; // For hpLLL
+  ZZ_mat<mpz_t> AT, tmpmat; // fpLLL
 
   // ---------------------------------------------------------------------
 
-  int k,K;
+  int k, K;
 
 
-  k=0;
+  k = 0;
 
   vector<int> d(100);
 
-  k=0;
+  k = 0;
 
-  double alpha=1.2;
-  
+  double alpha = 1.2;
+
   //------------
- 
-  d[k]=40;
-  k+=1;
 
-  d[k]=60;
-  k+=1;
+  d[k] = 40;
+  k += 1;
 
-  d[k]=80;
-  k+=1;
+  d[k] = 60;
+  k += 1;
 
-  d[k]=100;
-  k+=1;
+  d[k] = 80;
+  k += 1;
 
-  d[k]=140;
-  k+=1;
+  d[k] = 100;
+  k += 1;
 
-  d[k]=180;
-  k+=1;
+  d[k] = 140;
+  k += 1;
 
-  d[k]=200;
-  k+=1;
+  d[k] = 180;
+  k += 1;
 
-  d[k]=240;
-  k+=1;
+  d[k] = 200;
+  k += 1;
 
-  d[k]=280;
-  k+=1;
+  d[k] = 240;
+  k += 1;
 
-  d[k]=300;
-  k+=1;
-  
+  d[k] = 280;
+  k += 1;
+
+  d[k] = 300;
+  k += 1;
+
   //-------------
 
-  K=k;
+  K = k;
 
-  double delta=0.99;
+  double delta = 0.99;
 
-  int run=0;
-  
+  int run = 0;
+
   Timer time;
 
   int status;
 
-    os << endl << "FPLLL, HPLLL, NTL running times / Ajtai bases " << endl;   // ******** SPECIALIZE
-    os << endl << " NTL numbers too big, d=100 == XD " << endl; 
-                                                                                    
-    os <<         "----------------------------------------------" << endl << endl;
- 
-    for (int k=0; k<K; k++) { 
+  os << endl << "FPLLL, HPLLL, NTL running times / Ajtai bases " << endl;   // ******** SPECIALIZE
+  os << endl << " NTL numbers too big, d=100 == XD " << endl;
+
+  os <<         "----------------------------------------------" << endl << endl;
+
+  for (int k = 0; k < K; k++) {
 
 
-      /*****************************************************************************/
-      /*   i-th run  */
-      /*****************************************************************************/
-      
-      run+=1;
+    /*****************************************************************************/
+    /*   i-th run  */
+    /*****************************************************************************/
+
+    run += 1;
 
 
-      AT.resize(d[k],d[k]);
-      A.resize(d[k],d[k]);
-      tmpmat.resize(d[k],d[k]);
-      
-      AT.gen_ajtai(alpha);
-      
-      transpose(A,AT);
+    AT.resize(d[k], d[k]);
+    A.resize(d[k], d[k]);
+    tmpmat.resize(d[k], d[k]);
+
+    AT.gen_trg(alpha);
+
+    transpose(A, AT);
 
 
-      cout << d[k] <<  endl; 
-      
-      cout << "--------------  HLLL" << endl << endl; 
+    cout << d[k] <<  endl;
 
-      {
+    cout << "--------------  HLLL" << endl << endl;
 
-      	os << endl << "------------------------------------------------ " << endl ;
+    {
 
-	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A,NO_TRANSFORM,DEF_REDUCTION);  //* name 
+      os << endl << "------------------------------------------------ " << endl ;
 
-	verboseDepth=1;
-      	time.start();
-      	status=B.hlll(delta); //* name
-      	time.stop();
-	verboseDepth=0;
- 
-      	os << "Run " << run << "  with dim = " << d[k] << ",  alpha = " << alpha << ",   delta = " << delta <<  endl << endl;
-      	os << "    hlll: " << time << endl ;
-      	time.print(os);
-      	os << endl;
+      Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, NO_TRANSFORM, DEF_REDUCTION); //* name
 
-	
-      	if (status ==0) {
-      	  Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(B.getbase(),NO_TRANSFORM,DEF_REDUCTION); //* names
+      verboseDepth = 1;
+      time.start();
+      status = B.hlll(delta); //* name
+      time.stop();
+      verboseDepth = 0;
 
-      	  T.isreduced(delta-0.1); //* name
-
-	  double t,u,v,w;
-
-	  hplll::ratio<mpz_t>(B.getbase(),t,u,v,w);
-
-	  cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
-	  cout << ".. Average diagonal ratio: " << u << endl;
-	  cout << ".. Max diagonal ratio: " << v << endl;
-	  cout << ".. First vector quality: " << w << endl;
-      	} 
-      	cout << endl; 
-
-      	cout << "--------------  FPLLL WRAPPER VERBOSE " << endl << endl; 
-    
-      	time.start();
-      	lll_reduction(AT, delta, 0.501, LM_WRAPPER,FT_DEFAULT,0,LLL_VERBOSE);
-      	time.stop();
-  
-
-      	os << "   fplll: " << time << endl << endl ;
-      	time.print(os);
-      	os << endl;
-	
-      	transpose(tmpmat,AT);
-      	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(tmpmat,NO_TRANSFORM,DEF_REDUCTION); //* name
-      	T2.isreduced(delta-0.1); //* name
-
-	cout << "--------------  NTL  " << endl << endl; 
-
-	Mat<ZZ> BN; 
-
-	// Input basis 
-	fb.close();
-	fb.open ("tmp.txt",ios::out);
-	os <<  transpose(A) ;
-	fb.close();
-	fb.open ("tmp.txt",ios::in);
-	os >> BN;
-	fb.close();
-	system("rm tmp.txt");
-	fb.open (results,ios::app);
+      os << "Run " << run << "  with dim = " << d[k] << ",  alpha = " << alpha << ",   delta = " << delta <<  endl << endl;
+      os << "    hlll: " << time << endl ;
+      time.print(os);
+      os << endl;
 
 
-	time.start();	
-       
-	if (d[k] < 100)
-	  LLL_FP(BN,0.99,0,0,1); 
-	else
-	  LLL_XD(BN,0.99,0,0,1);
-	
-	time.stop();
+      if (status == 0) {
+        Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(B.getbase(), NO_TRANSFORM, DEF_REDUCTION); //* names
 
-	fb.close();
-	fb.open ("tmp.txt",ios::out);
-	os <<  BN ;
-	fb.close();
-	fb.open ("tmp.txt",ios::in);
-	os >> AT;
-	fb.close();
-	system("rm tmp.txt");
-	fb.open (results,ios::app);
+        T.isreduced(delta - 0.1); //* name
 
+        double t, u, v, w;
 
+        hplll::ratio<mpz_t>(B.getbase(), t, u, v, w);
 
-	transpose(tmpmat,AT);
-  
-	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(tmpmat,NO_TRANSFORM,DEF_REDUCTION);
-	verboseDepth=0;
-	T.isreduced(delta-0.1);
+        cout << endl << ".. hplll log 2 Frobenius norm cond: " << t << endl;
+        cout << ".. Average diagonal ratio: " << u << endl;
+        cout << ".. Max diagonal ratio: " << v << endl;
+        cout << ".. First vector quality: " << w << endl;
+      }
+      cout << endl;
+
+      cout << "--------------  FPLLL WRAPPER VERBOSE " << endl << endl;
+
+      time.start();
+      lll_reduction(AT, delta, 0.501, LM_WRAPPER, FT_DEFAULT, 0, LLL_VERBOSE);
+      time.stop();
 
 
-	os << "   ntl: " << time << endl << endl ;
-      	time.print(os);
-      	os << endl;
-	
-      } 
-   
-    }// End on runs, k loop
+      os << "   fplll: " << time << endl << endl ;
+      time.print(os);
+      os << endl;
+
+      transpose(tmpmat, AT);
+      Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(tmpmat, NO_TRANSFORM, DEF_REDUCTION); //* name
+      T2.isreduced(delta - 0.1); //* name
+
+      double t, u, v, w;
+
+      hplll::ratio<mpz_t>(tmpmat, t, u, v, w);
+
+      cout << endl << ".. fplll log 2 Frobenius norm cond: " << t << endl;
+      cout << ".. Average diagonal ratio: " << u << endl;
+      cout << ".. Max diagonal ratio: " << v << endl;
+      cout << ".. First vector quality: " << w << endl;
+
+      // cout << "--------------  NTL  " << endl << endl;
+
+      // Mat<ZZ> BN;
+
+      // // Input basis
+      // fb.close();
+      // fb.open ("tmp.txt", ios::out);
+      // os <<  transpose(A) ;
+      // fb.close();
+      // fb.open ("tmp.txt", ios::in);
+      // os >> BN;
+      // fb.close();
+      // system("rm tmp.txt");
+      // fb.open (results, ios::app);
 
 
-    // END 
-    fb.close();
+      // time.start();
+
+      // if (d[k] < 100)
+      //   LLL_FP(BN, 0.99, 0, 0, 1);
+      // else
+      //   LLL_XD(BN, 0.99, 0, 0, 1);
+
+      // time.stop();
+
+      // fb.close();
+      // fb.open ("tmp.txt", ios::out);
+      // os <<  BN ;
+      // fb.close();
+      // fb.open ("tmp.txt", ios::in);
+      // os >> AT;
+      // fb.close();
+      // system("rm tmp.txt");
+      // fb.open (results, ios::app);
 
 
- 
+
+      // transpose(tmpmat, AT);
+
+      // Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(tmpmat, NO_TRANSFORM, DEF_REDUCTION);
+      // verboseDepth = 0;
+      // T.isreduced(delta - 0.1);
+
+
+      // os << "   ntl: " << time << endl << endl ;
+      // time.print(os);
+      // os << endl;
+
+    }
+
+  }// End on runs, k loop
+
+
+  // END
+  fb.close();
+
+
+
   return 0;
 }

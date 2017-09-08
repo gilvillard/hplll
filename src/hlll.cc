@@ -787,8 +787,6 @@ template<class ZT, class FT, class MatrixZT, class MatrixFT> inline int
 Lattice<ZT, FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 
 
-	Timer cpu;
-	cpu.clear();
 
 	nmaxkappa = structure[kappa] + 1;
 
@@ -810,13 +808,9 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	bool somedone = 0;
 
 
-	//cpu.start();
+	
 	householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous
-	//cpu.stop();
-	//dbg += cpu;
-
-
-
+	
 
 	// While loop for the norm decrease
 	// --------------------------------
