@@ -73,6 +73,10 @@ template<class ZT> int ratio(ZZ_mat<ZT> B, double& lfcond,  double& av_ratio,  d
   
   iR.resize(d,d);
   
+  for (i=0; i<d; i++)
+    for (j=0; j<d; j++) 
+      iR(i,j)=0.0;
+
   for (i=0; i<d; i++) iR(i,i)=1.0; 
   
   // Higham p263 Method 1
@@ -113,7 +117,6 @@ template<class ZT> int ratio(ZZ_mat<ZT> B, double& lfcond,  double& av_ratio,  d
 	prod(i,j).addmul(aR(i,k),iR(k,j));
     }
 
-
   // Frobenius norm 
 
   FP_NR<mpfr_t>  cc;
@@ -123,6 +126,7 @@ template<class ZT> int ratio(ZZ_mat<ZT> B, double& lfcond,  double& av_ratio,  d
     for (j=0; j<d; j++) 
       cc.addmul(prod(i,j),prod(i,j));
   
+
   cc.sqrt(cc); 
 
   mpfr_log2(cc.get_data(),cc.get_data(),GMP_RNDN);
