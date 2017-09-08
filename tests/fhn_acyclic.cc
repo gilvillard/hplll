@@ -160,7 +160,10 @@ int main(int argc, char *argv[])  {
       verboseDepth = 1;
       if (n <= DIM_PREC_1) status = B.hlll(delta); //* name
 
-      else hlll<long>(tmpmat, A, 0.99, true, true);
+      else {
+        hlll<long>(tmpmat, A, 0.99, true, true);
+        status = 0; 
+      }
       verboseDepth = 0;
       time.stop();
 
@@ -172,7 +175,7 @@ int main(int argc, char *argv[])  {
 
       if  (n <= DIM_PREC_1) matrix_cast(tmpmat, B.getbase());
 
-      //if (status == 0) {  // PB status non assigned with the wrapper 
+      if (status == 0) {  // PB status non assigned with the wrapper, forced in entry
         Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(tmpmat, NO_TRANSFORM, DEF_REDUCTION); //* names
 
         T.isreduced(delta - 0.1); //* name
@@ -186,14 +189,12 @@ int main(int argc, char *argv[])  {
         cout << ".. Average diagonal ratio: " << u << endl;
         cout << ".. Max diagonal ratio: " << v << endl;
         cout << ".. First vector quality: " << w << endl;
-      //}
+      }
       cout << endl;
 
       cout << "--------------  FPLLL WRAPPER VERBOSE " << endl << endl;
 
       if (n < 512) {
-
-        int status = 0;
 
         time.start();
 
