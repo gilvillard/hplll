@@ -1,16 +1,13 @@
 #! /bin/sh
 
 
-CXXFLAGS += -std=c++11 -flto -O2 -Wall 
-
-# TODO EX: setenv LD_LIBRARY_PATH ${HOME}/Soft/lib
+CXXFLAGS += -std=c++11
 
 # If non standard installation directories 
 #  for instance, uncomment and fix the following  
 
 #PREFIX = ${HOME}/Soft
-
-#CXXFLAGS += -std=c++11 -flto -O2 -Wall -I${PREFIX}/include
+#CXXFLAGS += -I${PREFIX}/include
 #LDFLAGS += -L${PREFIX}/lib
 
 # Here with standard installation directories

@@ -783,7 +783,6 @@ slll<mpz_t>(ZZ_mat<mpz_t>& C, const ZZ_mat<mpz_t> A,
 
 }
 
-)
 } // end namespace hplll
 
 
