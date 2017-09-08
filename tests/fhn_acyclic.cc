@@ -65,35 +65,35 @@ int main(int argc, char *argv[])  {
 
   //------------
 
-  d[k] = 8;
+  // d[k] = 40;
+  // k += 1;
+
+  d[k] = 128;
   k += 1;
 
-  // d[k] = 128;
-  // k += 1;
+  d[k] = 256;
+  k += 1;
 
-  // d[k] = 256;
-  // k += 1;
+  d[k] = 340;
+  k += 1;
 
-  // d[k] = 340;
-  // k += 1;
+  d[k] = 400;
+  k += 1;
 
-  // d[k] = 400;
-  // k += 1;
+  d[k] = 460;
+  k += 1;
 
-  // d[k] = 460;
-  // k += 1;
+  d[k] = 512;
+  k += 1;
 
-  // d[k] = 512;
-  // k += 1;
+  d[k] = 544;
+  k += 1;
 
-  // d[k] = 544;
-  // k += 1;
+  d[k] = 580;
+  k += 1;
 
-  // d[k] = 580;
-  // k += 1;
-
-  // d[k] = 620;
-  // k += 1;
+  d[k] = 620;
+  k += 1;
 
 
   //-------------
@@ -134,29 +134,14 @@ int main(int argc, char *argv[])  {
     AT.resize(n, n);
     AT.gen_ntrulike_withq(q);
 
-    // acyclic
-    int l = 0;
-    for (int i = 0; i < n / 2; i++) {
-      for (int j = 0; j < n / 2; j++) {
-        l = (i + j) % (n / 2);
-        AT(i, l + n / 2) = AT(0, j + n / 2);
-      }
-      for (int j = 0; j < i; j++)
-        AT(i, n / 2 + j).neg(AT(i, n / 2 + j));
-    }
+
 
     transpose(A, AT);
 
-    for (int i = 0; i < n / 2; i++)
-      for (int j = 0; j < n; j++)
-        A(i, j) = AT(j, i + n / 2);
-    for (int i = 0; i < n / 2; i++)
-      for (int j = 0; j < n; j++)
-        A(i + n / 2, j) = AT(j, i);
 
-
-    ZZ_mat<long> Along;
+    ZZ_mat<long> Along, ATlong;
     matrix_cast(Along, A);
+    matrix_cast(ATlong, AT);
 
     // -------------------
 
@@ -204,22 +189,41 @@ int main(int argc, char *argv[])  {
       }
       cout << endl;
 
-      // cout << "--------------  FPLLL WRAPPER VERBOSE " << endl << endl;
+      cout << "--------------  FPLLL WRAPPER VERBOSE " << endl << endl;
 
-      // if (n < 512) {
-      //   time.start();
-      //   lll_reduction(AT, delta, 0.501, LM_WRAPPER, FT_DEFAULT, 0, LLL_VERBOSE);
-      //   time.stop();
+      if (n < 512) {
+
+        int status = 0;
+
+        time.start();
+
+        status = lll_reduction(ATlong, delta, 0.501, LM_FAST, FT_DOUBLE, 0, LLL_VERBOSE);
 
 
-      //   os << "   fplll: " << time << endl << endl ;
-      //   time.print(os);
-      //   os << endl;
+        if (status != 0)
+          lll_reduction(ATlong, delta, 0.501, LM_FAST, FT_LONG_DOUBLE, 0, LLL_VERBOSE);
 
-      //   transpose(tmpmat, AT);
-      //   Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(tmpmat, NO_TRANSFORM, DEF_REDUCTION); //* name
-      //   T2.isreduced(delta - 0.1); //* name
-      // }
+        if (status != 0)
+          lll_reduction(ATlong, delta, 0.501, LM_FAST, FT_DD, 0, LLL_VERBOSE);
+
+        if (status != 0)
+          lll_reduction(ATlong, delta, 0.501, LM_FAST, FT_MPFR, 212, LLL_VERBOSE);
+
+        if (status != 0)
+          lll_reduction(ATlong, delta, 0.501, LM_FAST, FT_MPFR, 424, LLL_VERBOSE);
+
+        time.stop();
+
+
+        os << "   fplll: " << time << endl << endl ;
+        time.print(os);
+        os << endl;
+
+        matrix_cast(AT, ATlong);
+        transpose(tmpmat, AT);
+        Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(tmpmat, NO_TRANSFORM, DEF_REDUCTION); //* name
+        T2.isreduced(delta - 0.1); //* name
+      }
 
       // cout << "--------------  NTL  " << endl << endl;
 
@@ -274,7 +278,7 @@ int main(int argc, char *argv[])  {
   }// End on runs, k loop
 
 
-  // END
+// END
   fb.close();
 
 
