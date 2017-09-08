@@ -1090,8 +1090,8 @@ template<class T> void set(matrix<T>& B, Matrix<T> A)
 
   int m, n, i, j;
 
-  m = B.getRows();
-  n = B.getCols();
+  m = A.getRows();
+  n = A.getCols();
 
   for (i = 0; i < m; i++)
     for (j = 0; j < n; j++)
@@ -1104,8 +1104,8 @@ template<class T> void set(Matrix<T>& B, Matrix<T> A)
 
   int m, n, i, j;
 
-  m = B.getRows();
-  n = B.getCols();
+  m = B.get_rows();
+  n = B.get_cols();
 
   for (i = 0; i < m; i++)
     for (j = 0; j < n; j++)

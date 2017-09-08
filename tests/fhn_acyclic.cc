@@ -110,8 +110,8 @@ int main(int argc, char *argv[])  {
 
   os << endl << "(FPLLL,) HPLLL wrapper >= dim_prec_1, NTL running times / Acyclic NTRU bases - long " << endl;   // ******** SPECIALIZE
 
-  os << endl << "NO FPLLL >= 512 (wrapper with mpfr to change) " << endl;
-  os << endl << " NTL infinite loop with FP at 512: at dim_prec_1 ==> XD" << endl;
+  //os << endl << "NO FPLLL >= 512 (wrapper with mpfr to change) " << endl;
+  // os << endl << " NTL infinite loop with FP at 512: at dim_prec_1 ==> XD" << endl;
 
   os <<         "------------------------------------------------------------------------------------" << endl << endl;
 
@@ -140,8 +140,8 @@ int main(int argc, char *argv[])  {
 
 
     ZZ_mat<long> Along, ATlong;
-    matrix_cast(Along, A);
-    matrix_cast(ATlong, AT);
+
+
 
     // -------------------
 
@@ -153,19 +153,52 @@ int main(int argc, char *argv[])  {
 
       os << endl << "------------------------------------------------ " << endl ;
 
+      matrix_cast(Along, A);
+
       Lattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > B(Along, NO_TRANSFORM, DEF_REDUCTION); //* name
 
       time.start();
 
       verboseDepth = 1;
-      if (n <= DIM_PREC_1) status = B.hlll(delta); //* name
 
-      else {
-        hlll<long>(tmpmat, A, 0.99, true, true);
-        status = 0;
+      // if (n <= DIM_PREC_1) status = B.hlll(delta); //* name
+
+      // else {
+      //   hlll<long>(tmpmat, A, 0.99, false, false); // The checks are done below
+      //   status = 0;
+      // }
+
+      // ***** Attemp directly without the wrapper, for the moment the heuristic stop may not be 100% sure
+
+      status = B.hlll(delta);
+
+      set(Along, B.getbase());
+
+      if (status != 0) {
+
+        Lattice<long, double, matrix<Z_NR<long> >,  matrix<FP_NR<double> > > BB(Along, NO_TRANSFORM, SEYSEN_REDUCTION);
+
+        status = BB.hlll(delta);
+
+        set(Along, BB.getbase());
+
       }
+
+      if (status != 0) {
+
+        Lattice<long, long double, matrix<Z_NR<long> >,  matrix<FP_NR<long double> > > BBB(Along, NO_TRANSFORM, SEYSEN_REDUCTION);
+
+        status = BBB.hlll(delta);
+
+        set(Along, BBB.getbase());
+
+      }
+
       verboseDepth = 0;
+
+
       time.stop();
+
 
 
       os << "Run " << run << "  with dim = " << n << ",   delta = " << delta <<  endl << endl;
@@ -173,7 +206,9 @@ int main(int argc, char *argv[])  {
       time.print(os);
       os << endl;
 
-      if  (n <= DIM_PREC_1) matrix_cast(tmpmat, B.getbase());
+      //if  (n <= DIM_PREC_1) matrix_cast(tmpmat, B.getbase());
+
+      matrix_cast(tmpmat, Along);
 
       if (status == 0) {  // PB status non assigned with the wrapper, forced in entry
         Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(tmpmat, NO_TRANSFORM, DEF_REDUCTION); //* names
@@ -185,7 +220,7 @@ int main(int argc, char *argv[])  {
         hplll::ratio<mpz_t>(tmpmat, t, u, v, w);
 
 
-        cout << endl << ".. log 2 Frobenius norm cond: " << t << endl;
+        cout << endl << ".. hplll log 2 Frobenius norm cond: " << t << endl;
         cout << ".. Average diagonal ratio: " << u << endl;
         cout << ".. Max diagonal ratio: " << v << endl;
         cout << ".. First vector quality: " << w << endl;
@@ -194,8 +229,10 @@ int main(int argc, char *argv[])  {
 
       cout << "--------------  FPLLL HAND WRAPPER VERBOSE " << endl << endl;
 
-      //if (n < 512) // To tune again 
+      //if (n < 512) // To tune again
       {
+
+        matrix_cast(ATlong, AT);
 
         time.start();
 
@@ -225,6 +262,18 @@ int main(int argc, char *argv[])  {
         transpose(tmpmat, AT);
         Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T2(tmpmat, NO_TRANSFORM, DEF_REDUCTION); //* name
         T2.isreduced(delta - 0.1); //* name
+
+        double t, u, v, w;
+
+        hplll::ratio<mpz_t>(tmpmat, t, u, v, w);
+
+
+        cout << endl << ".. fplll log 2 Frobenius norm cond: " << t << endl;
+        cout << ".. Average diagonal ratio: " << u << endl;
+        cout << ".. Max diagonal ratio: " << v << endl;
+        cout << ".. First vector quality: " << w << endl;
+
+        cout << endl;
       }
 
       // cout << "--------------  NTL  " << endl << endl;
