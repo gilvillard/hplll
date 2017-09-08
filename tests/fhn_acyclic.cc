@@ -162,7 +162,7 @@ int main(int argc, char *argv[])  {
 
       else {
         hlll<long>(tmpmat, A, 0.99, true, true);
-        status = 0; 
+        status = 0;
       }
       verboseDepth = 0;
       time.stop();
@@ -192,9 +192,10 @@ int main(int argc, char *argv[])  {
       }
       cout << endl;
 
-      cout << "--------------  FPLLL WRAPPER VERBOSE " << endl << endl;
+      cout << "--------------  FPLLL HAND WRAPPER VERBOSE " << endl << endl;
 
-      if (n < 512) {
+      //if (n < 512) // To tune again 
+      {
 
         time.start();
 
