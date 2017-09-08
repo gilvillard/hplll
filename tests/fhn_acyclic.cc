@@ -207,10 +207,10 @@ int main(int argc, char *argv[])  {
           lll_reduction(ATlong, delta, 0.501, LM_FAST, FT_DD, 0, LLL_VERBOSE);
 
         if (status != 0)
-          lll_reduction(ATlong, delta, 0.501, LM_FAST, FT_MPFR, 212, LLL_VERBOSE);
+          lll_reduction(ATlong, delta, 0.501, LM_PROVED, FT_MPFR, 212, LLL_VERBOSE);
 
         if (status != 0)
-          lll_reduction(ATlong, delta, 0.501, LM_FAST, FT_MPFR, 424, LLL_VERBOSE);
+          lll_reduction(ATlong, delta, 0.501, LM_PROVED, FT_MPFR, 424, LLL_VERBOSE);
 
         time.stop();
 
