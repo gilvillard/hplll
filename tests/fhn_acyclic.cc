@@ -172,7 +172,7 @@ int main(int argc, char *argv[])  {
 
       if  (n <= DIM_PREC_1) matrix_cast(tmpmat, B.getbase());
 
-      if (status == 0) {
+      //if (status == 0) {  // PB status non assigned with the wrapper 
         Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(tmpmat, NO_TRANSFORM, DEF_REDUCTION); //* names
 
         T.isreduced(delta - 0.1); //* name
@@ -186,7 +186,7 @@ int main(int argc, char *argv[])  {
         cout << ".. Average diagonal ratio: " << u << endl;
         cout << ".. Max diagonal ratio: " << v << endl;
         cout << ".. First vector quality: " << w << endl;
-      }
+      //}
       cout << endl;
 
       cout << "--------------  FPLLL WRAPPER VERBOSE " << endl << endl;
@@ -200,17 +200,17 @@ int main(int argc, char *argv[])  {
         status = lll_reduction(ATlong, delta, 0.501, LM_FAST, FT_DOUBLE, 0, LLL_VERBOSE);
 
 
-        if (status != 0)
-          lll_reduction(ATlong, delta, 0.501, LM_FAST, FT_LONG_DOUBLE, 0, LLL_VERBOSE);
+        if (status != RED_SUCCESS)
+          status = lll_reduction(ATlong, delta, 0.501, LM_FAST, FT_LONG_DOUBLE, 0, LLL_VERBOSE);
+
+        if (status != RED_SUCCESS)
+          status = lll_reduction(ATlong, delta, 0.501, LM_FAST, FT_DD, 0, LLL_VERBOSE);
 
         if (status != 0)
-          lll_reduction(ATlong, delta, 0.501, LM_FAST, FT_DD, 0, LLL_VERBOSE);
+          status = lll_reduction(ATlong, delta, 0.501, LM_PROVED, FT_MPFR, 212, LLL_VERBOSE);
 
         if (status != 0)
-          lll_reduction(ATlong, delta, 0.501, LM_PROVED, FT_MPFR, 212, LLL_VERBOSE);
-
-        if (status != 0)
-          lll_reduction(ATlong, delta, 0.501, LM_PROVED, FT_MPFR, 424, LLL_VERBOSE);
+          status = lll_reduction(ATlong, delta, 0.501, LM_PROVED, FT_MPFR, 424, LLL_VERBOSE);
 
         time.stop();
 
