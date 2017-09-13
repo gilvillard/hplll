@@ -7,6 +7,7 @@ using namespace hplll;
 
 int main(int argc, char *argv[]) {
 
+	Timer time;
 
 	long alpha, d;
 
@@ -46,7 +47,7 @@ int main(int argc, char *argv[]) {
 
 	// ----------------  Test B
 
-	
+
 	// alpha = 2800;
 	// mpfr_set_default_prec(alpha);
 
@@ -65,25 +66,58 @@ int main(int argc, char *argv[]) {
 
 	// ----------------  Test C
 
-	
-	alpha = 1800;
+
+	// alpha = 1800;
+	// mpfr_set_default_prec(alpha);
+
+	// d = 50;
+	// gen3r2s(fpv, d, 7, 7);
+
+
+
+	// ZZ_mat<mpz_t> C;
+
+	// FPTuple<mpz_t, dpe_t> L(fpv);
+
+	// L.relation_z(C, alpha,60,200,-1, FPLLL);
+	// cout << C << endl;
+
+	//  --------------   Test Poisson
+
+	static string s;
+
+	fb.open ("alpha.in", ios::in);
+
+	os >> alpha;
+	os >> d;
+
+
 	mpfr_set_default_prec(alpha);
 
-	d = 50;
-	gen3r2s(fpv, d, 7, 7);
+	fpv.resize(d);
 
+	for (int i = 0; i < d; i++) {
+		os >> s;
+		mpfr_set_str (fpv[i].get_data(), s.c_str(), 10, GMP_RNDN);
+	}
 
+	fb.close();
 
 	ZZ_mat<mpz_t> C;
 
-	FPTuple<mpz_t, dpe_t> L(fpv);
+	FPTuple<long, double> L(fpv);
+	//FPTuple<mpz_t, dpe_t> L(fpv);
 
-	L.relation_z(C, alpha,60,200,-1, FPLLL);
+	time.start();
+
+	L.relation_f(C, alpha, 30, 400, 20, FPLLL);
+	//L.relation_z(C, alpha, 30, 200, -1, FPLLL);
+
+	time.stop();
+
 	cout << C << endl;
 
-
-
-
+	cout << endl << endl << "   relation : " << time << endl ;
 
 
 
