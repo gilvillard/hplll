@@ -25,8 +25,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 
-#ifndef HPLLL_NEWRELATIONS_CC
-#define HPLLL_NEWRELATIONS_CC
+#ifndef HPLLL_RELATIONS_CC
+#define HPLLL_RELATIONS_CC
 
 
 

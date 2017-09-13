@@ -25,8 +25,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 
-#ifndef HPLLL_NEWRELATIONS_H
-#define HPLLL_NEWRELATIONS_H
+#ifndef HPLLL_RELATIONS_H
+#define HPLLL_RELATIONS_H
 
 
 #include  "hlll.h"
@@ -87,7 +87,7 @@ public:
 } // end namespace hplll
 
 
-#include "newrelations.cc"
+#include "relations.cc"
 
 
 #endif
