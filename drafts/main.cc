@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
 
 	time.start();
 
-	L.relation_f(C, alpha, 30, 400, 20, FPLLL);
+	L.relation_f(C, alpha, 30, 400, 20, HLLL);
 	//L.relation_z(C, alpha, 30, 200, -1, FPLLL);
 
 	time.stop();
