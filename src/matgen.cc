@@ -408,6 +408,40 @@ namespace hplll {
     return 0;
   }
 
+int gen3r2s(vector<FP_NR<mpfr_t> >& fpv, int n, int r, int s) {
+
+    fpv.resize(n); 
+
+    FP_NR<mpfr_t> l2,l3; 
+
+    FP_NR<mpfr_t> rr,ss;
+ 
+    l2=2.0;
+    l2.log(l2);
+    ss=((double) s);   
+    l2.div(l2,ss);
+    l2.exponential(l2);
+
+    l3=3.0;
+    rr=((double) r);  
+    l3.log(l3);
+    l3.div(l3,rr);
+    l3.exponential(l3);
+
+    FP_NR<mpfr_t> alpha,beta;
+
+    alpha.sub(l3,l2);
+    alpha.log(alpha);
+
+    beta=0.0;
+    fpv[0]=1.0;
+    for (int i=1; i<n; i++) {
+      beta.add(beta,alpha);
+      fpv[i].exponential(beta);
+    }
+
+    return 0;
+  }
 
   /* Two row vectors for a simultaneaous relation */
   template<class RT> int gen3r2s7t5u(matrix<FP_NR<RT> >& B, int n, int r, int s, int t, int u) {

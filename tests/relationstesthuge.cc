@@ -20,7 +20,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #include "matgen.h"
-#include "relations.h" 
+#include "newrelations.h" 
 
 using namespace hplll;
 
@@ -53,7 +53,8 @@ int main(int argc, char *argv[])  {
   cout <<  "Testing relation finder" << endl; 
   //  *****************************************************  
 
-  matrix<FP_NR<mpfr_t> > A;   // Input matrix 
+  //matrix<FP_NR<mpfr_t> > A;   // Input matrix 
+  vector<FP_NR<mpfr_t> > fpv;   // Input fp vector 
 
   typedef mpz_t integer_t;
   
@@ -73,10 +74,10 @@ int main(int argc, char *argv[])  {
 
   mpfr_set_default_prec(setprec);
   
-  A.resize(1,n);
+  fpv.resize(n);
   for (int i=0; i<n; i++) {
     os >> s;
-    mpfr_set_str (A(0,i).get_data(), s.c_str(), 10, GMP_RNDN);
+    mpfr_set_str (fpv[i].get_data(), s.c_str(), 10, GMP_RNDN);
   }
 
   fb.close();
@@ -86,11 +87,11 @@ int main(int argc, char *argv[])  {
   nbrel=1;
   cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl;
 
-  //print2maple(A,1,n);
-
   verboseDepth=1;
+
+  FPTuple<long, double> L(fpv);
   
-  found = relation_f<long, double>(C, A, 30400, 60, 800,20,FPLLL);
+  found = L.relation_f(C, 30400, 60, 800, 20, FPLLL);
 
   print2maple(C,n,1);
   

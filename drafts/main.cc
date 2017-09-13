@@ -1,62 +1,85 @@
 
 #include <hplll.h>
 
+#include "relations.h"
+
 using namespace hplll;
 
 int main(int argc, char *argv[]) {
 
 
-	Timer time, timed, timedd;
+	long alpha, d;
 
-	ZZ_mat<mpz_t> A;
+	filebuf fb;
+	iostream os(&fb);
 
-	ZZ_mat<mpz_t> AT;
+	vector<FP_NR<mpfr_t> > fpv;
 
+	//  --------------   Test A
 
-	double delta = 0.99;
+	// static string s;
 
-	int n, d;
+	// fb.open ("C3_in", ios::in);
 
-	command_line_basis(A, n, d, delta, argc, argv);
+	// os >> alpha;
+	// os >> d;
 
-	// fplll double
+	// mpfr_set_default_prec(alpha);
 
-	AT.resize(d, n);
-	transpose(AT, A);
+	// fpv.resize(d);
 
-	//cout << AT << endl;
+	// for (int i = 0; i < d; i++) {
+	// 	os >> s;
+	// 	mpfr_set_str (fpv[i].get_data(), s.c_str(), 10, GMP_RNDN);
+	// }
 
-	timed.start();
-	lll_reduction(AT, delta, 0.501, LM_FAST, FT_DOUBLE, 0, LLL_VERBOSE);
-	timed.stop();
+	// fb.close();
 
+	// Z_mat<mpz_t> C;
 
-	// fplll dd
+	// FPTuple<long, double> L(fpv);
 
-	AT.resize(d, n);
-	transpose(AT, A);
+	// L.relation_f(C, alpha, 80, 20, 10, HLLL);
 
-	//cout << AT << endl;
-
-	timedd.start();
-	lll_reduction(AT, delta, 0.501, LM_FAST, FT_DD, 0, LLL_VERBOSE);
-	timedd.stop();
-
-
-	// hplll
-
-	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, NO_TRANSFORM, DEF_REDUCTION); //* name
-
-	time.start();
-	B.hlll(delta); //* name
-	time.stop();
+	// cout << C << endl;
 
 
-	cout << endl << endl << "   hplll double : " << time << endl ;
-	cout << "   Householder: " << B.dbg << endl << endl ;
-	cout  << "   fplll double : " << timed << endl << endl ;
-	cout << "   fplll dd : " << timedd << endl << endl ;
-	cout << endl;
+	// ----------------  Test B
+
+	
+	// alpha = 2800;
+	// mpfr_set_default_prec(alpha);
+
+	// d = 65;
+	// gen3r2s(fpv, d, 8, 8);
+
+
+
+	// ZZ_mat<mpz_t> C;
+
+	// FPTuple<long, double> L(fpv);
+
+	// L.relation_f(C, alpha, 60, 200, 20, HLLL);
+	// cout << C << endl;
+
+
+	// ----------------  Test C
+
+	
+	alpha = 1800;
+	mpfr_set_default_prec(alpha);
+
+	d = 50;
+	gen3r2s(fpv, d, 7, 7);
+
+
+
+	ZZ_mat<mpz_t> C;
+
+	FPTuple<mpz_t, dpe_t> L(fpv);
+
+	L.relation_z(C, alpha,60,200,-1, FPLLL);
+	cout << C << endl;
 
 
 
@@ -69,3 +92,9 @@ int main(int argc, char *argv[]) {
 
 
 }
+
+
+
+
+
+
