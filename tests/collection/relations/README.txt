@@ -1,5 +1,5 @@
 
-Input real values for which an integer relation shoulb be found. 
+Input real values for which an integer relation should be found. 
 
 Format: 
 
