@@ -32,12 +32,72 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 namespace hplll {
 
+
+/************************************************************************************
+
+   Temporary wrapping the call to fplll for no compilation error
+
+   e.g. until  Z_NR<long double> available
+
+**************************************************************************************/
+
+template<> int
+FPTuple<long, double>::call_fplll(ZZ_mat<double> &b, ZZ_mat<double> &u, double delta, double eta,  \
+                                  LLLMethod method, FloatType floatType,               \
+                                  int precision, int flags) {
+
+	lll_reduction(b, u, delta, eta, method, floatType, precision);
+
+	return 0;
+}
+
+
+template<> int
+FPTuple<long, long double>::call_fplll(ZZ_mat<long double> &b, ZZ_mat<long double> &u, double delta, double eta,  \
+                                       LLLMethod method, FloatType floatType,               \
+                                       int precision, int flags) {
+
+	cerr << endl << "** Error in relations: no fplll with Z_NR<long double> **" << endl; 
+
+	exit(EXIT_FAILURE);
+
+	return 0;
+}
+
+
+template<> int
+FPTuple<__int128_t, double>::call_fplll(ZZ_mat<__int128_t> &b, ZZ_mat<__int128_t> &u, double delta, double eta,  \
+                                       LLLMethod method, FloatType floatType,               \
+                                       int precision, int flags) {
+
+	cerr << endl << "** Error in relations: no fplll with Z_NR<__int128_t> **" << endl; 
+
+	exit(EXIT_FAILURE);
+
+	return 0;
+}
+
+template<> int
+FPTuple<__int128_t, long double>::call_fplll(ZZ_mat<__int128_t> &b, ZZ_mat<__int128_t> &u, double delta, double eta,  \
+                                       LLLMethod method, FloatType floatType,               \
+                                       int precision, int flags) {
+
+	cerr << endl << "** Error in relations: no fplll with Z_NR<__int128_t> **" << endl; 
+
+	exit(EXIT_FAILURE);
+
+	return 0;
+}
+
+
+
+
 /***********************************************************************************
 
    Construction
 
    Fix the precision inside or let outside ?
-   
+
 **************************************************************************************/
 
 template<class ZT, class FT>
@@ -52,6 +112,8 @@ FPTuple<ZT, FT>::FPTuple(vector<FP_NR<mpfr_t> > fpvin) {
 
 
 }
+
+
 
 /***********************************************************************************
 
@@ -367,7 +429,7 @@ FPTuple<ZT, FT>::detect_lift_f_z(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT> A
 
 			setId(VfT);
 
-			lll_reduction(AfT, VfT, delta, 0.51, LM_FAST, FT_DEFAULT, 0);
+			call_fplll(AfT, VfT, delta, 0.51, LM_FAST, FT_DEFAULT, 0);
 
 			transpose(Af, AfT);
 
@@ -492,9 +554,9 @@ FPTuple<ZT, FT>::detect_lift_f_z(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT> A
 
 template<class ZT, class FT>  int
 FPTuple<ZT, FT>::relation_z(ZZ_mat<mpz_t>& C,  long alpha,
-                          long confidence_gap,  long shift, int truncate, int lllmethod, double delta) {
+                            long confidence_gap,  long shift, int truncate, int lllmethod, double delta) {
 
-	
+
 	ZZ_mat<mpz_t> L;
 	L.resize(1, d);
 
@@ -593,7 +655,9 @@ FPTuple<ZT, FT>::relation_lll_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long alpha,
 	T.resize(m + d, d);
 	TT.resize(d, m + d);
 
-	Lattice<ZT, FT, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > Bp(T, TRANSFORM, DEF_REDUCTION);
+	//Lattice<ZT, FT, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > Bp(T, TRANSFORM, DEF_REDUCTION);
+
+	Lattice<ZT, FT, matrix<Z_NR<ZT> >,  matrix<FP_NR<FT> > > Bp(T, TRANSFORM, DEF_REDUCTION);
 
 	ZZ_mat<ZT> U, UT;
 
@@ -642,7 +706,7 @@ FPTuple<ZT, FT>::relation_lll_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long alpha,
 			setId(UT);
 
 			time.start();
-			lll_reduction(TT, UT, delta, 0.51, LM_FAST, FT_DEFAULT, 0);
+			call_fplll(TT, UT, delta, 0.51, LM_FAST, FT_DEFAULT, 0);
 			time.stop();
 
 			tlll += time;

@@ -1465,6 +1465,32 @@ inline void matprod_in_si(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U)
       C(i, j) = tmat(i, j);
 };
 
+// TO OPTIMIZE
+inline void matprod_in_si(ZZ_mat<mpz_t>& C, ZZ_mat<__int128_t> U)
+{
+
+  int n, i, j;
+
+  n = U.get_rows();
+
+  ZZ_mat<mpz_t> V;
+  V.resize(n, n);
+
+  Z_NR<mpz_t> z;
+
+  for (i = 0; i < n; i++)
+    for (j = 0; j < n; j++) {
+
+      mpz_get_128int(z, U(i, j));
+      V(i, j) = z;
+
+    }
+
+  matprod_in(C, V);
+
+};
+
+
 inline void matprod_in_si(matrix<Z_NR<mpz_t> >& C, ZZ_mat<long int> U)
 {
 

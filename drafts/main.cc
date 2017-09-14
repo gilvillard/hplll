@@ -105,23 +105,20 @@ int main(int argc, char *argv[]) {
 
 	ZZ_mat<mpz_t> C;
 
-	FPTuple<long, double> L(fpv);
+	//FPTuple<long, double> L(fpv);
+	FPTuple<__int128_t, long double> L(fpv);
 	//FPTuple<mpz_t, dpe_t> L(fpv);
 
 	time.start();
 
-	L.relation_f(C, alpha, 30, 400, 20, HLLL);
-	//L.relation_z(C, alpha, 30, 200, -1, FPLLL);
+	//L.relation_f(C, alpha, 30, 400, 20, HLLL);
+	L.relation_z(C, alpha, 30, 20, 30, HLLL);
 
 	time.stop();
 
 	cout << C << endl;
 
 	cout << endl << endl << "   relation : " << time << endl ;
-
-
-
-
 
 
 

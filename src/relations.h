@@ -46,6 +46,14 @@ protected:
 
   vector<FP_NR<mpfr_t> > fpv;
 
+  int call_fplll(ZZ_mat<FT> &b, ZZ_mat<FT> &u, double delta = LLL_DEF_DELTA, double eta = LLL_DEF_ETA,          \
+                 LLLMethod method = LM_WRAPPER, FloatType floatType = FT_DEFAULT,               \
+                 int precision = 0, int flags = LLL_DEFAULT);
+
+  int call_fplll(ZZ_mat<ZT> &b, ZZ_mat<ZT> &u, double delta = LLL_DEF_DELTA, double eta = LLL_DEF_ETA,          \
+                 LLLMethod method = LM_WRAPPER, FloatType floatType = FT_DEFAULT,               \
+                 int precision = 0, int flags = LLL_DEFAULT);
+
 public:
 
 
@@ -70,9 +78,8 @@ public:
 
 
 
-
   int relation_z(ZZ_mat<mpz_t>& C, long alpha,
-               long confidence_gap = 60, long shift = 10, int truncate = -1, int lllmethod = FPLLL, double delta = 0.99);
+                 long confidence_gap = 60, long shift = 10, int truncate = -1, int lllmethod = FPLLL, double delta = 0.99);
 
 
 
