@@ -67,58 +67,75 @@ int main(int argc, char *argv[]) {
 	// ----------------  Test C
 
 
-	// alpha = 1800;
-	// mpfr_set_default_prec(alpha);
-
-	// d = 50;
-	// gen3r2s(fpv, d, 7, 7);
-
-
-
-	// ZZ_mat<mpz_t> C;
-
-	// FPTuple<mpz_t, dpe_t> L(fpv);
-
-	// L.relation_z(C, alpha,60,200,-1, FPLLL);
-	// cout << C << endl;
-
-	//  --------------   Test Poisson
-
-	static string s;
-
-	fb.open ("alpha.in", ios::in);
-
-	os >> alpha;
-	os >> d;
-
-
+	alpha = 6444;
 	mpfr_set_default_prec(alpha);
 
-	fpv.resize(d);
+	d = 101;
+	gen3r2s(fpv, d, 10, 10);
 
-	for (int i = 0; i < d; i++) {
-		os >> s;
-		mpfr_set_str (fpv[i].get_data(), s.c_str(), 10, GMP_RNDN);
-	}
 
-	fb.close();
 
 	ZZ_mat<mpz_t> C;
 
+	FPTuple<long, double> L(fpv);
+
 	
-	FPTuple<mpz_t, dpe_t> L(fpv);
+	cout << alpha << endl; 
+	cout << d << endl; 
+	for (int i = 0; i < d; i++) {
+		//mpfr_out_str (stdout, 10, alpha, fpv[i].get_data(), GMP_RNDN);
+		mpfr_printf ("%.1940Rf", fpv[i].get_data());
+		cout << endl; 
+	}
 	
 
 	time.start();
 
-	//L.relation_f(C, alpha, 30, 100, 20, HLLL);
-	L.relation_z(C, alpha, 30, 10, 50, HLLL);
+	L.relation_f(C, alpha, 60, 100, 20, FPLLL);
 
 	time.stop();
 
 	cout << C << endl;
 
 	cout << endl << endl << "   relation : " << time << endl ;
+
+	//  --------------   Test Poisson
+
+	// static string s;
+
+	// fb.open ("alpha.in", ios::in);
+
+	// os >> alpha;
+	// os >> d;
+
+
+	// mpfr_set_default_prec(alpha);
+
+	// fpv.resize(d);
+
+	// for (int i = 0; i < d; i++) {
+	// 	os >> s;
+	// 	mpfr_set_str (fpv[i].get_data(), s.c_str(), 10, GMP_RNDN);
+	// }
+
+	// fb.close();
+
+	// ZZ_mat<mpz_t> C;
+
+
+	// FPTuple<long, double> L(fpv);
+
+
+	// time.start();
+
+	// L.relation_f(C, alpha, 60, 100, 20, FPLLL);
+	// //L.relation_z(C, alpha, 30, 10, 50, HLLL);
+
+	// time.stop();
+
+	// cout << C << endl;
+
+	// cout << endl << endl << "   relation : " << time << endl ;
 
 
 
