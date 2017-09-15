@@ -11,7 +11,7 @@ Format:
 
 Credit to: 
 
-For rs see D. H. Bailey and D. J. Broadhurst. Parallel integer relation detection: 
+For rs and bifurcation see D. H. Bailey and D. J. Broadhurst. Parallel integer relation detection: 
 Techniques and applications. Mathematics of Computation, 70:1719–1736, 2000.
 
 For Poisson values, see 
