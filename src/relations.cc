@@ -113,6 +113,17 @@ FPTuple<mpz_t, dpe_t>::call_fplll_z(ZZ_mat<mpz_t> &b, ZZ_mat<mpz_t> &u, double d
 }
 
 template<> int
+FPTuple<mpz_t, double>::call_fplll_z(ZZ_mat<mpz_t> &b, ZZ_mat<mpz_t> &u, double delta, double eta,  \
+                                    LLLMethod method, FloatType floatType,               \
+                                    int precision, int flags) {
+
+	lll_reduction(b, u, delta, eta, method, floatType, precision);
+
+	return 0;
+}
+
+
+template<> int
 FPTuple<__int128_t, double>::call_fplll_z(ZZ_mat<__int128_t> &b, ZZ_mat<__int128_t> &u, double delta, double eta,  \
         LLLMethod method, FloatType floatType,               \
         int precision, int flags) {
@@ -191,6 +202,19 @@ FPTuple<long, long double>::FPTuple(vector<FP_NR<mpfr_t> > fpvin) {
 
 template<>
 FPTuple<__int128_t, double>::FPTuple(vector<FP_NR<mpfr_t> > fpvin) {
+
+	d = fpvin.size();
+
+	fpv.resize(d);
+
+	for (int i = 0; i < d; i++)
+		fpv[i] = fpvin[i];
+
+
+}
+
+template<>
+FPTuple<mpz_t, double>::FPTuple(vector<FP_NR<mpfr_t> > fpvin) {
 
 	d = fpvin.size();
 
@@ -789,7 +813,7 @@ FPTuple<ZT, FT>::relation_lll_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long alpha,
 
 	Lattice<ZT, FT, matrix<Z_NR<ZT> >,  matrix<FP_NR<FT> > > Bp(T, TRANSFORM, DEF_REDUCTION);
 	Lattice<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > Bp_dpe(T, TRANSFORM, DEF_REDUCTION);
-	Lattice<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > Bp_ldpe(T, TRANSFORM, DEF_REDUCTION);
+	//Lattice<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > Bp_ldpe(T, TRANSFORM, DEF_REDUCTION);
 
 	ZZ_mat<ZT> U, UT;
 
@@ -830,18 +854,18 @@ FPTuple<ZT, FT>::relation_lll_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long alpha,
 
 
 		}
-		if ((lllmethod == HLLL) && (RELATIONS_LDPE_FLAG)) {
+		// else if ((lllmethod == HLLL) && (RELATIONS_LDPE_FLAG)) {
 
-			Bp_ldpe.assign(T);
+		// 	Bp_ldpe.assign(T);
 
-			Bp_ldpe.hlll(delta);
+		// 	Bp_ldpe.hlll(delta);
 
-			matprod_in_int(A_in, Bp_ldpe.getU());
-			//avec long: matprod_in_si(A_in,U);
-			cout << "sizeof U: " << maxbitsize(Bp_ldpe.getU(), 0, d, d) << endl;
+		// 	matprod_in_int(A_in, Bp_ldpe.getU());
+		// 	//avec long: matprod_in_si(A_in,U);
+		// 	cout << "sizeof U: " << maxbitsize(Bp_ldpe.getU(), 0, d, d) << endl;
 
 
-		}
+		// }
 
 		else if (lllmethod == HLLL)  {
 
