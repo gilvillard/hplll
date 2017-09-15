@@ -42,17 +42,26 @@ class FPTuple
 
 protected:
 
+
   int m, d;
 
   vector<FP_NR<mpfr_t> > fpv;
 
-  int call_fplll(ZZ_mat<FT> &b, ZZ_mat<FT> &u, double delta = LLL_DEF_DELTA, double eta = LLL_DEF_ETA,          \
-                 LLLMethod method = LM_WRAPPER, FloatType floatType = FT_DEFAULT,               \
-                 int precision = 0, int flags = LLL_DEFAULT);
 
-  int call_fplll(ZZ_mat<ZT> &b, ZZ_mat<ZT> &u, double delta = LLL_DEF_DELTA, double eta = LLL_DEF_ETA,          \
-                 LLLMethod method = LM_WRAPPER, FloatType floatType = FT_DEFAULT,               \
-                 int precision = 0, int flags = LLL_DEFAULT);
+  // Dirty templating, for matrix type in calling hplll MatrixPE or matrix, should disappear
+
+  bool RELATIONS_DPE_FLAG = false;
+  bool RELATIONS_LDPE_FLAG = false;
+
+  // Because of restrictions on input types for fplll, should be temporary
+
+  int call_fplll_f(ZZ_mat<FT> &b, ZZ_mat<FT> &u, double delta = LLL_DEF_DELTA, double eta = LLL_DEF_ETA,          \
+                   LLLMethod method = LM_WRAPPER, FloatType floatType = FT_DEFAULT,               \
+                   int precision = 0, int flags = LLL_DEFAULT);
+
+  int call_fplll_z(ZZ_mat<ZT> &b, ZZ_mat<ZT> &u, double delta = LLL_DEF_DELTA, double eta = LLL_DEF_ETA,          \
+                   LLLMethod method = LM_WRAPPER, FloatType floatType = FT_DEFAULT,               \
+                   int precision = 0, int flags = LLL_DEFAULT);
 
 public:
 
