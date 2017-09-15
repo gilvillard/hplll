@@ -105,9 +105,9 @@ int main(int argc, char *argv[]) {
 
 	ZZ_mat<mpz_t> C;
 
-	//FPTuple<long, double> L(fpv);
-	FPTuple<__int128_t, long double> L(fpv);
-	//FPTuple<mpz_t, dpe_t> L(fpv);
+	
+	FPTuple<mpz_t, dpe_t> L(fpv);
+	
 
 	time.start();
 

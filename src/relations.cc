@@ -42,47 +42,94 @@ namespace hplll {
 **************************************************************************************/
 
 template<> int
-FPTuple<long, double>::call_fplll(ZZ_mat<double> &b, ZZ_mat<double> &u, double delta, double eta,  \
-                                  LLLMethod method, FloatType floatType,               \
-                                  int precision, int flags) {
+FPTuple<long, double>::call_fplll_f(ZZ_mat<double> &b, ZZ_mat<double> &u, double delta, double eta,  \
+                                    LLLMethod method, FloatType floatType,               \
+                                    int precision, int flags) {
+
+	int status;
+
+	status = lll_reduction(b, u, delta, eta, method, floatType, precision);
+
+	return status;
+}
+
+
+template<> int
+FPTuple<long, long double>::call_fplll_f(ZZ_mat<long double> &b, ZZ_mat<long double> &u, double delta, double eta,  \
+        LLLMethod method, FloatType floatType,               \
+        int precision, int flags) {
+
+	cerr << endl << "** Error in relations: no fplll with Z_NR<long double> **" << endl;
+
+	exit(EXIT_FAILURE);
+
+	return 0;
+}
+
+template<> int
+FPTuple<__int128_t, double>::call_fplll_f(ZZ_mat<double> &b, ZZ_mat<double> &u, double delta, double eta,  \
+        LLLMethod method, FloatType floatType,               \
+        int precision, int flags) {
+
+	cerr << endl << "** Error in relations: no fplll with Z_NR<__int128_t> **" << endl;
+
+	exit(EXIT_FAILURE);
+
+	return 0;
+}
+
+template<> int
+FPTuple<__int128_t, long double>::call_fplll_f(ZZ_mat<long double> &b, ZZ_mat<long double> &u, double delta, double eta,  \
+        LLLMethod method, FloatType floatType,               \
+        int precision, int flags) {
+
+	cerr << endl << "** Error in relations: no fplll with Z_NR<__int128_t> **" << endl;
+
+	exit(EXIT_FAILURE);
+
+	return 0;
+}
+
+
+
+template<> int
+FPTuple<long, double>::call_fplll_z(ZZ_mat<long> &b, ZZ_mat<long> &u, double delta, double eta,  \
+                                    LLLMethod method, FloatType floatType,               \
+                                    int precision, int flags) {
 
 	lll_reduction(b, u, delta, eta, method, floatType, precision);
 
 	return 0;
 }
 
+template<> int
+FPTuple<mpz_t, dpe_t>::call_fplll_z(ZZ_mat<mpz_t> &b, ZZ_mat<mpz_t> &u, double delta, double eta,  \
+                                    LLLMethod method, FloatType floatType,               \
+                                    int precision, int flags) {
+
+	lll_reduction(b, u, delta, eta, method, floatType, precision);
+
+	return 0;
+}
 
 template<> int
-FPTuple<long, long double>::call_fplll(ZZ_mat<long double> &b, ZZ_mat<long double> &u, double delta, double eta,  \
-                                       LLLMethod method, FloatType floatType,               \
-                                       int precision, int flags) {
+FPTuple<__int128_t, double>::call_fplll_z(ZZ_mat<__int128_t> &b, ZZ_mat<__int128_t> &u, double delta, double eta,  \
+        LLLMethod method, FloatType floatType,               \
+        int precision, int flags) {
 
-	cerr << endl << "** Error in relations: no fplll with Z_NR<long double> **" << endl; 
+	cerr << endl << "** Error in relations: no fplll with Z_NR<__int128_t> **" << endl;
 
 	exit(EXIT_FAILURE);
 
 	return 0;
 }
 
-
 template<> int
-FPTuple<__int128_t, double>::call_fplll(ZZ_mat<__int128_t> &b, ZZ_mat<__int128_t> &u, double delta, double eta,  \
-                                       LLLMethod method, FloatType floatType,               \
-                                       int precision, int flags) {
+FPTuple<__int128_t, long double>::call_fplll_z(ZZ_mat<__int128_t> &b, ZZ_mat<__int128_t> &u, double delta, double eta,  \
+        LLLMethod method, FloatType floatType,               \
+        int precision, int flags) {
 
-	cerr << endl << "** Error in relations: no fplll with Z_NR<__int128_t> **" << endl; 
-
-	exit(EXIT_FAILURE);
-
-	return 0;
-}
-
-template<> int
-FPTuple<__int128_t, long double>::call_fplll(ZZ_mat<__int128_t> &b, ZZ_mat<__int128_t> &u, double delta, double eta,  \
-                                       LLLMethod method, FloatType floatType,               \
-                                       int precision, int flags) {
-
-	cerr << endl << "** Error in relations: no fplll with Z_NR<__int128_t> **" << endl; 
+	cerr << endl << "** Error in relations: no fplll with Z_NR<__int128_t> **" << endl;
 
 	exit(EXIT_FAILURE);
 
@@ -100,8 +147,24 @@ FPTuple<__int128_t, long double>::call_fplll(ZZ_mat<__int128_t> &b, ZZ_mat<__int
 
 **************************************************************************************/
 
-template<class ZT, class FT>
-FPTuple<ZT, FT>::FPTuple(vector<FP_NR<mpfr_t> > fpvin) {
+// template<class ZT, class FT>
+// FPTuple<ZT, FT>::FPTuple(vector<FP_NR<mpfr_t> > fpvin) {
+
+// 	d = fpvin.size();
+
+// 	fpv.resize(d);
+
+// 	for (int i = 0; i < d; i++)
+// 		fpv[i] = fpvin[i];
+
+
+// }
+
+// Dirty templating, for matrix type in calling hplll MatrixPE or matrix, should disappear
+
+
+template<>
+FPTuple<long, double>::FPTuple(vector<FP_NR<mpfr_t> > fpvin) {
 
 	d = fpvin.size();
 
@@ -113,6 +176,72 @@ FPTuple<ZT, FT>::FPTuple(vector<FP_NR<mpfr_t> > fpvin) {
 
 }
 
+template<>
+FPTuple<long, long double>::FPTuple(vector<FP_NR<mpfr_t> > fpvin) {
+
+	d = fpvin.size();
+
+	fpv.resize(d);
+
+	for (int i = 0; i < d; i++)
+		fpv[i] = fpvin[i];
+
+
+}
+
+template<>
+FPTuple<__int128_t, double>::FPTuple(vector<FP_NR<mpfr_t> > fpvin) {
+
+	d = fpvin.size();
+
+	fpv.resize(d);
+
+	for (int i = 0; i < d; i++)
+		fpv[i] = fpvin[i];
+
+
+}
+
+template<>
+FPTuple<__int128_t, long double>::FPTuple(vector<FP_NR<mpfr_t> > fpvin) {
+
+	d = fpvin.size();
+
+	fpv.resize(d);
+
+	for (int i = 0; i < d; i++)
+		fpv[i] = fpvin[i];
+
+
+}
+
+template<>
+FPTuple<mpz_t, dpe_t>::FPTuple(vector<FP_NR<mpfr_t> > fpvin) {
+
+	d = fpvin.size();
+
+	fpv.resize(d);
+
+	for (int i = 0; i < d; i++)
+		fpv[i] = fpvin[i];
+
+	RELATIONS_DPE_FLAG = true;
+
+}
+
+template<>
+FPTuple<mpz_t, ldpe_t>::FPTuple(vector<FP_NR<mpfr_t> > fpvin) {
+
+	d = fpvin.size();
+
+	fpv.resize(d);
+
+	for (int i = 0; i < d; i++)
+		fpv[i] = fpvin[i];
+
+	RELATIONS_LDPE_FLAG = true;
+
+}
 
 
 /***********************************************************************************
@@ -429,7 +558,7 @@ FPTuple<ZT, FT>::detect_lift_f_z(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT> A
 
 			setId(VfT);
 
-			call_fplll(AfT, VfT, delta, 0.51, LM_FAST, FT_DEFAULT, 0);
+			call_fplll_f(AfT, VfT, delta, 0.51, LM_FAST, FT_DEFAULT, 0);
 
 			transpose(Af, AfT);
 
@@ -655,9 +784,12 @@ FPTuple<ZT, FT>::relation_lll_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long alpha,
 	T.resize(m + d, d);
 	TT.resize(d, m + d);
 
-	//Lattice<ZT, FT, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > Bp(T, TRANSFORM, DEF_REDUCTION);
+
+	// Dirty++ templating, for matrix type in calling hplll MatrixPE or matrix, should disappear
 
 	Lattice<ZT, FT, matrix<Z_NR<ZT> >,  matrix<FP_NR<FT> > > Bp(T, TRANSFORM, DEF_REDUCTION);
+	Lattice<ZT, dpe_t, matrix<Z_NR<ZT> >, MatrixPE<double, dpe_t> > Bp_dpe(T, TRANSFORM, DEF_REDUCTION);
+	Lattice<ZT, ldpe_t, matrix<Z_NR<ZT> >, MatrixPE<long double, ldpe_t> > Bp_ldpe(T, TRANSFORM, DEF_REDUCTION);
 
 	ZZ_mat<ZT> U, UT;
 
@@ -686,7 +818,32 @@ FPTuple<ZT, FT>::relation_lll_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long alpha,
 
 		cout << "Size T : " << maxbitsize(T, 1, d, d) << endl;
 
-		if (lllmethod == HLLL) {
+		if ((lllmethod == HLLL) && (RELATIONS_DPE_FLAG)) {
+
+			Bp_dpe.assign(T);
+
+			Bp_dpe.hlll(delta);
+
+			matprod_in_int(A_in, Bp_dpe.getU());
+			//avec long: matprod_in_si(A_in,U);
+			cout << "sizeof U: " << maxbitsize(Bp_dpe.getU(), 0, d, d) << endl;
+
+
+		}
+		if ((lllmethod == HLLL) && (RELATIONS_LDPE_FLAG)) {
+
+			Bp_ldpe.assign(T);
+
+			Bp_ldpe.hlll(delta);
+
+			matprod_in_int(A_in, Bp_ldpe.getU());
+			//avec long: matprod_in_si(A_in,U);
+			cout << "sizeof U: " << maxbitsize(Bp_ldpe.getU(), 0, d, d) << endl;
+
+
+		}
+
+		else if (lllmethod == HLLL)  {
 
 			Bp.assign(T);
 
@@ -706,7 +863,7 @@ FPTuple<ZT, FT>::relation_lll_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long alpha,
 			setId(UT);
 
 			time.start();
-			call_fplll(TT, UT, delta, 0.51, LM_FAST, FT_DEFAULT, 0);
+			call_fplll_z(TT, UT, delta, 0.51, LM_FAST, FT_DEFAULT, 0);
 			time.stop();
 
 			tlll += time;
