@@ -111,8 +111,8 @@ int main(int argc, char *argv[]) {
 
 	time.start();
 
-	//L.relation_f(C, alpha, 30, 400, 20, HLLL);
-	L.relation_z(C, alpha, 30, 20, 30, HLLL);
+	//L.relation_f(C, alpha, 30, 100, 20, HLLL);
+	L.relation_z(C, alpha, 30, 10, 50, HLLL);
 
 	time.stop();
 
