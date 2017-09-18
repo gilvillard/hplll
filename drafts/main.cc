@@ -103,43 +103,49 @@ int main(int argc, char *argv[]) {
 
 	static string s;
 
-	fb.open ("alpha.in", ios::in);
+	cin >> alpha;
 
-	os >> alpha;
-	os >> d;
+	cin >> d;
 
+	cout << "alpha " << alpha << "   " << d << endl;
 
-	mpfr_set_default_prec(alpha);
+	// fb.open ("alpha.in", ios::in);
 
-	fpv.resize(d);
-
-	for (int i = 0; i < d; i++) {
-		os >> s;
-		mpfr_set_str (fpv[i].get_data(), s.c_str(), 10, GMP_RNDN);
-	}
-
-	fb.close();
-
-	ZZ_mat<mpz_t> C;
-
-	//FPTuple_f<__int128_t, long double> L(fpv);
+	// os >> alpha;
+	// os >> d;
 
 
+	// mpfr_set_default_prec(alpha);
 
-	FPTuple<mpz_t, ldpe_t, MatrixPE<long double, ldpe_t> > L(fpv);  // long double needs to comment long double in relation_z
-	//FPTuple<long, double, matrix<FP_NR<double> > > L(fpv);
+	// fpv.resize(d);
+
+	// for (int i = 0; i < d; i++) {
+	// 	os >> s;
+	// 	mpfr_set_str (fpv[i].get_data(), s.c_str(), 10, GMP_RNDN);
+	// }
+
+	// fb.close();
+
+	// ZZ_mat<mpz_t> C;
+
+	// FPTuple<long, double, matrix<FP_NR<double> > > L(fpv);
 
 
-	time.start();
 
-	//L.relation(C, alpha, 20, 400, 20, HLLL);
-	L.relation(C, alpha, 20, 20, 40);   // -1 for bits only with mpz_t
+	// //FPTuple<mpz_t, ldpe_t, MatrixPE<long double, ldpe_t> > L(fpv);  // long double needs to comment long double in relation_z
+	// //FPTuple<long, double,  > > L(fpv);
 
-	time.stop();
 
-	cout << C << endl;
+	// time.start();
 
-	cout << endl << endl << "   relation : " << time << endl ;
+	// L.relation(C, alpha, 30, 20, 40, FPLLL);
+	// //L.relation(C, alpha, 20, 20, 40);   // -1 for bits only with mpz_t
+
+	// time.stop();
+
+	// cout << C << endl;
+
+	// cout << endl << endl << "   relation : " << time << endl ;
 
 
 

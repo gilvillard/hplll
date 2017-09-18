@@ -20,7 +20,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #include "matgen.h"
-#include "newrelations.h" 
+#include "relations.h" 
 
 using namespace hplll;
 
@@ -89,9 +89,9 @@ int main(int argc, char *argv[])  {
 
   verboseDepth=1;
 
-  FPTuple<long, double> L(fpv);
+  FPTuple_f<long, double> L(fpv);
   
-  found = L.relation_f(C, 30400, 60, 800, 20, FPLLL);
+  found = L.relation(C, 30400, 60, 800, 20, FPLLL);
 
   print2maple(C,n,1);
   

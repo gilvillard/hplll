@@ -85,9 +85,9 @@ int main(int argc, char *argv[])  {
 
     cout << "     Relation test, dim = " << n << ", " << setprec << " bits " << endl;
 
-    FPTuple<mpz_t, dpe_t> L(fpv);
+    FPTuple<mpz_t, dpe_t, MatrixPE<double, dpe_t> > L(fpv);
 
-    found = L.relation_z(C, setprec, 20, 20, -1, FPLLL);
+    found = L.relation(C, setprec, 20, 20, -1, FPLLL);
 
     //found = relation<mpz_t, dpe_t, MatrixPE<double, dpe_t> >(C, A, setprec, 20, 20, -1, FPLLL);
     //found=relation_f<long, double>(C, A,setprec,20,20,10,FPLLL);
@@ -135,9 +135,9 @@ int main(int argc, char *argv[])  {
 
     cout << "     Relation test, dim = " << n << ", " << setprec << " bits " << endl;
 
-    FPTuple<mpz_t, dpe_t> L(fpv);
+    FPTuple<mpz_t, dpe_t, MatrixPE<double, dpe_t> > L(fpv);
 
-    found = L.relation_z(C, setprec, 60, 200, -1, FPLLL);
+    found = L.relation(C, setprec, 60, 200, -1, FPLLL);
 
     //found = relation<mpz_t, dpe_t, MatrixPE<double, dpe_t> >(C, A, setprec, 60, 200, -1, FPLLL);
     //found=relation_f<long, double>(C, A,setprec,20,20,10,FPLLL);
@@ -194,10 +194,9 @@ int main(int argc, char *argv[])  {
 
     cout << "     Relation test, dim = " << n << ", " << setprec << " bits " << endl;
 
-    FPTuple<long, double> L(fpv);
+    FPTuple_f<long, double> L(fpv);
 
-    found = L.relation_f(C, setprec, 80, 20, 10, HLLL);
-    //found = relation_f<long, double>(C, A, setprec, 80, 20, 10, HLLL);
+    found = L.relation(C, setprec, 80, 20, 10, HLLL);
 
     cout << C << endl;
 
@@ -243,10 +242,9 @@ int main(int argc, char *argv[])  {
 
     cout << "     Relation test, dim = " << n << ", " << setprec << " bits " << endl;
 
-    FPTuple<long, double> L(fpv);
+    FPTuple_f<long, double> L(fpv);
 
-    found = L.relation_f(C, setprec, 60, 200, 20, FPLLL);
-    //found = relation_f<long, double>(C, A, setprec, 60, 200, 20, FPLLL);
+    found = L.relation(C, setprec, 60, 200, 20, FPLLL);
 
     cout << C << endl;
 
@@ -269,56 +267,7 @@ int main(int argc, char *argv[])  {
 
   }
 
-  // //  -------------------- TEST i --------------------------------
-  // nbtest+=1;
-
-
-
-  // ZZ_mat<mpz_t> AZ;
-
-  // fb.open ("C3_in",ios::in);
-  // os >> setprec ;
-  // os >> n;
-  // AZ.resize(1,n);
-  // os >> AZ;
-  // fb.close();
-
-
-  // mpfr_set_default_prec(setprec);
-
-
-  // FP_NR<mpfr_t> tmp;
-  // A.resize(1,n);
-  // for (int j=0; j<n; j++) {
-  //   set_z(tmp,AZ(0,j));
-  //   tmp.mul_2si(tmp,-setprec);
-  //   A.set(0,j,tmp);
-  // }
-
-  // nbrel=1;
-  // cout << "     Relation test, dim = " << n <<", " << setprec << " bits " << endl;
-
-  // found = relation_f<long, double>(C, A, 240, 60, 800, 40, FPLLL,0.99);
-
-
-  // Ccheck.resize(n,1);
-  // fb.open ("C3_out",ios::in);
-  // os >> Ccheck ;
-  // fb.close();
-
-  // if (found != 1)
-  //   cerr << "*** Problem in relation test, no relation found" << endl;
-  // else if (nbrel==1) {
-  //   difference = !matcmp(C, Ccheck, 1, n);
-
-  //   status |= difference;
-
-  //   if (difference) {
-  //     cerr << "*** Invalid matrix comparison in relation test" << endl;
-  //   }
-  //   else
-  //     succeed+=1;
-  // }
+  
 
 
   //  *****************************************************
