@@ -103,49 +103,48 @@ int main(int argc, char *argv[]) {
 
 	static string s;
 
-	cin >> alpha;
-
-	cin >> d;
-
-	cout << "alpha " << alpha << "   " << d << endl;
-
-	// fb.open ("alpha.in", ios::in);
-
-	// os >> alpha;
-	// os >> d;
 
 
-	// mpfr_set_default_prec(alpha);
+	//fb.open ("alpha.in", ios::in);
 
-	// fpv.resize(d);
+	//os >> alpha;
+	//os >> d;
 
-	// for (int i = 0; i < d; i++) {
-	// 	os >> s;
-	// 	mpfr_set_str (fpv[i].get_data(), s.c_str(), 10, GMP_RNDN);
-	// }
+	cin  >> alpha;
+	cin  >> d;
 
-	// fb.close();
+	mpfr_set_default_prec(alpha);
 
-	// ZZ_mat<mpz_t> C;
+	fpv.resize(d);
 
-	// FPTuple<long, double, matrix<FP_NR<double> > > L(fpv);
+	for (int i = 0; i < d; i++) {
+		//os >> s;
+		cin >> s;
+		mpfr_set_str (fpv[i].get_data(), s.c_str(), 10, GMP_RNDN);
+	}
+
+	//fb.close();
+
+	ZZ_mat<mpz_t> C;
+
+	//FPTuple<long, double, matrix<FP_NR<double> > > L(fpv);
+	FPTuple_f<long, double> L(fpv);
 
 
+	//FPTuple<mpz_t, ldpe_t, MatrixPE<long double, ldpe_t> > L(fpv);  // long double needs to comment long double in relation_z
+	//FPTuple<long, double,  > > L(fpv);
 
-	// //FPTuple<mpz_t, ldpe_t, MatrixPE<long double, ldpe_t> > L(fpv);  // long double needs to comment long double in relation_z
-	// //FPTuple<long, double,  > > L(fpv);
 
+	time.start();
 
-	// time.start();
+	L.relation(C, alpha, 30, 20, 20, HLLL, SEYSEN_REDUCTION);
+	//L.relation(C, alpha, 20, 20, 40);   // -1 for bits only with mpz_t
 
-	// L.relation(C, alpha, 30, 20, 40, FPLLL);
-	// //L.relation(C, alpha, 20, 20, 40);   // -1 for bits only with mpz_t
+	time.stop();
 
-	// time.stop();
+	cout << C << endl;
 
-	// cout << C << endl;
-
-	// cout << endl << endl << "   relation : " << time << endl ;
+	cout << endl << endl << "   relation : " << time << endl ;
 
 
 

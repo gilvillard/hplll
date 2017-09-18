@@ -217,7 +217,7 @@ FPTuple<ZT, FT, MatrixFT>::FPTuple(vector<FP_NR<mpfr_t> > fpvin) {
 
 template<class ZT, class FT, class MatrixFT>  int
 FPTuple<ZT, FT, MatrixFT>::relation(ZZ_mat<mpz_t>& C,  long alpha,
-                                    long confidence_gap,  long shift, int truncate, int lllmethod, double delta) {
+                                    long confidence_gap,  long shift, int truncate, int lllmethod,  int sizemethod, double delta) {
 
 
   ZZ_mat<mpz_t> L;
@@ -254,7 +254,7 @@ FPTuple<ZT, FT, MatrixFT>::relation(ZZ_mat<mpz_t>& C,  long alpha,
 
 template<class ZT, class FT, class MatrixFT>  int
 FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long alpha,
-                                        long confidence_gap, long shift, int truncate, int lllmethod, double delta) {
+                                        long confidence_gap, long shift, int truncate, int lllmethod,  int sizemethod, double delta) {
 
   Timer time;
 
@@ -325,7 +325,7 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
   UT.resize(d, d);
 
 
-  Lattice<ZT, FT, matrix<Z_NR<ZT> >,  MatrixFT > Bp(T, TRANSFORM, DEF_REDUCTION);
+  Lattice<ZT, FT, matrix<Z_NR<ZT> >,  MatrixFT > Bp(T, TRANSFORM, sizemethod);
 
 
 

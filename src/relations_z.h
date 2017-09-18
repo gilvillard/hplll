@@ -66,12 +66,14 @@ public:
 
 
   int relation(ZZ_mat<mpz_t>& C, long alpha,
-               long confidence_gap = 60, long shift = 10, int truncate = -1, int lllmethod = FPLLL, double delta = 0.99);
+               long confidence_gap = 60, long shift = 10, int truncate = -1, int lllmethod = FPLLL, \
+               int sizemethod=DEF_REDUCTION, double delta = 0.99);
 
 
 
   int relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long alpha,
-                   long confidence_gap = 60, long shift = 10, int truncate = -1, int lllmethod = FPLLL, double delta = 0.99);
+                   long confidence_gap = 60, long shift = 10, int truncate = -1, int lllmethod = FPLLL, \
+                   int sizemethod=DEF_REDUCTION, double delta = 0.99);
 
 
 

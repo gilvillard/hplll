@@ -129,7 +129,7 @@ FPTuple_f<ZT, FT>::FPTuple_f(vector<FP_NR<mpfr_t> > fpvin) {
 template<class ZT, class FT>  int
 FPTuple_f<ZT, FT>::relation(ZZ_mat<mpz_t>& C, long alpha,
                             long confidence_gap, long shift, long increment,
-                            int lllmethod, double delta) {
+                            int lllmethod, int sizemethod, double delta) {
 
 
 	ZZ_mat<mpz_t> L;
@@ -171,7 +171,7 @@ FPTuple_f<ZT, FT>::relation(ZZ_mat<mpz_t>& C, long alpha,
 template<class ZT, class FT>  int
 FPTuple_f<ZT, FT>::relation_f_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A,  int alpha,
                                 long confidence_gap, long shift, long increment,
-                                int lllmethod, double delta) {
+                                int lllmethod, int sizemethod, double delta) {
 
 	int m, d;
 	int i, j;
@@ -320,7 +320,7 @@ template<class ZT, class FT>  int
 FPTuple_f<ZT, FT>::detect_lift_f_z(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT> A_in_f, int& new_def, int def,
                                    int target_def, FP_NR<mpfr_t>& new_quot,
                                    long confidence_gap, long shift, long increment,
-                                   int lllmethod, double delta) {
+                                   int lllmethod,  int sizemethod, double delta) {
 
 	int m, d;
 	int i, j;
@@ -381,7 +381,7 @@ FPTuple_f<ZT, FT>::detect_lift_f_z(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT>
 
 	// -----------
 
-	Lattice<FT, FT,  matrix<Z_NR<FT> >, matrix<FP_NR<FT> > > B(Af, TRANSFORM, DEF_REDUCTION);
+	Lattice<FT, FT,  matrix<Z_NR<FT> >, matrix<FP_NR<FT> > > B(Af, TRANSFORM, sizemethod);
 
 	// Loop
 	// update def
