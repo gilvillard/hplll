@@ -3,7 +3,7 @@ AUTOMAKE_OPTIONS = gnu
 include_hpllldir=$(includedir)/hplll
 
 include_hplll_HEADERS=  hplll.h defs.h  mat.h matpe.h  ldpe.h nr-ld.cpp  \
-	hlll.h hlll.cc relations.h relations.cc  \
+	hlll.h hlll.cc relations.h relations_f.h relations_f.cc relations_z.h relations_z.cc  \
 	matgen.h matgen.cc  \
   	mixed-col.h  matmixed.h  tools.h  \
 	givtimer.h givtimer.C ratio.h nr_Z_l128.h nr_Z_ld.h\
