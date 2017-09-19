@@ -27,5 +27,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "hlll.h"
 #include "matgen.h"
+#include "relations.h"
 
 #endif

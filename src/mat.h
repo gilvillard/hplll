@@ -2145,6 +2145,7 @@ void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
       C(i, j) = A(i, j);
 
 
+
   if (bits > 0) {
 
 
@@ -2160,6 +2161,7 @@ void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
     }
     mmin = mmax;
 
+
     for (j = 1; j < d ; j++) {
       maxloc = 0;
       for (i = 0; i < n; i++) {
@@ -2170,25 +2172,36 @@ void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
       mmax = max(mmax, maxloc);
     }
 
+
     // Truncation
 
+    long bbc = mmax; // Bits before conversion
+
     if ((mmin - 2) > bits) {
+
       long s = bits - mmin + 2;
+
+      bbc += s;
 
       for (i = 0; i < n; i++)
         for (j = 0; j < d; j++)
           C(i, j).mul_2si(C(i, j), s);
     }
 
-    // !!! One should check for max bit sizes now : less than long ?
-    cout << "Bits before conversion " << mmax + bits - mmin + 2 << endl;
+
+    if (bbc > 63) {
+
+      cerr << endl << "** Error in lift truncate: too many integer digits required for truncation >= 64" << endl;
+
+      exit(EXIT_FAILURE);
+
+    }
 
 
   } // end bits > 0 / truncation
 
 
-
-  // Conversion to long
+// Conversion to long
 
   for (i = 0; i < n; i++)
     for (j = 0; j < d; j++)
@@ -2244,8 +2257,13 @@ void lift_truncate(ZZ_mat<__int128_t>& C_out, ZZ_mat<mpz_t> A, long def, long bi
 
     // Truncation
 
-    if ((mmin -2) > bits) {
+    long bbc = mmax; // Bits before conversion
+
+    if ((mmin - 2) > bits) {
+
       long s = bits - mmin + 2;
+
+      bbc+=s; 
 
       for (i = 0; i < n; i++)
         for (j = 0; j < d; j++)
@@ -2253,8 +2271,14 @@ void lift_truncate(ZZ_mat<__int128_t>& C_out, ZZ_mat<mpz_t> A, long def, long bi
     }
 
 
-    // !!! One should check for max bit sizes now : less than long ?
-    cout << "Bits bound before conversion" << mmax + bits - mmin + 2 << endl;
+
+    if (bbc > 127) {
+
+      cerr << endl << "** Error in lift truncate: too many integer digits required for truncation >= 128" << endl;
+
+      exit(EXIT_FAILURE);
+
+    }
 
 
   } // end bits > 0 / truncation

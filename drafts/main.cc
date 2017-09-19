@@ -128,16 +128,16 @@ int main(int argc, char *argv[]) {
 	ZZ_mat<mpz_t> C;
 
 	//FPTuple<long, double, matrix<FP_NR<double> > > L(fpv);
-	FPTuple_f<long, double> L(fpv);
+	FPTuple<long, double, matrix<FP_NR<double> > > L(fpv);
+	//FPTuple_f<long, double> L(fpv);
 
-
-	//FPTuple<mpz_t, ldpe_t, MatrixPE<long double, ldpe_t> > L(fpv);  // long double needs to comment long double in relation_z
+	//FPTuple<mpz_t, dpe_t, MatrixPE<double, dpe_t> > L(fpv);  // long double needs to comment long double in relation_z
 	//FPTuple<long, double,  > > L(fpv);
 
 
 	time.start();
 
-	L.relation(C, alpha, 30, 20, 20, HLLL, SEYSEN_REDUCTION);
+	L.relation(C, alpha, 10, 10, 40, FPLLL);
 	//L.relation(C, alpha, 20, 20, 40);   // -1 for bits only with mpz_t
 
 	time.stop();
