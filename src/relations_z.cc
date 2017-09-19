@@ -342,15 +342,14 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
     else def += shift;
 
 
+   
     if (truncate == -1)
       lift_truncate(T, A_in, def, 0);
     else if (truncate == 0)
       lift_truncate(T, A_in, def, shift + 2 * d);
     else
       lift_truncate(T, A_in, def, truncate);
-
-
-    cout << "Size T : " << maxbitsize(T, 1, d, d) << endl;
+  
 
 
     // HLLL and DOUBLES
@@ -358,13 +357,24 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
     if (lllmethod == HLLL) {
 
 
+      time.start();
       Bp.assign(T);
 
       Bp.hlll(delta);
+      time.stop();
 
+      tlll += time;
+
+      time.start();
       matprod_in_int(A_in, Bp.getU());
+      time.stop();
+
+      tprod += time;
+
       //avec long: matprod_in_si(A_in,U);
       cout << "sizeof U: " << maxbitsize(Bp.getU(), 0, d, d) << endl;
+      cout << "sizeof basis: " << maxbitsize(A_in, 1, d + 1, d) << endl << endl;
+
 
 
     } // end HLLL
@@ -379,7 +389,7 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
       setId(UT);
 
       time.start();
-      call_fplll(TT, UT, delta, 0.51, LM_FAST, FT_DEFAULT, 0);
+      call_fplll(TT, UT, delta, 0.51, LM_FAST, FT_DOUBLE, 0);
       time.stop();
 
       tlll += time;
@@ -403,6 +413,7 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
     // ----
 
     quot = new_quot;
+
 
     if (A_in(0, 0).sgn() == 0) { // For making the gap pertinent even if 0
       tz = 1;
@@ -448,8 +459,8 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
       HPLLL_INFO(def + bitsize, " bits used");
       HPLLL_INFO("Candidate relation found with bit confidence: ", -gap.exponent());
 
-      cout << "LLL : " << tlll << endl;
-      cout << "Products : " << tprod << endl;
+      cout << endl << "Time lll: " << tlll << endl;
+      cout << "Time products: " << tprod << endl << endl; 
       return 1;
 
     }
