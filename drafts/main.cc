@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
 	//cout << AT << endl;
 
 	timed.start();
-	lll_reduction(AT, delta, 0.501, LM_FAST, FT_DEFAULT, 0, LLL_VERBOSE);
+        lll_reduction(AT, delta, 0.501, LM_WRAPPER, FT_DEFAULT, 0, LLL_VERBOSE);
 	timed.stop();
 
 
