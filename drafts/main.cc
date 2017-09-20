@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
 	ZZ_mat<mpz_t> C;
 
 
-	FPTuple<__int128_t, double, matrix<FP_NR<double> > > L(fpv);
+	FPTuple<__int128_t, long double, matrix<FP_NR<long double> > > L(fpv);
 
 
 	//FPTuple<mpz_t, dpe_t, MatrixPE<double, dpe_t> > L(fpv);  // long double needs to comment long double in relation_z
@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
 	time.start();
 
 
-	L.relation(C, alpha, 20, 10, 40, HLLL);
+	L.relation(C, alpha, 20, 10, 80, HLLL);
 	//L.relation(C, alpha, 30, 400, -1, FPLLL);   // -1 for bits only with mpz_t
 	//L.lll(C, 12220);
 
