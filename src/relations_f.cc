@@ -234,6 +234,8 @@ FPTuple_f<ZT, FT>::relation_f_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A,  int alpha,
 			for (j = 0; j < d ; j++)
 				set_z(Tf(i, j), A_in(m + i, j));
 
+
+
 		// ICI
 		cout << "Basis size : " << maxbitsize(A_in, 1, d, d) << endl;
 
@@ -478,7 +480,6 @@ FPTuple_f<ZT, FT>::detect_lift_f_z(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT>
 		new_quot.set_z(xz);
 
 
-
 		Z_NR<FT> tmpz, maxcol;
 
 		maxcol.abs(Af(0, 0));
@@ -492,27 +493,11 @@ FPTuple_f<ZT, FT>::detect_lift_f_z(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT>
 		xf = maxcol.get_data(); // Double vers mpfr voir long double
 		new_quot.div(new_quot, xf);
 
+
 		gap.div(new_quot, quot);
 		gap.abs(gap);
 
-		// ICI
-		// print2maple(L,1,d);
-		//cout << endl;
-		//cout << "     gap : " << gap << endl;
-		//cout << "     quot : " << new_quot << endl;
-		//  cout << "     maxcol : " << maxcol << endl;
-		//  cout << "L: " << L(0,0) << endl;
-		//   cout << "L: " << L(0,1) << endl;
-		// cout << "Af: " << Af(0,0) << endl << endl;
-		//  cout << "Af: " << Af(0,1) << endl << endl;
-		//  cout << "Af: " << Af(1,0) << endl;
 
-		// Mettre avant possible
-		// if (L(0,0).sgn() ==0) {
-		//  new_def = target_def;
-
-		//  return 0;
-		// }
 
 		//if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
 		// Si epsilon mettre à la valeur max quotient des nombres au départ

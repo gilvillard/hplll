@@ -194,6 +194,21 @@ FPTuple<ZT, FT, MatrixFT>::FPTuple(vector<FP_NR<mpfr_t> > fpvin) {
   for (int i = 0; i < d; i++)
     fpv[i] = fpvin[i];
 
+  long emax, emin;
+
+  emin = fpv[0].exponent();
+  emax = fpv[0].exponent();
+
+
+  for (int i = 0; i < d; i++) {
+
+    emin = min(emin, fpv[i].exponent());
+    emax = max(emax, fpv[i].exponent());
+
+  }
+
+  inputgap = emax - emin;
+
 
 }
 
@@ -311,7 +326,9 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
   epsilon = 10.0;
 
 
-  Z_NR<mpz_t> tz, maxcol;
+  Z_NR<mpz_t> tz, t, maxcol;
+
+  long foundcol;
 
   ZZ_mat<ZT> T, TT;
 
@@ -342,14 +359,14 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
     else def += shift;
 
 
-   
+
     if (truncate == -1)
       lift_truncate(T, A_in, def, 0);
     else if (truncate == 0)
       lift_truncate(T, A_in, def, shift + 2 * d);
     else
       lift_truncate(T, A_in, def, truncate);
-  
+
 
 
     // HLLL and DOUBLES
@@ -412,25 +429,43 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
     // Test
     // ----
 
+    /* GV Mer 20 sep 2017 12:57:27 CEST
+        Mofified, the small entry may appear in any column, if not in the first one and 
+         if integer in fixed precision (ex long) then the lift truncate may lead to an error 
+         for the detection (bad truncation and crash)
+    */
+
     quot = new_quot;
 
+    foundcol = 0;
 
     if (A_in(0, 0).sgn() == 0) { // For making the gap pertinent even if 0
       tz = 1;
     }
     else
       tz.abs(A_in(0, 0));
+
+
+    for (int i = 1; i < d; i++) {
+
+      t.abs(A_in(0, i));
+
+      if (t.cmp(tz) == -1) {
+        tz = t;
+        foundcol = i;
+      }
+
+    }
+
     new_quot.set_z(tz);
 
 
-    maxcol.abs(A_in(0, 0));
+    maxcol.abs(A_in(0, foundcol));
     maxcol.mul_2si(maxcol, def);
 
-    // cout << "L: " << A_in(0,0) << endl;
-    // cout << "Af: " << maxcol << endl;
 
     for (i = 0; i < d; i++) {
-      tz.abs(A_in(m + i, 0));
+      tz.abs(A_in(m + i, foundcol));
       if (tz.cmp(maxcol) == 1) maxcol = tz;
     }
 
@@ -442,28 +477,35 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
     gap.abs(gap);
 
 
-    // ICI
-    //cout << "Gap : " << gap << endl;
-    //cout << "Newquot : " << new_quot << endl;
-    //cout << "Digits : " << def +alpha << endl;
+    /* GV Mer 20 sep 2017 12:57:27 CEST
+        added the test using the input gap otherwise the computation may terminate 
+        without having shifted for discovering all non zero entries 
+    */
+
+    if (def > inputgap-bitsize) {
 
     //if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
+    // Si epsilon mettre à la valeur max quotient des nombres au départ
+      
     if (gap.cmp(confidence) == -1) {
-      C.resize(d, 1);
-      for (j = 0; j < d; j++)
-        C(j, 0) = A_in(m + j, 0);
+        C.resize(d, 1);
+        for (j = 0; j < d; j++)
+          C(j, 0) = A_in(m + j, foundcol);
 
-      gap.mul_2si(gap, shift);
+        gap.mul_2si(gap, shift);
 
-      cout << endl;
-      HPLLL_INFO(def + bitsize, " bits used");
-      HPLLL_INFO("Candidate relation found with bit confidence: ", -gap.exponent());
+        cout << endl;
+        HPLLL_INFO(def + bitsize, " bits used");
+        HPLLL_INFO("Candidate relation found with bit confidence: ", -gap.exponent());
 
-      cout << endl << "Time lll: " << tlll << endl;
-      cout << "Time products: " << tprod << endl << endl; 
-      return 1;
+        cout << endl << "Time lll: " << tlll << endl;
+        cout << "Time products: " << tprod << endl << endl;
+        return 1;
+
+      }
 
     }
+
 
 
   } // End while on the shift

@@ -2191,9 +2191,9 @@ void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
 
     if (bbc > 63) {
 
-      cerr << endl << "** Error in lift truncate: too many integer digits required for truncation >= 64" << endl;
+      cout << endl << "** Warning in lift truncate: too many integer digits required for truncation >= 64 ?" << endl;
 
-      exit(EXIT_FAILURE);
+      //exit(EXIT_FAILURE);
 
     }
 
@@ -2274,7 +2274,7 @@ void lift_truncate(ZZ_mat<__int128_t>& C_out, ZZ_mat<mpz_t> A, long def, long bi
 
     if (bbc > 127) {
 
-      cerr << endl << "** Error in lift truncate: too many integer digits required for truncation >= 128" << endl;
+      cout << endl << "** Error in lift truncate: too many integer digits required for truncation >= 128 ?" << endl;
 
       exit(EXIT_FAILURE);
 

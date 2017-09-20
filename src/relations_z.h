@@ -50,11 +50,14 @@ protected:
 
   // Because of restrictions on input types for fplll, should be temporary
 
-  
+
 
   int call_fplll(ZZ_mat<ZT> &b, ZZ_mat<ZT> &u, double delta = LLL_DEF_DELTA, double eta = LLL_DEF_ETA,          \
                  LLLMethod method = LM_WRAPPER, FloatType floatType = FT_DEFAULT,               \
                  int precision = 0, int flags = LLL_DEFAULT);
+
+  long inputgap;
+
 
 public:
 
@@ -67,13 +70,13 @@ public:
 
   int relation(ZZ_mat<mpz_t>& C, long alpha,
                long confidence_gap = 60, long shift = 10, int truncate = -1, int lllmethod = FPLLL, \
-               int sizemethod=DEF_REDUCTION, double delta = 0.99);
+               int sizemethod = DEF_REDUCTION, double delta = 0.99);
 
 
 
   int relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long alpha,
                    long confidence_gap = 60, long shift = 10, int truncate = -1, int lllmethod = FPLLL, \
-                   int sizemethod=DEF_REDUCTION, double delta = 0.99);
+                   int sizemethod = DEF_REDUCTION, double delta = 0.99);
 
 
 

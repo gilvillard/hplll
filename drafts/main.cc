@@ -137,8 +137,8 @@ int main(int argc, char *argv[]) {
 
 	time.start();
 
-	L.relation(C, alpha, 10, 10, 40, FPLLL);
-	//L.relation(C, alpha, 20, 20, 40);   // -1 for bits only with mpz_t
+	//L.relation(C, alpha, 30, 20, 20, FPLLL);
+	L.relation(C, alpha, 30, 20, 40, FPLLL);   // -1 for bits only with mpz_t
 
 	time.stop();
 

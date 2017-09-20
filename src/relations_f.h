@@ -54,7 +54,7 @@ protected:
                  LLLMethod method = LM_WRAPPER, FloatType floatType = FT_DEFAULT,               \
                  int precision = 0, int flags = LLL_DEFAULT);
 
-
+  
 
 public:
 
@@ -65,17 +65,17 @@ public:
 
   int relation(ZZ_mat<mpz_t>& C, long alpha,
                long confidence_gap = 60, long shift = 200, long increment = 20,
-               int lllmethod = FPLLL, int sizemethod=DEF_REDUCTION, double delta = 0.99);
+               int lllmethod = FPLLL, int sizemethod = DEF_REDUCTION, double delta = 0.99);
 
 
   int relation_f_z(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A,  int alpha,
                    long confidence_gap = 60, long shift = 200, long increment = 20,
-                   int lllmethod = FPLLL, int sizemethod=DEF_REDUCTION, double delta = 0.99);
+                   int lllmethod = FPLLL, int sizemethod = DEF_REDUCTION, double delta = 0.99);
 
   int detect_lift_f_z(ZZ_mat<ZT>& U, ZZ_mat<mpz_t> L_in, ZZ_mat<FT> A_in_f, int& new_def, int def,
                       int target_def, FP_NR<mpfr_t>& new_quot,
                       long confidence_gap = 60, long shift = 200, long increment = 20,
-                      int lllmethod = FPLLL, int sizemethod=DEF_REDUCTION, double delta = 0.99);
+                      int lllmethod = FPLLL, int sizemethod = DEF_REDUCTION, double delta = 0.99);
 
 
 

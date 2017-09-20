@@ -163,6 +163,54 @@ int main(int argc, char *argv[])  {
 
   }
 
+//  -------------------- TEST i --------------------------------
+  nbtest += 1;
+
+  { // for changing the mpfr prec in A
+
+
+    vector<FP_NR<mpfr_t> > fpv;   // Input fp vector
+
+    r = 7;
+    s = 7;
+    n = r * s + 1;
+
+    setprec = 1800;
+    mpfr_set_default_prec(setprec);
+
+    gen3r2s(fpv, n, r, s);
+
+
+    nbrel = 1;
+
+    cout << "     Relation test, dim = " << n << ", " << setprec << " bits " << endl;
+
+    FPTuple<long, double, matrix<FP_NR<double> > >  L(fpv);
+
+    found = L.relation(C, setprec, 20, 20, 40, FPLLL);
+
+
+    cout << C << endl;
+
+    Ccheck.resize(n, 1);
+    fb.open ("C2_out", ios::in);
+    os >> Ccheck ;
+    fb.close();
+
+    if (found != 1)
+      cerr << "*** Problem in relation test, no relation found" << endl;
+
+    if (nbrel == 1) {
+      difference = !matcmp(C, Ccheck, 1, n);
+      if (difference) {
+        cerr << "*** Invalid matrix comparison in relation test" << endl;
+      }
+      else
+        succeed += 1;
+    }
+
+  }
+
   //  -------------------- TEST i --------------------------------
   nbtest += 1;
 
@@ -219,6 +267,61 @@ int main(int argc, char *argv[])  {
 
   }
 
+//  -------------------- TEST i --------------------------------
+  nbtest += 1;
+
+  { // for changing the mpfr prec in A
+
+
+    vector<FP_NR<mpfr_t> > fpv;   // Input fp vector
+
+    static string s;
+
+    fb.open ("C3_in", ios::in);
+
+    os >> setprec ;
+    os >> n;
+
+    mpfr_set_default_prec(setprec);
+
+    fpv.resize(n);
+    for (int i = 0; i < n; i++) {
+      os >> s;
+      mpfr_set_str (fpv[i].get_data(), s.c_str(), 10, GMP_RNDN);
+    }
+
+    fb.close();
+
+
+
+    nbrel = 1;
+
+    cout << "     Relation test, dim = " << n << ", " << setprec << " bits " << endl;
+
+    FPTuple<long, double, matrix<FP_NR<double> > > L(fpv);
+
+    found = L.relation(C, setprec, 20, 20, 40, HLLL);
+
+    cout << C << endl;
+
+    Ccheck.resize(n, 1);
+    fb.open ("C3_out", ios::in);
+    os >> Ccheck ;
+    fb.close();
+
+    if (found != 1)
+      cerr << "*** Problem in relation test, no relation found" << endl;
+
+    if (nbrel == 1) {
+      difference = !matcmp(C, Ccheck, 1, n);
+      if (difference) {
+        cerr << "*** Invalid matrix comparison in relation test" << endl;
+      }
+      else
+        succeed += 1;
+    }
+
+  }
 
   //  -------------------- TEST i --------------------------------
   nbtest += 1;
