@@ -1,167 +1,71 @@
 
 #include <hplll.h>
 
-#include "relations.h"
-
 using namespace hplll;
 
 int main(int argc, char *argv[]) {
 
-	Timer time;
 
-	long alpha, d;
+	Timer time, timed, timedd;
 
-	filebuf fb;
-	iostream os(&fb);
+	ZZ_mat<mpz_t> A;
 
-	vector<FP_NR<mpfr_t> > fpv;
-
-	//  --------------   Test A
-
-	// static string s;
-
-	// fb.open ("C3_in", ios::in);
-
-	// os >> alpha;
-	// os >> d;
-
-	// mpfr_set_default_prec(alpha);
-
-	// fpv.resize(d);
-
-	// for (int i = 0; i < d; i++) {
-	// 	os >> s;
-	// 	mpfr_set_str (fpv[i].get_data(), s.c_str(), 10, GMP_RNDN);
-	// }
-
-	// fb.close();
-
-	// Z_mat<mpz_t> C;
-
-	// FPTuple<long, double> L(fpv);
-
-	// L.relation_f(C, alpha, 80, 20, 10, HLLL);
-
-	// cout << C << endl;
+	ZZ_mat<mpz_t> AT;
 
 
-	// ----------------  Test B
+	double delta = 0.99;
+
+	int n, d;
+
+	command_line_basis(A, n, d, delta, argc, argv);
+
+	// fplll double
+
+	AT.resize(d, n);
+	transpose(AT, A);
+
+	//cout << AT << endl;
+
+	timed.start();
+	lll_reduction(AT, delta, 0.501, LM_FAST, FT_DEFAULT, 0, LLL_VERBOSE);
+	timed.stop();
 
 
-	// alpha = 2800;
-	// mpfr_set_default_prec(alpha);
+	// // fplll dd
 
-	// d = 65;
-	// gen3r2s(fpv, d, 8, 8);
+	// AT.resize(d, n);
+	// transpose(AT, A);
 
+	// //cout << AT << endl;
 
-
-	// ZZ_mat<mpz_t> C;
-
-	// FPTuple<long, double> L(fpv);
-
-	// L.relation_f(C, alpha, 60, 200, 20, HLLL);
-	// cout << C << endl;
+	// timedd.start();
+	// lll_reduction(AT, delta, 0.501, LM_FAST, FT_DD, 0, LLL_VERBOSE);
+	// timedd.stop();
 
 
-	// ----------------  Test C
+	// hplll
 
-
-	// alpha = 1600;
-	// mpfr_set_default_prec(alpha);
-
-	// int r, s;
-	// r = 7;
-	// s = r;
-
-	// d = r*s+1;
-	// gen3r2s(fpv, d, r, s);
-
-
-
-	// ZZ_mat<mpz_t> C;
-
-
-
-	// // cout << alpha << endl;
-	// // cout << d << endl;
-	// // for (int i = 0; i < d; i++) {
-	// // 	//mpfr_out_str (stdout, 10, alpha, fpv[i].get_data(), GMP_RNDN);
-	// // 	mpfr_printf ("%.1940Rf", fpv[i].get_data());
-	// // 	cout << endl;
-	// // }
-
-
-	// FPTuple<mpz_t, dpe_t, MatrixPE<double, dpe_t> > L(fpv);
-
-	// time.start();
-
-	// L.lll(C, alpha);
-
-	// //L.relation_f(C, alpha, 60, 100, 20, FPLLL);
-
-	// time.stop();
-
-	// cout << C << endl;
-
-	// cout << endl << endl << "   relation : " << time << endl ;
-
-	//  --------------   Test from file / Poisson
-
-	static string s;
-
-
-
-	//fb.open ("alpha.in", ios::in);
-
-	//os >> alpha;
-	//os >> d;
-
-	cin  >> alpha;
-	cin  >> d;
-
-	mpfr_set_default_prec(alpha);
-
-	fpv.resize(d);
-
-	for (int i = 0; i < d; i++) {
-		//os >> s;
-		cin >> s;
-		mpfr_set_str (fpv[i].get_data(), s.c_str(), 10, GMP_RNDN);
-	}
-
-	//fb.close();
-
-	ZZ_mat<mpz_t> C;
-
-
-	//FPTuple<__int128_t, long double, matrix<FP_NR<long double> > > L(fpv);
-
-
-	//FPTuple<mpz_t, dpe_t, MatrixPE<double, dpe_t> > L(fpv);  // long double needs to comment long double in relation_z
-	//FPTuple<long, double, matrix<FP_NR<double> > > L(fpv);
-	FPTuple<long, double, matrix<FP_NR<double> > > L(fpv);
-
+	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, NO_TRANSFORM, DEF_REDUCTION); //* name
 
 	time.start();
-
-
-	L.relation(C, alpha, 20, 20, 40, FPLLL);
-	//L.relation(C, alpha, 30, 400, -1, FPLLL);   // -1 for bits only with mpz_t
-	//L.lll(C, 12220);
-
+	//B.hlll(delta); //* name
 	time.stop();
 
-	cout << C << endl;
 
-	cout << endl << endl << "   relation : " << time << endl ;
+	cout << endl << endl << "   hplll double : " << time << endl ;
+	cout << "   Householder: " << B.dbg << endl << endl ;
+	cout  << "   fplll double : " << timed << endl << endl ;
+	//cout << "   fplll dd : " << timedd << endl << endl ;
+	cout << endl;
+
+
+
+
+
+
+
+
 
 
 
 }
-
-
-
-
-
-
