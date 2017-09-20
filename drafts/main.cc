@@ -67,31 +67,38 @@ int main(int argc, char *argv[]) {
 	// ----------------  Test C
 
 
-	// alpha = 6444;
+	// alpha = 1600;
 	// mpfr_set_default_prec(alpha);
 
-	// d = 101;
-	// gen3r2s(fpv, d, 10, 10);
+	// int r, s;
+	// r = 7;
+	// s = r;
+
+	// d = r*s+1;
+	// gen3r2s(fpv, d, r, s);
 
 
 
 	// ZZ_mat<mpz_t> C;
 
-	// FPTuple<long, double> L(fpv);
 
 
-	// cout << alpha << endl;
-	// cout << d << endl;
-	// for (int i = 0; i < d; i++) {
-	// 	//mpfr_out_str (stdout, 10, alpha, fpv[i].get_data(), GMP_RNDN);
-	// 	mpfr_printf ("%.1940Rf", fpv[i].get_data());
-	// 	cout << endl;
-	// }
+	// // cout << alpha << endl;
+	// // cout << d << endl;
+	// // for (int i = 0; i < d; i++) {
+	// // 	//mpfr_out_str (stdout, 10, alpha, fpv[i].get_data(), GMP_RNDN);
+	// // 	mpfr_printf ("%.1940Rf", fpv[i].get_data());
+	// // 	cout << endl;
+	// // }
 
+
+	// FPTuple<mpz_t, dpe_t, MatrixPE<double, dpe_t> > L(fpv);
 
 	// time.start();
 
-	// L.relation_f(C, alpha, 60, 100, 20, FPLLL);
+	// L.lll(C, alpha);
+
+	// //L.relation_f(C, alpha, 60, 100, 20, FPLLL);
 
 	// time.stop();
 
@@ -128,20 +135,20 @@ int main(int argc, char *argv[]) {
 	ZZ_mat<mpz_t> C;
 
 
-	FPTuple<__int128_t, long double, matrix<FP_NR<long double> > > L(fpv);
+	//FPTuple<__int128_t, long double, matrix<FP_NR<long double> > > L(fpv);
 
 
-	//FPTuple<mpz_t, ldpe_t, MatrixPE<long double, ldpe_t> > L(fpv);  // long double needs to comment long double in relation_z
+	//FPTuple<mpz_t, dpe_t, MatrixPE<double, dpe_t> > L(fpv);  // long double needs to comment long double in relation_z
 	//FPTuple<long, double, matrix<FP_NR<double> > > L(fpv);
-	//FPTuple<long, double,  > > L(fpv);
+	FPTuple<long, double, matrix<FP_NR<double> > > L(fpv);
 
 
 	time.start();
 
 
-	//L.relation(C, alpha, 30, 20, 20, FPLLL);
-	L.relation(C, alpha, 30, 20, 40, FPLLL);   // -1 for bits only with mpz_t
-
+	L.relation(C, alpha, 20, 20, 40, FPLLL);
+	//L.relation(C, alpha, 30, 400, -1, FPLLL);   // -1 for bits only with mpz_t
+	//L.lll(C, 12220);
 
 	time.stop();
 

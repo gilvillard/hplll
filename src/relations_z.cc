@@ -430,8 +430,8 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
     // ----
 
     /* GV Mer 20 sep 2017 12:57:27 CEST
-        Mofified, the small entry may appear in any column, if not in the first one and 
-         if integer in fixed precision (ex long) then the lift truncate may lead to an error 
+        Mofified, the small entry may appear in any column, if not in the first one and
+         if integer in fixed precision (ex long) then the lift truncate may lead to an error
          for the detection (bad truncation and crash)
     */
 
@@ -478,16 +478,16 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
 
 
     /* GV Mer 20 sep 2017 12:57:27 CEST
-        added the test using the input gap otherwise the computation may terminate 
-        without having shifted for discovering all non zero entries 
+        added the test using the input gap otherwise the computation may terminate
+        without having shifted for discovering all non zero entries
     */
 
-    if (def > inputgap-bitsize) {
+    if (def > inputgap - bitsize) {
 
-    //if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
-    // Si epsilon mettre à la valeur max quotient des nombres au départ
-      
-    if (gap.cmp(confidence) == -1) {
+      //if ((gap.cmp(confidence) == -1) && (new_quot.cmp(epsilon) == -1)) {
+      // Si epsilon mettre à la valeur max quotient des nombres au départ
+
+      if (gap.cmp(confidence) == -1) {
         C.resize(d, 1);
         for (j = 0; j < d; j++)
           C(j, 0) = A_in(m + j, foundcol);
@@ -548,6 +548,126 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
 
 
 
+/***********************************************************************************
+
+    Direct LLL reduction
+
+**************************************************************************************/
+
+template<class ZT, class FT, class MatrixFT>  int
+FPTuple<ZT, FT, MatrixFT>::lll(ZZ_mat<mpz_t>& C,  long alpha,
+                               int lllmethod,  int sizemethod, double delta) {
+
+
+
+  int i, j;
+
+  int m = 1;
+
+  ZZ_mat<ZT> L;
+  L.resize(1, d);
+
+  FP_NR<mpfr_t> t;
+
+  for (int j = 0; j < d; j++) {
+    t.mul_2si( fpv[j], alpha);
+    L(0, j).set_f(t);
+  }
+
+
+  int found = 0;
+
+  ZZ_mat<ZT> A;
+  A.resize(m + d, d);
+
+  // **** m=1 for the moment
+  for (j = 0; j < d; j++)
+    A(0, j) = L(0, j);
+
+  for (i = 0; i < d; i++)
+    A(m + i, i) = 1;
+
+
+  if (lllmethod == HLLL) {
+
+
+
+    Lattice<ZT, FT, matrix<Z_NR<ZT> >,  MatrixFT > B(A);
+
+    B.hlll(delta);
+
+
+    A = B.getbase();
+
+  }
+
+
+  else if (lllmethod == FPLLL) {
+
+    ZZ_mat<ZT> T;
+    T.resize(d, d + m);
+
+    transpose(T, A);
+
+    // Put the wrapper also if large examples
+    lll_reduction(T, delta, 0.51, LM_FAST, FT_DEFAULT, 0);
+
+    transpose(A, T);
+
+  } // end FPLLL
+
+
+  int foundcol = 0;
+
+  ZZ_mat<ZT> U;
+
+  U.resize(d, d);
+
+  for (i = 0; i < d; i++)
+    for (j = 0; j < d; j++)
+      U(i, j) = A(i + 1, j);
+
+
+  matprod_in(L, U);
+
+
+  Z_NR<ZT> tz, tt, maxcol;
+
+  tz.abs(L(0, 0));
+
+  for (i = 1; i < d; i++) {
+
+    tt.abs(L(0, i));
+
+    if (tt.cmp(tz) == -1) {
+      tz = tt;
+      foundcol = i;
+    }
+
+  }
+
+
+  C.resize(d, 1);
+  for (j = 0; j < d; j++)
+    C(j, 0) = A(m + j, foundcol);
+
+
+
+  // cout << endl;
+  // HPLLL_INFO(def + bitsize, " bits used");
+  // HPLLL_INFO("Candidate relation found with bit confidence: ", -gap.exponent());
+
+  // cout << endl << "Time lll: " << tlll << endl;
+  // cout << "Time products: " << tprod << endl << endl;
+  // return 1;
+
+
+  // TODO: get status of LLL and assign found accordingly
+  return found; // 0 here
+
+
+};
+
 
 
 
@@ -555,3 +675,14 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
 
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
