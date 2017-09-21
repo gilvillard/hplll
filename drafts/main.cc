@@ -67,17 +67,20 @@ int main(int argc, char *argv[]) {
 	// ----------------  Test C
 
 
-	// alpha = 6444;
+	// alpha = 1600;
 	// mpfr_set_default_prec(alpha);
 
-	// d = 101;
-	// gen3r2s(fpv, d, 10, 10);
+	// int r, s;
+	// r = 7;
+	// s = r;
+
+	// d = r*s+1;
+	// gen3r2s(fpv, d, r, s);
 
 
 
 	// ZZ_mat<mpz_t> C;
 
-	// FPTuple<long, double> L(fpv);
 
 
 	// cout << alpha << endl;
@@ -88,10 +91,11 @@ int main(int argc, char *argv[]) {
 	// 	cout << endl;
 	// }
 
-
 	// time.start();
 
-	// L.relation_f(C, alpha, 60, 100, 20, FPLLL);
+	// L.lll(C, alpha);
+
+	// //L.relation_f(C, alpha, 60, 100, 20, FPLLL);
 
 	// time.stop();
 
@@ -103,27 +107,37 @@ int main(int argc, char *argv[]) {
 
 	static string s;
 
-	fb.open ("alpha.in", ios::in);
 
-	os >> alpha;
-	os >> d;
 
+	//fb.open ("alpha.in", ios::in);
+
+	//os >> alpha;
+	//os >> d;
+
+	cin  >> alpha;
+	cin  >> d;
 
 	mpfr_set_default_prec(alpha);
 
 	fpv.resize(d);
 
 	for (int i = 0; i < d; i++) {
-		os >> s;
+		//os >> s;
+		cin >> s;
 		mpfr_set_str (fpv[i].get_data(), s.c_str(), 10, GMP_RNDN);
 	}
 
-	fb.close();
+	//fb.close();
 
 	ZZ_mat<mpz_t> C;
 
 
-	FPTuple<long, double> L(fpv);  // long double needs to comment long double in relation_z
+	FPTuple<__int128_t, long double, matrix<FP_NR<long double> > > L(fpv);
+
+
+	//FPTuple<mpz_t, dpe_t, MatrixPE<double, dpe_t> > L(fpv);  // long double needs to comment long double in relation_z
+	//FPTuple<long, double, matrix<FP_NR<double> > > L(fpv);
+	//FPTuple<long, double,  > > L(fpv);
 
 
 	time.start();

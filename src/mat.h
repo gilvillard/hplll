@@ -129,8 +129,8 @@ public:
     for (j = 0; j < d; j++) M[j].resize(n);
 
     //for (j = 0; j < d; j++) // Commented pb no 0 for both Z_NR and FP_NR
-      //for (i = 0; i < n; i++) //  Jeu 13 oct 2016 16:36:38 CEST
-        //M[j][i] = 0;
+    //for (i = 0; i < n; i++) //  Jeu 13 oct 2016 16:36:38 CEST
+    //M[j][i] = 0;
 
   }
 
@@ -2108,10 +2108,10 @@ void lift_truncate(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long def, long bits) {
 
     // Truncation
 
-    if (mmin > bits) {
+    if ((mmin - 2) >= bits) {   // We keep a heuristic margin of 2
 
 
-      long s = bits - mmin + 4;
+      long s = bits - mmin + 2;
 
       for (i = 0; i < n; i++)
         for (j = 0; j < d; j++)
@@ -2146,43 +2146,62 @@ void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
 
 
 
-  // Min max norms of the columns
-  int mmax, mmin, maxloc;
+  if (bits > 0) {
 
-  Z_NR<mpz_t> t;
 
-  mmax = 0;
-  for (i = 0; i < n; i++) {
-    t.abs(C(i, 0));
-    mmax = max(mmax, size_in_bits(t));
-  }
-  mmin = mmax;
+    // Min max norms of the columns
+    int mmax, mmin, maxloc;
 
-  for (j = 1; j < d ; j++) {
-    maxloc = 0;
+    Z_NR<mpz_t> t;
+
+    mmax = 0;
     for (i = 0; i < n; i++) {
-      t.abs(C(i, j));
-      maxloc = max(maxloc, size_in_bits(t));
+      t.abs(C(i, 0));
+      mmax = max(mmax, size_in_bits(t));
     }
-    mmin = min(mmin, maxloc);
-    mmax = max(mmax, maxloc);
-  }
-
-  // Truncation
-
-  if (mmin > bits) {
-    long s = bits - mmin;
-
-    for (i = 0; i < n; i++)
-      for (j = 0; j < d; j++)
-        C(i, j).mul_2si(C(i, j), s);
-  }
+    mmin = mmax;
 
 
-  // !!! One should check for max bit sizes now : less than long ?
-  cout << "Bits before conversion " << mmax + bits - mmin << endl;
+    for (j = 1; j < d ; j++) {
+      maxloc = 0;
+      for (i = 0; i < n; i++) {
+        t.abs(C(i, j));
+        maxloc = max(maxloc, size_in_bits(t));
+      }
+      mmin = min(mmin, maxloc);
+      mmax = max(mmax, maxloc);
+    }
 
-  // Conversion to long
+
+    // Truncation
+
+    long bbc = mmax; // Bits before conversion
+
+    if ((mmin - 2) > bits) {
+
+      long s = bits - mmin + 2;
+
+      bbc += s;
+
+      for (i = 0; i < n; i++)
+        for (j = 0; j < d; j++)
+          C(i, j).mul_2si(C(i, j), s);
+    }
+
+
+    if (bbc > 63) {
+
+      cout << endl << "** Warning in lift truncate: too many integer digits required for truncation >= 64 ?" << endl;
+
+      //exit(EXIT_FAILURE);
+
+    }
+
+
+  } // end bits > 0 / truncation
+
+
+// Conversion to long
 
   for (i = 0; i < n; i++)
     for (j = 0; j < d; j++)
@@ -2211,41 +2230,59 @@ void lift_truncate(ZZ_mat<__int128_t>& C_out, ZZ_mat<mpz_t> A, long def, long bi
       C(i, j) = A(i, j);
 
 
-  // Min max norms of the columns
-  int mmax, mmin, maxloc;
+  if (bits > 0) {
 
-  Z_NR<mpz_t> t;
 
-  mmax = 0;
-  for (i = 0; i < n; i++) {
-    t.abs(C(i, 0));
-    mmax = max(mmax, size_in_bits(t));
-  }
-  mmin = mmax;
+    // Min max norms of the columns
+    int mmax, mmin, maxloc;
 
-  for (j = 1; j < d ; j++) {
-    maxloc = 0;
+    Z_NR<mpz_t> t;
+
+    mmax = 0;
     for (i = 0; i < n; i++) {
-      t.abs(C(i, j));
-      maxloc = max(maxloc, size_in_bits(t));
+      t.abs(C(i, 0));
+      mmax = max(mmax, size_in_bits(t));
     }
-    mmin = min(mmin, maxloc);
-    mmax = max(mmax, maxloc);
-  }
+    mmin = mmax;
 
-  // Truncation
+    for (j = 1; j < d ; j++) {
+      maxloc = 0;
+      for (i = 0; i < n; i++) {
+        t.abs(C(i, j));
+        maxloc = max(maxloc, size_in_bits(t));
+      }
+      mmin = min(mmin, maxloc);
+      mmax = max(mmax, maxloc);
+    }
 
-  if (mmin > bits) {
-    long s = bits - mmin;
+    // Truncation
 
-    for (i = 0; i < n; i++)
-      for (j = 0; j < d; j++)
-        C(i, j).mul_2si(C(i, j), s);
-  }
+    long bbc = mmax; // Bits before conversion
+
+    if ((mmin - 2) > bits) {
+
+      long s = bits - mmin + 2;
+
+      bbc+=s; 
+
+      for (i = 0; i < n; i++)
+        for (j = 0; j < d; j++)
+          C(i, j).mul_2si(C(i, j), s);
+    }
 
 
-  // !!! One should check for max bit sizes now : less than long ?
-  cout << "Bits bound before conversion" << mmax + bits - mmin << endl;
+
+    if (bbc > 127) {
+
+      cout << endl << "** Error in lift truncate: too many integer digits required for truncation >= 128 ?" << endl;
+
+      exit(EXIT_FAILURE);
+
+    }
+
+
+  } // end bits > 0 / truncation
+
 
   // Conversion to 128 int
 
