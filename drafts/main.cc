@@ -79,15 +79,15 @@ int main(int argc, char *argv[]) {
 
 	// FPTuple<long, double> L(fpv);
 
-	
-	// cout << alpha << endl; 
-	// cout << d << endl; 
+
+	// cout << alpha << endl;
+	// cout << d << endl;
 	// for (int i = 0; i < d; i++) {
 	// 	//mpfr_out_str (stdout, 10, alpha, fpv[i].get_data(), GMP_RNDN);
 	// 	mpfr_printf ("%.1940Rf", fpv[i].get_data());
-	// 	cout << endl; 
+	// 	cout << endl;
 	// }
-	
+
 
 	// time.start();
 
@@ -129,7 +129,7 @@ int main(int argc, char *argv[]) {
 	time.start();
 
 	L.relation_f(C, alpha, 30, 800, 20, FPLLL);
-	//L.relation_z(C, alpha, 20, 20, 40, FPLLL);    // -1 for bits only with mpz_t  
+	//L.relation_z(C, alpha, 20, 20, 40, FPLLL);    // -1 for bits only with mpz_t
 
 	time.stop();
 
