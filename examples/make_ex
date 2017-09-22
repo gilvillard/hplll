@@ -1,6 +1,5 @@
 #! /bin/sh
 
-
 CXXFLAGS += -std=c++11
 
 # If non standard installation directories 

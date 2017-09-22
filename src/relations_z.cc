@@ -415,11 +415,13 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
       transpose(U, UT);
 
       matprod_in_int(A_in, U);
-      //matprod_in_si(A_in,U);
-      //avec long: matprod_in_si(A_in,U);
+      
       time.stop();
 
       tprod += time;
+
+      cout << "sizeof U: " << maxbitsize(Bp.getU(), 0, d, d) << endl;
+      cout << "sizeof basis: " << maxbitsize(A_in, 1, d + 1, d) << endl << endl;
 
 
     } // end FPLLL
