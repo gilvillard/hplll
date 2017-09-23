@@ -39,7 +39,7 @@ check_PROGRAMS = $(TESTS)
 EXTRA_PROGRAMS = relationstesthuge \
                  gen_table_knapsack gen_table_ajtai \
                  fhn_latticec fhn_ideal fhn_ajtai fhn_table_knapsack \
-                 fhn_acyclic fhn_al fhn_ntru 
+                 fhn_acyclic fhn_al fhn_ntru fhn_ntrul
 
 relationstesthuge_SOURCES=relationstesthuge.cc
 
@@ -53,6 +53,7 @@ fhn_table_knapsack_SOURCES = fhn_table_knapsack.cc
 fhn_acyclic_SOURCES = fhn_acyclic.cc
 fhn_al_SOURCES = fhn_al.cc
 fhn_ntru_SOURCES = fhn_ntru.cc
+fhn_ntrul_SOURCES = fhn_ntrul.cc
 
 benchmarks : bench benchntl 
 
@@ -87,6 +88,9 @@ bfhn6 : fhn_al
 
 bfhn7 : fhn_ntru 
 	./fhn_ntru >& benchmarks_results/fhn_ntru.log
+
+bfhn8 : fhn_ntrul 
+	./fhn_ntrul >& benchmarks_results/fhn_ntrul.log
 
 
 # Perfpublisher script interaction - AC 2016/06/09
