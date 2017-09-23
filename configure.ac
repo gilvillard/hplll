@@ -58,7 +58,6 @@ AC_CHECK_LIB(mpfr, mpfr_add, , [AC_MSG_ERROR(
 AC_ARG_ENABLE(omp, 
    [ --enable-omp Enables OpenMP], [
      CXXFLAGS="$CXXFLAGS  -fopenmp"
-     #CXXFLAGS="$CXXFLAGS  -fopenmp"
    ])
 
 # Checks for header files.
@@ -87,7 +86,6 @@ AC_CHECK_LIB(mpfr, mpfr_fms, , [AC_MSG_ERROR(
 LB_CHECK_FPLLL 
 
 LB_CHECK_NTL
-
 
 AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile macros/Makefile examples/Makefile drafts/Makefile])
 AC_OUTPUT
