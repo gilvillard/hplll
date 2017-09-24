@@ -808,9 +808,9 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
 	bool somedone = 0;
 
 
-	
+
 	householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous
-	
+
 
 	// While loop for the norm decrease
 	// --------------------------------
@@ -1978,6 +1978,7 @@ template<class ZT, class FT, class MatrixZT, class MatrixFT> inline void Lattice
 
 	if (d <= 20) setprec(53);
 	else setprec(2 * d); // ******* TO TUNE
+	//else setprec(1000); // ******* TO TUNE
 
 	newprec = getprec();
 

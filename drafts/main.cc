@@ -83,7 +83,7 @@ int main(int argc, char *argv[])  {
 	status = B.hlll(delta);
 	th.stop();
 
-print2maple(B.getbase(),n,d);
+
 	matrix_cast(A, B.getbase());
 
 	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > TB(A, NO_TRANSFORM, DEF_REDUCTION);
