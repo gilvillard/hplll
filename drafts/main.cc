@@ -1,7 +1,6 @@
 
 #include <hplll.h>
 
-#include "relations.h"
 
 using namespace hplll;
 
@@ -143,19 +142,10 @@ int main(int argc, char *argv[]) {
 	//FPTuple<long, double,  > > L(fpv);
 
 
-#ifdef _OPENMP
-
-	omp_set_num_threads(4);
-
-	#pragma omp parallel
-	cout << "Hello from thread " << omp_get_thread_num() << ",  nthreads " <<  omp_get_num_threads() << endl;
-
-#endif
-
 	time.start();
 
 
-	//L.relation(C, alpha, 20, 20, 40, FPLLL);
+	L.relation(C, alpha, 20, 20, 40, FPLLL);
 	//L.relation(C, alpha, 30, 400, -1, FPLLL);   // -1 for bits only with mpz_t
 	//L.lll(C, 12220);
 

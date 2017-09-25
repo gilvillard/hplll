@@ -1281,6 +1281,7 @@ inline void matprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U)
   Matrix<Z_NR<mpz_t> > tmat;
   tmat.resize(m, n);
 
+
   for (i = 0; i < m; i++)
     for (j = 0; j < n; j++) {
       tmat(i, j).mul_si(C(i, 0), U(0, j).get_data());
@@ -1288,6 +1289,7 @@ inline void matprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U)
         tmat(i, j).addmul_si(C(i, k), U(k, j).get_data());
       }
     }
+
 
   for (i = 0; i < m; i++)
     for (j = 0; j < n; j++)
@@ -1303,19 +1305,20 @@ inline void pmatprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U, int S)
   m = C.get_rows();
   n = C.get_cols();
 
+  int mloc, ibeg;
 
 #ifdef _OPENMP
-  #pragma omp parallel for shared(C)
+  #pragma omp parallel for  private(mloc,ibeg) shared(C,U,m,n,S)
 #endif
 
   for (int l = 0; l < S; l++) {
 
-    int mloc;
+
     mloc = m / S;
     if ((l + 1) <= m % S)
       mloc += 1;
 
-    int ibeg;
+
     ibeg = (m / S) * l;
     if ((l + 1) <= m % S)
       ibeg += l;
@@ -1337,6 +1340,7 @@ inline void pmatprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U, int S)
         }
       }
 
+
     for (i = 0; i < mloc; i++)
       for (j = 0; j < n; j++)
         C(i + ibeg, j) = tmat(i, j);
@@ -1344,6 +1348,9 @@ inline void pmatprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U, int S)
 
   } // Parallel loop
 
+#ifdef _OPENMP
+  #pragma omp barrier
+#endif
 
 };
 
@@ -2263,7 +2270,7 @@ void lift_truncate(ZZ_mat<__int128_t>& C_out, ZZ_mat<mpz_t> A, long def, long bi
 
       long s = bits - mmin + 2;
 
-      bbc+=s; 
+      bbc += s;
 
       for (i = 0; i < n; i++)
         for (j = 0; j < d; j++)

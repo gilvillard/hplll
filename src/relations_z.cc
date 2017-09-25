@@ -345,6 +345,17 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
   Lattice<ZT, FT, matrix<Z_NR<ZT> >,  MatrixFT > Bp(T, TRANSFORM, sizemethod);
 
 
+//OMP
+  int S = 2;
+
+  double en, st;
+  double lllt = 0.0;
+  double prodt = 0.0;
+
+#ifdef _OPENMP
+  omp_set_num_threads(S);
+#endif
+
 
   // Main loop on the shifts
   // -----------------------
@@ -405,17 +416,34 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
 
       setId(UT);
 
-      time.start();
+      //time.start();
+      st = omp_get_wtime();
       call_fplll(TT, UT, delta, 0.51, LM_FAST, FT_DOUBLE, 0);
-      time.stop();
+      en = omp_get_wtime();
 
-      tlll += time;
+      lllt += (en - st);
 
-      time.start();
+      //time.start();
       transpose(U, UT);
 
+
+
+#ifdef _OPENMP
+
+      st = omp_get_wtime();
+      pmatprod_in_int(A_in, U,S);
+      en = omp_get_wtime();
+      prodt += (en - st);
+
+#else
+
+      st = omp_get_wtime();
       matprod_in_int(A_in, U);
-      
+      en = omp_get_wtime();
+      prodt += (en - st);
+
+#endif
+
       time.stop();
 
       tprod += time;
@@ -500,8 +528,12 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
         HPLLL_INFO(def + bitsize, " bits used");
         HPLLL_INFO("Candidate relation found with bit confidence: ", -gap.exponent());
 
-        cout << endl << "Time lll: " << tlll << endl;
-        cout << "Time products: " << tprod << endl << endl;
+        //cout << endl << "Time lll: " << tlll << endl;
+        //cout << "Time products: " << tprod << endl << endl;
+
+        cout << endl << "Time lll: " << lllt << endl;
+        cout << "Time products: " << prodt << endl << endl;
+
         return 1;
 
       }
