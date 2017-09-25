@@ -46,6 +46,7 @@ template<class ZT> int ratio(ZZ_mat<ZT> B, double& lfcond,  double& av_ratio,  d
   int d=B.get_cols();
   
   mpfr_set_default_prec(2*d);
+  //mpfr_set_default_prec(1000);
   
   Lattice<ZT, mpfr_t, matrix<Z_NR<ZT> >, matrix<FP_NR<mpfr_t> > > L(B);
 
