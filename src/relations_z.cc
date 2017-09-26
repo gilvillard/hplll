@@ -275,6 +275,7 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
 
   Timer tlll;
   Timer tprod;
+  Timer ttrunc;
   tlll.clear();
   tprod.clear();
 
@@ -346,11 +347,12 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
 
 
 //OMP
-  int S = 2;
+  int S = 4;
 
   double en, st;
   double lllt = 0.0;
   double prodt = 0.0;
+
 
 #ifdef _OPENMP
   omp_set_num_threads(S);
@@ -370,15 +372,15 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
     else def += shift;
 
 
-
+    time.start();
     if (truncate == -1)
       lift_truncate(T, A_in, def, 0);
     else if (truncate == 0)
       lift_truncate(T, A_in, def, shift + 2 * d);
     else
       lift_truncate(T, A_in, def, truncate);
-
-
+    time.stop();
+    ttrunc += time;
 
     // HLLL and DOUBLES
 
@@ -393,9 +395,26 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
 
       tlll += time;
 
-      time.start();
+      
+      //matprod_in_int(A_in, Bp.getU());
+      
+
+#ifdef _OPENMP
+
+      st = omp_get_wtime();
+      pmatprod_in_int(A_in, Bp.getU(), S);
+      en = omp_get_wtime();
+      prodt += (en - st);
+
+#else
+
+      st = omp_get_wtime();
       matprod_in_int(A_in, Bp.getU());
-      time.stop();
+      en = omp_get_wtime();
+      prodt += (en - st);
+
+#endif
+
 
       tprod += time;
 
@@ -427,11 +446,10 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
       transpose(U, UT);
 
 
-
 #ifdef _OPENMP
 
       st = omp_get_wtime();
-      pmatprod_in_int(A_in, U,S);
+      pmatprod_in_int(A_in, U, S);
       en = omp_get_wtime();
       prodt += (en - st);
 
@@ -531,6 +549,7 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
         //cout << endl << "Time lll: " << tlll << endl;
         //cout << "Time products: " << tprod << endl << endl;
 
+        cout << endl << "Time trunc: " << ttrunc << endl;
         cout << endl << "Time lll: " << lllt << endl;
         cout << "Time products: " << prodt << endl << endl;
 

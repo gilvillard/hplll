@@ -1348,9 +1348,7 @@ inline void pmatprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U, int S)
 
   } // Parallel loop
 
-#ifdef _OPENMP
-  #pragma omp barrier
-#endif
+
 
 };
 
@@ -1405,8 +1403,9 @@ inline void pmatprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<__int128_t> U, int S)
 
     }
 
+
 #ifdef _OPENMP
-  #pragma omp parallel for shared(C)
+  #pragma omp parallel for  shared(C,V,m,n,S)
 #endif
 
   for (int l = 0; l < S; l++) {
