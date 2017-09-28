@@ -159,9 +159,6 @@ int main(int argc, char *argv[]) {
 	cout << endl << endl << "   relation : " << time << endl ;
 	cout << endl << endl << "   relation : " << en-st << endl ;
 
-
-
-
 }
 
 
