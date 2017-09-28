@@ -1,4 +1,6 @@
 
+
+
 #include <hplll.h>
 
 
@@ -144,20 +146,36 @@ int main(int argc, char *argv[]) {
 
 	time.start();
 
-        double st = omp_get_wtime();
 
-	L.relation(C, alpha, 20, 10, 40, FPLLL);
+
+#ifdef _OPENMP
+	double st = omp_get_wtime();
+#else
+	time.start();
+#endif
+
+	L.set_num_threads(4);
+
+	L.relation(C, alpha, 20, 20, 40, FPLLL);
+
+
 	//L.relation(C, alpha, 30, 400, -1, FPLLL);   // -1 for bits only with mpz_t
 	//L.lll(C, 12220);
 
-        double en = omp_get_wtime();
-
+#ifdef _OPENMP
+	double en = omp_get_wtime();
+#else
 	time.stop();
+#endif
+
 
 	cout << C << endl;
 
+#ifdef _OPENMP
+	cout << endl << endl << "   relation : " << en - st  << endl ;
+#else
 	cout << endl << endl << "   relation : " << time << endl ;
-	cout << endl << endl << "   relation : " << en-st << endl ;
+#endif
 
 }
 

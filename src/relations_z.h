@@ -59,6 +59,11 @@ protected:
   long inputgap;
 
 
+#ifdef _OPENMP
+  int S = 1;
+#endif
+
+
 public:
 
 
@@ -74,7 +79,7 @@ public:
 
 
   int lll(ZZ_mat<mpz_t>& C, long alpha, int lllmethod = FPLLL, \
-               int sizemethod = DEF_REDUCTION, double delta = 0.99);
+          int sizemethod = DEF_REDUCTION, double delta = 0.99);
 
 
 
@@ -83,6 +88,7 @@ public:
                    int sizemethod = DEF_REDUCTION, double delta = 0.99);
 
 
+  int  set_num_threads(int nbt = 1);
 
 
 };

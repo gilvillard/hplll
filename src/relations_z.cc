@@ -209,8 +209,27 @@ FPTuple<ZT, FT, MatrixFT>::FPTuple(vector<FP_NR<mpfr_t> > fpvin) {
 
   inputgap = emax - emin;
 
+#ifdef _OPENMP
+  omp_set_num_threads(S);
+#endif
 
 }
+
+
+#ifdef _OPENMP
+template<class ZT, class FT, class MatrixFT> int
+FPTuple<ZT, FT, MatrixFT>::set_num_threads(int nbt) {
+
+  S = nbt;
+
+  omp_set_num_threads(S);
+
+  return S;
+
+}
+#endif
+
+
 
 
 /***********************************************************************************
@@ -276,10 +295,13 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
   Timer tlll;
   Timer tprod;
   Timer ttrunc;
-  tlll.clear();
-  tprod.clear();
 
-  Timer tphase;
+#ifdef _OPENMP
+  double en, st;
+  double lllt = 0.0;
+  double prodt = 0.0;
+  double trunct = 0.0;
+#endif
 
   int m, d;
   int i, j;
@@ -348,25 +370,13 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
   Lattice<ZT, FT, matrix<Z_NR<ZT> >,  MatrixFT > Bp(T, TRANSFORM, sizemethod);
 
 
-//OMP
-  int S = 8;
-
-  double en, st;
-  double lllt = 0.0;
-  double prodt = 0.0;
-
-
-#ifdef _OPENMP
-  omp_set_num_threads(S);
-#endif
-
 
   // Main loop on the shifts
   // -----------------------
 
   while (def < target_def) {
 
-    tphase.start();
+
 
     HPLLL_INFO("Current default: ", def);
 
@@ -375,31 +385,27 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
     else def += shift;
 
 
+#ifdef _OPENMP
+    st = omp_get_wtime();
+#else
     time.start();
+#endif
+
+
     if (truncate == -1)
       lift_truncate(T, A_in, def, 0);
     else if (truncate == 0)
       lift_truncate(T, A_in, def, shift + 2 * d);
     else
       lift_truncate(T, A_in, def, truncate);
+
+#ifdef _OPENMP
+    en = omp_get_wtime();
+    trunct += (en - st);
+#else
     time.stop();
     ttrunc += time;
-
-
-    //  DBG  
-    // if (def == -135657) {
-
-    //   ZZ_mat<ZT> AT;
-
-    //   AT.resize(d, m + d);
-
-    //   transpose(AT, T);
-
-    //   cout << AT << endl;
-
-
-    // }
-  
+#endif
 
 
     // HLLL and DOUBLES
@@ -407,38 +413,46 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
     if (lllmethod == HLLL) {
 
 
+#ifdef _OPENMP
+      st = omp_get_wtime();
+#else
       time.start();
+#endif
+
       Bp.assign(T);
 
       Bp.hlll(delta);
-      time.stop();
-
-      tlll += time;
-
-
-      //matprod_in_int(A_in, Bp.getU());
-
 
 #ifdef _OPENMP
-
-      st = omp_get_wtime();
-      pmatprod_in_int(A_in, Bp.getU(), S);
       en = omp_get_wtime();
-      prodt += (en - st);
-
+      lllt += (en - st);
 #else
-
-      st = omp_get_wtime();
-      matprod_in_int(A_in, Bp.getU());
-      en = omp_get_wtime();
-      prodt += (en - st);
-
+      time.stop();
+      tlll += time;
 #endif
 
 
-      tprod += time;
 
-      //avec long: matprod_in_si(A_in,U);
+#ifdef _OPENMP
+      st = omp_get_wtime();
+
+      if (S > 1)
+        pmatprod_in_int(A_in, Bp.getU(), S);
+      else
+        matprod_in_int(A_in, Bp.getU());
+
+      en = omp_get_wtime();
+      prodt += (en - st);
+#else
+      time.start();
+
+      matprod_in_int(A_in, Bp.getU());
+
+      time.stop();
+      tprod += time;
+#endif
+
+
       cout << "sizeof U: " << maxbitsize(Bp.getU(), 0, d, d) << endl;
       cout << "sizeof basis: " << maxbitsize(A_in, 1, d + 1, d) << endl << endl;
 
@@ -451,40 +465,55 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
 
     else if (lllmethod == FPLLL) {
 
+
+
+#ifdef _OPENMP
+      st = omp_get_wtime();
+#else
+      time.start();
+#endif
+
       transpose(TT, T);
 
       setId(UT);
 
-      //time.start();
-      st = omp_get_wtime();
       call_fplll(TT, UT, delta, 0.51, LM_FAST, FT_DOUBLE, 0);
-      en = omp_get_wtime();
-
-      lllt += (en - st);
-
-      //time.start();
-      transpose(U, UT);
 
 
 #ifdef _OPENMP
-
-      st = omp_get_wtime();
-      pmatprod_in_int(A_in, U, S);
       en = omp_get_wtime();
-      prodt += (en - st);
-
+      lllt += (en - st);
 #else
-
-      st = omp_get_wtime();
-      matprod_in_int(A_in, U);
-      en = omp_get_wtime();
-      prodt += (en - st);
-
+      time.stop();
+      tlll += time;
 #endif
 
-      time.stop();
 
+
+
+#ifdef _OPENMP
+      st = omp_get_wtime();
+
+      transpose(U, UT);
+
+      if (S > 1)
+        pmatprod_in_int(A_in, U, S);
+      else
+        matprod_in_int(A_in, U);
+
+      en = omp_get_wtime();
+      prodt += (en - st);
+#else
+      time.start();
+
+      transpose(U, UT);
+      matprod_in_int(A_in, U);
+
+      time.stop();
       tprod += time;
+#endif
+
+
 
       cout << "sizeof U: " << maxbitsize(Bp.getU(), 0, d, d) << endl;
       cout << "sizeof basis: " << maxbitsize(A_in, 1, d + 1, d) << endl << endl;
@@ -569,9 +598,15 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
         //cout << endl << "Time lll: " << tlll << endl;
         //cout << "Time products: " << tprod << endl << endl;
 
-        cout << endl << "Time trunc: " << ttrunc << endl;
+#ifdef _OPENMP
+        cout << endl << "Time trunc: " << trunct << endl;
         cout << endl << "Time lll: " << lllt << endl;
         cout << "Time products: " << prodt << endl << endl;
+#else
+        cout << endl << "Time trunc: " << ttrunc << endl;
+        cout << endl << "Time lll: " << tlll << endl;
+        cout << "Time products: " << tprod << endl << endl;
+#endif
 
         return 1;
 
@@ -579,8 +614,6 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
 
     }
 
-    tphase.stop();
-    cout << "--- Phase " << def << " time " << tphase << endl;
 
 
 

@@ -54,7 +54,6 @@ protected:
                  LLLMethod method = LM_WRAPPER, FloatType floatType = FT_DEFAULT,               \
                  int precision = 0, int flags = LLL_DEFAULT);
 
-  
 
 public:
 
