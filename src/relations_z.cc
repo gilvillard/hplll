@@ -349,7 +349,7 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
 
 
 //OMP
-  int S = 3;
+  int S = 8;
 
   double en, st;
   double lllt = 0.0;
