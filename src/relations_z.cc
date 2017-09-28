@@ -279,6 +279,8 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
   tlll.clear();
   tprod.clear();
 
+  Timer tphase;
+
   int m, d;
   int i, j;
 
@@ -347,7 +349,7 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
 
 
 //OMP
-  int S = 4;
+  int S = 3;
 
   double en, st;
   double lllt = 0.0;
@@ -364,6 +366,7 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
 
   while (def < target_def) {
 
+    tphase.start();
 
     HPLLL_INFO("Current default: ", def);
 
@@ -382,6 +385,23 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
     time.stop();
     ttrunc += time;
 
+
+    //  DBG  
+    // if (def == -135657) {
+
+    //   ZZ_mat<ZT> AT;
+
+    //   AT.resize(d, m + d);
+
+    //   transpose(AT, T);
+
+    //   cout << AT << endl;
+
+
+    // }
+  
+
+
     // HLLL and DOUBLES
 
     if (lllmethod == HLLL) {
@@ -395,9 +415,9 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
 
       tlll += time;
 
-      
+
       //matprod_in_int(A_in, Bp.getU());
-      
+
 
 #ifdef _OPENMP
 
@@ -558,6 +578,9 @@ FPTuple<ZT, FT, MatrixFT>::relation_lll(ZZ_mat<mpz_t>& C, ZZ_mat<mpz_t> A, long 
       }
 
     }
+
+    tphase.stop();
+    cout << "--- Phase " << def << " time " << tphase << endl;
 
 
 

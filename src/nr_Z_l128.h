@@ -12,38 +12,38 @@
 
 FPLLL_BEGIN_NAMESPACE
 
-// For gmp conversions 
+// For gmp conversions
 
-// long on 64 bits 
-// sign + 127 bits : 64 + 63 
-inline void mpz_set_128int(Z_NR< __int128_t>& r, const Z_NR<mpz_t> a){
+// long on 64 bits
+// sign + 127 bits : 64 + 63
+inline void mpz_set_128int(Z_NR< __int128_t>& r, const Z_NR<mpz_t> a) {
 
-  mpz_t lmp,ump;
+  mpz_t lmp, ump;
   mpz_init(lmp);
   mpz_init(ump);
 
   mpz_fdiv_q_2exp (ump, a.get_data(), 64);
   mpz_fdiv_r_2exp (lmp, a.get_data(), 64);
 
-  r.get_data()=mpz_get_si(ump);
-  r.get_data()<<=64;
-  r.get_data()+=mpz_get_ui(lmp);
+  r.get_data() = mpz_get_si(ump);
+  r.get_data() <<= 64;
+  r.get_data() += mpz_get_ui(lmp);
 }
 
-// long on 64 bits 
-// sign + 127 bits : 64 + 63 
-inline void mpz_get_128int(Z_NR<mpz_t>& a, const Z_NR< __int128_t> r){
+// long on 64 bits
+// sign + 127 bits : 64 + 63
+inline void mpz_get_128int(Z_NR<mpz_t>& a, const Z_NR< __int128_t> r) {
 
   mpz_t data;
   mpz_init(data);
 
   mpz_init(data);
-  mpz_set_si(data,r.get_data()>>64);
-  mpz_mul_2exp(data,data,64);
+  mpz_set_si(data, r.get_data() >> 64);
+  mpz_mul_2exp(data, data, 64);
 
-  mpz_set(a.get_data(),data);
+  mpz_set(a.get_data(), data);
 
-  mpz_add_ui(a.get_data(),a.get_data(),(r.get_data()<<64)>>64);
+  mpz_add_ui(a.get_data(), a.get_data(), (r.get_data() << 64) >> 64);
 
 }
 
@@ -131,7 +131,7 @@ inline void Z_NR<__int128_t>::operator=(const mpz_t& a) {
   data = static_cast<__int128_t>(mpz_get_si(a));
 }
 
-  
+
 
 template<>
 inline void Z_NR<__int128_t>::operator=(long a) {
@@ -146,10 +146,10 @@ inline void Z_NR<__int128_t>::set_f(const FP_NR<double>& a) {
 }
 
 
-// Mettre ds nr-ld 
+// Mettre ds nr-ld
 template<> template<>
 inline void Z_NR<__int128_t>::set_f(const FP_NR<long double>& a) {
-    data = static_cast<__int128_t>(a.get_data());
+  data = static_cast<__int128_t>(a.get_data());
 }
 
 
@@ -159,12 +159,19 @@ inline void Z_NR<__int128_t>::set_f(const FP_NR<dpe_t>& a) {
   //data = static_cast<__int128_t>(a.get_d());
 }
 
+// #ifdef FPLLL_NR_FP_DD_H
+// template<> template<>
+// inline void Z_NR<__int128_t>::set_f(const FP_NR<dd_real>& a) {
+//   data = a.get_si();
+//   //data = static_cast<__int128_t>(a.get_d());
+// }
+// #endif
 
 //template<> template<>
 //inline void Z_NR<__int128_t>::set_f(const FP_NR<mpfr_t>& a) {
 //data = a.get_si();
 //}
-  
+
 //template<> template<>
 //inline void FP_NR<mpfr_t>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
 //mpfr_set_d(data, static_cast<double>(a.get_data()), rnd);
@@ -172,16 +179,22 @@ inline void Z_NR<__int128_t>::set_f(const FP_NR<dpe_t>& a) {
 
 template<> template<>
 inline void FP_NR<double>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
-  data=static_cast<double>(a.get_data());
+  data = static_cast<double>(a.get_data());
 }
 
-// Mettre ds nr-ld 
+// Mettre ds nr-ld
 template<> template<>
 inline void FP_NR<long double>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
-  data=static_cast<long double>(a.get_data());
+  data = static_cast<long double>(a.get_data());
 }
 
-
+// #ifdef FPLLL_NR_FP_DD_H
+// template<> template<>
+// inline void Z_NR<__int128_t>::set_f(const FP_NR<dd_real>& a) {
+//   data = a.get_si();
+//   //data = static_cast<__int128_t>(a.get_d());
+// }
+// #endif
 
 
 /* template<> */
@@ -270,10 +283,10 @@ inline void Z_NR<__int128_t>::sub(const Z_NR<__int128_t>& a, const Z_NR<__int128
 /*   data = a.data - b; */
 /* } */
 
-template<> 
-inline void Z_NR<__int128_t>::neg(const Z_NR<__int128_t>& a) { 
-  data = -a.data; 
-} 
+template<>
+inline void Z_NR<__int128_t>::neg(const Z_NR<__int128_t>& a) {
+  data = -a.data;
+}
 
 template<>
 inline void Z_NR<__int128_t>::mul(const Z_NR<__int128_t>& a, const Z_NR<__int128_t>& b) {
@@ -335,7 +348,7 @@ inline void Z_NR<__int128_t>::submul(const Z_NR<__int128_t>& a, const Z_NR<__int
 
 template<>
 inline void Z_NR<__int128_t>::abs(const Z_NR<__int128_t>& a) {
-  if (a.data >=0) 
+  if (a.data >= 0)
     data = a.data;  //==> error Ven 13 mai 2016 18:34:13 CEST  with data = abs(a.data); __int128_t ???
   else data = -a.data;
 }
@@ -352,7 +365,7 @@ inline void Z_NR<__int128_t>::randb(int bits) {
   mpz_t temp;
   mpz_init(temp);
   mpz_urandomb(temp, RandGen::gmp_state, bits);
-  data = mpz_get_si(temp); 
+  data = mpz_get_si(temp);
   mpz_clear(temp);
 }
 
@@ -437,29 +450,29 @@ inline void Z_NR<__int128_t>::randb(int bits) {
 template<>
 inline ostream& operator<<(ostream& os, const Z_NR<__int128_t>& x) {
 
-__int128_t value= x.get_data();
+  __int128_t value = x.get_data();
 
-    std::ostream::sentry s( os );
-    if ( s ) {
-        __uint128_t tmp = value < 0 ? -value : value;
-        char buffer[ 128 ];
-        char* d = buffer +127;
-        do
-        {
-            -- d;
-            *d = "0123456789"[ tmp % 10 ];
-            tmp /= 10;
-        } while ( tmp != 0 );
-        if ( value < 0 ) {
-            -- d;
-            *d = '-';
-        }
-        int len = buffer +127 - d;
-        if ( os.rdbuf()->sputn( d, len ) != len ) {
-            os.setstate( std::ios_base::badbit );
-        }
+  std::ostream::sentry s( os );
+  if ( s ) {
+    __uint128_t tmp = value < 0 ? -value : value;
+    char buffer[ 128 ];
+    char* d = buffer + 127;
+    do
+    {
+      -- d;
+      *d = "0123456789"[ tmp % 10 ];
+      tmp /= 10;
+    } while ( tmp != 0 );
+    if ( value < 0 ) {
+      -- d;
+      *d = '-';
     }
-    return os;
+    int len = buffer + 127 - d;
+    if ( os.rdbuf()->sputn( d, len ) != len ) {
+      os.setstate( std::ios_base::badbit );
+    }
+  }
+  return os;
 }
 
 

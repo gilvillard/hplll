@@ -1728,47 +1728,6 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::Lattice(ZZ_mat<ZT> A, bool forU, int reduct
 }
 
 
-// With mixed matrix from mixed matrix
-// -----------------------------------
-
-// template<class ZT,class FT, class MatrixZT, class MatrixFT>
-// Lattice<ZT,FT, MatrixZT, MatrixFT>::Lattice(MatrixRZ<matrix, FP_NR<mpfr_t>, Z_NR<ZT> > A, bool forU, int reduction_method) {
-
-//     n=A.getRowsRT()+A.getRowsZT();
-//     d=A.getCols();
-
-//     init(n,d, forU);
-
-//     int i,j;
-
-//     B.resize(A.getRowsRT(), A.getRowsZT(), d);
-
-//     for (i=0; i<A.getRowsRT(); i++)
-//       for (j=0; j<d; j++)
-// 	B.setRT(i,j,A.getRT(i,j));
-
-//     for (i=0; i<A.getRowsZT(); i++)
-//       for (j=0; j<d; j++)
-// 	B.setZT(i,j,A.getZT(i,j));
-
-//     if (transf) {    // Not in init for the mixed matrix case also
-//       Z_NR<ZT> one;
-//       one=1;
-//       U.resize(0,d,d);
-//       for (i=0; i<d; i++) U.set(i,i,one);
-//     }
-
-//     nblov_max = 4294967295;
-
-
-//     // CHECK this with base constructor changed
-//     seysen_flag=reduction_method;
-
-//     if (reduction_method == DEF_REDUCTION) fast_long_flag = 1;
-//     else if  (reduction_method == NO_LONG)  fast_long_flag = 0;
-
-//     matrix_structure(structure, B, A.getRowsRT(), A.getRowsZT(), d);
-// }
 
 
 // ------------------------------------------------------------------

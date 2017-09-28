@@ -520,6 +520,41 @@ public:
 }; // End matrix class
 
 
+template<class T> void transpose(Matrix<T>& B, Matrix<T> A)
+{
+
+  int m, n, i, j;
+
+  m = A.get_rows();
+  n = A.get_cols();
+
+  for (i = 0; i < m; i++)
+    for (j = 0; j < n; j++)
+      B(j, i) = A(i, j);
+
+
+};
+
+template<class T> Matrix<T> transpose(Matrix<T> A)
+{
+
+  int m, n, i, j;
+
+  m = A.get_rows();
+  n = A.get_cols();
+
+  Matrix<T> B;
+  B.resize(n, m);
+
+  for (i = 0; i < m; i++)
+    for (j = 0; j < n; j++)
+      B(j, i) = A(i, j);
+
+  return B;
+
+};
+
+
 // **************
 // Block accesses
 // **************
@@ -1352,6 +1387,73 @@ inline void pmatprod_in_int(ZZ_mat<mpz_t>& C, ZZ_mat<long int> U, int S)
 
 };
 
+inline void tpmatprod_in_int(ZZ_mat<mpz_t>& C_in, ZZ_mat<long int> U_in, int S)
+{
+
+  int m, n;
+
+  m = C_in.get_rows();
+  n = C_in.get_cols();
+
+  ZZ_mat<mpz_t> C;
+
+  C.resize(n, m);
+  transpose(C, C_in);
+
+  ZZ_mat<long int> U;
+
+  U.resize(n, n);
+  transpose(U, U_in);
+
+
+  int nloc, ibeg;
+
+#ifdef _OPENMP
+  #pragma omp parallel for  private(nloc,ibeg) shared(C,U,m,n,S)
+#endif
+
+  for (int l = 0; l < S; l++) {
+
+
+    nloc = n / S;
+    if ((l + 1) <= n % S)
+      nloc += 1;
+
+
+    ibeg = (n / S) * l;
+    if ((l + 1) <= n % S)
+      ibeg += l;
+    else
+      ibeg += n % S;
+
+    //cout << "l: " << l << "   mloc: " << mloc << "    ibeg: " << ibeg << endl;
+
+    Matrix<Z_NR<mpz_t> > tmat;
+    tmat.resize(nloc, m);
+
+    int i, j, k;
+
+    for (i = 0; i < nloc; i++)
+      for (j = 0; j < m; j++) {
+        //tmat(i, j).mul_si(C(i + ibeg, 0), U(0, j).get_data());
+        tmat(i, j).mul_si(C(0, j), U(i+ibeg, 0).get_data());
+        for (k = 1; k < n; k++) {
+          //tmat(i, j).addmul_si(C(i + ibeg, k), U(k, j).get_data());
+          tmat(i, j).addmul_si(C(k,j), U(i+ibeg,k).get_data());
+        }
+      }
+
+
+    for (i = 0; i < nloc; i++)
+      for (j = 0; j < m; j++)
+        C_in(j, i+ibeg) = tmat(i, j);
+
+
+  } // Parallel loop
+
+
+
+};
 
 
 // TO OPTIMIZE
@@ -1776,39 +1878,7 @@ template<class T> void matprod(Matrix<T>& B, Matrix<T> U)
 };
 
 
-template<class T> void transpose(Matrix<T>& B, Matrix<T> A)
-{
 
-  int m, n, i, j;
-
-  m = A.get_rows();
-  n = A.get_cols();
-
-  for (i = 0; i < m; i++)
-    for (j = 0; j < n; j++)
-      B(j, i) = A(i, j);
-
-
-};
-
-template<class T> Matrix<T> transpose(Matrix<T> A)
-{
-
-  int m, n, i, j;
-
-  m = A.get_rows();
-  n = A.get_cols();
-
-  Matrix<T> B;
-  B.resize(n, m);
-
-  for (i = 0; i < m; i++)
-    for (j = 0; j < n; j++)
-      B(j, i) = A(i, j);
-
-  return B;
-
-};
 
 template<class T> void print2maple(Matrix<T> B, int n, int d)
 {
