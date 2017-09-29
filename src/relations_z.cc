@@ -51,7 +51,7 @@ FPTuple<long, double, matrix<FP_NR<double> > >::call_fplll(ZZ_mat<long> &b, ZZ_m
   int status;
 
 
-  status = lll_reduction(b, u, delta, eta, method, floatType, precision);
+  status = lll_reduction(b, u, delta, eta, method, FT_DOUBLE, precision);
 
   return status;
 }
@@ -65,7 +65,7 @@ FPTuple<long, long double, matrix<FP_NR<long double> > >::call_fplll(ZZ_mat<long
   int status;
 
 
-  status = lll_reduction(b, u, delta, eta, method, floatType, precision);
+  status = lll_reduction(b, u, delta, eta, method, FT_LONG_DOUBLE, precision);
 
   return status;
 
@@ -73,6 +73,20 @@ FPTuple<long, long double, matrix<FP_NR<long double> > >::call_fplll(ZZ_mat<long
 }
 
 
+template<> int
+FPTuple<long, dd_real, matrix<FP_NR<dd_real> > >::call_fplll(ZZ_mat<long> &b, ZZ_mat<long> &u, double delta, double eta,  \
+    LLLMethod method, FloatType floatType,               \
+    int precision, int flags) {
+
+  int status;
+
+
+  status = lll_reduction(b, u, delta, eta, method, FT_DD, precision);
+
+  return status;
+
+
+}
 
 template<> int
 FPTuple<__int128_t, double, matrix<FP_NR<double> > >::call_fplll(ZZ_mat<__int128_t> &b, ZZ_mat<__int128_t> &u, double delta, double eta,  \
@@ -98,7 +112,17 @@ FPTuple<__int128_t, long double, matrix<FP_NR<long double> > >::call_fplll(ZZ_ma
   return 0;
 }
 
+template<> int
+FPTuple<__int128_t, dd_real, matrix<FP_NR<dd_real> > >::call_fplll(ZZ_mat<__int128_t> &b, ZZ_mat<__int128_t> &u, double delta, double eta,  \
+    LLLMethod method, FloatType floatType,               \
+    int precision, int flags) {
 
+  cerr << endl << "** Error in relations: no fplll with Z_NR<__int128_t> **" << endl;
+
+  exit(EXIT_FAILURE);
+
+  return 0;
+}
 
 template<> int
 FPTuple<mpz_t, double, matrix<FP_NR<double> > >::call_fplll(ZZ_mat<mpz_t> &b, ZZ_mat<mpz_t> &u, double delta, double eta,  \
@@ -108,7 +132,7 @@ FPTuple<mpz_t, double, matrix<FP_NR<double> > >::call_fplll(ZZ_mat<mpz_t> &b, ZZ
   int status;
 
 
-  status = lll_reduction(b, u, delta, eta, method, floatType, precision);
+  status = lll_reduction(b, u, delta, eta, method, FT_DOUBLE, precision);
 
   return status;
 
@@ -122,7 +146,7 @@ FPTuple<mpz_t, long double, matrix<FP_NR<long double> > >::call_fplll(ZZ_mat<mpz
   int status;
 
 
-  status = lll_reduction(b, u, delta, eta, method, floatType, precision);
+  status = lll_reduction(b, u, delta, eta, method, FT_LONG_DOUBLE, precision);
 
   return status;
 
@@ -138,7 +162,7 @@ FPTuple<mpz_t, dpe_t, MatrixPE<double, dpe_t> >::call_fplll(ZZ_mat<mpz_t> &b, ZZ
   int status;
 
 
-  status = lll_reduction(b, u, delta, eta, method, floatType, precision);
+  status = lll_reduction(b, u, delta, eta, method, FT_DOUBLE, precision);
 
   return status;
 
@@ -152,7 +176,7 @@ FPTuple<mpz_t, ldpe_t, MatrixPE<long double, ldpe_t> >::call_fplll(ZZ_mat<mpz_t>
 
   int status;
 
-  status = lll_reduction(b, u, delta, eta, method, floatType, precision);
+  status = lll_reduction(b, u, delta, eta, method, FT_LONG_DOUBLE, precision);
 
   return status;
 
@@ -266,7 +290,16 @@ FPTuple<ZT, FT, MatrixFT>::relation(ZZ_mat<mpz_t>& C,  long alpha,
 
   int found;
 
-  found = relation_lll(C, L, alpha, confidence_gap, shift, truncate, lllmethod, delta);
+
+  // Shift should be maximized for efficiency, then the overall precision is at least truncate - shift  (truncate > shift) 
+  // 
+  // Hence enough precision should be ensured by truncate - shift 
+  //
+  // However, truncate cannot be too large : the ratio between column norms after the shift will 
+  //    give extra size  : truncate + extra  <= integer size  
+
+
+  found = relation_lll(C, L, alpha, confidence_gap, shift, truncate, lllmethod, sizemethod, delta);
 
   return found;
 

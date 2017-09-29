@@ -159,23 +159,28 @@ inline void Z_NR<__int128_t>::set_f(const FP_NR<dpe_t>& a) {
   //data = static_cast<__int128_t>(a.get_d());
 }
 
-// #ifdef FPLLL_NR_FP_DD_H
-// template<> template<>
-// inline void Z_NR<__int128_t>::set_f(const FP_NR<dd_real>& a) {
-//   data = a.get_si();
-//   //data = static_cast<__int128_t>(a.get_d());
-// }
-// #endif
+
+// Probably extremely slow, TODO
+#ifdef FPLLL_NR_FP_DD_H
+template<> template<>
+inline void Z_NR<__int128_t>::set_f(const FP_NR<dd_real>& a) {
+
+  Z_NR<mpz_t> tz;
+
+  tz.set_f(a);
+
+  mpz_set_128int(*this, tz);
+
+}
+#endif
 
 //template<> template<>
 //inline void Z_NR<__int128_t>::set_f(const FP_NR<mpfr_t>& a) {
 //data = a.get_si();
 //}
 
-//template<> template<>
-//inline void FP_NR<mpfr_t>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
-//mpfr_set_d(data, static_cast<double>(a.get_data()), rnd);
-//}
+
+
 
 template<> template<>
 inline void FP_NR<double>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
@@ -188,13 +193,35 @@ inline void FP_NR<long double>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
   data = static_cast<long double>(a.get_data());
 }
 
-// #ifdef FPLLL_NR_FP_DD_H
-// template<> template<>
-// inline void Z_NR<__int128_t>::set_f(const FP_NR<dd_real>& a) {
-//   data = a.get_si();
-//   //data = static_cast<__int128_t>(a.get_d());
-// }
-// #endif
+
+#ifdef FPLLL_NR_FP_DD_H
+template<> template<>
+inline void FP_NR<dd_real>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
+
+  double hi = static_cast<double>(a.get_data());
+
+  __int128_t tz;
+
+  tz = static_cast<__int128_t>(hi);
+
+  tz -= a.get_data();
+
+  data = dd_real(hi, static_cast<double>(tz));
+
+}
+#endif
+
+
+
+
+
+
+
+//template<> template<>
+//inline void FP_NR<mpfr_t>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
+//mpfr_set_d(data, static_cast<double>(a.get_data()), rnd);
+//}
+
 
 
 /* template<> */

@@ -1436,17 +1436,17 @@ inline void tpmatprod_in_int(ZZ_mat<mpz_t>& C_in, ZZ_mat<long int> U_in, int S)
     for (i = 0; i < nloc; i++)
       for (j = 0; j < m; j++) {
         //tmat(i, j).mul_si(C(i + ibeg, 0), U(0, j).get_data());
-        tmat(i, j).mul_si(C(0, j), U(i+ibeg, 0).get_data());
+        tmat(i, j).mul_si(C(0, j), U(i + ibeg, 0).get_data());
         for (k = 1; k < n; k++) {
           //tmat(i, j).addmul_si(C(i + ibeg, k), U(k, j).get_data());
-          tmat(i, j).addmul_si(C(k,j), U(i+ibeg,k).get_data());
+          tmat(i, j).addmul_si(C(k, j), U(i + ibeg, k).get_data());
         }
       }
 
 
     for (i = 0; i < nloc; i++)
       for (j = 0; j < m; j++)
-        C_in(j, i+ibeg) = tmat(i, j);
+        C_in(j, i + ibeg) = tmat(i, j);
 
 
   } // Parallel loop
@@ -2262,20 +2262,29 @@ void lift_truncate(ZZ_mat<long>& C_out, ZZ_mat<mpz_t> A, long def, long bits) {
       for (i = 0; i < n; i++)
         for (j = 0; j < d; j++)
           C(i, j).mul_2si(C(i, j), s);
-    }
 
 
-    if (bbc > 63) {
+      maxloc = 0;
+      for (j = 1; j < d ; j++) {
+        for (i = 1; i < n; i++) {
+          t.abs(C(i, j));
+          maxloc = max(maxloc, size_in_bits(t));
+        }
 
-      cout << endl << "** Warning in lift truncate: too many integer digits required for truncation >= 64 ?" << endl;
+      }
 
-      //exit(EXIT_FAILURE);
+      cout << "Remains down " << maxloc << endl;
 
-    }
+      if (bbc > 63) {
 
+        cout << endl << "** Warning in lift truncate: too many integer digits required for truncation >= 64 ?" << endl;
 
-  } // end bits > 0 / truncation
+        //exit(EXIT_FAILURE);
+      }
 
+    } // end bits > 0 / truncation
+
+  }
 
 // Conversion to long
 
@@ -2344,6 +2353,18 @@ void lift_truncate(ZZ_mat<__int128_t>& C_out, ZZ_mat<mpz_t> A, long def, long bi
       for (i = 0; i < n; i++)
         for (j = 0; j < d; j++)
           C(i, j).mul_2si(C(i, j), s);
+
+
+      maxloc = 0;
+      for (j = 1; j < d ; j++) {
+        for (i = 1; i < n; i++) {
+          t.abs(C(i, j));
+          maxloc = max(maxloc, size_in_bits(t));
+        }
+
+      }
+
+      cout << "Remains down " << maxloc << endl;
     }
 
 
@@ -2400,7 +2421,7 @@ void lift_truncate(ZZ_mat<__int128_t>& C_out, ZZ_mat<mpz_t> A, long def, long bi
 // Todo : check the roundings
 //
 
-template<class ZT, class MatrixZT> void trunc(MatrixZT& B, ZZ_mat<ZT> A, long d, long n, long m, long t, long tau) {
+template<class ZT, class MatrixZT> void trunc(MatrixZT & B, ZZ_mat<ZT> A, long d, long n, long m, long t, long tau) {
 
   // Division of the first m rows
   // and on the fly computation of the log[2] length
@@ -2867,7 +2888,7 @@ inline void next2prime(Z_NR<mpz_t>& p, long bits) {
 // -----------------------
 
 
-inline  void  zzmat_to_ntlp(mat_ZZ_p& Ap, const ZZ_mat<mpz_t> A, Z_NR<mpz_t> p) {
+inline  void  zzmat_to_ntlp(mat_ZZ_p & Ap, const ZZ_mat<mpz_t> A, Z_NR<mpz_t> p) {
 
   mpz_t zp;
   mpz_init(zp);

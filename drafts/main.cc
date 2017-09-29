@@ -136,46 +136,42 @@ int main(int argc, char *argv[]) {
 	ZZ_mat<mpz_t> C;
 
 
-	FPTuple<long, double, matrix<FP_NR<double> > > L(fpv);
-	//FPTuple_f<long, double> L(fpv);
+	FPTuple<__int128_t, double, matrix<FP_NR<double> > > L(fpv);
 
-	//FPTuple<mpz_t, dpe_t, MatrixPE<double, dpe_t> > L(fpv);  // long double needs to comment long double in relation_z
-	//FPTuple<long, double, matrix<FP_NR<double> > > L(fpv);
-	//FPTuple<long, double,  > > L(fpv);
-
-
-	time.start();
 
 
 
 #ifdef _OPENMP
 	double st = omp_get_wtime();
-#else
+	OMPTimer ptime;
+	ptime.start();
+#endif 
+
 	time.start();
-#endif
-
-	L.set_num_threads(1);
-
-	L.relation(C, alpha, 20, 20, 40, FPLLL);
 
 
-	//L.relation(C, alpha, 30, 400, -1, FPLLL);   // -1 for bits only with mpz_t
-	//L.lll(C, 12220);
+	L.set_num_threads(2);
+
+	L.relation(C, alpha, 20, 60, 100, HLLL);
+
 
 #ifdef _OPENMP
 	double en = omp_get_wtime();
-#else
+	ptime.stop();
+#endif 
 	time.stop();
-#endif
+
 
 
 	cout << C << endl;
 
 #ifdef _OPENMP
-	cout << endl << endl << "   relation : " << en - st  << endl ;
-#else
-	cout << endl << endl << "   relation : " << time << endl ;
-#endif
+	cout << endl << endl << "   omp time relation : " << en - st  << endl ;
+	cout << endl << "   omp timer relation : " << ptime << endl ;
+#endif 
+
+	cout << endl << "   timer relation : " << time << endl << endl;
+
 
 }
 
