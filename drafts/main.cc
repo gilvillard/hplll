@@ -154,7 +154,7 @@ int main(int argc, char *argv[]) {
 	time.start();
 #endif
 
-	L.set_num_threads(4);
+	L.set_num_threads(1);
 
 	L.relation(C, alpha, 20, 20, 40, FPLLL);
 
