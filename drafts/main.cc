@@ -1,4 +1,6 @@
 
+//  Writes the input basis lat.txt in PK code directory 
+
 #include <hplll.h>
 
 using namespace hplll;
