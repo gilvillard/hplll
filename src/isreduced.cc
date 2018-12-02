@@ -51,7 +51,7 @@ int main(int argc, char *argv[])  {
   
   Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A,NO_TRANSFORM,DEF_REDUCTION,NO_LONG);
   
-  T.isreduced(0.99);
+  T.isreduced(0.75);
 
   return 0;
 }

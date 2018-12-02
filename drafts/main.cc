@@ -1,182 +1,99 @@
 
-
-
 #include <hplll.h>
-
 
 using namespace hplll;
 
 int main(int argc, char *argv[]) {
 
-	Timer time;
 
-	long alpha, d;
+	Timer time, timed, timedd;
 
+	ZZ_mat<mpz_t> A0;
+	ZZ_mat<mpz_t> A;
+
+	ZZ_mat<mpz_t> AT;
+
+
+	double delta = 0.99;
+
+	int n, d;
+
+	command_line_basis(A0, n, d, delta, argc, argv);
+
+	// fplll double
+
+	A.resize(d, d);
+	for (int i = 0; i < d; i++)
+		for (int j = 0; j < d; j++)
+			A(i, j) = A0(i, j);
+
+	AT.resize(d, d);
+	transpose(AT, A);
+
+	//cout << AT << endl;
+
+
+	// Write the inpute matrix in a file
 	filebuf fb;
 	iostream os(&fb);
-
-	vector<FP_NR<mpfr_t> > fpv;
-
-	//  --------------   Test A
-
-	// static string s;
-
-	// fb.open ("C3_in", ios::in);
-
-	// os >> alpha;
-	// os >> d;
-
-	// mpfr_set_default_prec(alpha);
-
-	// fpv.resize(d);
-
-	// for (int i = 0; i < d; i++) {
-	// 	os >> s;
-	// 	mpfr_set_str (fpv[i].get_data(), s.c_str(), 10, GMP_RNDN);
-	// }
-
-	// fb.close();
-
-	// Z_mat<mpz_t> C;
-
-	// FPTuple<long, double> L(fpv);
-
-	// L.relation_f(C, alpha, 80, 20, 10, HLLL);
-
-	// cout << C << endl;
+	fb.open ("/Users/gvillard/Installed-Libraries/code/src/lat.txt", ios::out);
+	os << AT;
+	fb.close();
 
 
-	// ----------------  Test B
+	timed.start();
+	lll_reduction(AT, delta, 0.501, LM_FAST, FT_DOUBLE, 0, LLL_VERBOSE);
+	//lll_reduction(AT, delta, 0.501, LM_FAST, FT_DOUBLE, 0);
+	timed.stop();
 
 
-	// alpha = 2800;
-	// mpfr_set_default_prec(alpha);
+	// // fplll dd
 
-	// d = 65;
-	// gen3r2s(fpv, d, 8, 8);
+	// AT.resize(d, n);
+	// transpose(AT, A);
 
+	// //cout << AT << endl;
 
-
-	// ZZ_mat<mpz_t> C;
-
-	// FPTuple<long, double> L(fpv);
-
-	// L.relation_f(C, alpha, 60, 200, 20, HLLL);
-	// cout << C << endl;
+	// timedd.start();
+	// lll_reduction(AT, delta, 0.501, LM_FAST, FT_DD, 0, LLL_VERBOSE);
+	// timedd.stop();
 
 
-	// ----------------  Test C
+	// hplll
 
+	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, NO_TRANSFORM, DEF_REDUCTION); //* name
 
-	// alpha = 1600;
-	// mpfr_set_default_prec(alpha);
-
-	// int r, s;
-	// r = 7;
-	// s = r;
-
-	// d = r*s+1;
-	// gen3r2s(fpv, d, r, s);
-
-
-
-	// ZZ_mat<mpz_t> C;
-
-
-
-	// // cout << alpha << endl;
-	// // cout << d << endl;
-	// // for (int i = 0; i < d; i++) {
-	// // 	//mpfr_out_str (stdout, 10, alpha, fpv[i].get_data(), GMP_RNDN);
-	// // 	mpfr_printf ("%.1940Rf", fpv[i].get_data());
-	// // 	cout << endl;
-	// // }
-
-
-	// FPTuple<mpz_t, dpe_t, MatrixPE<double, dpe_t> > L(fpv);
-
-	// time.start();
-
-	// L.lll(C, alpha);
-
-	// //L.relation_f(C, alpha, 60, 100, 20, FPLLL);
-
-	// time.stop();
-
-	// cout << C << endl;
-
-	// cout << endl << endl << "   relation : " << time << endl ;
-
-	//  --------------   Test from file / Poisson
-
-	static string s;
-
-
-
-	//fb.open ("alpha.in", ios::in);
-
-	//os >> alpha;
-	//os >> d;
-
-	cin  >> alpha;
-	cin  >> d;
-
-	mpfr_set_default_prec(alpha);
-
-	fpv.resize(d);
-
-	for (int i = 0; i < d; i++) {
-		//os >> s;
-		cin >> s;
-		mpfr_set_str (fpv[i].get_data(), s.c_str(), 10, GMP_RNDN);
-	}
-
-	//fb.close();
-
-	ZZ_mat<mpz_t> C;
-
-
-	FPTuple<__int128_t, double, matrix<FP_NR<double> > > L(fpv);
-
-
-
-
-#ifdef _OPENMP
-	double st = omp_get_wtime();
-	OMPTimer ptime;
-	ptime.start();
-#endif 
+	verboseDepth = 1;
 
 	time.start();
-
-
-	L.set_num_threads(2);
-
-	L.relation(C, alpha, 20, 60, 100, HLLL);
-
-
-#ifdef _OPENMP
-	double en = omp_get_wtime();
-	ptime.stop();
-#endif 
+	B.hlll(delta); //* name
 	time.stop();
 
+	cout << endl << endl;
+
+	verboseDepth = 0;
+
+	transpose(A, AT);
+	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(B.getbase()); //* names
+
+	T.isreduced(delta - 0.1);
+
+	double t, u, v, w;
+
+	hplll::ratio<mpz_t>(B.getbase(), t, u, v, w);
+
+	cout << endl << ".. fplll log 2 Frobenius norm cond: " << t << endl;
+	cout << ".. Average diagonal ratio: " << u << endl;
+	cout << ".. Max diagonal ratio: " << v << endl;
+	cout << ".. First vector quality: " << w << endl;
 
 
-	cout << C << endl;
+	cout << endl << endl << "   hplll double : " << time << endl ;
+	cout << "   Householder: " << B.dbg << endl << endl ;
+	cout  << "   fplll double : " << timed << endl << endl ;
+	//cout << "   fplll dd : " << timedd << endl << endl ;
+	cout << endl;
 
-#ifdef _OPENMP
-	cout << endl << endl << "   omp time relation : " << en - st  << endl ;
-	cout << endl << "   omp timer relation : " << ptime << endl ;
-#endif 
-
-	cout << endl << "   timer relation : " << time << endl << endl;
 
 
 }
-
-
-
-
-
-
