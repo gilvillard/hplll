@@ -1,7 +1,7 @@
-/* Householder LLL 
+/* OpenMP LLL 
 
-Created Mar 18 jan 2011 18:08:24 CET  
-Copyright (C) 2011, 2012, 2013      Gilles Villard 
+Created Mer  9 avr 2014 14:07:39 CEST 
+Copyright (C) 2014  Gilles Villard 
 
 This file is part of the hplll Library 
 
@@ -28,135 +28,77 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 namespace hplll { 
 
-// MatrixFT pour  matrix<FP_NR<FT> > 
-// MatrixZT pour  matrix<Z_NR<ZT> >
 
 template<class ZT, class FT, class MatrixZT, class MatrixFT>
 class SLattice
 {
-
  protected:
 
   MatrixZT B;
 
-  matrix<Z_NR<mpz_t> > RZ;
-
- 
+  MatrixZT RZ;
+  MatrixZT newRZ;
   
-  matrix<Z_NR<mpz_t> > U_even;
-  matrix<Z_NR<mpz_t> > U_odd;
 
-  MatrixZT U;
-   
-  int norigin,n,dorigin,d; 
+  ZZ_mat<ZT> U;
+  ZZ_mat<ZT> U_even;
+  ZZ_mat<ZT> U_odd;
+  ZZ_mat<ZT> U_proper;
+  
+  MatrixZT Uglob;
 
   bool transf;
 
-  unsigned int nblov_max;
+  int norigin,n,dorigin,d; 
 
-  
-  int nmaxkappa;
-
-  Z_NR<ZT> amax; // Value used for completing and divisibility of the dimension 
 
   // Floating point objects concerned a possible precision change 
   // ************************************************************
 
   MatrixFT R; 
-  MatrixFT Rkept; 
 
-  MatrixFT V; 
+  MatrixFT Rt; 
 
-  MatrixFT Bfp; // floating point B 
+  MatrixFT V;
 
-  matrix<FP_NR<FT> > VR; // Difference between MatrixFT and matrix<FP_NR<FT> >  in Exp 
-  vector<FP_NR<FT> > normB2; // Square norm  
+ public:
+  
+  int nbswaps;
+  vector<int> swapstab; 
 
-  FP_NR<FT> x; // For size reduction 
-
-  vector<FP_NR<FT> > toR; // Some assignment in householder_r 
-
-  vector<int> structure; 
-
-  vector<int> col_kept;
-
-  vector<int> kappamin;
+  int hlll(double delta, int condbits, int S, int nbthreads, unsigned int lovmax=4294967295);
  
-  vector<int> descendu;
+  void even_hsizereduce(int S); // Householder is refreshed or not 
+  void odd_hsizereduce(int S);
 
-public:
-
-
-  // Timings 
-  // ******* 
-  unsigned int tps_reduce;
-  unsigned int tps_householder;
-  unsigned int tps_prepare;
-  unsigned int tps_swap;
-  unsigned int nblov,nbswaps;
-  unsigned int tps_redB;
-
-  vector<int> swapstab;
-  
-  int compteur;   // while counting 
-  int tmpcompt;   // Debug or test counting 
-
-  int householder_r(int kappa); 
-  int householder_v(int kappa); 
-
-  int householder(int dmax=0);
-  
-  int hsizereduce(int kappa, int fromk=0);
-  
-  int seysenreduce(int kappa);
-
-  bool seysen_update(int kappa, int from_i, int restdim,  vector<FP_NR<FT> > vectx, vector<bool> bounded);
-
-  bool seysen_update_R(int kappa, int from_i, int restdim, vector<FP_NR<FT> > vectx, vector<bool> bounded);
-
-  bool pseysen_update_B(int kappa, int from_i, int restdim, vector<FP_NR<FT> > vectx, vector<bool> bounded, int S); 
-
-  bool size_update(int kappa, int from_i, int to_i);
-
-  bool size_update_R(vector<FP_NR<FT> >& vectx, int kappa, int from_i, int to_i);
-
-  bool psize_update_B(int kappa, int from_i, int to_i,  vector<FP_NR<FT> > vectx, int S);
+  void even_updateRZ(int S); 
+  void odd_updateRZ(int S);
    
-  int reduce_and_gap_detect(int seysen_flag);
+  unsigned int setprec(unsigned int prec);
+  unsigned int getprec();
 
-  int rotate(int gap_status);  
-
-  int seysen_flag;
-
-  int fast_long_flag;
-
-  int hlll(double delta, int S, int nbthreads, unsigned int lovmax=4294967295);
-
-  // Parallel
-  // --------
-
-  int pmatprod(int S, int dec);
-   
-  unsigned int set_nblov_max(unsigned int nb); 
-
-  ZZ_mat<ZT> getbase();
+  long  approx_cond();
+  int householder();
+  int phouseholder(int S);
 
   ZZ_mat<ZT> getU();
+
+  ZZ_mat<ZT> getbase();
 
   // Not MatrixFT for the exp case 
   matrix<FP_NR<FT> > getR(); 
 
-  SLattice(ZZ_mat<ZT> A, int S, bool forU=false,  int reduction_method=0, int long_flag = 1);  
+  SLattice(ZZ_mat<ZT> A, int S, bool forU=false, int reduction_method=0); 
 
-  void init(int n, int d, bool forU=false);
+  void init(int n, int d, bool forU);
 
-  //~Lattice();
+  //~SLattice();
 };
+
 
 } // end namespace hplll
 
-
 #include "slll.cc"
 
+#endif 
 
-#endif

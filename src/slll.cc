@@ -1,9 +1,9 @@
-/* Householder LLL
+/* OpenMP LLL 
 
-Created Mar 18 jan 2011 18:10:25 CET
-Copyright (C) 2011, 2012, 2013      Gilles Villard
+Created Mer  9 avr 2014 14:12:40 CEST 
+Copyright (C) 2014  Gilles Villard 
 
-This file is part of the hplll Library
+This file is part of the hplll Library 
 
 The hplll Library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -20,1826 +20,1170 @@ along with the hplll Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#include "ratio.h"
 
 #ifndef HPLLL_SLLL_CC
 #define HPLLL_SLLL_CC
 
+
 #ifdef _OPENMP
 #include <omp.h>
-#endif
+#endif 
 
-// *******************************************************************************
-//
-//  S >= 2 parallel segments, hence nb_blocks = 2*S blocks
-//
-//  Divisibility of the dimension by nb_blocks in ensured by the constructor
-//     hence S as the parameter of hlll should divide S given to the constructor
-//
-//  nbthreads should divide S (??)
-//
-// *******************************************************************************
+namespace hplll { 
 
 
-namespace hplll {
+  // S >= 2 parallel segments, hence K=2*S blocks (divisibility of the dimension) 
 
-template<class ZT, class FT, class MatrixZT, class MatrixFT>  int
-SLattice<ZT, FT, MatrixZT, MatrixFT>::hlll(double delta, int S, int nbthreads, unsigned int lovmax) {
+  template<class ZT,class FT, class MatrixZT, class MatrixFT>  int 
+  SLattice<ZT,FT, MatrixZT, MatrixFT>::hlll(double delta, int condbits, int S, int nbthreads, unsigned int lovmax) { 
+   
+    int K=2*S;
+ 
+    int bdim;     // Dimension of each block 
+                  // Assume that d is a multiple of K >= 4 
+                  // bdim >= 2 for actual segment 
+    
+    bdim = d/K;
+    
 
-  verboseDepth -= 1;
+    int i,k;    
+   
+        
+#ifdef _OPENMP
+    OMPTimer time,chrono,special;
+    OMPTimer redtime,eventime,oddtime,qrtime,
+      prodtime1, prodtime2, prodtime3, prodtime4, prodtime5, prodtime6,
+      esizetime,osizetime,orthotime,totime;
+    
+    omp_set_num_threads(nbthreads);
+#else 
+    Timer time,chrono,special;
+    Timer redtime,eventime,oddtime,qrtime,
+      prodtime1, prodtime2, prodtime3, prodtime4, prodtime5, prodtime6,
+      esizetime,osizetime,restsizetime,totime;
+#endif 
+    
+    time.clear();
+    chrono.clear();
+    special.clear();
+    redtime.clear();
+    eventime.clear();
+    oddtime.clear();
+    qrtime.clear();
+    prodtime1.clear();
+    prodtime2.clear();
+    prodtime3.clear();
+    prodtime4.clear();
+    prodtime5.clear();
+    prodtime6.clear();
+    esizetime.clear();
+    orthotime.clear();
+    osizetime.clear();
+    totime.clear();
+   
+    
+    int iter;
 
-  int i, j, k;
+    bool stop=0;
+
+    // See what to do with this ? 
+
+    setprec(condbits);
+
+    //setId(U);
+
+    // ************************
+    // Main loop on block swaps 
+    // ************************
+   
+    totime.start();
+
+    for (iter=0; stop==0; iter++) {
+    
+      stop=1;
+      
+      time.start();
+
+      phouseholder(S);
+      
+      time.stop();      
+      qrtime+=time;
+      
+   
+      // Even block reduction  
+      // --------------------
+ 
+      setId(U_even);
+     
+      
+      // The integer block lattice: truncation of the floating point R 
+
+      set_f(RZ,R,condbits); 
+            
+      // In case one column is badly conditioned 
+      // Make this clean, how?
+ 
+      for (i=0; i<d; i++)
+	if (RZ(i,i).sgn() ==0) RZ(i,i)=1;
+         
+ 
+      time.start();
+
+      cout << endl <<  "--- Even reductions" << endl;
 
 #ifdef _OPENMP
-  OMPTimer time, totime;
-  OMPTimer redtime, eventime, oddtime, prodtime1, prodtime2, esizetime, osizetime, rztime;
-
-  omp_set_num_threads(nbthreads);
-#else
-  Timer time, totime;
-  Timer redtime, eventime, oddtime, prodtime1, prodtime2, esizetime, osizetime, rztime;
+#pragma omp parallel for 
 #endif
 
-  time.clear();
-  redtime.clear();
-  eventime.clear();
-  oddtime.clear();
-  prodtime1.clear();
-  prodtime2.clear();
-  esizetime.clear();
-  osizetime.clear();
-  totime.clear();
-  rztime.clear();
-
-  totime.start();
-
-  int nb_blocks = 2 * S;
-
-  int bdim;    // Dimension of each block
-  // Assume that d is a multiple of nb_blocks
-
-  bdim = d / nb_blocks;
-
-  int iter;
-
-  bool stop = 0;
-
-  vector<int> lovtests(S);
-  int phase_tests;
-
-
-  int condbits = 63;
-
-  // ************************************
-  //
-  //   Main odd-even phases loop on iter
-  //
-  // ************************************
-
-  // Computed through size reduction afterwards
-
-
-
-
-  FP_NR<FT> afmax;
-  set_z(afmax, amax);
-
-  int gap_status = 0;
-
-
-  householder(dorigin);
-
-
-  for (i = dorigin; i < d; i++)
-    R.set(i, i, afmax);
-
-
-
-
-  // Main iteration loop
-  // *******************
-
-  for (iter = 0; stop == 0; iter++) {
-
-
-
-    stop = 1;
-
-    time.start();
-
-    // col_kept ??
-
-
-    // The integer block lattice: truncation of the floating point R
-    // 0 triangulaire ici car householder global
-
-    set_f(RZ, R, condbits);
-
-    for (i = 1; i < d; i++)
-      for (j = 0; j < i; j++)
-        RZ(i, j) = 0;
-
-
-    // In case one column is badly conditioned
-    // Make this clean, how?
-
-    for (i = 0; i < d; i++)
-      if (RZ(i, i).sgn() == 0) RZ(i, i) = 1;
-
-
-    time.stop();
-    rztime += time;
-
-    // Even reductions
-    // ***************
-
-
-    setId(U_even); // Pas nécessaire pour even sans doute
-    phase_tests = 0;
-
-    //cout << endl <<  "--- Even reductions" << endl;
-    time.start();
-
-
-
-#ifdef _OPENMP
-    #pragma omp parallel for
-#endif
-
-
-    for (k = 0; k < S; k++) {
-      {
-
-        Lattice<mpz_t, FT, matrix<Z_NR<mpz_t> >, MatrixFT>  BR(getblock(RZ, k, k, S, 0), TRANSFORM, seysen_flag);
-
-
-        BR.set_nblov_max(lovmax);
-        BR.hlll(delta, VERBOSE_NO);
-
-        //cout << endl << "Swaps (" << 2*k << "): " << BR.nbswaps << endl;
-        swapstab[2 * k] += BR.nbswaps;
-        nbswaps += BR.nbswaps;
-
-        putblock(U_even, BR.getU(), k, k, S, 0);
-
-        lovtests[k] = BR.nblov;
-
+      for (k=0; k<S; k++) { 
+  	 {
+	   
+	   Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  BR(getblock(RZ,k,k,S,0),TRANSFORM,DEF_REDUCTION);
+	   
+	   BR.set_nblov_max(lovmax);
+	   BR.hlll(delta);
+	   
+	   cout << endl << "Swaps (" << 2*k << "): " << BR.nbswaps << endl; 
+	   swapstab[2*k]+=BR.nbswaps;
+	   nbswaps+=BR.nbswaps;
+	   
+	   putblock(RZ,BR.getbase(),k,k,S,0);
+	   putblock(U_even,BR.getU(),k,k,S,0);
+	}
       }
-    }
+      
+
+      time.stop();
+      redtime+=time; 
+      eventime+=time; 
+
+     
+	
+      // Size reduction via size reduction of RZ by blocks 
+      // -------------------------------------------------
+      
+      time.start();
+
+             
+       // update blocks above the diagonal 
+
+      even_updateRZ(S);
+      
+                    
+      //pmatprod_in(B,U_even,S);
+      // Put an if nbthreads > S
+      pmaprod_diag_even(B,U_even,S,nbthreads);
+
+      // {// ICI 
+      // 	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  T(getbase(),NO_TRANSFORM,DEF_REDUCTION);
+	 
+      // 	T.householder_r(0);  
+      // 	T.householder_v(0);
+
+      // 	for (int i=1; i<dorigin; i++) {
+      // 	  T.hsizereduce(i);
+      // 	  T.householder_v(i);
+      // 	}
+      // }
+      
+      time.stop();
+      prodtime1+=time;
+      
+       stop= (stop &&  isId(U_even));
+       //print2maple(getbase(),n,d);
+	
+       
+       
+       // print2maple(RZ,d,d);
+
+
+       setId(U_proper);
+
+       // Les blocs diagonaux ne devraient pas avoir Ã  Ãªtre rÃ©-orthogonalisÃ©s
+
+       time.start();
+ 
+       even_hsizereduce(S); // Uproper implicitely updated
+       // !!!!! eventuellement que au-dessus de diag pour odd 
+       // Both RZ and newRZ are equal 
+
+       time.stop();
+       esizetime+=time;
+       
+
+       // Si on l'applique Ã  B autant ne pas le faire 3 fois R flottant, RZ et B ?
+       
+       time.start();
+
+       chrono.start();
+
+       //pmatprod_in(B,U_proper,S);
+       pmatprod(B,U_proper,S,nbthreads);
+
+       chrono.stop();
+      special+=chrono;  
+
+
+       time.stop();
+       prodtime2+=time;
+             
+       stop= (stop &&  isId(U_proper));
+       
+       //  if (transf) pmatprod_in(Uglob,U,S);
+ 
+      // Re-orthogonalization 
+
+       time.start();
+
+       phouseholder(S);
+       set_f(RZ,R,condbits);
+
+       // DBG
+       for (i=0; i<d; i++)
+	 if (RZ(i,i).sgn() ==0) RZ(i,i)=1;
+
+       time.stop();
+       orthotime+=time;
+       
+
+	 // Odd block loop 
+	 // --------------
+
+
+       setId(U);
+      
+
+       setId(U_odd);
+
+	
+       time.start();
+
+       cout << endl <<  "--- Odd reductions" << endl;
 
 #ifdef _OPENMP
-    #pragma omp barrier
+#pragma omp parallel for 
 #endif
-
-    for (k = 0; k < S; k++) phase_tests += lovtests[k];
-    nblov += phase_tests;
-
-    time.stop();
-    redtime += time;
-    eventime += time;
-
-
-    // Update after the block even reductions
-    // **************************************
-
-    //stop= (stop &&  isId(U_even));
-    stop = (stop && ( phase_tests == (S * (2 * bdim - 1)) ));
-
-    time.start();
-
-    matrix_cast(U, U_even);
-
-    pmatprod(S, 0);
-
-
-    time.stop();
-    prodtime1 += time;
-
-
-
-    // Even size reduction
-    // *******************
-
-
-    time.start();
-
-    gap_status = reduce_and_gap_detect(seysen_flag);
-
-
-    if (gap_status >= 2) {
-      verboseDepth += 1;
-      return gap_status;
-    }
-
-    for (i = dorigin; i < d; i++)
-      R.set(i, i, afmax);
-
-
-    time.stop();
-    esizetime += time;
-
-
-
-    // Odd reductions
-    // **************
-
-    time.start();
-
-    setId(U_odd);
-
-    phase_tests = 0;
-
-
-    set_f(RZ, R, condbits);
-
-
-
-    // Forcer les zéros si pas mis dans householder_v par ex
-    for (i = 1; i < d; i++)
-      for (j = 0; j < i; j++)
-        RZ(i, j) = 0;
-
-    // PATCH
-    for (i = 0; i < d; i++)
-      if (RZ(i, i).sgn() == 0) RZ(i, i) = 1;
-
-    time.stop();
-    rztime += time;
-
-    time.start();
-
-    //cout << endl <<  "--- Odd reductions" << endl;
-
-
-
-#ifdef _OPENMP
-    #pragma omp parallel for
-#endif
-
-    for (k = 0; k < S - 1; k++) {
-
-      Lattice<mpz_t, FT, matrix<Z_NR<mpz_t> >, MatrixFT>  BR(getblock(RZ, k, k, S, bdim), TRANSFORM, seysen_flag);
-
-
-      BR.set_nblov_max(lovmax);
-      BR.hlll(delta, VERBOSE_NO);
-      //cout << endl << "Swaps (" << 2*k+1 << "): " << BR.nbswaps << endl;
-      swapstab[2 * k + 1] += BR.nbswaps;
-      nbswaps += BR.nbswaps;
-
-      putblock(U_odd, BR.getU(), k, k, S, bdim);
-
-      lovtests[k] = BR.nblov;
-
-    }
-
-
-    for (k = 0; k < S - 1; k++) phase_tests += lovtests[k];
-    nblov += phase_tests;
-
-    time.stop();
-    redtime += time;
-    oddtime += time;
-
-    // Update after the block odd reductions
-    // *************************************
-
-    //stop = (stop &&  isId(U_odd));
-    stop = (stop && ( phase_tests == ((S - 1) * (2 * bdim - 1)) ));
-
-    time.start();
-
-    matrix_cast(U, U_odd);
-
-    pmatprod(S, 1);
-
-    time.stop();
-    prodtime2 += time;
-
-
-    // Odd size reduction
-    // ******************
-
-    time.start();
-
-    gap_status = reduce_and_gap_detect(seysen_flag);
-
-    if (gap_status >= 2) {
-      verboseDepth += 1;
-      return gap_status;
-    }
-
-    for (i = dorigin; i < d; i++)
-      R.set(i, i, afmax);
-
-
-    time.stop();
-    osizetime += time;
-
-  } // End odd-even iter until reduced
-
-
-  totime.stop();
-
-
-  // cout << endl;
-  // //cout << " Householder: " << qrtime << endl;
-  // //cout << " Re-ortho: " << orthotime  << endl;
-
-  cout << " Reductions: " << redtime << endl;
-  cout << "   Even reductions: " << eventime << endl;
-  cout << "   Odd reductions: " << oddtime << endl;
-  cout << " Products: " << prodtime1 << endl;
-  cout << "           " << prodtime2 << endl;
-
-  // //cout << "           " << prodtime3 << endl;
-  // //cout << "           " << prodtime4 << endl;
-
-  cout << " Even size reds: " << esizetime  << endl;
-  cout << " Odd size reds: " << osizetime  << endl;
-  cout << " RZ: " << rztime  << endl;
-  cout << " Total time:  " << totime << endl;
-
-  // //cout << endl << " Special chrono:" << special << endl << endl;
-  // cout << endl << "Swaps: " << swapstab << endl;
-
-  verboseDepth += 1;
-
-  return 0;
-
-};
-
-
-
-/* -------------------------------------------------------------------------
-
-  Rotation
-
-
-  ------------------------------------------------------------------------- */
-
-
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline int
-SLattice<ZT, FT, MatrixZT, MatrixFT>::rotate(int gap_status) {
-
-  vector<Z_NR<ZT> > vz;
-  vz.resize(n);
-
-  int i, j;
-
-  for (i = 0; i < n; i++)
-    vz[i] = B(i, gap_status - 1);
-
-  for (j = gap_status - 1; j > 0; j--)
-    for (i = 0; i < n; i++)
-      B(i, j) = B(i, j - 1);
-
-  for (i = 0; i < n; i++)
-    B(i, 0) = vz[i];
-
-  return (0);
-
+             
+       for (k=0; k<S-1; k++) {
+	
+	  Lattice<mpz_t, double, matrix<Z_NR<mpz_t> >, matrix<FP_NR<double> > >  BR(getblock(RZ,k,k,S,bdim),TRANSFORM,DEF_REDUCTION);
+	  BR.set_nblov_max(lovmax);
+	  BR.hlll(delta);
+	  cout << endl << "Swaps (" << 2*k+1 << "): " << BR.nbswaps << endl;
+	  swapstab[2*k+1]+=BR.nbswaps;
+	  nbswaps+=BR.nbswaps;
+	  putblock(U_odd,BR.getU(),k,k,S,bdim);	   
+	  //putblock(RZ,BR.getbase(),k,k,S,bdim); //Not here: RZ and the orthogonalization were different
+
+	  
+ 	}
+       
+       //odd_updateRZ(S); 
+
+       time.stop();
+       redtime+=time; 
+       oddtime+=time; 
+
+       time.start();
+       
+       pmatprod_in(B,U_odd,S);
+       
+       pmatprod_in(RZ,U_odd,S);   
+
+       time.stop();
+       prodtime3+=time;
+
+       stop= (stop &&  isId(U_odd));
+
+// #pragma omp barrier
+      
+//       stop=isId(U)*stop;
+        
+	
+//       // Size reduction via size reduction of RZ by blocks 
+//       // -------------------------------------------------
+      
+//       time.start();
+
+     
+      
+//       pmatprod_in(B,U,S);
+     
+
+//       if (transf) pmatprod_in(Uglob,U,S);
+
+//       time.stop();    
+//       prodtime+=time; 
+      
+//       // RZ and B same state 
+      
+//       setId(U);
+      
+//       time.start();
+
+       setId(U_proper);
+       // ICI
+
+       time.start();
+
+       //phouseholder(S);
+       
+
+       time.stop();      
+       qrtime+=time;
+       
+       
+       //set_f(RZ,R,condbits);
+      
+       time.start();
+      
+       odd_hsizereduce(S); // U_proper implicitely updated 
+       // Le phouseholder du dÃ©but nÃ©cessaire aprÃ¨s Ã§a ? 
+
+       time.stop();
+       osizetime+=time;
+
+       time.start();
+       
+       pmatprod_in(B,U_proper,S);
+       
+       time.stop();
+       prodtime4+=time;
+       
+
+       // if (transf) pmatprod_in(Uglob,U,S);
+
+     
+    } // End main loop: global iterations, iter 
+    
+      totime.stop();
+
+      cout << endl;
+      cout << " Householder: " << qrtime << endl;
+      cout << " Re-ortho: " << orthotime  << endl;
+      cout << " Reductions: " << redtime << endl;
+      cout << "   Even reductions: " << eventime << endl;
+      cout << "   Odd reductions: " << oddtime << endl;
+      cout << " Products: " << prodtime1 << endl;
+      cout << "           " << prodtime2 << endl;
+      cout << "           " << prodtime3 << endl;
+      cout << "           " << prodtime4 << endl;
+      cout << " Even size reds: " << esizetime  << endl;
+      cout << " Odd size reds: " << osizetime  << endl;
+      cout << " Total time:  " << totime << endl;  
+      cout << endl << " Special chrono:" << special << endl << endl;
+      cout << endl << "Swaps: " << swapstab << endl; 
+    
+    return 0;
+    
 }
 
 
-/* -------------------------------------------------------------------------
+  /* -------------------------------------------------------- */
+  /* Update above diagonal after the even phase               */
+  /*   since only diagonal blocks have been computed          */
+  /* -------------------------------------------------------- */
 
-   Size reduction and gap detection
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void 
+  SLattice<ZT,FT, MatrixZT, MatrixFT>::even_updateRZ(int S)  {
 
+    int k;
+    
+    int Sdim = d/S;
 
-   ------------------------------------------------------------------------- */
+   
+      
+  // Loop on the block columns 
+  // -------------------------
+    
+  //PPP  
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif
+    // Could use more parallelism 
 
+    for (k=1; k<S ; k++) {
 
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline int
-SLattice<ZT, FT, MatrixZT, MatrixFT>::reduce_and_gap_detect(int seysen_flag) {
-
-  // For the gap detection
-
-  FP_NR<FT>  qq;
-  FP_NR<FT>  eps;
-
-  eps = 0.000000001; // 9
-  //eps=0.0000001; // 7
-  //eps=0.00001; // 4
-
-  int i;
-
-  for (i = 0; i < dorigin; i++) {
-    col_kept[i] = 0;
-    descendu[i] = 0;
+      int i,j,l;
+      
+      MatrixZT tRZ;
+      tRZ.resize(Sdim,Sdim);
+      
+      MatrixZT  tU;
+      tU.resize(Sdim,Sdim);
+      
+      MatrixZT tres;
+      tres.resize(Sdim,Sdim);
+      
+      for (i=0; i<Sdim; i++)
+	for (j=0; j<Sdim; j++)
+	  tU(i,j)=U_even(k*Sdim+i,k*Sdim+j);
+      
+      for (l=0; l<k; l++) {
+	
+	for (i=0; i<Sdim; i++)
+	  for (j=0; j<Sdim; j++)
+	    tRZ(i,j)=RZ(l*Sdim+i,k*Sdim+j);
+	
+	matprod(tres,tRZ,tU);
+	
+	for (i=0; i<Sdim; i++)
+	  for (j=0; j<Sdim; j++)
+	    RZ(l*Sdim+i,k*Sdim+j)=tres(i,j);
+      }
+    } 
   }
 
-  householder_r(0);
-  householder_v(0);
 
-  for (i = 1; i < dorigin; i++) {
 
 
-    if (seysen_flag < 1)
-      hsizereduce(i);
-    else
-      seysenreduce(i);
+  /* -------------------------------------------------------- */
+  /* Update above diagonal for the odd phase                  */
+  /* -------------------------------------------------------- */
 
+  template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void 
+  SLattice<ZT,FT, MatrixZT, MatrixFT>::odd_updateRZ(int S)  {
 
-    householder_v(i);
+    int k;
+    
+    int Sdim = d/S;
 
-
-    // Gap detection is a e.g. small vector has been found
-    // ---------------------------------------------------
-
-    if ((i >= 2) && (i < dorigin - 1)) {
-
-      qq.div(R.get(i, i), R.get(i - 1, i - 1));
-      qq.abs(qq);
-
-      // DBG
-      //cout << " qq  "; hplllprint(qq); cout << endl;
-
-      if (eps.cmp(qq) == 1) {
-
-        cout << " **** Anomaly gap detection, column: " << i + 1 << "/" << dorigin << "    Ratio = ";
-        hplllprint(qq);   cout << endl;
-
-        return i + 1; // Math column index
-      }
-    } // gap detection test
-
-
-
-  } // end size reduction loop
-
-
-  return 0;
-
-}
-
-
-/* -------------------------------------------------------------------------
-   Seysen size reduction
-
-   Assumes that Householder is available until index kappa-1
-
-   Returns -1 if no convergence in the while loop:  no decrease of the norm
-
-   ------------------------------------------------------------------------- */
-
-
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline int
-SLattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
-
-
-  nmaxkappa = structure[kappa] + 1;
-
-  FP_NR<FT> approx;
-  approx = 0.01;
-
-
-
-  FP_NR<FT> x, t, tmpfp;
-  Z_NR<ZT>  xz, tmpz;
-
-  vector<FP_NR<FT> > vectx(kappa);
-
-  vector<FP_NR<FT> > tmpcolR(kappa);
-
-  int i, k, w = 0;
-
-  bool nonstop = 1;
-  bool somedone = 0;
-
-  vector<bool> bounded(kappa);
-
-  int restdim = 0; // Remaining dimension after the current block
-
-
-  householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous
-
-  FP_NR<FT> theta, eps, qq;
-  eps = 0.00000000001; // To tune for theta depending on the precision
-
-
-  int bdim, ld, tdig, indexdec;
-
-  while (nonstop) {  // LOOP COLUMN CONVERGENCE
-
-    // DBG
-    //cout <<  w << "   ";  hplllprint(normB2[kappa]); cout  << endl;
-    //hplllprint(normB2[kappa-1]); cout << "   ";  hplllprint(R.get(kappa-1,kappa-1));  cout  << endl;
-
-    // Jeu 12 mai 2016 12:55:13 CEST
-    theta.sqrt(normB2[kappa]);
-    theta.mul(theta, eps);
-
-    w++;
-
-
-
-    somedone = 0;
-
-    //compteur += 1;
-
-    ld = 1; indexdec = 0; // Décalage d'indice
-
-
-    while (ld <= kappa) {
-
-      tdig = (kappa / ld) % 2;
-
-      if (tdig == 0) bdim = 0; else bdim = ld;
-
-      // -----------------------------------------------------
-      // Boucle sur la partie de la colonne correspond au bloc
-      // -----------------------------------------------------
-
-      // vectxz rounding of vectx
-      //  column -  (prev col) * vectxz (xz ré-utilisé)
-      // On peut travailler sur place en remontant dans la colonne kappa de R
-
-      // On calcule vectx et on arrondit au fur et à mesure
-
-      restdim = kappa - indexdec - bdim;
-
-
-      for (i = kappa - 1 - indexdec; i >= restdim; i--)
-        tmpcolR[i] = R.get(i, kappa);
-
-
-      for (i = kappa - 1 - indexdec; i >= restdim; i--) {
-
-        vectx[i].div(tmpcolR[i], R.get(i, i));
-
-        qq.abs(R.get(i, i));
-        qq.add(qq, theta); // À optimiser
-        qq.div(tmpcolR[i], qq);
-        qq.abs(qq);
-        //qq.abs(vectx[i]);
-
-        qq.abs(vectx[i]);
-        if (qq.cmp(0.501) == 1) {  // Ex 512 Shi ne passe pas en 512 avec 0.501
-          bounded[i] = 0;
-          somedone = 1;
-        }
-        else bounded[i] = 1;
-
-
-        // Faire une opération vectorielle
-        for (k = restdim; k < i; k++)
-          tmpcolR[k].submul(R.get(k, i), vectx[i]);
-
-
-      } // end calcul de la transfo
-
-
-      for (i = kappa - 1 - indexdec; i >= restdim; i--)
-        vectx[i].rnd(vectx[i]);
-
-
-      // Et on applique la transformation
-      // --------------------------------
-
-      // Sequential
-
-      if (bdim <= 255)
-        seysen_update(kappa, kappa - 1 - indexdec,  restdim,  vectx, bounded);
-
-
-      // Parallel
-
-      else {  // Mettre en parallèle avec un seuseyn_update B
-
-        seysen_update_R(kappa, kappa - 1 - indexdec,  restdim,  vectx, bounded);
-
-        pseysen_update_B(kappa, kappa - 1 - indexdec,  restdim, vectx, bounded, 2);
-      }
-
-      indexdec += bdim;
-      ld = ld * 2;
-
-    } // End loop on log blocks
-
-
-
-    if (somedone) {
-
-      compteur += 1;
-
-
-      col_kept[kappa] = 0;
-
-      t.mul(approx, normB2[kappa]);
-
-      householder_r(kappa);
-
-      // IICI
-      //nonstop = (normB2[kappa] < t);  // ne baisse quasiment  plus ?
-
-    }
-    else {
-
-      nonstop = 0;
-
-    }
-
-  } // end while
-
-  return somedone;
-
-};
-
-/* -------------------------------------------------------------------------
-   Seysen sequential update of R and B
-
-   ------------------------------------------------------------------------- */
-
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline bool
-SLattice<ZT, FT, MatrixZT, MatrixFT>::seysen_update(int kappa, int from_i, int restdim,
-    vector<FP_NR<FT> > vectx, vector<bool> bounded) {
-
-
-  int i;
-
-  FP_NR<FT>  xf; // Old x
-
-  long expo, lx;
-
-  int nmax;
-
-  Z_NR<ZT>  xz;
-
-  for (i = from_i; i >= restdim; i--) {
-
-    //vectx[i].rnd(vectx[i]);
-    xf = vectx[i];
-
-
-    if (bounded[i] == 0) {
-
-
-      lx = xf.get_si_exp(expo);
-
-      nmax = structure[i] + 1;
-
-      // Cf fplll
-      // Long case
-      if (expo == 0) {
-
-        if (lx == 1) {
-
-          R.subcol(kappa, i, restdim);
-
-          B.subcol(kappa, i, nmax);
-
-          if (transf)
-            U.subcol(kappa, i, min(d, nmax));
-
-        }
-        else if (lx == -1) {
-
-
-          R.addcol(kappa, i, restdim);
-
-          B.addcol(kappa, i, nmax);
-
-          if (transf)
-            U.addcol(kappa, i, min(d, nmax));
-
-        }
-        else {
-
-          if (fast_long_flag == 1) {
-
-            R.submulcol(kappa, i, xf, restdim);
-
-            B.addmulcol_si(kappa, i, -lx, nmax);
-            if (transf)
-              U.addmulcol_si(kappa, i, -lx, min(d, nmax));
-
-          } // end fast_long
-          else {
-
-            set_f(xz, x);
-
-            R.submulcol(kappa, i, xf, restdim);
-            B.submulcol(kappa, i, xz, nmax);
-            if (transf)
-              U.submulcol(kappa, i, xz, min(d, nmax));
-          }
-        }
-
-      } // end expo == 0
-      else {  // expo <> 0
-
-
-        if (fast_long_flag == 1) {
-
-          R.submulcol(kappa, i, xf, restdim);
-
-          B.addmulcol_si_2exp(kappa, i, -lx, expo, nmax);
-          if (transf)
-            U.addmulcol_si_2exp(kappa, i, -lx, expo, min(d, nmax));
-
-        } // end fast_long
-        else {
-
-          set_f(xz, x);
-
-          R.submulcol(kappa, i, xf, restdim);
-
-          B.submulcol(kappa, i, xz, nmax);
-          if (transf)
-            U.submulcol(kappa, i, xz, min(d, nmax));
-
-        } // end no long
-
-
-
-      } // end expo <> 0
-    } // Non zero combination
-
-  } // end application de la transformation
-
-
-  return 0;
-
-}
-
-
-/* -------------------------------------------------------------------------
-   Seysen update of R  / TO DO parallel
-
-   ------------------------------------------------------------------------- */
-
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline bool
-SLattice<ZT, FT, MatrixZT, MatrixFT>::seysen_update_R(int kappa, int from_i, int restdim,
-    vector<FP_NR<FT> > vectx, vector<bool> bounded) {
-
-
-  int i;
-
-  FP_NR<FT>  xf; // Old x
-
-  long expo, lx;
-
-
-  for (i = from_i; i >= restdim; i--) {
-
-    //vectx[i].rnd(vectx[i]);  // Attention si en parallèle
-    xf = vectx[i];
-
-
-    if (bounded[i] == 0) {
-
-
-      lx = xf.get_si_exp(expo);
-
-      // Cf fplll
-      // Long case
-      if (expo == 0) {
-
-        if (lx == 1) {
-
-          R.subcol(kappa, i, restdim);
-
-        }
-        else if (lx == -1) {
-
-
-          R.addcol(kappa, i, restdim);
-
-        }
-        else {
-
-          if (fast_long_flag == 1) {
-
-            R.submulcol(kappa, i, xf, restdim);
-
-          } // end fast_long
-          else {
-
-
-            R.submulcol(kappa, i, xf, restdim);
-
-          }
-        }
-
-      } // end expo == 0
-      else {  // expo <> 0
-
-        R.submulcol(kappa, i, xf, restdim);
-
-      } // end expo <> 0
-    } // Non zero combination
-
-  } // end application de la transformation
-
-
-  return 0;
-
-}
-
-
-
-
-
-/* -------------------------------------------------------------------------
- Seysen parallel update of B
-
- ------------------------------------------------------------------------- */
-
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline bool
-SLattice<ZT, FT, MatrixZT, MatrixFT>::pseysen_update_B(int kappa, int from_i, int restdim,
-    vector<FP_NR<FT> > vectx, vector<bool> bounded, int S) {
-
-
-  int nmax;
-
-  nmax = structure[from_i];
-
-  for (int i = from_i + 1; i >= restdim; i--)
-    nmax = max(nmax, structure[i]);
-
-  nmax += 1;
-
-  // Parallel loop
-  // -------------
-
+    int bdim = Sdim/2; 
+       
+  // Loop on the block columns 
+  // -------------------------
+    
+  //PPP  
 #ifdef _OPENMP
-  #pragma omp parallel for
+#pragma omp parallel for 
 #endif
+    // Could use more parallelism 
 
-  for (int l = 0; l < S; l++) {
+    for (k=0; k<S-1 ; k++) {
 
-    int i;
+      int i,j;
+      
+      MatrixZT  tU;
+      tU.resize(Sdim,Sdim);
 
-    FP_NR<FT>  xf; // Old x
+    
+      MatrixZT tRZ;
+      tRZ.resize((k+2)*Sdim,Sdim);
 
-    long expo, lx;
+      MatrixZT tres;
+      tres.resize((k+2)*Sdim,Sdim);
+    
+      for (i=0; i<Sdim; i++)
+	for (j=0; j<Sdim; j++)
+	  tU(i,j)=U_odd(k*Sdim+bdim+i,k*Sdim+bdim+j);
+      
+      for (i=0; i<(k+2)*Sdim; i++) 
+	for (j=0; j<Sdim; j++)
+	  tRZ(i,j)=RZ(i,k*Sdim+bdim+j);
+      
+	
+      matprod(tres,tRZ,tU);
 
-    Z_NR<ZT>  xz;
+      for (i=0; i<(k+2)*Sdim; i++) 
+	for (j=0; j<Sdim; j++)
+	  RZ(i,k*Sdim+bdim+j)=tres(i,j);
 
-    int nloc;
-    nloc = nmax / S;
-    if ((l + 1) <= nmax % S)
-      nloc += 1;
+      
+    } 
+  }
 
-    int ibeg;
-    ibeg = (nmax / S) * l;
-    if ((l + 1) <= nmax % S)
-      ibeg += l;
-    else
-      ibeg += nmax % S;
+  
+/* -------------------------------------------------------- */
+/* Even phase size reduction                                */
+/* -------------------------------------------------------- */
 
-
-    for (i = from_i; i >= restdim; i--) {
-
-      xf = vectx[i];
-
-
-      if (bounded[i] == 0) {
-
-
-        lx = xf.get_si_exp(expo);
-
-        // Cf fplll
-        // Long case
-        if (expo == 0) {
-
-          if (lx == 1) {
-
-
-            B.psubcol(kappa, i, ibeg, nloc);
-
-            // if (transf)   TODO EN PARALLELE CF LONGUEUR
-            //  U.subcol(kappa,i,min(d,nmax));
-
-          }
-          else if (lx == -1) {
-
-            B.paddcol(kappa, i, ibeg, nloc);
-
-            // if (transf)
-            //  U.addcol(kappa,i,min(d,nmax));
-
-          }
-          else {
-
-            if (fast_long_flag == 1) {
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void 
+SLattice<ZT,FT, MatrixZT, MatrixFT>::even_hsizereduce(int S)
+{
 
 
-              B.paddmulcol_si(kappa, i, -lx, ibeg, nloc);
+  int k;
 
-              // if (transf)
-              //   U.addmulcol_si(kappa,i,-lx,min(d,nmax));
-
-            } // end fast_long
-            else {
-
-              set_f(xz, x);
-
-              B.psubmulcol(kappa, i, xz, ibeg, nloc);
-
-              // if (transf)
-              //   U.submulcol(kappa,i,xz,min(d,nmax));
-            }
-          }
-
-        } // end expo == 0
-        else {  // expo <> 0
+  int Sdim = d/S;
 
 
-          if (fast_long_flag == 1) {
-
-            B.paddmulcol_si_2exp(kappa, i, -lx, expo, ibeg, nloc);
-
-            // if (transf)
-            //  U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
-
-          } // end fast_long
-          else {
-
-            set_f(xz, x);
-
-            B.psubmulcol(kappa, i, xz, ibeg, nloc);
-
-            // if (transf)
-            //  U.submulcol(kappa,i,xz,min(d,nmax));
-
-          } // end no long
+  for (int i=0; i<d; i++) 
+    for (int j=0; j< d; j++) 
+      newRZ(i,j)=RZ(i,j);
 
 
+  // Loop on the block columns 
+  // -------------------------
 
-        } // end expo <> 0
-      } // Non zero combination
+  //PPP  
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif 
 
-    } // end application de la transformation
+  for (k=1; k<S ; k++) {
 
-  } // Parallel loop
+    OMPTimer c;
+    c.clear();
+    c.start();
 
-  return 0;
+    
+    int i,j;
+
+   
+    // lattice for size reduction 
+    ZZ_mat<ZT> tmpM;
+    tmpM.resize(Sdim,2*Sdim);
+    
+    //Lattice<ZT, FT, MatrixZT, MatrixFT> RZloc(tmpM,TRANSFORM,DEF_REDUCTION);
+    // Ok since the diagonal blocks are reduced 
+    Lattice<ZT, double, MatrixZT, matrix<FP_NR<double> > > RZloc(tmpM,TRANSFORM,DEF_REDUCTION);
+
+    // tmp for U  
+    ZZ_mat<ZT> tmpU;
+    tmpU.resize(2*Sdim,2*Sdim);
+
+  
+
+    matrix<FP_NR<FT> > tmpR;
+    tmpR.resize(Sdim,2*Sdim);
+    
+    // Loop in the block column 
+    // ------------------------
+
+    int l;
+
+    for (l=k-1; l>-1; l--) {
+
+    
+      // Block extraction for size reduction
+      // from RZ and the update in newR 
+
+      for (i=0; i<Sdim; i++)
+	for (j=0; j<Sdim; j++) 
+	  tmpM(i,j)=RZ(l*Sdim+i,l*Sdim+j);
+
+      for (i=0; i<Sdim; i++)
+	for (j=0; j<Sdim; j++) 
+	  tmpM(i,Sdim+j)=newRZ(l*Sdim+i,k*Sdim+j);
+
+
+            
+      RZloc.assign(tmpM);
+ 
+     
+     
+      // Local size reduction 
+
+      for (i=0; i<Sdim; i++) {
+
+	RZloc.householder_r(i);
+	RZloc.householder_v(i);
+      }
+
+
+      for (i=Sdim; i<2*Sdim; i++) {
+
+	RZloc.hsizereduce(i,Sdim-1);
+
+	
+      }
+
+	
+      // Update of U
+      tmpU=RZloc.getU();
+
+      for (i=0; i<Sdim; i++)
+	for (j=0; j<Sdim; j++) 
+	  U_proper(l*Sdim+i,k*Sdim+j)=tmpU(i,Sdim+j);
+
+            
+      // Update of newRZ for the remaining computations in the block column 
+      // Clean matrix product to do  RZ * U in newRZ
+
+            
+       for (i=0; i<(l+1)*Sdim; i++)  {  
+
+
+	int jj,kk;
+	
+	for (jj=0; jj<Sdim; jj++) {  // i,jj in the result 
+	  
+	  for (kk=0; kk<Sdim; kk++) {
+	    
+	    // RZ(i,(l-1)*Sdim+kk)   x  tmpU(kk,Sdim+jj) += newRZ(i,jj) 
+	    (newRZ(i,k*Sdim+jj)).addmul( RZ(i,l*Sdim+kk) , tmpU(kk, Sdim+jj) ); 
+	  }
+	}	
+      } // end RZ * U 
+
+             
+    } // loop in the block column k 
+    
+    c.stop();
+    
+  } // parallel loop on the blocks 
+
+
+#pragma omp barrier
+
+  // RZ updated at the end since initial value used by threads above
+  
+  for (int i=0; i<d; i++)
+    for (int j=0; j<d; j++) 
+      RZ(i,j)=newRZ(i,j);
+
+    
+
+
+  // Mise a jour de RZ avec newRZ, B et de R Ã  la fin pour le nouveau RZ 
 
 }
 
+/* -------------------------------------------------------- */
+/*  Odd phase size reduction                                */
+/* -------------------------------------------------------- */
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline void 
+SLattice<ZT,FT, MatrixZT, MatrixFT>::odd_hsizereduce(int S)
+{
 
 
+  int k;
+
+  int Sdim = d/S;
+  int bdim = Sdim/2;
+
+  // Loop on the block columns 
+  // -------------------------
+
+  
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif 
 
 
-/* -------------------------------------------------------------------------
-   Size reduction
+  for (k=1; k<=S ; k++) {
 
-   Assumes that Householder is available until index kappa-1
+    OMPTimer c;
+    c.clear();
+    c.start();
 
-   Returns -1 if no convergence in the while loop:  no decrease of the norm
+    
+    int i,j;
 
-   ------------------------------------------------------------------------- */
+    int dlast=0;
 
+    // Sdim blocks and last smaller block 
+    // ----------------------------------
 
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline int
-SLattice<ZT, FT, MatrixZT, MatrixFT>::hsizereduce(int kappa, int fromk) {
+    if (k==S) 
+      dlast = bdim;
+    else 
+      dlast = 0;
+ 
+    // lattice for size reduction 
+    ZZ_mat<ZT> tmpM;
+    tmpM.resize(Sdim,2*Sdim-dlast);
+    
+    Lattice<ZT, FT, MatrixZT, MatrixFT> RZloc(tmpM,TRANSFORM,DEF_REDUCTION);
+      
+    // tmp for U  
+    ZZ_mat<ZT> tmpU;
+    tmpU.resize(2*Sdim-dlast,2*Sdim-dlast);
 
-  //nmaxkappa=structure[kappa]+1;
+    // The local slice of RZ and update 
+    MatrixZT newRZ;
+    newRZ.resize(d,Sdim-dlast);
 
-  FP_NR<FT> approx;
-  vector<FP_NR<FT> > vectx;
-  vectx.resize(n);
+    for (i=0; i<d; i++) 
+      for (j=0; j< Sdim-dlast; j++) 
+	newRZ(i,j)=RZ(i,k*Sdim-bdim+j);
 
+    
+    // Loop in the block column 
+    // ------------------------
 
-  approx = 0.001;
+    int l;
 
+    for (l=k-1; l>0; l--) { 
+      
+      // Block extraction for size reduction
+      // from RZ and the update in newR 
+      
+      for (i=0; i<Sdim; i++)
+	for (j=0; j<Sdim; j++) 
+	  tmpM(i,j)=RZ(l*Sdim-bdim+i,l*Sdim-bdim+j);
+      
+      for (i=0; i<Sdim; i++)
+	for (j=0; j<Sdim-dlast; j++) 
+	  tmpM(i,Sdim+j)=newRZ(l*Sdim-bdim+i,j);
+      
+      
+      RZloc.assign(tmpM);
 
-  FP_NR<FT> t, tmpfp;
+      // ICI
+      //cout << "* A ** " << k << "   " << l << endl;
+      //print2maple(tmpM,Sdim,2*Sdim-dlast);
+		  
+      // Local size reduction 
 
+      for (i=0; i<Sdim; i++) {
 
-  int i, w = 0;
+	RZloc.householder_r(i);
+	RZloc.householder_v(i);
+      }
 
-  bool nonstop = 1;
-  bool prev_nonstop = 1;
+      // DBG 
+      //print2maple(tmpM,Sdim,2*Sdim-dlast);
+ 
+      for (i=Sdim; i<2*Sdim-dlast; i++) {
 
-  bool somedone = 0;
+	RZloc.hsizereduce(i,Sdim-1);
 
+	
+      }
 
-
-  householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous
-
-
-
-  int startposition;
-  if (fromk > 0)
-    startposition = min(kappa - 1, fromk);
-  else
-    startposition = kappa - 1;
-
-  somedone = 1;
-
-  // While loop for the norm decrease
-  // --------------------------------
-
-
-  while (somedone == 1) {
-
-    w++;
-
-
-    // Sequential
-    // ----------
-    somedone = size_update(kappa, startposition, 0);
-
-    // Parallel
-    // --------
-
-    //somedone=size_update_R(vectx, kappa, startposition, 0);
-
-    //psize_update_B(kappa, startposition, 0, vectx, 1);
-
-
-    // Somedone
-
-    if (somedone) {
-
-
-      compteur += 1;
-
-      col_kept[kappa] = 0;
-
-      t.mul(approx, normB2[kappa]);
-
-      householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous
-
-      nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ?
-
-      // Heuristic test
-      // The norm is not increasing for several steps
-      // This may happen exceptionnaly in correct cases with mu_ij = 1/2 exactly
-      //  (and alternates between to values 1/2 and -1/2 in floating point
-      // Or happen when not enough precision
-      // Hence here: test of size reduction, if yes then exit if no then return -1
-      if ((prev_nonstop == 0) && (nonstop == 0)) {
-
-        FP_NR<FT> one;
-        one = 1.0;
-
-        FP_NR<FT> theta, eps;
-        //theta = 0.0000001;
-        //theta.mul(theta,R.get(kappa,kappa));
-        // Jeu 12 mai 2016 12:55:13 CEST - R.get(kappa,kappa) may not be relevant (no hoseholder_v)
-        theta.sqrt(normB2[kappa]);
-        eps = 0.00000000001; // To tune for theta depending on the precision
-        theta.mul(theta, eps);
+      // Update of U
+      tmpU=RZloc.getU();
+	
+      for (i=0; i<Sdim; i++)
+	for (j=0; j<Sdim-dlast; j++) 
+	  U_proper(l*Sdim-bdim+i,k*Sdim-bdim+j)=tmpU(i,Sdim+j);
 
 
-        FP_NR<FT> mu, mu_test;
+      // Update of newRZ for the remaining computations in the block column 
+      // Clean matrix product to do  RZ * U in newRZ
 
-        for (i = 0; i < kappa; i++) {
+      for (i=0; i<l*Sdim-bdim; i++)  {  
+ 
+	int jj,kk;
+  	
+	for (jj=0; jj<Sdim-dlast; jj++) {  // i,jj in the result 
+	   
+	  for (kk=0; kk<Sdim; kk++) {
+	    
+	    // RZ(i,(l-1)*Sdim+kk)   x  tmpU(kk,Sdim+jj) += newRZ(i,jj) 
+	    (newRZ(i,jj)).addmul( RZ(i,l*Sdim-bdim+kk) , tmpU(kk, Sdim+jj) ); 
+	  }
+	}	
+      } // end RZ * U 
+     
+    } // end loop in the block column 
+    
+    // With respect to the first smaller block l=0
+    // -------------------------------------------
+    
+    // lattice for size reduction 
+    
+    tmpM.resize(Sdim,bdim+Sdim-dlast);
+    
+    Lattice<ZT, FT, MatrixZT, MatrixFT> RZlocf(tmpM,TRANSFORM,DEF_REDUCTION);
+    
+    // tmp for U  
+    tmpU.resize(bdim+Sdim-dlast,bdim+Sdim-dlast);
 
-          mu.div(R.get(i, kappa), R.get(i, i));
-          mu.abs(mu);
+    // Dummy 
+    l=0;
 
-          mu_test.div(theta, R.get(i, i));
-          mu_test.abs(mu_test); // Jeu 12 mai 2016 12:55:13 CEST
-          mu_test.add(mu_test, one);
+    // Block extraction for size reduction
 
+    for (i=0; i<Sdim; i++)
+      for (j=0; j<bdim; j++) 
+	tmpM(i,j)=RZ(i,j);
 
-          if (mu.cmp(mu_test) == 1) {
+    for (i=0; i<Sdim; i++)
+      for (j=0; j<Sdim-dlast; j++) 
+	tmpM(i,bdim+j)=newRZ(i,j);
+      
+    RZlocf.assign(tmpM);
 
-            cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, kappa = " << kappa  << endl;
-            return -1;
-          }
+    // ICI
+    //cout << "* B ** " << k << "   " << l << endl;
+    //print2maple(tmpM,Sdim,bdim+Sdim-dlast);
+      
+    // Local size reduction 
+    
+    for (i=0; i<bdim; i++) {
+      
+      RZlocf.householder_r(i);
+      RZlocf.householder_v(i);
+    }
 
-        }
-        somedone = 0;  // Here, should be size reduced, hence ok for continuing
+    // DBG 
+    //print2maple(tmpM,Sdim,bdim+Sdim-dlast);
+      
+    for (i=bdim; i<bdim+Sdim-dlast; i++) {
 
-      } // End test prec
-
-      prev_nonstop = nonstop;
+      RZlocf.hsizereduce(i,bdim-1);
 
     }
 
-    else
-      nonstop = 0;
+    // Update of U
+    tmpU=RZlocf.getU();
+	
+    for (i=0; i<bdim; i++)
+      for (j=0; j<Sdim-dlast; j++) 
+	U_proper(i,k*Sdim-bdim+j)=tmpU(i,bdim+j);
 
-
-    // Heuristic test for not enough precision with respect to delta
-    // Should be done much more efficiently
-
-    // if ((nonstop==0) && (somedone ==1))  {
-
-
-
-    // } // end test
-
-
-  } // end while
-
-
-  return somedone;
+    // End w.r.t the first block 
+    
+    
+    c.stop();
+    //cout << "On block : " << k << "  " << c << endl; 
+    
+  } // end parallel loop on the blocks 
 
 }
 
+/* -------------------------------------------------------- */
+/* Approximate log_2 of condition number of R, size-reduced */
+/* -------------------------------------------------------- */
 
-/* -------------------------------------------------------------------------
-   Size reduce sequential update of R and B
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline long 
+SLattice<ZT,FT, MatrixZT, MatrixFT>::approx_cond()
+{
 
-   ------------------------------------------------------------------------- */
+  int i,j;
 
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline bool
-SLattice<ZT, FT, MatrixZT, MatrixFT>::size_update(int kappa, int from_i, int to_i) {
+  FP_NR<FT>  tmp,ttmp;
 
-  bool somedone = false;
+  // Size-reducedness 
+  // ----------------
+  
+  FP_NR<FT>  eta;
+  eta=0.0;
 
-  int i;
+  for  (j=1; j<d; j++) 
 
-  int nmax;
+    for (i=0; i<j; i++) {
+      tmp.div(R.get(i,j),R.get(i,i));
+      tmp.abs(tmp);
+      if (tmp.cmp(eta) > 0) eta=tmp;
+    }
+  
+  //cout << "************************************************************  eta  **  " << eta << endl; 
 
-  Z_NR<ZT>  xz;
+  // diag quo
+  // --------
+  
+  FP_NR<FT>  maxquo;
+  maxquo=0.0;
 
-  long expo, lx;
+  for  (j=0; j<d; j++) 
+    for (i=0; i<d; i++) {
+      tmp.div(R.get(j,j),R.get(i,i));
+      tmp.abs(tmp);
+      if (tmp.cmp(maxquo) > 0) maxquo=tmp;
+    }
+  
+  //cout << "**  maxquo  **  " << maxquo << endl;
 
+  // Approx cond all together 
+  // ------------------------
 
-  // Loop through the column
-  // -----------------------
+  long condb; 
+ 
+  condb=maxquo.exponent();
+  tmp=1.0;
+  eta.add(tmp,eta);
+  condb += (d-1) + eta.exponent();
 
-  for (i = from_i; i >= to_i; i--) {
+  Z_NR<long> dd;
+  dd=d;
+  condb += 1 + dd.exponent();
 
-
-    x.div(R.get(i, kappa), R.get(i, i));
-    x.rnd(x);
-
-
-
-    if (x.sgn() != 0) {  // Non zero combination
-      // --------------------
-      lx = x.get_si_exp(expo);
-
-
-      nmax = structure[i] + 1;
-
-      // Cf fplll
-      // Long case
-      if (expo == 0) {
-
-        if (lx == 1) {
-
-          //compteur +=1;
-          somedone = 1;
-
-
-          R.subcol(kappa, i, i + 1);
-
-          B.subcol(kappa, i, nmax);
-
-          if (transf)
-            U.subcol(kappa, i, min(d, nmax));
-
-        }
-        else if (lx == -1) {
-
-          //compteur +=1;
-          somedone = 1;
-
-
-          R.addcol(kappa, i, i + 1);
-
-          B.addcol(kappa, i, nmax);
-
-          if (transf)
-            U.addcol(kappa, i, min(d, nmax));
-
-        }
-        else {
-
-          //compteur +=1;
-          somedone = 1;
-
-
-          if (fast_long_flag == 1) {
-
-            R.submulcol(kappa, i, x, i + 1);
-            B.addmulcol_si(kappa, i, -lx, nmax);
-            if (transf)
-              U.addmulcol_si(kappa, i, -lx, min(d, nmax));
-
-
-          } // end fast_long
-          else {
-
-            set_f(xz, x);
-
-            R.submulcol(kappa, i, x, i + 1);
-
-            B.submulcol(kappa, i, xz, nmax);
-            if (transf)
-              U.submulcol(kappa, i, xz, min(d, nmax));
-          }
-
-
-        } // end else expo ==0 and not 1 or -1
-
-      } // end expo == 0
-      else {  // expo <> 0
-
-        //compteur +=1;
-        somedone = 1;
-
-
-        if (fast_long_flag == 1) {
-
-          R.submulcol(kappa, i, x, i + 1);
-          B.addmulcol_si_2exp(kappa, i, -lx, expo, nmax);
-          if (transf)
-            U.addmulcol_si_2exp(kappa, i, -lx, expo, min(d, nmax));
-
-        } // end fast_long
-        else {
-
-          set_f(xz, x);
-
-          R.submulcol(kappa, i, x, i + 1);
-          B.submulcol(kappa, i, xz, nmax);
-          if (transf)
-            U.submulcol(kappa, i, xz, min(d, nmax));
-
-        } // end no long
-
-      } // end expo <> 0
-
-    } // Non zero combination
-
-  } // Loop through the column
-
-
-  return somedone;
-
+  return condb;
 }
 
 
-/* -------------------------------------------------------------------------
-   Size reduce update of R
 
-   ------------------------------------------------------------------------- */
+/* --------------------------------------------- */
+/* Complete Householder */
+/* --------------------------------------------- */
 
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline bool
-SLattice<ZT, FT, MatrixZT, MatrixFT>::size_update_R(vector<FP_NR<FT> >& vectx, int kappa, int from_i, int to_i) {
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
+SLattice<ZT,FT, MatrixZT, MatrixFT>::householder()
+{
 
-  bool somedone = false;
+  int i,k,kappa;
+  FP_NR<FT> nrtmp,s,w; 
+  
 
-  int i;
+    for (kappa=0; kappa<d; kappa++) {
 
-  long expo, lx;
+      R.setcol(kappa,B.getcol(kappa),0,n);
 
-
-  // Loop through the column
-  // -----------------------
-
-  for (i = from_i; i >= to_i; i--) {
-
-
-    x.div(R.get(i, kappa), R.get(i, i));
-    x.rnd(x);
-
-    vectx[i] = x;
-
-    if (x.sgn() != 0) {    // Non zero combination
-      // --------------------
-      lx = x.get_si_exp(expo);
+      for (k=0; k<kappa; k++) {
+	scalarprod(nrtmp, V.getcol(k,k), R.getcol(kappa,k), n-k);
+	R.fmasub(kappa,k,R.getcol(kappa,k), V.getcol(k,k), nrtmp, n-k); 
+      }
 
 
-      // Cf fplll
-      // Long case
-      if (expo == 0) {
+      w=R.get(kappa,kappa);
 
-        if (lx == 1) {
-
-
-          somedone = 1;
-
-          R.subcol(kappa, i, i + 1);
-
-        }
-        else if (lx == -1) {
-
-
-          somedone = 1;
-
-          R.addcol(kappa, i, i + 1);
-
-        }
-        else {
-
-          somedone = 1;
-
-          R.submulcol(kappa, i, x, i + 1);
-
-        }
+      if (w >=0) {
+	fp_norm(s,R.getcol(kappa,kappa),n-kappa); 
+	nrtmp.neg(s);
+	R.set(kappa,kappa,nrtmp);    
       }
       else {
-
-        somedone = 1;
-
-        R.submulcol(kappa, i, x, i + 1);
-
-      } // end expo <> 0
-
-    } // Non zero combination
-
-  } // Loop through the column
-
-
-  return somedone;
-
-}
-
-
-
-
-
-
-/* -------------------------------------------------------------------------
-   Size reduce parallel update of B
-
-   ------------------------------------------------------------------------- */
-
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline bool
-SLattice<ZT, FT, MatrixZT, MatrixFT>::psize_update_B(int kappa, int from_i, int to_i,  vector<FP_NR<FT> > vectx, int S) {
-
-
-  int nmax;
-
-
-  nmax = structure[from_i];
-
-  for (int i = from_i + 1; i >= to_i; i--)
-    nmax = max(nmax, structure[i]);
-
-  nmax += 1;
-
-
-  // Parallel loop
-  // -------------
-
-#ifdef _OPENMP
-  #pragma omp parallel for
-#endif
-
-  for (int l = 0; l < S; l++) {
-
-    int i;
-
-    Z_NR<ZT>  xz;
-
-    FP_NR<FT>  xf; // Old x
-
-    long expo, lx;
-
-    int nloc;
-    nloc = nmax / S;
-    if ((l + 1) <= nmax % S)
-      nloc += 1;
-
-    int ibeg;
-    ibeg = (nmax / S) * l;
-    if ((l + 1) <= nmax % S)
-      ibeg += l;
-    else
-      ibeg += nmax % S;
-
-
-    // Loop through the column
-    // -----------------------
-
-    for (i = from_i; i >= to_i; i--) {
-
-
-      xf = vectx[i];
-
-
-      if (xf.sgn() != 0) {  // Non zero combination
-        // --------------------
-        lx = xf.get_si_exp(expo); // To put also through R
-
-        //nmax=structure[i]+1;
-
-        // Cf fplll
-        // Long case
-        if (expo == 0) {
-
-          if (lx == 1) {
-
-            B.psubcol(kappa, i, ibeg, nloc);
-
-            // if (transf)   A FAIRE EN PARALLELE CF LONG
-            //  U.subcol(kappa,i,min(d,nmax));
-
-          }
-          else if (lx == -1) {
-
-            B.paddcol(kappa, i, ibeg, nloc);
-
-            // if (transf)
-            //  U.addcol(kappa,i,min(d,nmax));
-
-          }
-          else {
-
-            if (fast_long_flag == 1) {
-
-              B.paddmulcol_si(kappa, i, -lx, ibeg, nloc);
-
-              // if (transf)
-              //   U.addmulcol_si(kappa,i,-lx,min(d,nmax));
-
-
-            } // end fast_long
-            else {
-
-              set_f(xz, xf);
-
-              B.psubmulcol(kappa, i, xz, ibeg, nloc);
-
-              // if (transf)
-              //   U.submulcol(kappa,i,xz,min(d,nmax));
-            }
-
-
-          } // end else expo ==0 and not 1 or -1
-
-        } // end expo == 0
-        else {  // expo <> 0
-
-
-          if (fast_long_flag == 1) {
-
-            B.paddmulcol_si_2exp(kappa, i, -lx, expo, ibeg, nloc);
-
-            // if (transf)
-            //  U.addmulcol_si_2exp(kappa,i,-lx,expo,min(d,nmax));
-
-          } // end fast_long
-          else {
-
-            set_f(xz, xf);
-
-            B.psubmulcol(kappa, i, xz, ibeg, nloc);
-
-            // if (transf)
-            //  U.submulcol(kappa,i,xz,min(d,nmax));
-
-          } // end no long
-
-        } // end expo <> 0
-
-      } // Non zero combination
-
-    } // Loop through the column
-
-  } // Parallel loop
-
-  return true; // Somedone by R
-}
-
-
-/* ------------- */
-/* Householder R */
-/* ------------- */
-
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline int
-SLattice<ZT, FT, MatrixZT, MatrixFT>::householder_r(int kappa)
-{
-
-  nmaxkappa = structure[kappa] + 1;
-
-  int i, k, length;
-
-  // kappa == 0
-  // ----------
-  if (kappa == 0) {
-
-    if (col_kept[kappa]) {
-
-      R.setcol(kappa, Bfp.getcol(kappa), nmaxkappa);
-
-    }
-    else {
-
-      col_kept[kappa] = 1;
-
-      Bfp.setcol(kappa, B.getcol(kappa), 0, nmaxkappa);
-      R.setcol(kappa, Bfp.getcol(kappa), nmaxkappa);
-      fp_norm_sq(normB2[kappa], R.getcol(kappa), nmaxkappa);
-
-    }
-
-    kappamin[kappa] = kappa;
-
-  }
-
-  // kappa >0
-  // --------
-  else {
-
-    // Length of all the computations
-
-    length = nmaxkappa;
-
-    // ---------------------------------------------
-    // Re-use of previous orthononalization data
-    // ---------------------------------------------
-
-
-    //if (descendu[kappa]>=1) {
-    // Actually already implicitly considered in the next test
-
-    //}
-    //else
-    if (col_kept[kappa]) {
-
-      // Keep the current norm and the floating point value of B
-      // Everything if not too big index decrease otherwise just a slice, for the index increase also
-      if  (((descendu[kappa] < 1) || (kappa - descendu[kappa] <= 0))) {
-
-        // k=0
-        if (kappamin[kappa] == 0) {
-
-          k = 0;
-          scalarprod(VR(k, kappa), V.getcol(k, k), Bfp.getcol(kappa, k), length);
-          Rkept.fmasub(0, k, Bfp.getcol(kappa, k), V.getcol(k, k), VR(k, kappa), length); // k=0
-
-          for (k = 1; (k < kappa) && (k < nmaxkappa) ; k++) {
-            length--;
-            scalarprod(VR(k, kappa), V.getcol(k, k), Rkept.getcol(k - 1, k), length);
-            Rkept.fmasub(k, k, Rkept.getcol(k - 1, k), V.getcol(k, k), VR(k, kappa), length); //  k-1 to k
-          }
-        }
-        else {
-
-          k = 0;
-
-          Rkept.fmasub(k, k, Bfp.getcol(kappa, k), V.getcol(k, k), VR(k, kappa), length); // k=0
-
-          // (k < nmax kappa) added Mer 28 mai 2014 11:15:45 CEST for the rectangular case
-          for (k = 1; (k < kappamin[kappa]) && (k < nmaxkappa); k++)  {
-            length--;
-            Rkept.fmasub(k, k, Rkept.getcol(k - 1, k), V.getcol(k, k), VR(k, kappa), length); // k-1 to k
-          }
-
-          for (k = kappamin[kappa]; (k < kappa)  && (k < nmaxkappa); k++) {
-            length--;
-            scalarprod(VR(k, kappa), V.getcol(k, k), Rkept.getcol(k - 1, k), length);
-            Rkept.fmasub(k, k, Rkept.getcol(k - 1, k), V.getcol(k, k), VR(k, kappa), length); // k-1 to k
-          }
-        }
-
-      } // endif not big decrease or increase
-
-    } // end colkept
-    // -----------------------------------------------------------
-    // Complete re-computation
-    // -----------------------------------------------------------
-    else {
-
-
-      col_kept[kappa] = 1;
-
-      Bfp.setcol(kappa, B.getcol(kappa), 0, nmaxkappa);
-
-
-      fp_norm_sq(normB2[kappa], Bfp.getcol(kappa), nmaxkappa);
-
-      // k =0
-      k = 0;
-      scalarprod(VR(k, kappa), V.getcol(k, k), Bfp.getcol(kappa, k), length);
-
-      Rkept.fmasub(0, k, Bfp.getcol(kappa, k), V.getcol(k, k), VR(k, kappa), length);
-
-      // (k < nmax kappa) added Mer 28 mai 2014 11:15:45 CEST for the rectangular case
-      for (k = 1; (k < kappa) && (k < nmaxkappa); k++) {
-
-        length--;
-
-        scalarprod(VR(k, kappa), V.getcol(k, k), Rkept.getcol(k - 1, k), length);
-
-        Rkept.fmasub(k, k, Rkept.getcol(k - 1, k), V.getcol(k, k), VR(k, kappa), length); // de k-1 à k
+	fp_norm(nrtmp,R.getcol(kappa,kappa),n-kappa); // de la colonne
+	R.set(kappa,kappa,nrtmp);
+	s.neg(nrtmp);  
       }
 
-      length = nmaxkappa;
+      w.add(w,s);
+      s.mul(s,w);
+      s.sqrt(s);
 
-    } // endelse recomputation
-    // -----------------------------------------------------------
+      V.div(kappa,kappa+1, R.getcol(kappa,kappa+1), s, n-kappa-1);
 
+      nrtmp.div(w,s);
+      V.set(kappa,kappa,nrtmp); 
 
-    // Dummy in the standard case, made special for the MatrixPE case
-
-    //for (i=0; i<kappa; i++) toR[i]=Rkept.get_non_normalized(i,i);
-    // GV Mer 21 mai 2014 17:11:32 CEST for the rectangular case
-
-    // Should be done more efficiently
-
-    if (kappa < nmaxkappa) {
-
-      for (i = 0; i < kappa; i++) toR[i] = Rkept.get_non_normalized(i, i);
-      for (i = kappa; i < nmaxkappa; i++) toR[i] = Rkept.get_non_normalized(i, kappa - 1);
-
-      R.setcol(kappa, &toR[0], nmaxkappa);
-
-    }
-    else {
-
-      for (i = 0; i < nmaxkappa; i++) toR[i] = Rkept.get_non_normalized(i, i);
-
-      R.setcol(kappa, &toR[0], nmaxkappa);
-
-    }
-
-    kappamin[kappa] = kappa;
-
-  } // else kappa !=0
-
-
-  return 0;
+      for(i=kappa+1; i<d; i++)  R.set(i,kappa,0.0); 
+       
+    }  // sur kappa 
+   
+    return 0; 
 }
 
-/* ------------- */
-/* Householder V */
-/* ------------- */
-// nmaxkappa must be initialized e.g. through householder_r
+/* --------------------------------------------- */
+/* Complete Householder */
+/* --------------------------------------------- */
 
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline int
-SLattice<ZT, FT, MatrixZT, MatrixFT>::householder_v(int kappa)
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline int 
+SLattice<ZT,FT, MatrixZT, MatrixFT>::phouseholder(int S)
 {
 
-  int i;
-  FP_NR<FT> s, norm, w, tmpdpe;
-  s = 0.0;
-  tmpdpe = 0.0;
+  int i,k,kappa;
+  FP_NR<FT> nrtmp,s,w; 
 
-  //R.normalize(kappa,nmaxkappa);  // voir si nécessaire ? Rajouter en dummy si besoin aussi mpfr
+ 
+  int Sdim=d/S;
 
-  w = R.get(kappa, kappa);
+  int l;
+
+  for (l=0; l<S; l++)   {
+
+    // Diagonal block
+    // --------------
+
+    for (kappa=l*Sdim; kappa<(l+1)*Sdim; kappa++) {
+
+      if (l==0) 
+	R.setcol(kappa,B.getcol(kappa),0,n);
+
+      for (k=l*Sdim; k<kappa; k++) {
+	scalarprod(nrtmp, V.getcol(k,k), R.getcol(kappa,k), n-k);
+	R.fmasub(kappa,k,R.getcol(kappa,k), V.getcol(k,k), nrtmp, n-k); 
+      }
+
+      w=R.get(kappa,kappa);
+
+      if (w >=0) {
+	fp_norm(s,R.getcol(kappa,kappa),n-kappa); 
+	nrtmp.neg(s);
+	R.set(kappa,kappa,nrtmp);    
+      }
+      else {
+	fp_norm(nrtmp,R.getcol(kappa,kappa),n-kappa); 
+	R.set(kappa,kappa,nrtmp);
+	s.neg(nrtmp);  
+      }
+
+      w.add(w,s);
+      s.mul(s,w);
+      s.sqrt(s);
+
+      // Zero test 
+      if (s.sgn() <=0) 
+	V.set(kappa,kappa,1.0); 
+
+      else { 
+	V.div(kappa,kappa+1, R.getcol(kappa,kappa+1), s, n-kappa-1);
+
+	nrtmp.div(w,s);
+	V.set(kappa,kappa,nrtmp); 
+      }
+
+      for(i=kappa+1; i<d; i++)  R.set(i,kappa,0.0); 
+       
+    }  // end diag computation 
+
+ 
+    // Parallel application to other blocks 
+    // ------------------------------------
+    int lb;
 
 
-  if (w >= 0) {
+#ifdef _OPENMP
+#pragma omp parallel for shared (l,S)
+#endif 
 
-    fp_norm(s, R.getcol(kappa, kappa), nmaxkappa - kappa);
-    tmpdpe.neg(s);
-    R.set(kappa, kappa, tmpdpe); // On ne met pas à zéro, inutile, sauf pour getR
+    for (lb=l+1; lb<S; lb++) {
 
-  }
-  else {
+      int kk; 
+      int pkappa; 
+      FP_NR<FT> pnrtmp;
+      
+      for (pkappa=lb*Sdim; pkappa<(lb+1)*Sdim; pkappa++) {
 
-    fp_norm(tmpdpe, R.getcol(kappa, kappa), nmaxkappa - kappa); // de la colonne
-    R.set(kappa, kappa, tmpdpe);
-
-    s.neg(tmpdpe);
-  }
-
-  w.add(w, s);
-
-  s.mul(s, w);
-  s.sqrt(s);
-
-  V.div(kappa, kappa + 1, R.getcol(kappa, kappa + 1), s, nmaxkappa - kappa - 1);
-
-  // vraiment utile il n'y a pas deja des 0?   --> sans doute pas 12/04/11
-  for (i = nmaxkappa; i < n; i++) V.set(i, kappa, 0.0); // V à zéro car ré-utilisé plus loin ensuite (pas R);
+	if (l==0) 
+	  R.setcol(pkappa,B.getcol(pkappa),0,n);
+      		
+	for (kk=l*Sdim; kk<(l+1)*Sdim; kk++) {
+	  scalarprod(pnrtmp, V.getcol(kk,kk), R.getcol(pkappa,kk), n-kk);
+	  R.fmasub(pkappa,kk,R.getcol(pkappa,kk), V.getcol(kk,kk), pnrtmp, n-kk); 
+	}
+      }
+    } 
 
 
-  tmpdpe.div(w, s);
-
-  V.set(kappa, kappa, tmpdpe);
-
-  return 0;
+  } // end block loop 
+   
+    return 0; 
 }
 
 
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline unsigned int
-SLattice<ZT, FT, MatrixZT, MatrixFT>::set_nblov_max(unsigned int nb) {
-
-  nblov_max = nb;
-  return nblov_max;
-
-}
 
 
 
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline ZZ_mat<ZT>
-SLattice<ZT, FT, MatrixZT, MatrixFT>::getbase()
+
+template<class ZT,class FT,class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> SLattice<ZT,FT, MatrixZT, MatrixFT>::getbase()
 {
-  ZZ_mat<ZT> BB(norigin, dorigin);
-  for (int i = 0; i < norigin; i++)
-    for (int j = 0; j < dorigin; j++)
-      BB(i, j) = B(i, j); // reprendre boucle sur les colonnes
+  ZZ_mat<ZT> BB(norigin,dorigin);
+  for (int i=0; i<norigin; i++) 
+    for (int j=0; j<dorigin; j++) BB.Set(i,j,B(i,j)); // reprendre boucle sur les colonnes 
 
   return BB;
+
+
 }
 
 
 
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline ZZ_mat<ZT>
-SLattice<ZT, FT, MatrixZT, MatrixFT>::getU()
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline  matrix<FP_NR<FT> > SLattice<ZT,FT, MatrixZT, MatrixFT>::getR()
 {
-
-  if (transf) {
-    ZZ_mat<ZT> UU(d, d);
-    for (int i = 0; i < d; i++)
-      for (int j = 0; j < d; j++) UU.Set(i, j, U.get(i, j)); // reprendre boucle sur les colonnes
-    return UU;
-  }
-  else {
-    cout << "*** Error, HLLL, the transformation matrix has not been computed" << endl;
-    ZZ_mat<ZT> UU(0, 0);
-    return UU;
-  }
-}
-
-
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline  matrix<FP_NR<FT> >
-SLattice<ZT, FT, MatrixZT, MatrixFT>::getR()
-{
-  matrix<FP_NR<FT> >  RR(d, d);
+  matrix<FP_NR<FT> >  RR(d,d);
   FP_NR<FT> tmp;
 
-  for (int i = 0; i < min(n, d); i++)
-    for (int j = i; j < d; j++) {
-      tmp = R.get(i, j); // cf l'absence de const dans nr.cpp Set / Exp
-      RR.set(i, j, tmp); // reprendre boucle sur les colonnes
-
+  for (int i=0; i<min(n,d); i++) 
+    for (int j=i; j<d; j++) {
+      tmp=R.get(i,j);  // cf l'absence de const dans nr.cpp Set / Exp 
+      RR.set(i,j,tmp); // reprendre boucle sur les colonnes 
+      
     }
-  for (int i = 0; i < d; i++)
-    for (int j = 0; j < i; j++) RR(i, j) = 0.0;
-
+  for (int i=0; i<d; i++) 
+    for (int j=0; j<i; j++) RR(i,j)=0.0;
+  
   return RR;
 }
 
 
-// Constructeur
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline ZZ_mat<ZT> SLattice<ZT,FT, MatrixZT, MatrixFT>::getU()
+{
+ 
+  if (transf) { 
+    ZZ_mat<ZT> UU(d,d); 
+    for (int i=0; i<d; i++) 
+      for (int j=0; j<d; j++) UU.Set(i,j,Uglob.get(i,j)); // reprendre boucle sur les colonnes 
+    return UU;
+  }
+  else {
+    cout << "*** Error, PLLL, the transformation matrix has not been computed" << endl;
+    ZZ_mat<ZT> UU(0,0);
+    return UU;
+  }
+}
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline unsigned int 
+SLattice<ZT,FT, MatrixZT, MatrixFT>::getprec() {
+
+  return (R.get(0,0)).getprec(); 
+  
+}
+
+
+template<class ZT,class FT, class MatrixZT, class MatrixFT> inline unsigned int 
+SLattice<ZT,FT, MatrixZT, MatrixFT>::setprec(unsigned int prec) {
+
+  // Re-initializations
+  // Should be for each variable, non global? 
+  // push and pop ? 
+ 
+  unsigned oldprec;
+  oldprec=getprec();
+
+  mpfr_set_default_prec(prec);
+
+  R.clear();
+  R.resize(n,d);
+
+  Rt.clear();
+  Rt.resize(n,d);
+
+  unsigned newprec;
+  newprec=(R.get(0,0)).getprec(); 
+  if (newprec == oldprec) cout << "Warning: in function setprec plll, the change of precision has no effect" << endl; 
+
+  V.clear();
+  V.resize(n,d);
+
+  // The old precision 
+  return oldprec;
+}
+
+
+// Constructeur 
 // ------------
 
 
-template<class ZT, class FT, class MatrixZT, class MatrixFT> void
-SLattice<ZT, FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
-
-  int i, j;
+template<class ZT,class FT, class MatrixZT, class MatrixFT> void 
+SLattice<ZT,FT, MatrixZT, MatrixFT>::init(int n, int d, bool forU) {
 
   transf = forU;
-  compteur = 0;
-  tmpcompt = 0;
 
-  tps_reduce = 0;
-  tps_householder = 0;
-  tps_prepare = 0;
-  tps_swap = 0;
-  nblov = 0;
-  nbswaps = 0;
-  tps_redB = 0;
+  nbswaps=0;
 
+  R.resize(n,d);
 
-  R.resize(n, d);
+  Rt.resize(n,d);
 
-  Rkept.resize(n, d);
+  V.resize(n,d);
 
-  Bfp.resize(n, d);
-  for (i = 0; i < n; i++)
-    for (j = 0; j < d; j++)
-      Bfp.set(i, j, 0.0);
+  RZ.resize(d,d);
 
-  normB2.resize(d);
-  toR.resize(n);
-
-  V.resize(n, d);
-
-  RZ.resize(d, d);
-
-  col_kept.resize(d + 1); // +1 for the discovery test
-  descendu.resize(d);
-  for (i = 0; i < d; i++) {col_kept[i] = 0; descendu[i] = 0;}
-
-  kappamin.resize(d); // Lowest point down for kappa since last time
-  for (j = 0; j < d; j++) kappamin[j] = -1;
-
-  VR.resize(d, d);
-
-  U_even.resize(d, d);
-
-  U_odd.resize(d, d);
+  newRZ.resize(d,d);
+   
+   
+  U.resize(d,d);
+  U_even.resize(d,d);
+  U_odd.resize(d,d);
+  U_proper.resize(d,d);
+ 
+  if (transf) {
+    Uglob.resize(d,d);
+    setId(Uglob);
+  } 
 
 }
 
 
-template<class ZT, class FT, class MatrixZT, class MatrixFT>
-SLattice<ZT, FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int S, bool forU, int reduction_method,  int long_flag) {
+template<class ZT,class FT, class MatrixZT, class MatrixFT>
+SLattice<ZT,FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int S, bool forU, int reduction_method) {
 
-  // Resizing for dimension divisible by K
-  // -------------------------------------
+  int K=2*S;
 
-  int K = 2 * S;
+  int i,j;
 
-  int i, j;
+  norigin=A.getRows();
+  n=A.getRows();
+  dorigin=A.getCols();
+  d=A.getCols();
 
-  norigin = A.get_rows();
-  n = A.get_rows();
-  dorigin = A.get_cols();
-  d = A.get_cols();
-
-
-  if (d % K != 0) {
+        
+  if (d%K !=0) {
 
 
     // B.resize(n+K-d%K,d+K-d%K);
@@ -1850,242 +1194,58 @@ SLattice<ZT, FT, MatrixZT, MatrixFT>::SLattice(ZZ_mat<ZT> A, int S, bool forU, i
 
     //   for  (i=0; i<n; i++)
     //     for (j=0; j<d; j++)
-    //       B(i+K-d%K,j+K-d%K)=A(i,j);
+    //       B(i+K-d%K,j+K-d%K)=A(i,j);      
 
     //   n+=K-d%K;
     //   d+=K-d%K;
 
 
-    B.resize(n + K - d % K, d + K - d % K);
+      B.resize(n+K-d%K,d+K-d%K);
 
-    Z_NR<ZT> tabs;
-    amax = 0;
+      Z_NR<mpz_t> tabs,amax;
+      amax=0;
 
-    for (i = 0; i < n; i++)
-      for (j = 0; j < d; j++) {
+      for (i=0; i<n; i++)
+      	for (j=0; j<d; j++) {
 
-        tabs.abs(A(i, j));
+      	  tabs.abs(A(i,j)); 
+       	  if (tabs.cmp(amax) > 0) amax=tabs;
+      	}
+      
+      for  (i=0; i<n; i++)
+        for (j=0; j<d; j++)
+          B(i,j)=A(i,j);
 
-        if (tabs.cmp(amax) > 0) amax = tabs;
+      for  (i=0; i<K-d%K; i++)
+        B(n+i,d+i)=amax;
 
-      }
+      n+=K-d%K;
+      d+=K-d%K;
 
-    Z_NR<ZT> tz;
-    tz = d;
-
-    amax.mul(amax, tz);
-
-    for  (i = 0; i < n; i++)
-      for (j = 0; j < d; j++)
-        B(i, j) = A(i, j);
-
-    for  (i = 0; i < K - d % K; i++)
-      B(n + i, d + i) = amax;
-
-    n += K - d % K;
-    d += K - d % K;
-
-
-  }
+     
+    }
   else {
+    
+    B.resize(n,d);  // Not in init for the mixed matrix case also 
 
-    B.resize(n, d); // Not in init for the mixed matrix case also
-
-    for (i = 0; i < n; i++)
-      for (j = 0; j < d; j++)
-        B(i, j) = A(i, j);
-
+    for (i=0; i<n; i++) 
+      for (j=0; j<d; j++) 
+	B(i,j)=A.Get(i,j);
+    
   }
+  
+  swapstab.resize(K-1);
+  for (i=0; i<K-1; i++) 
+    swapstab[i]=0;
 
-  // Initializations (after the change of dimension)
-  // -----------------------------------------------
-
-  init(n, d, forU);
-
-  if (transf) {    // Not in init for the mixed matrix case also
-
-    U.resize(d, d);
-    for (i = 0; i < d; i++) U(i, i) = 1;
-  }
-
-  nblov_max = 4294967295;
-
-  seysen_flag = reduction_method;
-
-  fast_long_flag = long_flag;
-
-
-  matrix_structure(structure, B, n, d);
-
-  for (i = 1; i < d; i++)
-    structure[i] = max(structure[i - 1], structure[i]);
-
-  for (i = 0; i < d; i++)
-    structure[i] = structure[d - 1];
-
-  swapstab.resize(K - 1);
-  for (i = 0; i < K - 1; i++)
-    swapstab[i] = 0;
+  init(n,d, forU); 
 
 }
 
 
 
-/* --------------------------------------------- */
-/* Householder complet */
-/* --------------------------------------------- */
-
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline int
-SLattice<ZT, FT, MatrixZT, MatrixFT>::householder(int dmax)
-{
-
-  int i, k, kappa;
-  FP_NR<FT> nrtmp, s, w;
-
-  nrtmp = 0.0;
-  s = 0.0;
-
-  int dk;
-
-  if (dmax != 0) dk = dmax;
-  else dk = d;
-
-  for (kappa = 0; kappa < dk; kappa++) {
-
-    R.setcol(kappa, B.getcol(kappa), 0, n);
-
-    for (k = 0; k < kappa; k++) {
-      scalarprod(nrtmp, V.getcol(k, k), R.getcol(kappa, k), n - k);
-      R.fmasub(kappa, k, R.getcol(kappa, k), V.getcol(k, k), nrtmp, n - k);
-    }
-
-
-    w = R.get(kappa, kappa);
-
-    if (w >= 0) {
-      fp_norm(s, R.getcol(kappa, kappa), n - kappa);
-      nrtmp.neg(s);
-      R.set(kappa, kappa, nrtmp);
-    }
-    else {
-      fp_norm(nrtmp, R.getcol(kappa, kappa), n - kappa); // de la colonne
-      R.set(kappa, kappa, nrtmp);
-      s.neg(nrtmp);
-    }
-
-    w.add(w, s);
-    s.mul(s, w);
-    s.sqrt(s);
-
-    V.div(kappa, kappa + 1, R.getcol(kappa, kappa + 1), s, n - kappa - 1);
-
-    nrtmp.div(w, s);
-    V.set(kappa, kappa, nrtmp);
-
-    for (i = kappa + 1; i < d; i++)  R.set(i, kappa, 0.0);
-
-  }  // sur kappa
-
-  return 0;
-}
-
-/* --------------------------------------------- */
-/*   Matrix products after block reductions      */
-/* --------------------------------------------- */
-
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline int
-SLattice<ZT, FT, MatrixZT, MatrixFT>::pmatprod(int S, int dec)
-{
-
-
-  int b;
-
-  int sdim = d / S;
-
-  // Even case (one could make with only one U)
-  // ------------------------------------------
-
-  if (dec == 0) {
-
-    // Column blocks of B, diag blocks of U_even
-    //   simple matrix products
-
-#ifdef _OPENMP
-    #pragma omp parallel for
-#endif
-
-    for (b = 0; b < S; b++) {
-
-      int i, j, k;
-
-      int shift = b * sdim;
-
-      MatrixZT tmat;
-      tmat.resize(n, sdim);
-
-      for (i = 0; i < n; i++) {
-        for (j = shift; j < shift + sdim; j++) {
-
-          tmat(i, j - shift).mul(B(i, shift), U(shift, j));
-
-          for (k = shift + 1; k < shift + sdim; k++) {
-            tmat(i, j - shift).addmul(B(i, k), U(k, j));
-          }
-        }
-        for (j = shift; j < shift + sdim; j++)
-          B(i, j) = tmat(i, j - shift);
-      } // On rows
-
-
-    } // Block parallel loop
-
-  }
-  // Odd case
-  // --------
-  else {
-
-    // Column blocks of B, diag blocks of U_even
-    //   simple matrix products
-
-#ifdef _OPENMP
-    #pragma omp parallel for
-#endif
-
-    for (b = 0; b < S - 1; b++) {
-
-      int i, j, k;
-
-      int shift = b * sdim + (sdim / 2);
-
-      MatrixZT tmat;
-      tmat.resize(n, sdim);
-
-      for (i = 0; i < n; i++) {
-        for (j = shift; j < shift + sdim; j++) {
-
-          tmat(i, j - shift).mul(B(i, shift), U(shift, j));
-
-          for (k = shift + 1; k < shift + sdim; k++) {
-            tmat(i, j - shift).addmul(B(i, k), U(k, j));
-          }
-        }
-        for (j = shift; j < shift + sdim; j++)
-          B(i, j) = tmat(i, j - shift);
-      } // On rows
-
-
-    } // Block parallel loop
-
-
-  }
-
-
-
-  return 0;
-
-}
 
 } // end namespace hplll
 
-#endif
+#endif 
 

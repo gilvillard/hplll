@@ -1,6 +1,4 @@
 
-//  Writes the input basis lat.txt in PK code directory 
-
 #include <hplll.h>
 
 using namespace hplll;
@@ -10,7 +8,6 @@ int main(int argc, char *argv[]) {
 
 	Timer time, timed, timedd;
 
-	ZZ_mat<mpz_t> A0;
 	ZZ_mat<mpz_t> A;
 
 	ZZ_mat<mpz_t> AT;
@@ -20,32 +17,17 @@ int main(int argc, char *argv[]) {
 
 	int n, d;
 
-	command_line_basis(A0, n, d, delta, argc, argv);
+	command_line_basis(A, n, d, delta, argc, argv);
 
 	// fplll double
 
-	A.resize(d, d);
-	for (int i = 0; i < d; i++)
-		for (int j = 0; j < d; j++)
-			A(i, j) = A0(i, j);
-
-	AT.resize(d, d);
+	AT.resize(d, n);
 	transpose(AT, A);
 
 	//cout << AT << endl;
 
-
-	// Write the inpute matrix in a file
-	filebuf fb;
-	iostream os(&fb);
-	fb.open ("/Users/gvillard/Installed-Libraries/code/src/lat.txt", ios::out);
-	os << AT;
-	fb.close();
-
-
 	timed.start();
-	lll_reduction(AT, delta, 0.501, LM_FAST, FT_DOUBLE, 0, LLL_VERBOSE);
-	//lll_reduction(AT, delta, 0.501, LM_FAST, FT_DOUBLE, 0);
+	//lll_reduction(AT, delta, 0.501, LM_FAST, FT_DOUBLE, 0, LLL_VERBOSE);
 	timed.stop();
 
 
@@ -71,10 +53,6 @@ int main(int argc, char *argv[]) {
 	B.hlll(delta); //* name
 	time.stop();
 
-	cout << endl << endl;
-
-	verboseDepth = 0;
-
 	transpose(A, AT);
 	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(B.getbase()); //* names
 
@@ -95,6 +73,14 @@ int main(int argc, char *argv[]) {
 	cout  << "   fplll double : " << timed << endl << endl ;
 	//cout << "   fplll dd : " << timedd << endl << endl ;
 	cout << endl;
+
+
+
+
+
+
+
+
 
 
 
