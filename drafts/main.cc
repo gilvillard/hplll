@@ -1,12 +1,13 @@
 
 #include <hplll.h>
+#include <slll.h>
 
 using namespace hplll;
 
 int main(int argc, char *argv[]) {
 
 
-	Timer time, timed, timedd;
+	Timer time, timep, timed, timedd;
 
 	ZZ_mat<mpz_t> A;
 
@@ -45,34 +46,56 @@ int main(int argc, char *argv[]) {
 
 	// hplll
 
-	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, NO_TRANSFORM, DEF_REDUCTION); //* name
+	//SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, 4); //* name
 
-	verboseDepth = 1;
+	int S = 16;
+
+	SLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A, S);
+
+	B.setprec(1600);
+
+	timep.start();
+
+	B.phouseholder(S);
+
+	timep.stop();
 
 	time.start();
-	B.hlll(delta); //* name
+
+	B.phouseholder(1);
+
 	time.stop();
 
-	transpose(A, AT);
-	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(B.getbase()); //* names
+	cout << endl << endl << "   householder p : " << timep << endl;
+	cout << endl << "   householder : " << time << endl;
+	cout << endl << "   ratio : " << ((double) time.realtime()) / ((double) timep.realtime()) << endl << endl;
 
-	T.isreduced(delta - 0.1);
+	//verboseDepth = 1;
 
-	double t, u, v, w;
+	// time.start();
+	// B.hlll(delta); //* name
+	// time.stop();
 
-	hplll::ratio<mpz_t>(B.getbase(), t, u, v, w);
+	// transpose(A, AT);
+	// Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(B.getbase()); //* names
 
-	cout << endl << ".. fplll log 2 Frobenius norm cond: " << t << endl;
-	cout << ".. Average diagonal ratio: " << u << endl;
-	cout << ".. Max diagonal ratio: " << v << endl;
-	cout << ".. First vector quality: " << w << endl;
+	// T.isreduced(delta - 0.1);
+
+	// double t, u, v, w;
+
+	// hplll::ratio<mpz_t>(B.getbase(), t, u, v, w);
+
+	// cout << endl << ".. fplll log 2 Frobenius norm cond: " << t << endl;
+	// cout << ".. Average diagonal ratio: " << u << endl;
+	// cout << ".. Max diagonal ratio: " << v << endl;
+	// cout << ".. First vector quality: " << w << endl;
 
 
-	cout << endl << endl << "   hplll double : " << time << endl ;
-	cout << "   Householder: " << B.dbg << endl << endl ;
-	cout  << "   fplll double : " << timed << endl << endl ;
-	//cout << "   fplll dd : " << timedd << endl << endl ;
-	cout << endl;
+	// cout << endl << endl << "   hplll double : " << time << endl ;
+	// cout << "   Householder: " << B.dbg << endl << endl ;
+	// cout  << "   fplll double : " << timed << endl << endl ;
+	// //cout << "   fplll dd : " << timedd << endl << endl ;
+	// cout << endl;
 
 
 
