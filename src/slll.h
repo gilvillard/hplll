@@ -66,7 +66,7 @@ class SLattice
   int nbswaps;
   vector<int> swapstab; 
 
-  int hlll(double delta, int condbits, int S, int nbthreads, unsigned int lovmax=4294967295);
+  int hlll(double delta, int cond_in, int S, int nbthreads, unsigned int lovmax=4294967295);
  
   void even_hsizereduce(int S); // Householder is refreshed or not 
   void odd_hsizereduce(int S);

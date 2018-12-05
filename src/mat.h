@@ -559,6 +559,38 @@ template<class T> Matrix<T> transpose(Matrix<T> A)
 // Block accesses
 // **************
 
+// For an input square matrix - possibly rectangular output one
+
+template<class T> inline int setblock(ZZ_mat<T>& B, const int kk, const int ll, matrix<Z_NR<T> > A, const int ii, const int jj, const int nbb, const int diagdec)   {
+
+
+  int n = A.getRows();
+
+  long bdim = n / nbb;
+
+
+  long  si;
+  long  sk;
+
+  long sj = jj * bdim;
+  long sl = ll * bdim;
+
+  for (int j = 0; j < bdim; j++) {
+    si = ii * bdim;
+    sk = kk * bdim;
+    for (int i = 0; i < bdim; i++) {
+      B(sk, sl) = A(si + diagdec, sj + diagdec);
+      si += 1;
+      sk +=1;
+    }
+    sj += 1;
+    sl+=1;
+  }
+
+  return (0);
+};
+
+
 // SQUARE HERE, bdim divise n
 // Cas rectangle ???
 
@@ -675,7 +707,6 @@ template<class T> inline  matrix<Z_NR<T> >  getblock(matrix<Z_NR<T> > A, const i
     else
       decc = rem * (dc + 1) + dc * (jj - rem);
   }
-
   B.resize(dr, dc);
 
   for (int i = 0; i < dr; i++)
@@ -1197,8 +1228,6 @@ template<class T> void matprod(Matrix<T>& C,  Matrix<T> B, Matrix<T> U)
       }
     }
   }
-
-
 };
 
 
@@ -2522,6 +2551,7 @@ template<class ZT, class MatrixZT> void trunc(MatrixZT & B, ZZ_mat<ZT> A, long d
 void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long condbits)
 {
 
+
   int n, d;
 
   n = B.getRows();
@@ -2532,7 +2562,6 @@ void set_f(matrix<Z_NR<mpz_t> >& B, matrix<FP_NR<mpfr_t> > R, long condbits)
   int i, j;
 
   fp_norm(minval, R.getcol(0), n);
-
 
   // Avant Mar 29 avr 2014 10:42:12 CEST
   for (j = 1; j < d; j++) {

@@ -48,27 +48,23 @@ int main(int argc, char *argv[]) {
 
 	//SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, 4); //* name
 
-	int S = 16;
+	int S = 3;
 
 	SLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A, S);
 
-	B.setprec(1600);
+	int cond = maxbitsize(A);
 
-	timep.start();
-
-	B.phouseholder(S);
-
-	timep.stop();
 
 	time.start();
 
-	B.phouseholder(1);
+	B.hlll(delta, cond, S, S); 
 
 	time.stop();
 
-	cout << endl << endl << "   householder p : " << timep << endl;
+
+	//cout << endl << endl << "   householder p : " << timep << endl;
 	cout << endl << "   householder : " << time << endl;
-	cout << endl << "   ratio : " << ((double) time.realtime()) / ((double) timep.realtime()) << endl << endl;
+	//cout << endl << "   ratio : " << ((double) time.realtime()) / ((double) timep.realtime()) << endl << endl;
 
 	//verboseDepth = 1;
 
