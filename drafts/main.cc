@@ -75,10 +75,6 @@ int main(int argc, char *argv[])  {
 	//SLattice<long, double, matrix<Z_NR<long> >, matrix<FP_NR<double> > > B(Along, 4, TRANSFORM, DEF_REDUCTION);
 
 
-<<<<<<< HEAD
-	int S = 32;
-=======
->>>>>>> b9cf7a0f0e977249d7972a607a2592cf1ef594a1
 
 	int S = 8;
 
