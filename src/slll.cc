@@ -1784,6 +1784,7 @@ SLattice<ZT, FT, MatrixZT, MatrixFT>::phouseholder(int S)
 
 
 #ifdef _OPENMP
+    cout << " ICI " << endl; 
     #pragma omp parallel for shared (l,S)
 #endif
 

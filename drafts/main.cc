@@ -76,7 +76,7 @@ int main(int argc, char *argv[])  {
 
 
 
-	int S = 8;
+	int S = 4;
 
 	SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, S, NO_TRANSFORM, DEF_REDUCTION);
 
