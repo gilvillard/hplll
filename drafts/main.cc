@@ -1,110 +1,135 @@
+/*
 
-#include <hplll.h>
-#include <slll.h>
+Created Dim  7 avr 2013 16:54:03 CEST
+Copyright (C) 2013-2016      Gilles Villard
+
+This file is part of the hplll Library
+
+The hplll Library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 3 of the License, or (at your
+option) any later version.
+
+The hplll Library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the hplll Library; see the file COPYING.LESSER.  If not, see
+http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
+51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+
+
+#include "hplll.h"
+
+#include "wrappers.h"
+
+/* ***********************************************
+
+          MAIN
+
+   ********************************************** */
 
 using namespace hplll;
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])  {
 
-
-	Timer time, timep, timed, timedd;
 
 	ZZ_mat<mpz_t> A;
+	ZZ_mat<mpz_t> L;
+
+	ZZ_mat<mpz_t> Along;
 
 	ZZ_mat<mpz_t> AT;
 
+	// ---------------------------------------------------------------------
 
-	double delta = 0.99;
+	filebuf fb;
+	iostream os(&fb);
 
 	int n, d;
+	double delta = 0.99;
 
 	command_line_basis(A, n, d, delta, argc, argv);
 
-	// fplll double
+	// fb.open ("basis.txt", ios::in);
+	// os >>  AT ;
+	// fb.close();
+
+	// d  = AT.get_rows();
+	// n = AT.get_cols();
+
+	// A.resize(n, d);
+
+	// transpose(A, AT);
 
 	AT.resize(d, n);
-	transpose(AT, A);
 
-	//cout << AT << endl;
-
-	timed.start();
-	//lll_reduction(AT, delta, 0.501, LM_FAST, FT_DOUBLE, 0, LLL_VERBOSE);
-	timed.stop();
+	Timer tp, ts;
 
 
-	// // fplll dd
+	//matrix_cast(Along, A);
 
-	// AT.resize(d, n);
-	// transpose(AT, A);
-
-	// //cout << AT << endl;
-
-	// timedd.start();
-	// lll_reduction(AT, delta, 0.501, LM_FAST, FT_DD, 0, LLL_VERBOSE);
-	// timedd.stop();
+	//SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > B(A, 4, NO_TRANSFORM, DEF_REDUCTION);
+	//SLattice<long, double, matrix<Z_NR<long> >, matrix<FP_NR<double> > > B(Along, 4, TRANSFORM, DEF_REDUCTION);
 
 
-	// hplll
-
-	//SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, 4); //* name
-
+<<<<<<< HEAD
 	int S = 32;
+=======
+>>>>>>> b9cf7a0f0e977249d7972a607a2592cf1ef594a1
 
-	SLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A, S);
+	int S = 8;
 
-	B.setprec(1600);
+	SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, S, NO_TRANSFORM, DEF_REDUCTION);
 
-	timep.start();
+	tp.clear();
+	tp.start();
 
 	B.phouseholder(S);
 
-	timep.stop();
+	tp.stop();
 
-	time.start();
+	cout << "pLLL: " << tp << endl;
 
-	B.phouseholder(1);
+	tp.clear();
+	tp.start();
 
-	time.stop();
+	B.householder(d);
 
-	cout << endl << endl << "   householder p : " << timep << endl;
-	cout << endl << "   householder : " << time << endl;
-	cout << endl << "   ratio : " << ((double) time.realtime()) / ((double) timep.realtime()) << endl << endl;
-
-	//verboseDepth = 1;
-
-	// time.start();
-	// B.hlll(delta); //* name
-	// time.stop();
-
-	// transpose(A, AT);
-	// Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(B.getbase()); //* names
-
-	// T.isreduced(delta - 0.1);
-
-	// double t, u, v, w;
-
-	// hplll::ratio<mpz_t>(B.getbase(), t, u, v, w);
-
-	// cout << endl << ".. fplll log 2 Frobenius norm cond: " << t << endl;
-	// cout << ".. Average diagonal ratio: " << u << endl;
-	// cout << ".. Max diagonal ratio: " << v << endl;
-	// cout << ".. First vector quality: " << w << endl;
+	tp.stop();
 
 
-	// cout << endl << endl << "   hplll double : " << time << endl ;
-	// cout << "   Householder: " << B.dbg << endl << endl ;
-	// cout  << "   fplll double : " << timed << endl << endl ;
-	// //cout << "   fplll dd : " << timedd << endl << endl ;
+	cout << "LLL :" << tp << endl;
+
+
+	// tp.start();
+
+	// //B.hlll(delta, 2, 2);
+
+	// slll_wrap<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > (L, A, 30, 4, delta, DEF_REDUCTION);
+
+	// tp.stop();
+
+
+	// Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> > C(A);
+
+	// ts.start();
+
+	// C.hlll(delta);
+
+	// ts.stop();
+
+
+	// cout << endl << "-----------------------" << endl;
+
 	// cout << endl;
 
+	// cout << "SLLL: " << tp << endl;
+
+	// cout << "HPLLL :" << ts << endl;
 
 
-
-
-
-
-
-
-
-
+	return 0;
 }
