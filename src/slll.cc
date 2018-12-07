@@ -29,6 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <omp.h>
 #endif
 
+
 // *******************************************************************************
 //
 //  S >= 2 parallel segments, hence nb_blocks = 2*S blocks
