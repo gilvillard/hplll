@@ -590,6 +590,35 @@ template<class T> inline int setblock(ZZ_mat<T>& B, const int kk, const int ll, 
   return (0);
 };
 
+template<class T> inline int setblock(ZZ_mat<T>& B, const int kk, const int ll, ZZ_mat<T> A, const int ii, const int jj, const int nbb, const int diagdec)   {
+
+
+  int n = A.get_rows();
+
+  long bdim = n / nbb;
+
+
+  long  si;
+  long  sk;
+
+  long sj = jj * bdim;
+  long sl = ll * bdim;
+
+  for (int j = 0; j < bdim; j++) {
+    si = ii * bdim;
+    sk = kk * bdim;
+    for (int i = 0; i < bdim; i++) {
+      B(sk, sl) = A(si + diagdec, sj + diagdec);
+      si += 1;
+      sk +=1;
+    }
+    sj += 1;
+    sl+=1;
+  }
+
+  return (0);
+};
+
 
 // SQUARE HERE, bdim divise n
 // Cas rectangle ???
