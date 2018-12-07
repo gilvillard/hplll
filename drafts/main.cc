@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 
 	//SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, 4); //* name
 
-	int S = 16;
+	int S = 32;
 
 	SLattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > B(A, S);
 
