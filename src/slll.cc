@@ -1785,7 +1785,7 @@ SLattice<ZT, FT, MatrixZT, MatrixFT>::phouseholder(int S)
 
 
 #ifdef _OPENMP
-    #pragma omp parallel for shared (l,S)
+    //#pragma omp parallel for shared (l,S)
 #endif
 
     for (lb = l + 1; lb < S; lb++) {

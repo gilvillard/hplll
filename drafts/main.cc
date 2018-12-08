@@ -20,9 +20,14 @@ along with the hplll Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#include "hplll.h"
+#include <ctime>
+#include <omp.h>
+#include <sstream>
+#include <iostream>
 
-#include "wrappers.h"
+//#include "wrappers.h"
+
+using namespace std;
 
 /* ***********************************************
 
@@ -30,27 +35,27 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
    ********************************************** */
 
-using namespace hplll;
+//using namespace hplll;
 
 int main(int argc, char *argv[])  {
 
 
-	ZZ_mat<mpz_t> A;
-	ZZ_mat<mpz_t> L;
+	//ZZ_mat<mpz_t> A;
+	//ZZ_mat<mpz_t> L;
 
-	ZZ_mat<mpz_t> Along;
+	//ZZ_mat<mpz_t> Along;
 
-	ZZ_mat<mpz_t> AT;
+	//ZZ_mat<mpz_t> AT;
 
 	// ---------------------------------------------------------------------
 
-	filebuf fb;
-	iostream os(&fb);
+	//filebuf fb;
+	//iostream os(&fb);
 
 	int n, d;
 	double delta = 0.99;
 
-	command_line_basis(A, n, d, delta, argc, argv);
+	//command_line_basis(A, n, d, delta, argc, argv);
 
 	// fb.open ("basis.txt", ios::in);
 	// os >>  AT ;
@@ -63,9 +68,9 @@ int main(int argc, char *argv[])  {
 
 	// transpose(A, AT);
 
-	AT.resize(d, n);
+	//AT.resize(d, n);
 
-	Timer tp, ts;
+//	Timer tp;
 
 
 	//matrix_cast(Along, A);
@@ -75,28 +80,29 @@ int main(int argc, char *argv[])  {
 
 
 
-	int S = 4;
+//	int S = 4;
 
-	SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, S, NO_TRANSFORM, DEF_REDUCTION);
+	//SLattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, S, NO_TRANSFORM, DEF_REDUCTION);
 
-	tp.clear();
-	tp.start();
+//	tp.clear();
+//	tp.start();
 
-	B.phouseholder(S);
+	double tp;
 
-	tp.stop();
+int ll; 
+tp =  omp_get_wtime();
+#pragma omp parallel for 
+	for (int h=1; h<2; h++) {
+
+	//B.householder(d);
+ll+=1;
+	}
+
+	//B.phouseholder(S);
+
+	tp =  omp_get_wtime() - tp;
 
 	cout << "pLLL: " << tp << endl;
-
-	tp.clear();
-	tp.start();
-
-	B.householder(d);
-
-	tp.stop();
-
-
-	cout << "LLL :" << tp << endl;
 
 
 	// tp.start();
