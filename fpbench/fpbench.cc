@@ -47,7 +47,7 @@ int main(int argc, char *argv[])  {
 	//      << "    " <<  time[5] << "    " <<  time[7] << "    " << endl;
 
 
-	typedef long double FT;
+	typedef double FT;
 	cout << endl << endl <<  "               FP_NR < long double >          " << endl;
 
 	bench<FT>(time[0], time[1], vaxpy_in<FT>, 1200);
