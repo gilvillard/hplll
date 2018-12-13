@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 
-EXTRA_DIST= fpbench.h
+EXTRA_DIST= fpbench.h  nr_FP_float128.inl
 
 AM_CPPFLAGS = -I$(top_srcdir)/src
 

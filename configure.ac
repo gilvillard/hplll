@@ -29,6 +29,24 @@ AC_PROG_CC
 AC_PROG_MAKE_SET
 AX_CXX_COMPILE_STDCXX([11],[noext],[mandatory])
 
+
+
+
+#GV to make clean 
+#AC_ARG_ENABLE([quadmath],
+    #[AC_HELP_STRING([--enable-quadmath],
+        #[enable support for __float128 floating point arithmetics (default: yes)])],
+    #[enable_quadmath="${enableval}"],
+    #[enable_quadmath="yes"]
+#)
+#
+#if test "$enable_quadmath" != no; then
+  #LIBQUAD_LIBADD="-lquadmath"
+        #AC_CHECK_LIB(quadmath,sinhq)
+#fi
+
+#AC_SUBST(LIBQUAD_LIBADD)
+
 AC_ARG_WITH(mpfr,
    [  --with-mpfr=DIR          MPFR install directory ], [
      if test "$withval" != "" ; then
@@ -59,6 +77,13 @@ AC_ARG_ENABLE(omp,
    [ --enable-omp Enables OpenMP], [
      CXXFLAGS="$CXXFLAGS  -fopenmp"
    ])
+
+AC_ARG_ENABLE(quadmath, 
+   [ --enable-quadmath  Enable quadmath], [
+     LDFLAGS="${LDFLAGS} -lquadmath"
+     LIBS="${BACKUP_LIBS} -lquadmath"
+   ])
+
 
 # Checks for header files.
 AC_HEADER_STDC

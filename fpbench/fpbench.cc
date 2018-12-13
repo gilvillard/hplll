@@ -26,47 +26,78 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 using namespace hplll;
 
+#include "nr_FP_float128.inl"
 
 // ***********************************************
+
+template<class FT> void go(vector<double>& t, int rounds) {
+
+	bench<FT>(t[0], t[1], vaxpy_in<FT>, rounds);
+	bench<FT>(t[2], t[3], dotproduct<FT>, rounds);
+	bench<FT>(t[4], t[5], vadd<FT>, rounds);
+	bench<FT>(t[6], t[7], vdiv<FT>, rounds);
+
+	cout << "***************************" << endl;
+	printf("Table:  %.1f    %.1f    %.1f    %.1f    %.1f    %.1f \n \n ", t[0], t[1], t[2], t[3], t[5], t[7]);
+
+}
 
 
 int main(int argc, char *argv[])  {
 
 
-	double time[20];
-
-	// typedef double FT;
-	// cout << endl << endl <<  "               FP_NR < double >          " << endl;
-
-	// bench<FT>(time[0], time[1], vaxpy_in<FT>, 1200);
-	// bench<FT>(time[2], time[3], dotproduct<FT>, 1200);
-	// bench<FT>(time[4], time[5], vadd<FT>, 1200);
-	// bench<FT>(time[6], time[7], vdiv<FT>, 1200);
-
-	// cout << "Table results: " <<  time[0] << "    " <<  time[1] << "    " <<  time[2] << "    " <<  time[3] 
-	//      << "    " <<  time[5] << "    " <<  time[7] << "    " << endl;
+	vector<double> time;
+	time.resize(20);
 
 
-	typedef double FT;
+	// --------------------------
+
+	/*typedef double FT;
+	cout << endl << endl <<  "               FP_NR < double >          " << endl;
+
+	go<FT>(time, 1200);*/
+
+
+	/*typedef long double FT;
 	cout << endl << endl <<  "               FP_NR < long double >          " << endl;
 
-	bench<FT>(time[0], time[1], vaxpy_in<FT>, 1200);
-	bench<FT>(time[2], time[3], dotproduct<FT>, 1200);
-	bench<FT>(time[4], time[5], vadd<FT>, 1200);
-	bench<FT>(time[6], time[7], vdiv<FT>, 1200);
-
-	cout << "Table results: " <<  time[0] << "    " <<  time[1] << "    " <<  time[2] << "    " <<  time[3] 
-	     << "    " <<  time[5] << "    " <<  time[7] << "    " << endl;
+	go<FT>(time, 1200);*/
 
 
+	/*typedef dd_real FT;
+	cout << endl << endl <<  "               FP_NR < dd_real >          " << endl;
 
-	//cout << endl << endl <<  "               FP_NR < dd_real >          " << endl;
-
-
-	//typedef dd_real FT;
-
+	go<FT>(time, 1200);*/
 
 
+	/*mpfr_set_default_prec(106);
+
+	typedef mpfr_t FT;
+	cout << endl << endl <<  "               FP_NR < mpfr_t >  106         " << endl;
+
+	go<FT>(time, 600);
+	*/
+
+	// mpfr_set_default_prec(212);
+
+	// typedef mpfr_t FT;
+	// cout << endl << endl <<  "               FP_NR < mpfr_t >  212        " << endl;
+
+	// go<FT>(time, 600);
+
+
+	// typedef qd_real FT;
+	// cout << endl << endl <<  "               FP_NR < qd_real>         " << endl;
+
+	// go<FT>(time, 600);
+
+
+	typedef __float128 FT;
+	cout << endl << endl <<  "               FP_NR < qd_real>         " << endl;
+
+	go<FT>(time, 600);
+
+	
 
 	return 0;
 }

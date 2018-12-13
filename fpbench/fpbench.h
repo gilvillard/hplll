@@ -128,6 +128,63 @@ template<class FT> void bench(double& t1, double& t2, const function<void(string
 
 	int count;
 
+	clock_t fl_start, fl_end;
+
+
+	// Measure for pure doubles
+	// ------------------------
+
+
+	vector<double> r1;
+
+	int fpdim = 10000;
+	int nbfp = 8000;
+
+	r1.resize(fpdim);
+
+	double fp_time = 0.0;
+
+	srand(time(NULL));
+
+	for (int K = 0; K < nbfp ; K++) {
+
+		double c = rand();
+
+		for (int i = 0; i < fpdim; i++)
+			r1[i] = rand();
+
+		// Chrono
+		// ------
+
+		fl_start = clock();
+
+		for (int i = 0; i < fpdim; i++)
+			r1[i] += c * r1[i];
+
+		fl_end = clock();
+
+		fp_time += (difftime(fl_end, fl_start) / CLOCKS_PER_SEC);
+
+		// use res
+		for (int i = 0; i < fpdim; i++)
+			fpr += r1[i];
+
+	}
+
+	// use res
+	cout << endl << fpr << endl;
+
+	fp_time = fp_time / nbfp;
+
+	double dflops = 2 * ((double) fpdim) / fp_time;
+
+	cout << endl << "***** dGflops    [" << fpdim << "]: " << dflops << endl;
+
+
+	// Measure for float type
+	// ----------------------
+
+
 	for (int l = 0; l < nsize; l++) {
 
 		va.resize(n[l]);
@@ -140,25 +197,9 @@ template<class FT> void bench(double& t1, double& t2, const function<void(string
 		r0.randb(prec);
 
 
-
-
 		string tag;
 
-		Timer t;
-		clock_t fl_start, fl_end;
-
-		//int nbtrials = 20;
-
-		double fpnr_time[nbtrials], fp_time[nbtrials];
-
-		auto fpnrbegin = chrono::high_resolution_clock::now();
-		auto fpnrend =  chrono::high_resolution_clock::now();
-		auto fpnrduration = 0.0;
-
-		auto fpbegin = chrono::high_resolution_clock::now();
-		auto fpend = chrono::high_resolution_clock::now();
-		auto fpduration = 0.0;
-
+		double fpnr_time = 0.0;
 
 
 		for (int K = 0; K < nbtrials; K++) {
@@ -180,28 +221,22 @@ template<class FT> void bench(double& t1, double& t2, const function<void(string
 			}
 
 
-			t.clear();
+			// Chrono
+			// ------
 
-			t.start();
 			fl_start = clock();
-
-			fpnrbegin = chrono::high_resolution_clock::now();
 
 			g(tag, count, n[l], r, va, vb);
 
-			fpnrend = chrono::high_resolution_clock::now();
-
 			fl_end = clock();
-			t.stop();
 
-			fpnrduration += chrono::duration_cast<chrono::nanoseconds>(fpnrend - fpnrbegin).count();
 
+			fpnr_time += (difftime(fl_end, fl_start) / CLOCKS_PER_SEC);
 
 
 			if ((K == 0) && (l == 0))
 				cout << endl << "-------------------   " << tag << "   --------------------------" << endl;
 
-			fpnr_time[K] = difftime(fl_end, fl_start) / CLOCKS_PER_SEC;
 
 			// Use va and r, see what has been involved in the computation
 			for (int i = 0; i < n[l]; i++) {
@@ -210,89 +245,24 @@ template<class FT> void bench(double& t1, double& t2, const function<void(string
 
 			}
 
-			// Pure double speed
-
-			vector<double> r1;
-			vector<double> r2;
-
-			r1.resize(n[l]);
-			r2.resize(n[l]);
-
-			for (int i = 0; i < n[l]; i++) {
-
-				r1[i] = rand();
-				r2[i] = rand();
-
-			}
-
-			fl_start = clock();
-
-			fpbegin = chrono::high_resolution_clock::now();
-
-			for (int i = 0; i < n[l]; i++) {
-
-				r1[i] += 3416 * r1[i]; // * r2[i];
-
-			}
-
-			fpend = chrono::high_resolution_clock::now();
-
-			fl_end = clock();
-
-
-			fpduration += chrono::duration_cast<chrono::nanoseconds>(fpend - fpbegin).count();
-
-
-			for (int i = 0; i < n[l]; i++)
-				fpr += r1[i];
-
-			fp_time[K] = difftime(fl_end, fl_start) / CLOCKS_PER_SEC;
-
-
 
 			if (K == nbtrials - 1) {
 
-				double avg_fpnr = 0.0;
-				double avg_fp = 0.0;
 
-				for (int K = 0; K < nbtrials; K++) {
+				fpnr_time = fpnr_time / nbtrials;
 
-					avg_fpnr += fpnr_time[K];
-					avg_fp += fp_time[K];
-
-				}
-
-				avg_fpnr /= nbtrials;
-				avg_fp /= nbtrials;
-
-				cout << fpr << endl;
-				cout << r << endl;
+				cout << r << endl; 
 
 
-				//cout << "CPU & clock time:  " << t.usertime() << "  "  << avg_fpnr  << endl << endl;
-				//cout << "CPU & clock time:  " << t.usertime() << "  "  << avg_fp << endl << endl;
+				double wflops = count * ((double) n[l]) / fpnr_time;
+				cout << "flops     [" << n[l] << "]: " <<  wflops << endl;
 
-				//cout << "flops     [" << n[l] << "]: " << count * ((double) n[l]) / t.usertime() << endl;
-
-				cout << endl << tag << endl << endl;
-
-				cout << fpnrduration << "ns total, average : " << fpnrduration / nbtrials << "ns." << endl;
-
-				fpnrduration /= nbtrials;
-				fpduration /= nbtrials;
-
-				cout << "GFlops     [" << n[l] << "]: " << count * ((double) n[l]) / fpnrduration << endl;
-				cout << "flops     [" << n[l] << "]: " << count * ((double) n[l]) / avg_fpnr << endl;
-				cout << "dGFlops    [" << n[l] << "]: " << 2 * ((double) n[l]) / fpduration << endl;
-				//cout << "dflops    [" << n[l] << "]: " << 2 * ((double) n[l]) / avg_fp << endl;
-
-				//cout << "d ratio: " << 2 * avg_fpnr / (count * avg_fp) << endl << endl;
-				cout << "d ratio: " << ((double) 2) * fpnrduration / (((double) count) * fpduration) << endl << endl;
+				cout << "d ratio: " << dflops / wflops << endl << endl;
 
 				if (l == 0)
-					t1 = ((double) 2) * fpnrduration / (((double) count) * fpduration);
+					t1 = dflops / wflops;
 				else if (l == nsize - 1)
-					t2 = ((double) 2) * fpnrduration / (((double) count) * fpduration);
+					t2 = dflops / wflops;
 
 			}
 
