@@ -33,16 +33,16 @@ using namespace hplll;
 int main(int argc, char *argv[])  {
 
 
-	typedef double FT;
+	// typedef double FT;
 
 
-	cout << endl << endl <<  "               FP_NR < double >          " << endl;
+	// cout << endl << endl <<  "               FP_NR < double >          " << endl;
 
 
-	bench<FT>(vaxpy_in<FT>, 800);
-	bench<FT>(dotproduct<FT>, 800);
-	bench<FT>(vadd<FT>, 800);
-	bench<FT>(vdiv<FT>, 800);
+	// bench<FT>(vaxpy_in<FT>, 800);
+	// bench<FT>(dotproduct<FT>, 800);
+	// bench<FT>(vadd<FT>, 800);
+	// bench<FT>(vdiv<FT>, 800);
 
 
 	// typedef long double FT;
@@ -57,6 +57,16 @@ int main(int argc, char *argv[])  {
 	// bench<FT>(vdiv<FT>, 400);
 
 
+
+	cout << endl << endl <<  "               FP_NR < dd_real >          " << endl;
+
+
+	typedef dd_real FT;
+
+	bench<FT>(vaxpy_in<FT>, 400);
+	bench<FT>(dotproduct<FT>, 400);
+	bench<FT>(vadd<FT>, 400);
+	bench<FT>(vdiv<FT>, 400);
 
 
 	return 0;
