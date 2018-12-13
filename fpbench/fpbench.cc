@@ -50,51 +50,38 @@ int main(int argc, char *argv[])  {
 	time.resize(20);
 
 
-
-	typedef double FT;
 	cout << endl << endl <<  "               FP_NR < double >          " << endl;
+	go<double>(time, 1200);
 
-	go<FT>(time, 1200);
 
-
-	typedef long double FT;
+	
 	cout << endl << endl <<  "               FP_NR < long double >          " << endl;
+	go<long double>(time, 1200);
 
-	go<FT>(time, 1200);
 
-
-	typedef dd_real FT;
+	
 	cout << endl << endl <<  "               FP_NR < dd_real >          " << endl;
-
-	go<FT>(time, 1200);
+	go<dd_real>(time, 1200);
 
 
 	mpfr_set_default_prec(106);
-
-	typedef mpfr_t FT;
 	cout << endl << endl <<  "               FP_NR < mpfr_t >  106         " << endl;
+	go<mpfr_t>(time, 600);
 
-	go<FT>(time, 600);
 
-
-	typedef __float128 FT;
+	
 	cout << endl << endl <<  "               FP_NR < __float128 >         " << endl;
-
-	go<FT>(time, 600);
+	go<__float128>(time, 600);
 
 
 	mpfr_set_default_prec(212);
-
-	typedef mpfr_t FT;
 	cout << endl << endl <<  "               FP_NR < mpfr_t >  212        " << endl;
+	go<mpfr_t>(time, 600);
 
-	go<FT>(time, 600);
 
 
-	typedef qd_real FT;
 	cout << endl << endl <<  "               FP_NR < qd_real>         " << endl;
-
-	go<FT>(time, 600);
+	go<qd_real>(time, 600);
 
 
 
