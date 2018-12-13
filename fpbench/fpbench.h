@@ -66,6 +66,8 @@ template<class FT> void dotproduct(string& tag, int& count, int n, FP_NR<FT>& r,
 
 template<class FT> void vaxpy_in(string& tag, int& count, int n, FP_NR<FT>& r, vector<FP_NR<FT> >& va, vector<FP_NR<FT> >& vb) {
 
+	r = 0.0;
+
 	FP_NR<FT> t = va[0];
 
 	for (int i = 0; i < n; i++) {
@@ -75,8 +77,6 @@ template<class FT> void vaxpy_in(string& tag, int& count, int n, FP_NR<FT>& r, v
 	}
 
 	tag = "vaxpy in";
-
-	r = 0.0;
 
 	count = 2;
 }
@@ -109,14 +109,14 @@ template<class FT> void bench(double& t1, double& t2, const function<void(string
 
 	int prec = f.get_prec();
 
-	int nsize = 3;
+	int nsize = 2;
 
 	vector<int> n;
 	n.resize(nsize);
 
 	n[0] = 400;
 	n[1] = 10000;
-	n[2] = 100000;
+	//n[2] = 100000;
 
 
 	vector<FP_NR<FT> > va;
@@ -153,11 +153,11 @@ template<class FT> void bench(double& t1, double& t2, const function<void(string
 
 		auto fpnrbegin = chrono::high_resolution_clock::now();
 		auto fpnrend =  chrono::high_resolution_clock::now();
-		auto fpnrduration = 0.0; 
+		auto fpnrduration = 0.0;
 
-		auto fpbegin = chrono::high_resolution_clock::now(); 
+		auto fpbegin = chrono::high_resolution_clock::now();
 		auto fpend = chrono::high_resolution_clock::now();
-		auto fpduration = 0.0; 
+		auto fpduration = 0.0;
 
 
 
@@ -238,7 +238,7 @@ template<class FT> void bench(double& t1, double& t2, const function<void(string
 			fpend = chrono::high_resolution_clock::now();
 
 			fl_end = clock();
-			
+
 
 			fpduration += chrono::duration_cast<chrono::nanoseconds>(fpend - fpbegin).count();
 
@@ -251,6 +251,7 @@ template<class FT> void bench(double& t1, double& t2, const function<void(string
 
 
 			if (K == nbtrials - 1) {
+
 				double avg_fpnr = 0.0;
 				double avg_fp = 0.0;
 
@@ -281,7 +282,7 @@ template<class FT> void bench(double& t1, double& t2, const function<void(string
 				fpduration /= nbtrials;
 
 				cout << "GFlops     [" << n[l] << "]: " << count * ((double) n[l]) / fpnrduration << endl;
-				//cout << "flops     [" << n[l] << "]: " << count * ((double) n[l]) / avg_fpnr << endl;
+				cout << "flops     [" << n[l] << "]: " << count * ((double) n[l]) / avg_fpnr << endl;
 				cout << "dGFlops    [" << n[l] << "]: " << 2 * ((double) n[l]) / fpduration << endl;
 				//cout << "dflops    [" << n[l] << "]: " << 2 * ((double) n[l]) / avg_fp << endl;
 

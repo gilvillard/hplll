@@ -33,41 +33,42 @@ using namespace hplll;
 int main(int argc, char *argv[])  {
 
 
-	typedef double FT;
-
-
-	cout << endl << endl <<  "               FP_NR < double >          " << endl;
-
-
 	double time[20];
 
-	bench<FT>(time[0], time[1], vaxpy_in<FT>, 800);
-	bench<FT>(time[2], time[3], dotproduct<FT>, 800);
-	bench<FT>(time[4], time[5], vadd<FT>, 800);
-	bench<FT>(time[6], time[7], vdiv<FT>, 800);
+	// typedef double FT;
+	// cout << endl << endl <<  "               FP_NR < double >          " << endl;
+
+	// bench<FT>(time[0], time[1], vaxpy_in<FT>, 1200);
+	// bench<FT>(time[2], time[3], dotproduct<FT>, 1200);
+	// bench<FT>(time[4], time[5], vadd<FT>, 1200);
+	// bench<FT>(time[6], time[7], vdiv<FT>, 1200);
+
+	// cout << "Table results: " <<  time[0] << "    " <<  time[1] << "    " <<  time[2] << "    " <<  time[3] 
+	//      << "    " <<  time[5] << "    " <<  time[7] << "    " << endl;
 
 
-	cout << "Table results: " <<  time[0] << "    " <<  time[1] << "    " <<  time[2] << "    " <<  time[3] \
+	typedef long double FT;
+	cout << endl << endl <<  "               FP_NR < long double >          " << endl;
+
+	bench<FT>(time[0], time[1], vaxpy_in<FT>, 1200);
+	bench<FT>(time[2], time[3], dotproduct<FT>, 1200);
+	bench<FT>(time[4], time[5], vadd<FT>, 1200);
+	bench<FT>(time[6], time[7], vdiv<FT>, 1200);
+
+	cout << "Table results: " <<  time[0] << "    " <<  time[1] << "    " <<  time[2] << "    " <<  time[3] 
 	     << "    " <<  time[5] << "    " <<  time[7] << "    " << endl;
 
 
-	     // typedef long double FT;
+
+	//cout << endl << endl <<  "               FP_NR < dd_real >          " << endl;
 
 
-	     // cout << endl << endl <<  "               FP_NR < long double >          " << endl;
-
-
-
-
-	     //cout << endl << endl <<  "               FP_NR < dd_real >          " << endl;
-
-
-	     //typedef dd_real FT;
+	//typedef dd_real FT;
 
 
 
 
-	     return 0;
+	return 0;
 }
 
 
