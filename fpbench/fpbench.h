@@ -20,10 +20,14 @@ along with the hplll Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#ifndef HPLLL_FPBENCH_H
+#define HPLLL_FPBENCH_H
+
 #include "hplll.h"
 
-using namespace hplll;
+#include <chrono>
 
+namespace hplll {
 
 // ***********************************************
 
@@ -89,7 +93,7 @@ template<class FT> void vdiv(string& tag, int& count, int n, FP_NR<FT>& r, vecto
 
 	tag = "vdiv";
 
-	count = 2;
+	count = 1;
 }
 
 // *********************************************
@@ -145,6 +149,15 @@ template<class FT> void bench(const function<void(string&, int&, int, FP_NR<FT>&
 
 		double fpnr_time[nbtrials], fp_time[nbtrials];
 
+		auto fpnrbegin = chrono::high_resolution_clock::now();
+		auto fpnrend = chrono::high_resolution_clock::now();
+		auto fpnrduration = chrono::duration_cast<chrono::nanoseconds>(fpnrend - fpnrbegin).count();
+
+		auto fpbegin = chrono::high_resolution_clock::now();
+		auto fpend = chrono::high_resolution_clock::now();
+		auto fpduration = chrono::duration_cast<chrono::nanoseconds>(fpend - fpbegin).count();
+
+
 
 		for (int K = 0; K < nbtrials; K++) {
 
@@ -170,10 +183,17 @@ template<class FT> void bench(const function<void(string&, int&, int, FP_NR<FT>&
 			t.start();
 			fl_start = clock();
 
+			fpnrbegin = chrono::high_resolution_clock::now();
+
 			g(tag, count, n[l], r, va, vb);
+
+			fpnrend = chrono::high_resolution_clock::now();
 
 			fl_end = clock();
 			t.stop();
+
+			fpnrduration += chrono::duration_cast<chrono::nanoseconds>(fpnrend - fpnrbegin).count();
+
 
 
 			if ((K == 0) && (l == 0))
@@ -205,6 +225,7 @@ template<class FT> void bench(const function<void(string&, int&, int, FP_NR<FT>&
 
 			fl_start = clock();
 
+			fpbegin = chrono::high_resolution_clock::now();
 
 			for (int i = 0; i < n[l]; i++) {
 
@@ -212,71 +233,70 @@ template<class FT> void bench(const function<void(string&, int&, int, FP_NR<FT>&
 
 			}
 
+			fpend = chrono::high_resolution_clock::now();
+
 			fl_end = clock();
+			t.stop();
+
+			fpduration += chrono::duration_cast<chrono::nanoseconds>(fpend - fpbegin).count();
+
 
 			for (int i = 0; i < n[l]; i++)
 				fpr += r1[i];
 
 			fp_time[K] = difftime(fl_end, fl_start) / CLOCKS_PER_SEC;
 
-		}
 
-		double avg_fpnr = 0.0;
-		double avg_fp = 0.0;
+			if (K == nbtrials - 1) {
+				double avg_fpnr = 0.0;
+				double avg_fp = 0.0;
 
-		for (int K = 0; K < nbtrials; K++) {
+				for (int K = 0; K < nbtrials; K++) {
 
-			avg_fpnr += fpnr_time[K];
-			avg_fp += fp_time[K];
+					avg_fpnr += fpnr_time[K];
+					avg_fp += fp_time[K];
 
-		}
+				}
 
-		avg_fpnr /= nbtrials;
-		avg_fp /= nbtrials;
+				avg_fpnr /= nbtrials;
+				avg_fp /= nbtrials;
 
-		cout << fpr << endl;
-		cout << r << endl;
-
-
-		//cout << "CPU & clock time:  " << t.usertime() << "  "  << avg_fpnr  << endl << endl;
-		//cout << "CPU & clock time:  " << t.usertime() << "  "  << avg_fp << endl << endl;
-
-		//cout << "flops     [" << n[l] << "]: " << count * ((double) n[l]) / t.usertime() << endl;
-
-		cout << endl << tag << endl;
-
-		cout << "flops     [" << n[l] << "]: " << count * ((double) n[l]) / avg_fpnr << endl;
-		cout << "dflops    [" << n[l] << "]: " << 2 * ((double) n[l]) / avg_fp << endl;
-
-		cout << "d ratio: " << 2 * avg_fpnr / (count * avg_fp) << endl << endl;
+				cout << fpr << endl;
+				cout << r << endl;
 
 
-	}
+				//cout << "CPU & clock time:  " << t.usertime() << "  "  << avg_fpnr  << endl << endl;
+				//cout << "CPU & clock time:  " << t.usertime() << "  "  << avg_fp << endl << endl;
+
+				//cout << "flops     [" << n[l] << "]: " << count * ((double) n[l]) / t.usertime() << endl;
+
+				cout << endl << tag << endl << endl;
+
+				cout << fpnrduration << "ns total, average : " << fpnrduration / nbtrials << "ns." << endl;
+
+				fpnrduration /= nbtrials;
+				fpduration /= nbtrials;
+
+				cout << "GFlops     [" << n[l] << "]: " << count * ((double) n[l]) / fpnrduration << endl;
+				//cout << "flops     [" << n[l] << "]: " << count * ((double) n[l]) / avg_fpnr << endl;
+				cout << "dGFlops    [" << n[l] << "]: " << 2 * ((double) n[l]) / fpduration << endl;
+				//cout << "dflops    [" << n[l] << "]: " << 2 * ((double) n[l]) / avg_fp << endl;
+
+				//cout << "d ratio: " << 2 * avg_fpnr / (count * avg_fp) << endl << endl;
+				cout << "d ratio: " << ((double) 2) * fpnrduration / (((double) count) * fpduration) << endl << endl;
+			}
+
+		} // Loop nbtrials
+
+	} // Loop vector length
+
 	cout << endl;
 }
 
 
+} // end namespace hplll
 
-
-int main(int argc, char *argv[])  {
-
-	//typedef long double  FT;
-	typedef double FT;
-
-
-	cout << endl <<  "               FP_NR < double >          " << endl;
-
-
-	bench<FT>(vaxpy_in<FT>, 100);
-
-
-	return 0;
-}
-
-
-
-
-
+#endif
 
 
 
