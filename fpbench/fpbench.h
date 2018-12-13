@@ -99,9 +99,11 @@ template<class FT> void vdiv(string& tag, int& count, int n, FP_NR<FT>& r, vecto
 // *********************************************
 
 
-template<class FT> void bench(const function<void(string&, int&, int, FP_NR<FT>&, vector<FP_NR<FT> >& , vector<FP_NR<FT> >&)> &g, int nbtrials) {
+template<class FT> void bench(double& t1, double& t2, const function<void(string&, int&, int, FP_NR<FT>&, vector<FP_NR<FT> >& , vector<FP_NR<FT> >&)> &g, int nbtrials) {
 
 
+	t1 = 0.0;
+	t2 = 0.0;
 
 	FP_NR<FT> f = 0.0;
 
@@ -150,12 +152,12 @@ template<class FT> void bench(const function<void(string&, int&, int, FP_NR<FT>&
 		double fpnr_time[nbtrials], fp_time[nbtrials];
 
 		auto fpnrbegin = chrono::high_resolution_clock::now();
-		auto fpnrend = chrono::high_resolution_clock::now();
-		auto fpnrduration = chrono::duration_cast<chrono::nanoseconds>(fpnrend - fpnrbegin).count();
+		auto fpnrend =  chrono::high_resolution_clock::now();
+		auto fpnrduration = 0.0; 
 
-		auto fpbegin = chrono::high_resolution_clock::now();
+		auto fpbegin = chrono::high_resolution_clock::now(); 
 		auto fpend = chrono::high_resolution_clock::now();
-		auto fpduration = chrono::duration_cast<chrono::nanoseconds>(fpend - fpbegin).count();
+		auto fpduration = 0.0; 
 
 
 
@@ -236,7 +238,7 @@ template<class FT> void bench(const function<void(string&, int&, int, FP_NR<FT>&
 			fpend = chrono::high_resolution_clock::now();
 
 			fl_end = clock();
-			t.stop();
+			
 
 			fpduration += chrono::duration_cast<chrono::nanoseconds>(fpend - fpbegin).count();
 
@@ -245,6 +247,7 @@ template<class FT> void bench(const function<void(string&, int&, int, FP_NR<FT>&
 				fpr += r1[i];
 
 			fp_time[K] = difftime(fl_end, fl_start) / CLOCKS_PER_SEC;
+
 
 
 			if (K == nbtrials - 1) {
@@ -284,6 +287,12 @@ template<class FT> void bench(const function<void(string&, int&, int, FP_NR<FT>&
 
 				//cout << "d ratio: " << 2 * avg_fpnr / (count * avg_fp) << endl << endl;
 				cout << "d ratio: " << ((double) 2) * fpnrduration / (((double) count) * fpduration) << endl << endl;
+
+				if (l == 0)
+					t1 = ((double) 2) * fpnrduration / (((double) count) * fpduration);
+				else if (l == nsize - 1)
+					t2 = ((double) 2) * fpnrduration / (((double) count) * fpduration);
+
 			}
 
 		} // Loop nbtrials

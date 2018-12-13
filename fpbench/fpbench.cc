@@ -33,43 +33,41 @@ using namespace hplll;
 int main(int argc, char *argv[])  {
 
 
-	// typedef double FT;
+	typedef double FT;
 
 
-	// cout << endl << endl <<  "               FP_NR < double >          " << endl;
+	cout << endl << endl <<  "               FP_NR < double >          " << endl;
 
 
-	// bench<FT>(vaxpy_in<FT>, 800);
-	// bench<FT>(dotproduct<FT>, 800);
-	// bench<FT>(vadd<FT>, 800);
-	// bench<FT>(vdiv<FT>, 800);
+	double time[20];
+
+	bench<FT>(time[0], time[1], vaxpy_in<FT>, 800);
+	bench<FT>(time[2], time[3], dotproduct<FT>, 800);
+	bench<FT>(time[4], time[5], vadd<FT>, 800);
+	bench<FT>(time[6], time[7], vdiv<FT>, 800);
 
 
-	// typedef long double FT;
+	cout << "Table results: " <<  time[0] << "    " <<  time[1] << "    " <<  time[2] << "    " <<  time[3] \
+	     << "    " <<  time[5] << "    " <<  time[7] << "    " << endl;
 
 
-	// cout << endl << endl <<  "               FP_NR < long double >          " << endl;
+	     // typedef long double FT;
 
 
-	// bench<FT>(vaxpy_in<FT>, 400);
-	// bench<FT>(dotproduct<FT>, 400);
-	// bench<FT>(vadd<FT>, 400);
-	// bench<FT>(vdiv<FT>, 400);
+	     // cout << endl << endl <<  "               FP_NR < long double >          " << endl;
 
 
 
-	cout << endl << endl <<  "               FP_NR < dd_real >          " << endl;
+
+	     //cout << endl << endl <<  "               FP_NR < dd_real >          " << endl;
 
 
-	typedef dd_real FT;
-
-	bench<FT>(vaxpy_in<FT>, 400);
-	bench<FT>(dotproduct<FT>, 400);
-	bench<FT>(vadd<FT>, 400);
-	bench<FT>(vdiv<FT>, 400);
+	     //typedef dd_real FT;
 
 
-	return 0;
+
+
+	     return 0;
 }
 
 
