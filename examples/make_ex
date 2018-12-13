@@ -5,9 +5,13 @@ CXXFLAGS += -std=c++11
 # If non standard installation directories 
 #  for instance, uncomment and fix the following  
 
-#PREFIX = ${HOME}/Soft
-#CXXFLAGS += -I${PREFIX}/include
-#LDFLAGS += -L${PREFIX}/lib
+PREFIX = /usr/local
+CXXFLAGS += -I${PREFIX}/include
+LDFLAGS += -L${PREFIX}/lib
+
+OPTPREFIX = /opt/local
+CXXFLAGS += -I${OPTPREFIX}/include
+LDFLAGS += -L${OPTPREFIX}/lib
 
 # Here with standard installation directories
 #  otherwise modify the compilation variables

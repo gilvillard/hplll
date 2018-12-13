@@ -93,7 +93,7 @@ int main(int argc, char *argv[])  {
 
 
 	typedef __float128 FT;
-	cout << endl << endl <<  "               FP_NR < qd_real>         " << endl;
+	cout << endl << endl <<  "               FP_NR < __float128 >         " << endl;
 
 	go<FT>(time, 600);
 
