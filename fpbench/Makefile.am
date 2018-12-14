@@ -8,5 +8,6 @@ EXTRA_PROGRAMS = fpbench
 
 fpbench_SOURCES = fpbench.cc fpbench.h
 
-
+fp : fpbench 
+	fpbench 
 

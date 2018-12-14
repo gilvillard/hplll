@@ -25,249 +25,122 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 using namespace hplll;
 
 
-// ***********************************************
-
-
-template<class FT> void vadd(string& tag, int& count, int n, FP_NR<FT>& r, vector<FP_NR<FT> >& va, vector<FP_NR<FT> >& vb) {
-
-	r = 0.0;
-
-	for (int i = 0; i < n; i++) {
-
-		va[i].add(va[i], vb[i]);
-
-	}
-
-	tag = "vector add";
-
-	count = 1;
-}
-
-
-template<class FT> void dotproduct(string& tag, int& count, int n, FP_NR<FT>& r, vector<FP_NR<FT> >& va, vector<FP_NR<FT> >& vb) {
-
-	r = 0.0;
-
-	for (int i = 0; i < n; i++) {
-
-		r.addmul(va[i], vb[i]);
-
-	}
-
-	tag = "dot product";
-
-	count = 2;
-}
-
-
-template<class FT> void vaxpy_in(string& tag, int& count, int n, FP_NR<FT>& r, vector<FP_NR<FT> >& va, vector<FP_NR<FT> >& vb) {
-
-	FP_NR<FT> t = va[0];
-
-	for (int i = 0; i < n; i++) {
-
-		va[i].addmul(va[i], t);
-
-	}
-
-	tag = "vaxpy in";
-
-	r = 0.0;
-
-	count = 2;
-}
-
-template<class FT> void vdiv(string& tag, int& count, int n, FP_NR<FT>& r, vector<FP_NR<FT> >& va, vector<FP_NR<FT> >& vb) {
-
-	r = 0.0;
-
-	for (int i = 0; i < n; i++) {
-
-		va[i].div(va[i], vb[i]);
-
-	}
-
-	tag = "vdiv";
-
-	count = 2;
-}
-
-// *********************************************
-
-
-template<class FT> void bench(const function<void(string&, int&, int, FP_NR<FT>&, vector<FP_NR<FT> >& , vector<FP_NR<FT> >&)> &g, int nbtrials) {
-
-
-
-	FP_NR<FT> f = 0.0;
-
-	int prec = f.get_prec();
-
-	int nsize = 3;
-
-	vector<int> n;
-	n.resize(nsize);
-
-	n[0] = 400;
-	n[1] = 10000;
-	n[2] = 100000;
-
-
-	vector<FP_NR<FT> > va;
-	vector<FP_NR<FT> > vb;
-
-	FP_NR<FT> r;
-
-	double fpr = 0.0;
-
-	int count;
-
-	for (int l = 0; l < nsize; l++) {
-
-		va.resize(n[l]);
-		vb.resize(n[l]);
-
-
-		Z_NR<mpz_t> r0;
-
-		srand(time(NULL));
-		r0.randb(prec);
-
-
-
-
-		string tag;
-
-		Timer t;
-		clock_t fl_start, fl_end;
-
-		//int nbtrials = 20;
-
-		double fpnr_time[nbtrials], fp_time[nbtrials];
-
-
-		for (int K = 0; K < nbtrials; K++) {
-
-			for (int i = 0; i < n[l]; i++) {
-
-				va[i] = 0.0;
-				vb[i] = 0.0;
-
-				for (int k = prec; k > 0; k /= 53) {
-
-					va[i].mul_2si(va[i], 53);
-					va[i].add(va[i], (double) rand());
-
-					vb[i].mul_2si(vb[i], 53);
-					vb[i].add(vb[i], (double) rand());
-				}
-
-			}
-
-
-			t.clear();
-
-			t.start();
-			fl_start = clock();
-
-			g(tag, count, n[l], r, va, vb);
-
-			fl_end = clock();
-			t.stop();
-
-
-			if ((K == 0) && (l == 0))
-				cout << endl << "-------------------   " << tag << "   --------------------------" << endl;
-
-			fpnr_time[K] = difftime(fl_end, fl_start) / CLOCKS_PER_SEC;
-
-			// Use va and r, see what has been involved in the computation
-			for (int i = 0; i < n[l]; i++) {
-
-				r.add(r, va[i]);
-
-			}
-
-			// Pure double speed
-
-			vector<double> r1;
-			vector<double> r2;
-
-			r1.resize(n[l]);
-			r2.resize(n[l]);
-
-			for (int i = 0; i < n[l]; i++) {
-
-				r1[i] = rand();
-				r2[i] = rand();
-
-			}
-
-			fl_start = clock();
-
-
-			for (int i = 0; i < n[l]; i++) {
-
-				r1[i] += 3416 * r1[i]; // * r2[i];
-
-			}
-
-			fl_end = clock();
-
-			for (int i = 0; i < n[l]; i++)
-				fpr += r1[i];
-
-			fp_time[K] = difftime(fl_end, fl_start) / CLOCKS_PER_SEC;
-
-		}
-
-		double avg_fpnr = 0.0;
-		double avg_fp = 0.0;
-
-		for (int K = 0; K < nbtrials; K++) {
-
-			avg_fpnr += fpnr_time[K];
-			avg_fp += fp_time[K];
-
-		}
-
-		avg_fpnr /= nbtrials;
-		avg_fp /= nbtrials;
-
-		cout << fpr << endl;
-		cout << r << endl;
-
-
-		//cout << "CPU & clock time:  " << t.usertime() << "  "  << avg_fpnr  << endl << endl;
-		//cout << "CPU & clock time:  " << t.usertime() << "  "  << avg_fp << endl << endl;
-
-		//cout << "flops     [" << n[l] << "]: " << count * ((double) n[l]) / t.usertime() << endl;
-
-		cout << endl << tag << endl;
-
-		cout << "flops     [" << n[l] << "]: " << count * ((double) n[l]) / avg_fpnr << endl;
-		cout << "dflops    [" << n[l] << "]: " << 2 * ((double) n[l]) / avg_fp << endl;
-
-		cout << "d ratio: " << 2 * avg_fpnr / (count * avg_fp) << endl << endl;
-
-
-	}
-	cout << endl;
-}
-
-
-
-
 int main(int argc, char *argv[])  {
 
-	//typedef long double  FT;
-	typedef double FT;
+
+	int n = 2000;
+
+	clock_t fl_start, fl_end;
 
 
-	cout << endl <<  "               FP_NR < double >          " << endl;
+	// DD
+	// --
+
+	double time;
+
+	FP_NR<dd_real> f = 0.0;
+	int prec = f.get_prec();
+
+	vector<FP_NR<dd_real> > va;
+	vector<FP_NR<dd_real> > vb;
+
+	va.resize(n);
+	vb.resize(n);
 
 
-	bench<FT>(vaxpy_in<FT>, 100);
+	for (int i = 0; i < n; i++) {
+
+		va[i] = 0.0;
+		vb[i] = 0.0;
+
+		for (int k = prec; k > 0; k /= 53) {
+
+			va[i].mul_2si(va[i], 53);
+			va[i].add(va[i], (double) rand());
+
+			vb[i].mul_2si(vb[i], 53);
+			vb[i].add(vb[i], (double) rand());
+		}
+
+	}
+
+
+	fl_start = clock();
+
+	for (int i = 0; i < n; i++) {
+
+		va[i].mul(va[i], vb[i]);
+
+	}
+
+	fl_end = clock();
+
+
+	// Use the result
+	for (int i = 0; i < n; i++)
+		f.add(f, va[i]);
+	cout << f << endl;
+
+
+	time = (difftime(fl_end, fl_start) / CLOCKS_PER_SEC);
+
+	cout << endl << "Time dd: " << time << endl << endl;
+
+
+	// QD
+	// --
+
+	double qtime;
+
+	FP_NR<qd_real> qf = 0.0;
+	int qprec = qf.get_prec();
+
+	vector<FP_NR<qd_real> > qva;
+	vector<FP_NR<qd_real> > qvb;
+
+	qva.resize(n);
+	qvb.resize(n);
+
+
+	for (int i = 0; i < n; i++) {
+
+		qva[i] = 0.0;
+		qvb[i] = 0.0;
+
+		for (int k = qprec; k > 0; k /= 53) {
+
+			qva[i].mul_2si(qva[i], 53);
+			qva[i].add(qva[i], (double) rand());
+
+			qvb[i].mul_2si(qvb[i], 53);
+			qvb[i].add(qvb[i], (double) rand());
+		}
+
+	}
+
+
+	fl_start = clock();
+
+	for (int i = 0; i < n; i++) {
+
+		qva[i].mul(qva[i], qvb[i]);
+
+	}
+
+	fl_end = clock();
+
+
+	// Use the result
+	for (int i = 0; i < n; i++)
+		qf.add(qf, qva[i]);
+	cout << qf << endl;
+
+
+	qtime = (difftime(fl_end, fl_start) / CLOCKS_PER_SEC);
+
+	cout << endl << "Time qd: " << qtime << endl << endl;
+
+	cout << endl << "Ratio: " << qtime/time << endl << endl;
 
 
 	return 0;
