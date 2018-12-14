@@ -97,39 +97,6 @@ int main(int argc, char *argv[])  {
 
 	// -------------------------------------------------------------------------------
 
-	n = 400;
-
-	cout << endl << endl <<  "               FP_NR < double >        " << endl;
-	go<double>(n, 20);
-
-
-	cout << endl << endl <<  "               FP_NR < long double >        " << endl;
-	go<long double>(n, 20);
-
-
-	cout << endl << endl <<  "               FP_NR < dd_real >          " << endl;
-	go<dd_real>(n, 20);
-
-
-	mpfr_set_default_prec(106);
-	cout << endl << endl <<  "               FP_NR < mpfr_t >  106         " << endl;
-	go<mpfr_t>(n, 20);
-
-
-	// cout << endl << endl <<  "               FP_NR < __float128 >         " << endl;
-	// go<__float128>(n,20);
-
-	mpfr_set_default_prec(212);
-	cout << endl << endl <<  "               FP_NR < mpfr_t >  212        " << endl;
-	go<mpfr_t>(n, 20);
-
-
-	cout << endl << endl <<  "               FP_NR < qd_real>         " << endl;
-	go<qd_real>(n, 20);
-
-
-	// -------------------------------------------------------------------------------
-
 	n = 800;
 
 	cout << endl << endl <<  "               FP_NR < double >        " << endl;
