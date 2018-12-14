@@ -20,6 +20,7 @@ along with the hplll Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+
 #include "hplll.h"
 
 using namespace hplll;
@@ -28,7 +29,10 @@ using namespace hplll;
 int main(int argc, char *argv[])  {
 
 
-	int n = 2000;
+	unsigned int old_cw;
+	fpu_fix_start(&old_cw);
+
+	int n = 8000;
 
 	clock_t fl_start, fl_end;
 
@@ -69,7 +73,7 @@ int main(int argc, char *argv[])  {
 
 	for (int i = 0; i < n; i++) {
 
-		va[i].mul(va[i], vb[i]);
+		va[i].add(va[i], vb[i]);
 
 	}
 
@@ -123,7 +127,8 @@ int main(int argc, char *argv[])  {
 
 	for (int i = 0; i < n; i++) {
 
-		qva[i].mul(qva[i], qvb[i]);
+		//qva[i].add(qva[i], qvb[i]);
+		(qva[i]).get_data() = qd_real::sloppy_add((qva[i]).get_data(), (qvb[i]).get_data());
 
 	}
 
@@ -140,7 +145,7 @@ int main(int argc, char *argv[])  {
 
 	cout << endl << "Time qd: " << qtime << endl << endl;
 
-	cout << endl << "Ratio: " << qtime/time << endl << endl;
+	cout << endl << "Ratio: " << qtime / time << endl << endl;
 
 
 	return 0;

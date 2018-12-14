@@ -30,7 +30,10 @@ using namespace hplll;
 
 // ***********************************************
 
-template<class FT> void go(vector<double>& t, int rounds) {
+template<class FT> void go(int rounds) {
+
+	vector<double> t;
+	t.resize(8);
 
 	bench<FT>(t[0], t[1], vaxpy_in<FT>, rounds);
 	bench<FT>(t[2], t[3], dotproduct<FT>, rounds);
@@ -46,45 +49,40 @@ template<class FT> void go(vector<double>& t, int rounds) {
 int main(int argc, char *argv[])  {
 
 
-	vector<double> time;
-	time.resize(20);
 
 
 	cout << endl << endl <<  "               FP_NR < double >          " << endl;
-	go<double>(time, 1200);
+	go<double>(1200);
 
 
-	
+
 	cout << endl << endl <<  "               FP_NR < long double >          " << endl;
-	go<long double>(time, 1200);
+	go<long double>(1200);
 
 
-	
+
 	cout << endl << endl <<  "               FP_NR < dd_real >          " << endl;
-	go<dd_real>(time, 1200);
+	go<dd_real>(1200);
 
 
 	mpfr_set_default_prec(106);
 	cout << endl << endl <<  "               FP_NR < mpfr_t >  106         " << endl;
-	go<mpfr_t>(time, 600);
+	go<mpfr_t>(600);
 
 
-	
+
 	cout << endl << endl <<  "               FP_NR < __float128 >         " << endl;
-	go<__float128>(time, 600);
+	go<__float128>(600);
 
 
 	mpfr_set_default_prec(212);
 	cout << endl << endl <<  "               FP_NR < mpfr_t >  212        " << endl;
-	go<mpfr_t>(time, 600);
+	go<mpfr_t>(600);
 
 
 
 	cout << endl << endl <<  "               FP_NR < qd_real>         " << endl;
-	go<qd_real>(time, 600);
-
-
-
+	go<qd_real>(600);
 
 
 	return 0;

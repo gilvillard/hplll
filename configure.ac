@@ -31,21 +31,19 @@ AX_CXX_COMPILE_STDCXX([11],[noext],[mandatory])
 
 
 
+AC_ARG_ENABLE([quadmath],
+    [AC_HELP_STRING([--enable-quadmath],
+        [enable support for __float128 floating point arithmetics (default: yes)])],
+    [enable_quadmath="${enableval}"],
+    [enable_quadmath="yes"]
+)
 
-#GV to make clean 
-#AC_ARG_ENABLE([quadmath],
-    #[AC_HELP_STRING([--enable-quadmath],
-        #[enable support for __float128 floating point arithmetics (default: yes)])],
-    #[enable_quadmath="${enableval}"],
-    #[enable_quadmath="yes"]
-#)
-#
-#if test "$enable_quadmath" != no; then
-  #LIBQUAD_LIBADD="-lquadmath"
-        #AC_CHECK_LIB(quadmath,sinhq)
-#fi
+if test "$enable_quadmath" = "yes"; then
+  LIBQUAD_LIBADD="-lquadmath"
+        AC_CHECK_LIB(quadmath,sinhq)
+  AC_SUBST(LIBQUAD_LIBADD)
+fi
 
-#AC_SUBST(LIBQUAD_LIBADD)
 
 AC_ARG_WITH(mpfr,
    [  --with-mpfr=DIR          MPFR install directory ], [
@@ -78,11 +76,11 @@ AC_ARG_ENABLE(omp,
      CXXFLAGS="$CXXFLAGS  -fopenmp"
    ])
 
-AC_ARG_ENABLE(quadmath, 
-   [ --enable-quadmath  Enable quadmath], [
-     LDFLAGS="${LDFLAGS} -lquadmath"
-     LIBS="${BACKUP_LIBS} -lquadmath"
-   ])
+#AC_ARG_ENABLE(quadmath, 
+   #[ --enable-quadmath  Enable quadmath], [
+     #LDFLAGS="${LDFLAGS} -lquadmath"
+     #LIBS="${BACKUP_LIBS} -lquadmath"
+   #])
 
 
 # Checks for header files.

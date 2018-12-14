@@ -27,6 +27,9 @@
 /* Define to 1 if you have the `mpfr' library (-lmpfr). */
 #undef HAVE_LIBMPFR
 
+/* Define to 1 if you have the `quadmath' library (-lquadmath). */
+#undef HAVE_LIBQUADMATH
+
 /* Define to 1 if you have the <limits> header file. */
 #undef HAVE_LIMITS
 

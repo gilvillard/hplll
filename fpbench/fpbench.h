@@ -25,7 +25,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "hplll.h"
 
-#include <chrono>
 
 namespace hplll {
 
