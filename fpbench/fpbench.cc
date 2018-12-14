@@ -26,7 +26,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 using namespace hplll;
 
+#ifdef HAVE_LIBQUADMATH
 #include "nr_FP_float128.inl"
+#endif
 
 // ***********************************************
 
@@ -70,10 +72,10 @@ int main(int argc, char *argv[])  {
 	go<mpfr_t>(600);
 
 
-
+#ifdef HAVE_LIBQUADMATH
 	cout << endl << endl <<  "               FP_NR < __float128 >         " << endl;
 	go<__float128>(600);
-
+#endif 
 
 	mpfr_set_default_prec(212);
 	cout << endl << endl <<  "               FP_NR < mpfr_t >  212        " << endl;
