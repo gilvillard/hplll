@@ -10,7 +10,7 @@ fpbench_SOURCES = fpbench.cc fpbench.h
 matbench_SOURCES = matbench.cc matbench.h
 
 fp : fpbench 
-	fpbench 
+	./fpbench 
 
 mat : matbench 
-	matbench
+	./matbench
