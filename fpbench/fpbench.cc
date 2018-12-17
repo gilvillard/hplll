@@ -75,7 +75,7 @@ int main(int argc, char *argv[])  {
 #ifdef HAVE_LIBQUADMATH
 	cout << endl << endl <<  "               FP_NR < __float128 >         " << endl;
 	go<__float128>(600);
-#endif 
+#endif
 
 	mpfr_set_default_prec(212);
 	cout << endl << endl <<  "               FP_NR < mpfr_t >  212        " << endl;

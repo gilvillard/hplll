@@ -71,6 +71,25 @@ AC_CHECK_LIB(gmp, __gmpz_init, , [AC_MSG_ERROR(
 AC_CHECK_LIB(mpfr, mpfr_add, , [AC_MSG_ERROR(
 [MPFR not found, see http://www.mpfr.org])])
 
+
+AC_ARG_WITH(qd, AS_HELP_STRING([--with-qd=@<:@=DIR@:>@], [libqd install directory]),)
+
+AS_IF([test "x$with_qd" != "xno"], [
+       CPPFLAGS="$CPPFLAGS -I$with_qd/include"
+       LDFLAGS="$LDFLAGS -L$with_qd/lib"
+       qd_lib_path="$with_qd/lib"
+       AC_CHECK_HEADER(qd/dd_real.h,
+           have_libqd="yes",
+           have_libqd="no")
+      ])
+
+AS_IF([test "x${have_libqd}" = "xyes"], [
+    LIBQD_LIBADD="-lqd"
+    AC_DEFINE([HPLLL_WITH_QD], [1], [defined when libqd is available])])
+
+AC_SUBST(LIBQD_LIBADD)
+
+
 AC_ARG_ENABLE(omp, 
    [ --enable-omp Enables OpenMP], [
      CXXFLAGS="$CXXFLAGS  -fopenmp"
