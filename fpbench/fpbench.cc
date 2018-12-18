@@ -51,8 +51,6 @@ template<class FT> void go(int rounds) {
 int main(int argc, char *argv[])  {
 
 
-
-
 	cout << endl << endl <<  "               FP_NR < double >          " << endl;
 	go<double>(1200);
 
