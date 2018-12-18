@@ -161,7 +161,7 @@ inline void Z_NR<__int128_t>::set_f(const FP_NR<dpe_t>& a) {
 
 
 // Probably extremely slow, TODO
-#ifdef FPLLL_NR_FP_DD_H
+#ifdef HPLLL_WITH_QD
 template<> template<>
 inline void Z_NR<__int128_t>::set_f(const FP_NR<dd_real>& a) {
 
@@ -194,7 +194,7 @@ inline void FP_NR<long double>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
 }
 
 
-#ifdef FPLLL_NR_FP_DD_H
+#ifdef  HPLLL_WITH_QD
 template<> template<>
 inline void FP_NR<dd_real>::set_z(const Z_NR<__int128_t>& a, mp_rnd_t rnd) {
 

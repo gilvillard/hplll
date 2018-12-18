@@ -30,10 +30,9 @@ AC_PROG_MAKE_SET
 AX_CXX_COMPILE_STDCXX([11],[noext],[mandatory])
 
 
-
 AC_ARG_ENABLE([quadmath],
     [AC_HELP_STRING([--enable-quadmath],
-        [enable support for __float128 floating point arithmetics (default: yes)])],
+        [enable support for __float128 floating point arithmetics (default test: yes)])],
     [enable_quadmath="${enableval}"],
     [enable_quadmath="yes"]
 )
@@ -43,6 +42,12 @@ if test "$enable_quadmath" = "yes"; then
         AC_CHECK_LIB(quadmath,sinhq)
   AC_SUBST(LIBQUAD_LIBADD)
 fi
+
+#AC_ARG_ENABLE(quadmath, 
+   #[ --enable-quadmath  Enable quadmath], [
+     #LDFLAGS="${LDFLAGS} -lquadmath"
+     #LIBS="${BACKUP_LIBS} -lquadmath"
+   #])
 
 
 AC_ARG_WITH(mpfr,
@@ -75,8 +80,13 @@ AC_CHECK_LIB(mpfr, mpfr_add, , [AC_MSG_ERROR(
 AC_ARG_WITH(qd, AS_HELP_STRING([--with-qd=@<:@=DIR@:>@], [libqd install directory]),)
 
 AS_IF([test "x$with_qd" != "xno"], [
-       CPPFLAGS="$CPPFLAGS -I$with_qd/include"
-       LDFLAGS="$LDFLAGS -L$with_qd/lib"
+       if test "$with_qd" = "" ;  then 
+             CPPFLAGS="$CPPFLAGS"
+             LDFLAGS="$LDFLAGS"
+       else 
+             CPPFLAGS="$CPPFLAGS -I$with_qd/include"
+             LDFLAGS="$LDFLAGS -L$with_qd/lib"
+       fi 
        qd_lib_path="$with_qd/lib"
        AC_CHECK_HEADER(qd/dd_real.h,
            have_libqd="yes",
@@ -94,12 +104,6 @@ AC_ARG_ENABLE(omp,
    [ --enable-omp Enables OpenMP], [
      CXXFLAGS="$CXXFLAGS  -fopenmp"
    ])
-
-#AC_ARG_ENABLE(quadmath, 
-   #[ --enable-quadmath  Enable quadmath], [
-     #LDFLAGS="${LDFLAGS} -lquadmath"
-     #LIBS="${BACKUP_LIBS} -lquadmath"
-   #])
 
 
 # Checks for header files.

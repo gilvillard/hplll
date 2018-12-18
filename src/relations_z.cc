@@ -72,7 +72,7 @@ FPTuple<long, long double, matrix<FP_NR<long double> > >::call_fplll(ZZ_mat<long
 
 }
 
-
+#ifdef HPLLL_WITH_QD
 template<> int
 FPTuple<long, dd_real, matrix<FP_NR<dd_real> > >::call_fplll(ZZ_mat<long> &b, ZZ_mat<long> &u, double delta, double eta,  \
     LLLMethod method, FloatType floatType,               \
@@ -84,9 +84,8 @@ FPTuple<long, dd_real, matrix<FP_NR<dd_real> > >::call_fplll(ZZ_mat<long> &b, ZZ
   status = lll_reduction(b, u, delta, eta, method, FT_DD, precision);
 
   return status;
-
-
 }
+#endif 
 
 template<> int
 FPTuple<__int128_t, double, matrix<FP_NR<double> > >::call_fplll(ZZ_mat<__int128_t> &b, ZZ_mat<__int128_t> &u, double delta, double eta,  \
@@ -112,6 +111,7 @@ FPTuple<__int128_t, long double, matrix<FP_NR<long double> > >::call_fplll(ZZ_ma
   return 0;
 }
 
+#ifdef HPLLL_WITH_QD
 template<> int
 FPTuple<__int128_t, dd_real, matrix<FP_NR<dd_real> > >::call_fplll(ZZ_mat<__int128_t> &b, ZZ_mat<__int128_t> &u, double delta, double eta,  \
     LLLMethod method, FloatType floatType,               \
@@ -123,6 +123,7 @@ FPTuple<__int128_t, dd_real, matrix<FP_NR<dd_real> > >::call_fplll(ZZ_mat<__int1
 
   return 0;
 }
+#endif 
 
 template<> int
 FPTuple<mpz_t, double, matrix<FP_NR<double> > >::call_fplll(ZZ_mat<mpz_t> &b, ZZ_mat<mpz_t> &u, double delta, double eta,  \

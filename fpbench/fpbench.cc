@@ -62,10 +62,10 @@ int main(int argc, char *argv[])  {
 	go<long double>(1200);
 
 
-
+#ifdef HPLLL_WITH_QD
 	cout << endl << endl <<  "               FP_NR < dd_real >          " << endl;
 	go<dd_real>(1200);
-
+#endif 
 
 	mpfr_set_default_prec(106);
 	cout << endl << endl <<  "               FP_NR < mpfr_t >  106         " << endl;
@@ -82,10 +82,10 @@ int main(int argc, char *argv[])  {
 	go<mpfr_t>(600);
 
 
-
+#ifdef HPLLL_WITH_QD
 	cout << endl << endl <<  "               FP_NR < qd_real>         " << endl;
 	go<qd_real>(600);
-
+#endif 
 
 	return 0;
 }
