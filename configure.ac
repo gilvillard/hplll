@@ -10,7 +10,7 @@ AM_INIT_AUTOMAKE
 #Recompile pour toute modif dans la chaine autotool
 AM_MAINTAINER_MODE(enable)
 
-AC_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADER(src/config.h)
 
 DEFAULT_CFLAGS="-O3 -Wall"
 

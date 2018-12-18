@@ -1,160 +1,87 @@
-/*
 
-Created Mar 11 déc 2018 17:27:16 CET
-Copyright (C) 2018      Gilles Villard
-
-This file is part of the hplll Library
-
-The hplll Library is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 3 of the License, or (at your
-option) any later version.
-
-The hplll Library is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
-License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with the hplll Library; see the file COPYING.LESSER.  If not, see
-http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
-
-
-#include "hplll.h"
+#include <hplll.h>
 
 using namespace hplll;
 
-
-int main(int argc, char *argv[])  {
-
-
-	unsigned int old_cw;
-	fpu_fix_start(&old_cw);
-
-	int n = 8000;
-
-	clock_t fl_start, fl_end;
+int main(int argc, char *argv[]) {
 
 
-	// DD
-	// --
+	Timer time, timed, timedd;
 
-	double time;
+	ZZ_mat<mpz_t> A;
 
-	FP_NR<dd_real> f = 0.0;
-	int prec = f.get_prec();
-
-	vector<FP_NR<dd_real> > va;
-	vector<FP_NR<dd_real> > vb;
-
-	va.resize(n);
-	vb.resize(n);
+	ZZ_mat<mpz_t> AT;
 
 
-	for (int i = 0; i < n; i++) {
+	double delta = 0.99;
 
-		va[i] = 0.0;
-		vb[i] = 0.0;
+	int n, d;
 
-		for (int k = prec; k > 0; k /= 53) {
+	command_line_basis(A, n, d, delta, argc, argv);
 
-			va[i].mul_2si(va[i], 53);
-			va[i].add(va[i], (double) rand());
+	// fplll double
 
-			vb[i].mul_2si(vb[i], 53);
-			vb[i].add(vb[i], (double) rand());
-		}
+	AT.resize(d, n);
+	transpose(AT, A);
 
-	}
+	//cout << AT << endl;
 
-
-	fl_start = clock();
-
-	for (int i = 0; i < n; i++) {
-
-		va[i].add(va[i], vb[i]);
-
-	}
-
-	fl_end = clock();
+	timed.start();
+	lll_reduction(AT, delta, 0.501, LM_FAST, FT_DOUBLE, 0, LLL_VERBOSE);
+	timed.stop();
 
 
-	// Use the result
-	for (int i = 0; i < n; i++)
-		f.add(f, va[i]);
-	cout << f << endl;
+	// // fplll dd
+
+	// AT.resize(d, n);
+	// transpose(AT, A);
+
+	// //cout << AT << endl;
+
+	// timedd.start();
+	// lll_reduction(AT, delta, 0.501, LM_FAST, FT_DD, 0, LLL_VERBOSE);
+	// timedd.stop();
 
 
-	time = (difftime(fl_end, fl_start) / CLOCKS_PER_SEC);
+	// hplll
 
-	cout << endl << "Time dd: " << time << endl << endl;
+	Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, NO_TRANSFORM, DEF_REDUCTION); //* name
 
+	verboseDepth = 0;
 
-	// QD
-	// --
+	time.start();
+	B.hlll(delta); //* name
+	time.stop();
 
-	double qtime;
+	transpose(A, AT);
+	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(B.getbase()); //* names
 
-	FP_NR<qd_real> qf = 0.0;
-	int qprec = qf.get_prec();
+	T.isreduced(delta - 0.1);
 
-	vector<FP_NR<qd_real> > qva;
-	vector<FP_NR<qd_real> > qvb;
+	double t, u, v, w;
 
-	qva.resize(n);
-	qvb.resize(n);
+	hplll::ratio<mpz_t>(B.getbase(), t, u, v, w);
 
-
-	for (int i = 0; i < n; i++) {
-
-		qva[i] = 0.0;
-		qvb[i] = 0.0;
-
-		for (int k = qprec; k > 0; k /= 53) {
-
-			qva[i].mul_2si(qva[i], 53);
-			qva[i].add(qva[i], (double) rand());
-
-			qvb[i].mul_2si(qvb[i], 53);
-			qvb[i].add(qvb[i], (double) rand());
-		}
-
-	}
+	cout << endl << ".. fplll log 2 Frobenius norm cond: " << t << endl;
+	cout << ".. Average diagonal ratio: " << u << endl;
+	cout << ".. Max diagonal ratio: " << v << endl;
+	cout << ".. First vector quality: " << w << endl;
 
 
-	fl_start = clock();
-
-	for (int i = 0; i < n; i++) {
-
-		//qva[i].add(qva[i], qvb[i]);
-		(qva[i]).get_data() = qd_real::sloppy_add((qva[i]).get_data(), (qvb[i]).get_data());
-
-	}
-
-	fl_end = clock();
+	cout << endl << endl << "   hplll double : " << time << endl ;
+	cout << "   Householder: " << B.dbg << endl << endl ;
+	cout  << "   fplll double : " << timed << endl << endl ;
+	//cout << "   fplll dd : " << timedd << endl << endl ;
+	cout << endl;
 
 
-	// Use the result
-	for (int i = 0; i < n; i++)
-		qf.add(qf, qva[i]);
-	cout << qf << endl;
 
 
-	qtime = (difftime(fl_end, fl_start) / CLOCKS_PER_SEC);
-
-	cout << endl << "Time qd: " << qtime << endl << endl;
-
-	cout << endl << "Ratio: " << qtime / time << endl << endl;
 
 
-	return 0;
+
+
+
+
+
 }
-
-
-
-
-
-
-
-

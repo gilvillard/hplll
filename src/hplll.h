@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef HPLLL_H
 #define HPLLL_H
 
-
+#include "config.h"
 #include "hlll.h"
 #include "matgen.h"
 #include "relations.h"
