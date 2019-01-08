@@ -282,9 +282,10 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
 /* -------------------------------------------------------------------------
    Seysen size reduction
-   version 0
+   version 1
 
    Returns -1 if no convergence in the while loop:  no decrease of the norm
+   (see also the default reduction)
 
    Assumes that Householder is available until index kappa-1
 
@@ -293,6 +294,318 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
 template<class ZT, class FT, class MatrixZT, class MatrixFT> inline int
 Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
+
+
+	nmaxkappa = structure[kappa] + 1;
+
+	FP_NR<FT> approx;
+	approx = 0.1;
+
+	FP_NR<FT>  qq;
+
+	FP_NR<FT> x, t;
+
+	vector<FP_NR<FT> > vectx(kappa);
+
+	vector<FP_NR<FT> > tmpcolR(kappa);
+
+	int i, k, w = 0;
+
+	bool nonstop = 1;
+	bool prev_nonstop = 1;
+
+	bool somedone = 0;
+
+	vector<bool> bounded(kappa);
+
+	int restdim = 0; // Remaining dimension after the current block
+
+
+	householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous
+
+
+
+	int bdim, ld, tdig, indexdec;
+
+	somedone = 1;
+
+	while (somedone == 1) {  // LOOP COLUMN CONVERGENCE
+
+		somedone = 0;
+
+		w++;
+
+
+		ld = 1; indexdec = 0; // Décalage d'indice
+
+
+		while (ld <= kappa) {
+
+			tdig = (kappa / ld) % 2;
+
+			if (tdig == 0) bdim = 0; else bdim = ld;
+
+			// -----------------------------------------------------
+			// Boucle sur la partie de la colonne correspond au bloc
+			// -----------------------------------------------------
+
+			// vectxz rounding of vectx
+			//  column -  (prev col) * vectxz (xz ré-utilisé)
+			// On peut travailler sur place en remontant dans la colonne kappa de R
+
+			// On calcule vectx et on arrondit au fur et à mesure
+
+			restdim = kappa - indexdec - bdim;
+
+
+			for (i = kappa - 1 - indexdec; i >= restdim; i--)
+				tmpcolR[i] = R.get(i, kappa);
+
+			compteur = 0;
+
+			for (i = kappa - 1 - indexdec; i >= restdim; i--) {
+
+				vectx[i].div(tmpcolR[i], R.get(i, i)); // Faire après le test, pas besoin si bounded ?
+
+				// Faire une opération vectorielle
+				for (k = restdim; k < i; k++)
+					tmpcolR[k].submul(R.get(k, i), vectx[i]);
+
+			} // end calcul de la transfo
+
+
+			// Et on applique la transformation
+			// --------------------------------
+
+
+			// Sequential
+			// ----------
+
+			// TO BE MODIFIED NO NEED TO CALL TEST BEFORE
+
+			if ((num_S == 1) || (bdim < par_reduce_threshold))
+				somedone = somedone | seysen_update(vectx, kappa, kappa - 1 - indexdec, restdim,  bounded);
+
+
+			// // Parallel
+			// // --------
+			// else
+			// {
+			// 	seysen_update_R(vectx, kappa, kappa - 1 - indexdec,  restdim,  bounded);
+			// 	pseysen_update_B(kappa, kappa - 1 - indexdec,  restdim, vectx, bounded, num_S);
+			// }
+
+			indexdec += bdim;
+			ld = ld * 2;
+
+		} // End loop on log blocks
+
+
+		if (somedone) {
+
+			col_kept[kappa] = 0;
+
+			t.mul(approx, normB2[kappa]);
+
+			householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous
+
+			nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ?
+
+			// Heuristic test
+			// The norm is not increasing for several steps
+			// This may happen exceptionnaly in correct cases with mu_ij = 1/2 exactly
+			//  (and alternates between to values 1/2 and -1/2 in floating point
+			// Or happen when not enough precision
+			// Hence here: test of size reduction, if yes then exit if no then return -1
+			if ((prev_nonstop == 0) && (nonstop == 0)) {
+
+				FP_NR<FT> one;
+				one = 1.0;
+
+				FP_NR<FT> theta, eps;
+				//theta = 0.0000001;
+				//theta.mul(theta,R.get(kappa,kappa));
+				// Jeu 12 mai 2016 12:55:13 CEST - R.get(kappa,kappa) may not be relevant (no hoseholder_v)
+				theta.sqrt(normB2[kappa]);
+				eps = 0.00000000001; // To tune for theta depending on the precision
+				theta.mul(theta, eps);
+
+
+				FP_NR<FT> mu, mu_test;
+
+				for (i = 0; i < kappa; i++) {
+
+					mu.div(R.get(i, kappa), R.get(i, i));
+					mu.abs(mu);
+
+					mu_test.div(theta, R.get(i, i));
+					mu_test.abs(mu_test); // Jeu 12 mai 2016 12:55:13 CEST
+					mu_test.add(mu_test, one);
+
+					if (mu.cmp(mu_test) == 1) {
+
+						cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, i = " << i << " ,kappa = " << kappa  << endl;
+						return -1;
+					}
+
+				}
+				somedone = 0;  // Here, should be size reduced, hence ok for continuing
+
+			} // End test prec
+
+			prev_nonstop = nonstop;
+
+		}
+
+		else
+			nonstop = 0;
+
+
+
+
+	} // end while
+
+	return somedone;
+
+};
+
+
+
+/* -------------------------------------------------------------------------
+   Seysen sequential update of R and B
+
+   with version 1
+   ------------------------------------------------------------------------- */
+
+template<class ZT, class FT, class MatrixZT, class MatrixFT> inline bool
+Lattice<ZT, FT, MatrixZT, MatrixFT>::seysen_update( vector<FP_NR<FT> >& vectx, int kappa, int from_i, int restdim, vector<bool> bounded) {
+
+
+	bool somedone = false;
+
+	int i;
+
+	FP_NR<FT>  xf; // Old x
+
+	long expo, lx;
+
+	int nmax;
+
+	Z_NR<ZT>  xz;
+
+	for (i = from_i; i >= restdim; i--) {
+
+		vectx[i].rnd(vectx[i]);
+		xf = vectx[i];
+
+
+		if (xf.sgn() != 0)  {   // Non zero combination
+
+
+			somedone = 1;
+
+			lx = xf.get_si_exp(expo);
+
+			nmax = structure[i] + 1;
+
+			// Cf fplll
+			// Long case
+			if (expo == 0) {
+
+				if (lx == 1) {
+
+					R.subcol(kappa, i, restdim);
+
+					B.subcol(kappa, i, nmax);
+
+					if (transf)
+						U.subcol(kappa, i, min(d, nmax));
+
+				}
+				else if (lx == -1) {
+
+
+					R.addcol(kappa, i, restdim);
+
+					B.addcol(kappa, i, nmax);
+
+					if (transf)
+						U.addcol(kappa, i, min(d, nmax));
+
+				}
+				else {
+
+					if (fast_long_flag == 1) {
+
+						R.submulcol(kappa, i, xf, restdim);
+
+						B.addmulcol_si(kappa, i, -lx, nmax);
+						if (transf)
+							U.addmulcol_si(kappa, i, -lx, min(d, nmax));
+
+					} // end fast_long
+					else {
+
+						set_f(xz, x);
+
+						R.submulcol(kappa, i, xf, restdim);
+						B.submulcol(kappa, i, xz, nmax);
+						if (transf)
+							U.submulcol(kappa, i, xz, min(d, nmax));
+					}
+				}
+
+			} // end expo == 0
+			else {  // expo <> 0
+
+
+				if (fast_long_flag == 1) {
+
+					R.submulcol(kappa, i, xf, restdim);
+
+					B.addmulcol_si_2exp(kappa, i, -lx, expo, nmax);
+					if (transf)
+						U.addmulcol_si_2exp(kappa, i, -lx, expo, min(d, nmax));
+
+				} // end fast_long
+				else {
+
+					set_f(xz, x);
+
+					R.submulcol(kappa, i, xf, restdim);
+
+					B.submulcol(kappa, i, xz, nmax);
+					if (transf)
+						U.submulcol(kappa, i, xz, min(d, nmax));
+
+				} // end no long
+
+
+
+			} // end expo <> 0
+		} // Non zero combination
+
+	} // end application de la transformation
+
+
+	return somedone;
+
+}
+
+
+/* -------------------------------------------------------------------------
+   Seysen size reduction
+   version 0
+
+   Stops if the quotient by the diagonal is small enough
+
+   Assumes that Householder is available until index kappa-1
+
+   ------------------------------------------------------------------------- */
+
+
+template<class ZT, class FT, class MatrixZT, class MatrixFT> inline int
+Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce0(int kappa) {
 
 
 	nmaxkappa = structure[kappa] + 1;
@@ -438,13 +751,15 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 };
 
+
 /* -------------------------------------------------------------------------
    Seysen sequential update of R and B
 
+   with version 0
    ------------------------------------------------------------------------- */
 
 template<class ZT, class FT, class MatrixZT, class MatrixFT> inline bool
-Lattice<ZT, FT, MatrixZT, MatrixFT>::seysen_update( vector<FP_NR<FT> >& vectx, int kappa, int from_i, int restdim, vector<bool> bounded) {
+Lattice<ZT, FT, MatrixZT, MatrixFT>::seysen_update0( vector<FP_NR<FT> >& vectx, int kappa, int from_i, int restdim, vector<bool> bounded) {
 
 
 	int i;
@@ -555,10 +870,11 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysen_update( vector<FP_NR<FT> >& vectx, i
 }
 
 
-
 /* -------------------------------------------------------------------------
    Seysen update of R  / TO DO parallel
 
+   ok for version 0
+   See changes with new version, should not work  Mar  8 jan 2019 16:29:38 CET
    ------------------------------------------------------------------------- */
 
 template<class ZT, class FT, class MatrixZT, class MatrixFT> inline bool
@@ -635,6 +951,8 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysen_update_R(vector<FP_NR<FT> >& vectx, 
 /* -------------------------------------------------------------------------
  Seysen parallel update of B
 
+ ok for version 0
+ See changes with new version, should not work  Mar  8 jan 2019 16:29:38 CET
  ------------------------------------------------------------------------- */
 
 template<class ZT, class FT, class MatrixZT, class MatrixFT> inline bool
