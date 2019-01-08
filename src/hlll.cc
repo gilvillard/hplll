@@ -282,10 +282,11 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::hlll(double delta, bool verbose) {
 
 /* -------------------------------------------------------------------------
    Seysen size reduction
-
-   Assumes that Householder is available until index kappa-1
+   version 0
 
    Returns -1 if no convergence in the while loop:  no decrease of the norm
+
+   Assumes that Householder is available until index kappa-1
 
    ------------------------------------------------------------------------- */
 
@@ -325,8 +326,8 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 	int bdim, ld, tdig, indexdec;
 
-	while (nonstop) {  // LOOP COLUMN CONVERGENCE
 
+	while (nonstop) {  // LOOP COLUMN CONVERGENCE
 
 
 		// Jeu 12 mai 2016 12:55:13 CEST
@@ -376,7 +377,7 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 				qq.abs(qq);
 				//qq.abs(vectx[i]);
 
-				if (qq.cmp(0.501) == 1) {
+				if (qq.cmp(0.50001) == 1) {
 					bounded[i] = 0;
 					somedone = 1;
 				}
