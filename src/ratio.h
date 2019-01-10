@@ -34,6 +34,8 @@ namespace hplll {
 //
 //   log_2 of the Frobenius norm cond
 //
+//   mpfr at heuristic 2d precision
+//
 // ******************************************************************************
 
 
@@ -188,6 +190,180 @@ template<class ZT> int ratio(ZZ_mat<ZT> B, double& lfcond,  double& av_ratio,  d
   return 0;
 
 }
+
+
+// ******************************************************************************
+//
+//  Statitics concerning the quality of the reduction
+//  The matrix is assumed to be reduced   n rows >= d columns
+//
+//   log_2 of the Frobenius norm cond
+//
+//   (for the 1rst vector quality) should be called at precision larger than double 
+//
+// ******************************************************************************
+
+
+template<class ZT, class FT> int ratio0(ZZ_mat<ZT> B, double& lfcond,  double& av_ratio,  double& max_ratio, double& c) {
+
+  int i, j, k;
+
+
+  //int n=B.getRows();
+  int d = B.get_cols();
+
+  //mpfr_set_default_prec(2 * d);
+  //mpfr_set_default_prec(1000);
+
+  Lattice<ZT, FT, matrix<Z_NR<ZT> >, matrix<FP_NR<FT> > > L(B);
+
+  L.householder();
+
+  matrix<FP_NR<FT> > R;
+
+  R = L.getR();
+
+  // ** Frobenius norm cond  **
+  // **************************
+
+  matrix<FP_NR<FT> > aR;
+  matrix<FP_NR<FT> > iR;
+
+  // Absolute value
+
+  aR.resize(d, d);
+
+  for (i = 0; i < d; i++)
+    for (j = 0; j < d; j++)
+      aR(i, j).abs(R(i, j));
+
+  // Inversion
+
+  iR.resize(d, d);
+
+  for (i = 0; i < d; i++)
+    for (j = 0; j < d; j++)
+      iR(i, j) = 0.0;
+
+  for (i = 0; i < d; i++) iR(i, i) = 1.0;
+
+  // Higham p263 Method 1
+
+  FP_NR<FT> t, one;
+  one = 1.0;
+
+  for (j = 0; j < d; j++) {
+    iR(j, j).div(one, aR(j, j));
+    for (k = j + 1; k < d; k++) {
+      t.mul(iR(j, j), R(j, k));
+      iR(j, k).neg(t);
+    }
+
+    for (k = j + 1; k < d; k++) {
+      for (i = j + 1; i < k; i++) {
+        t.mul(iR(j, i), R(i, k));
+        iR(j, k).sub(iR(j, k), t);
+      }
+      iR(j, k).div(iR(j, k), R(k, k));
+    }
+  }
+
+  // Abs iR --> iR
+  for (i = 0; i < d; i++)
+    for (j = 0; j < d; j++)
+      iR(i, j).abs(iR(i, j));
+
+  // aR * iR
+
+  matrix<FP_NR<FT> > prod;
+  prod.resize(d, d);
+
+  for (i = 0; i < d; i++)
+    for (j = 0; j < d; j++) {
+      prod(i, j).mul(aR(i, 0), iR(0, j));
+      for (k = 1; k < d ; k++)
+        prod(i, j).addmul(aR(i, k), iR(k, j));
+    }
+
+  // Frobenius norm
+
+  FP_NR<FT>  cc;
+  cc = 0.0;
+
+  for (i = 0; i < d; i++)
+    for (j = 0; j < d; j++)
+      cc.addmul(prod(i, j), prod(i, j));
+
+
+  cc.sqrt(cc);
+
+  FP_NR<FT> l2;
+  l2 = log(2.0);
+
+  //mpfr_log2(cc.get_data(), cc.get_data(), GMP_RNDN);
+  cc.div(log(cc),l2);
+
+  lfcond = cc.get_d();
+
+  // ** Diagonal ratio **
+  // ********************
+
+  FP_NR<FT>  maxq, s, tt;
+
+  s = 0.0;
+  maxq = 0.0;
+
+  for (i = 1; i < d; i++) {
+
+    tt.div(aR(i - 1, i - 1), aR(i, i));
+
+    s.add(s, tt);
+
+    if (tt.cmp(maxq) > 0) maxq = tt;
+
+  }
+
+  // Average diagonal ratio
+
+  tt = ((double) d);
+  s.div(s, tt);
+
+  av_ratio = s.get_d();
+  max_ratio = maxq.get_d();
+
+
+  // ** First vector length **
+  // *************************
+
+
+  // First vector
+  //mpfr_log2(t.get_data(), (aR(0, 0)).get_data(), GMP_RNDN);
+  t.div(log(aR(0, 0)),l2);
+
+  // Volume
+
+  FP_NR<FT>  v;
+
+  v = aR(0, 0);
+  for (i = 1; i < d; i++) v.mul(v, aR(i, i));
+  //mpfr_log2(v.get_data(), v.get_data(), GMP_RNDN);
+  v.div(log(v),l2);
+
+  tt = ((double) d);
+  v.div(v, tt);
+
+  t.sub(t, v);
+  t.div(t, tt);
+
+  // Or keep t?
+  c = pow(2.0, t.get_d());
+
+  return 0;
+
+}
+
+
+
 
 } // end namespace hplll
 

@@ -299,7 +299,7 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	nmaxkappa = structure[kappa] + 1;
 
 	FP_NR<FT> approx;
-	approx = 0.1;
+	approx = 0.0000001;
 
 	FP_NR<FT>  qq;
 
@@ -311,12 +311,18 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 	int i, k, w = 0;
 
-	bool nonstop = 1;
-	bool prev_nonstop = 1;
-
 	bool somedone = 0;
 
 	vector<bool> bounded(kappa);
+
+	// To test the second convergence phase: stabilization of the norms
+	int K = 2;
+	bool gnonstop;
+
+	vector<bool> nonstop(K);
+	for (i = 0; i < K; i++)
+		nonstop[i] = 1;
+
 
 	int restdim = 0; // Remaining dimension after the current block
 
@@ -329,7 +335,9 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 	somedone = 1;
 
+
 	while (somedone == 1) {  // LOOP COLUMN CONVERGENCE
+
 
 		somedone = 0;
 
@@ -365,13 +373,15 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 			for (i = kappa - 1 - indexdec; i >= restdim; i--) {
 
-				vectx[i].div(tmpcolR[i], R.get(i, i)); // Faire après le test, pas besoin si bounded ?
+				vectx[i].div(tmpcolR[i], R.get(i, i));
 
 				// Faire une opération vectorielle
 				for (k = restdim; k < i; k++)
 					tmpcolR[k].submul(R.get(k, i), vectx[i]);
 
 			} // end calcul de la transfo
+
+
 
 
 			// Et on applique la transformation
@@ -409,7 +419,7 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 			householder_r(kappa); // pas tout householder necessaire en fait cf ci-dessous
 
-			nonstop = (normB2[kappa] < t);  // ne baisse quasiment plus ?
+			nonstop[K - 1] = (normB2[kappa] < t); // baisse encore ?
 
 			// Heuristic test
 			// The norm is not increasing for several steps
@@ -417,50 +427,65 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 			//  (and alternates between to values 1/2 and -1/2 in floating point
 			// Or happen when not enough precision
 			// Hence here: test of size reduction, if yes then exit if no then return -1
-			if ((prev_nonstop == 0) && (nonstop == 0)) {
 
-				FP_NR<FT> one;
-				one = 1.0;
-
-				FP_NR<FT> theta, eps;
-				//theta = 0.0000001;
-				//theta.mul(theta,R.get(kappa,kappa));
-				// Jeu 12 mai 2016 12:55:13 CEST - R.get(kappa,kappa) may not be relevant (no hoseholder_v)
-				theta.sqrt(normB2[kappa]);
-				eps = 0.00000000001; // To tune for theta depending on the precision
-				theta.mul(theta, eps);
+			// PB WITH SEYSEN HOW TO TEST THE SIZE REDUCTION ?
+			// TO BE DONE
+			// NO RETURN -1 FOR THE MOMENT BUT A WARNING
 
 
-				FP_NR<FT> mu, mu_test;
+			gnonstop = 0;;
 
-				for (i = 0; i < kappa; i++) {
+			for (i = 0; i < K; i++)
+				if (nonstop[i]) gnonstop = 1;
 
-					mu.div(R.get(i, kappa), R.get(i, i));
-					mu.abs(mu);
 
-					mu_test.div(theta, R.get(i, i));
-					mu_test.abs(mu_test); // Jeu 12 mai 2016 12:55:13 CEST
-					mu_test.add(mu_test, one);
+			if (gnonstop == 0) {
 
-					if (mu.cmp(mu_test) == 1) {
 
-						cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, i = " << i << " ,kappa = " << kappa  << endl;
-						return -1;
-					}
+				cout << "**** WARNING in size reduction, non decrease of the norms, kappa = " << kappa  << endl;
 
-				}
+				// FP_NR<FT> one;
+				// one = 1.0;
+
+				// FP_NR<FT> theta, eps;
+				// //theta = 0.0000001;
+				// //theta.mul(theta,R.get(kappa,kappa));
+				// // Jeu 12 mai 2016 12:55:13 CEST - R.get(kappa,kappa) may not be relevant (no hoseholder_v)
+				// theta.sqrt(normB2[kappa]);
+				// eps = 0.00000000001; // To tune for theta depending on the precision
+				// theta.mul(theta, eps);
+
+
+				// FP_NR<FT> mu, mu_test;
+
+				// for (i = 0; i < kappa; i++) {
+
+				// 	mu.div(R.get(i, kappa), R.get(i, i));
+				// 	mu.abs(mu);
+
+				// 	mu_test.div(theta, R.get(i, i));
+				// 	mu_test.abs(mu_test); // Jeu 12 mai 2016 12:55:13 CEST
+				// 	mu_test.add(mu_test, one);
+
+				// 	if (mu.cmp(mu_test) == 1) {
+
+				// 		cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, i = " << i << " ,kappa = " << kappa  << endl;
+				// 		return -1;
+				// 	}
+
+				// }
+
 				somedone = 0;  // Here, should be size reduced, hence ok for continuing
 
 			} // End test prec
 
-			prev_nonstop = nonstop;
+			for (i = 0; i < K - 1; i++)
+				nonstop[i] = nonstop[i + 1];
 
 		}
 
 		else
-			nonstop = 0;
-
-
+			nonstop[K - 1] = 0;
 
 
 	} // end while
@@ -495,7 +520,7 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysen_update( vector<FP_NR<FT> >& vectx, i
 
 	for (i = from_i; i >= restdim; i--) {
 
-		vectx[i].rnd(vectx[i]);
+		vectx[i].rnd(vectx[i]);  // Done before now
 		xf = vectx[i];
 
 
@@ -2267,6 +2292,7 @@ template<class ZT, class FT, class MatrixZT, class MatrixFT> inline void Lattice
 
 	householder();
 
+
 	s1.mul(R(0, 1), R(0, 1));
 	s2.mul(R(1, 1), R(1, 1));
 	s.mul(R(0, 0), R(0, 0));
@@ -2329,6 +2355,7 @@ template<class ZT, class FT, class MatrixZT, class MatrixFT> inline void Lattice
 			v.sub(v, w);
 			if (v > 0) {
 				v.div(v, R(i, i));
+				v.abs(v);
 				if (v > eta) eta = v;
 			}
 		}
@@ -2436,6 +2463,7 @@ template<class ZT, class FT, class MatrixZT, class MatrixFT> inline void Lattice
 				v.abs(R(i, j));
 				w.mul(theta, R(j, j));
 				v.sub(v, w);
+				v.abs(v);
 				v.div(v, R(i, i));
 				if (v > eta) eta = v;
 			}

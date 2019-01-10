@@ -57,6 +57,7 @@ template<class ZT> int genalpha(ZZ_mat<ZT>& B, int n, double alpha) {
 
   for (i = n - 1; i >= 0; i--) {
     tb = ta * S;
+
     B(i, i).set_f(tb);
     ta.mul(ta, a0);
   }
@@ -69,10 +70,10 @@ template<class ZT> int genalpha(ZZ_mat<ZT>& B, int n, double alpha) {
   FP_NR<mpfr_t> diagf, frdm, p49, p50;
 
   p49 = 1.0;
-  p49.mul_2si(p49, 49);
+  p49.mul_2si(p49, 19);
 
   p50 = 1.0;
-  p50.mul_2si(p50, 50);
+  p50.mul_2si(p50, 20);
 
   for (i = 0; i < n; i++) {
 
@@ -80,7 +81,7 @@ template<class ZT> int genalpha(ZZ_mat<ZT>& B, int n, double alpha) {
 
     for (j = i + 1; j < n; j++) {
 
-      zrdm.randb(50);
+      zrdm.randb(20);
 
 
       frdm.set_z(zrdm);
@@ -339,7 +340,7 @@ void command_line_basis(ZZ_mat<mpz_t>& A, int& n, int& d, double &delta, int arg
   // -----------------------------------------------------------
   else if (strcmp(type, al) == 0) {
 
-    genalpha<mpz_t>(A, d, 1.1);
+    genalpha<mpz_t>(A, d, alpha);
     n = d;
 
   }
