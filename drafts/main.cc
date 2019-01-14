@@ -34,7 +34,7 @@ void go(int n, int K, double alpha) {
 	ZZ_mat<integer> Along;
 
 
-	time.start();
+
 
 
 	cout << endl;
@@ -45,11 +45,18 @@ void go(int n, int K, double alpha) {
 
 		matrix_cast(Along, A);
 
+
+
 		Lattice < integer, double, matrix<Z_NR<integer> >, matrix<FP_NR<double> > >  B(Along, NO_TRANSFORM, SEYSEN_REDUCTION);
 
 		verboseDepth = 0;
 
+		time.clear();
+		time.start();
+
 		B.hlll(delta);
+
+		time.stop();
 
 		// RE-USE OF A
 		matrix_cast(A, B.getbase());
@@ -59,9 +66,9 @@ void go(int n, int K, double alpha) {
 
 		hplll::ratio<mpz_t>(A, t, u, v, w);
 
-		if ((k == 0) || (k==K-1)) {
+		if ((k == 0) || (k == K - 1)) {
 
-		
+
 			Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A);
 			T.isreduced(delta - 0.1);
 
@@ -83,7 +90,6 @@ void go(int n, int K, double alpha) {
 	}
 	cout << endl;
 
-	time.stop();
 
 	cout << endl << "Average log 2 Frobenius norm cond : " << scond / K << endl;
 
@@ -107,7 +113,7 @@ int main(int argc, char *argv[]) {
 
 		n = 20 + i * 40;
 
-		go(n, 20, 1.1);
+		go(n, 2, 1.1);
 
 	}
 
