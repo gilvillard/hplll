@@ -3,83 +3,121 @@
 
 using namespace hplll;
 
-int main(int argc, char *argv[]) {
 
 
-	//typedef __int128_t integer;
-	typedef long integer;
 
-	Timer time, timed, timedd;
+void go(int n, int K, double alpha) {
 
-	ZZ_mat<mpz_t> A;
-
-
-	double delta = 0.99;
-
-	int n, d;
 
 	RandGen::init_with_time();
 
-	command_line_basis(A, n, d, delta, argc, argv);
+	vector<double> lcond(K);
 
-	ZZ_mat<integer> Along;
-
-	matrix_cast(Along, A);
-
-	// hplll
-
-	//Lattice<mpz_t, dpe_t, matrix<Z_NR<mpz_t> >, MatrixPE<double, dpe_t> >  B(A, NO_TRANSFORM, SEYSEN_REDUCTION); //* name
-	Lattice < integer, double, matrix<Z_NR<integer> >, matrix<FP_NR<double> > >  B(Along, NO_TRANSFORM, SEYSEN_REDUCTION); //* name
-
-	verboseDepth = 0;
-
-	time.start();
-	B.hlll(delta); //* name
-	time.stop();
-
-	// RE-USE OF A
-	matrix_cast(A, B.getbase());
-
-	Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A); //* names
-
-	//T.isreduced(delta - 0.1);
+	double scond = 0.0;
 
 	double t, u, v, w;
 
-	hplll::ratio<mpz_t>(A, t, u, v, w);
+	double delta = 0.99;
 
-	cout << endl << ".. fplll log 2 Frobenius norm cond: " << t << endl;
-	cout << ".. Average diagonal ratio: " << u << endl;
-	cout << ".. Max diagonal ratio: " << v << endl;
-	cout << ".. First vector quality: " << w << endl;
-	cout << ".. Nb swaps: " << B.nbswaps << endl;
+	Timer time;
+
+
+	typedef __int128_t integer;
+	//typedef long integer;
+
+
+	cout << endl << endl << "*************************    n = " << n << "   alpha = " << alpha << endl;
+
+	ZZ_mat<mpz_t> A;
+	A.resize(n, n);
+
+	ZZ_mat<integer> Along;
+
+
+	time.start();
 
 
 	cout << endl;
 
-	// hplll::ratio0<mpz_t, dd_real>(A, t, u, v, w);
+	for (int k = 0; k < K; k++) {
 
-	// cout << endl << ".. fplll log 2 Frobenius norm cond: " << t << endl;
-	// cout << ".. Average diagonal ratio: " << u << endl;
-	// cout << ".. Max diagonal ratio: " << v << endl;
-	// cout << ".. First vector quality: " << w << endl;
-	// cout << ".. Nb swaps: " << B.nbswaps << endl;
+		genalpha(A, n, alpha);
+
+		matrix_cast(Along, A);
+
+		Lattice < integer, double, matrix<Z_NR<integer> >, matrix<FP_NR<double> > >  B(Along, NO_TRANSFORM, SEYSEN_REDUCTION);
+
+		verboseDepth = 0;
+
+		B.hlll(delta);
+
+		// RE-USE OF A
+		matrix_cast(A, B.getbase());
+
+		// Check only for the first trial
+		// ------------------------------
+
+		hplll::ratio<mpz_t>(A, t, u, v, w);
+
+		if ((k == 0) || (k==K-1)) {
+
+		
+			Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A);
+			T.isreduced(delta - 0.1);
+
+			cout << endl << ".. fplll log 2 Frobenius norm cond: " << t << endl;
+			cout << ".. Average diagonal ratio: " << u << endl;
+			cout << ".. Max diagonal ratio: " << v << endl;
+			cout << ".. First vector quality: " << w << endl;
+			cout << ".. Nb swaps: " << B.nbswaps << endl;
+
+		}
 
 
-	cout << endl << endl << "   hplll double : " << time << endl ;
+		lcond[k] = t;
 
+		scond += t;
+
+		cout.flush() << t << ",";
+
+	}
 	cout << endl;
 
-//genalpha(A, n, 1); 
+	time.stop();
 
-//print2maple(A,n,d);
+	cout << endl << "Average log 2 Frobenius norm cond : " << scond / K << endl;
+
+	double ln;
+	ln = log(n) / log(2.0);
+	ln *= ln;
+
+	cout << endl << "Average over log 2 n^2 : " << (scond / K) / ln << endl;
 
 
+	cout << endl << "Time: " << time << endl ;
+
+}
 
 
+int main(int argc, char *argv[]) {
 
+	int n; // Initial value
 
+	for (int i = 0; i < 100; i++ ) {
 
+		n = 20 + i * 40;
+
+		go(n, 20, 1.1);
+
+	}
 
 
 }
+
+
+
+
+
+
+
+
