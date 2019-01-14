@@ -442,7 +442,7 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 			if (gnonstop == 0) {
 
 
-				cout << "**** WARNING in size reduction, non decrease of the norms, kappa = " << kappa  << endl;
+				//cout << "**** WARNING in size reduction, non decrease of the norms, kappa = " << kappa  << endl;
 
 				// FP_NR<FT> one;
 				// one = 1.0;
