@@ -47,7 +47,7 @@ void go(int n, int K, double alpha) {
 
 
 
-		Lattice < integer, double, matrix<Z_NR<integer> >, matrix<FP_NR<double> > >  B(Along, NO_TRANSFORM, SEYSEN_REDUCTION);
+		Lattice < integer, double, matrix<Z_NR<integer> >, matrix<FP_NR<double> > >  B(Along, NO_TRANSFORM, DEF_REDUCTION);
 
 		verboseDepth = 0;
 
