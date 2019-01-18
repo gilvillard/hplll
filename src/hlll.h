@@ -187,7 +187,7 @@ public:
   // Only in the mpfr case (when possible to change the precision)
   // *************************************************************
 
-  void isreduced(double delta);
+  int isreduced(double delta);
 
 #define ANY 0
 #define TRIANGULAR_PROPER 1

@@ -21,9 +21,21 @@ void go(int n, int K, double alpha) {
 
 	Timer time;
 
+	int status;
 
 	typedef __int128_t integer;
 	//typedef long integer;
+
+	// Storing anomalies
+
+	int ano = 0;
+
+	char* s;
+
+	s = (char *) malloc(600);
+
+	filebuf fb;
+	iostream os(&fb);
 
 
 	cout << endl << endl << "*************************    n = " << n << "   alpha = " << alpha << endl;
@@ -32,8 +44,6 @@ void go(int n, int K, double alpha) {
 	A.resize(n, n);
 
 	ZZ_mat<integer> Along;
-
-
 
 
 
@@ -49,7 +59,7 @@ void go(int n, int K, double alpha) {
 
 		Lattice < integer, double, matrix<Z_NR<integer> >, matrix<FP_NR<double> > >  B(Along, NO_TRANSFORM, SEYSEN_REDUCTION);
 
-		verboseDepth = 0;
+		verboseDepth = 1;
 
 		time.clear();
 		time.start();
@@ -57,6 +67,8 @@ void go(int n, int K, double alpha) {
 		B.hlll(delta);
 
 		time.stop();
+
+		verboseDepth = 0;
 
 		// RE-USE OF A
 		matrix_cast(A, B.getbase());
@@ -66,11 +78,30 @@ void go(int n, int K, double alpha) {
 
 		hplll::ratio<mpz_t>(A, t, u, v, w);
 
-		if ((k == 0) || (k == K - 1)) {
+		//if ((k == 0) || (k == K - 1))
+		{
 
 
 			Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A);
-			T.isreduced(delta - 0.1);
+
+			status = T.isreduced(delta - 0.1);
+
+
+			if (status == -1) {
+
+				strncpy(s, "ano.txt", 599);
+
+				sprintf(s + 4, "%d", ano);
+				ano += 1;
+
+				fb.open (s, ios::out);
+				os << "Dimension: " << n << endl;
+				os << A;
+				fb.close();
+
+				print2maple(A, n, n);
+
+			}
 
 			cout << endl << ".. fplll log 2 Frobenius norm cond: " << t << endl;
 			cout << ".. Average diagonal ratio: " << u << endl;
@@ -107,15 +138,33 @@ void go(int n, int K, double alpha) {
 
 int main(int argc, char *argv[]) {
 
-	int n; // Initial value
+	int n = 420;
 
-	for (int i = 0; i < 100; i++ ) {
+	double delta = 0.99;
 
-		n = 20 + i * 40;
+	
+	typedef __int128_t integer;
+	//typedef long integer;
 
-		go(n, 20, 1.1);
+	ZZ_mat<mpz_t> A;
+	A.resize(n, n);
 
-	}
+	cin >> A;
+
+
+	ZZ_mat<integer> Along;
+
+	matrix_cast(Along, A);
+
+
+	Lattice < integer, double, matrix<Z_NR<integer> >, matrix<FP_NR<double> > >  B(Along, NO_TRANSFORM, SEYSEN_REDUCTION);
+
+	verboseDepth = 1;
+
+	B.hlll(delta);
+
+	matrix_cast(A, B.getbase());
+
 
 
 }

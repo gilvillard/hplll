@@ -299,7 +299,7 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	nmaxkappa = structure[kappa] + 1;
 
 	FP_NR<FT> approx;
-	approx = 0.0000001;
+	approx = 0.01;
 
 	FP_NR<FT>  qq;
 
@@ -316,7 +316,7 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	vector<bool> bounded(kappa);
 
 	// To test the second convergence phase: stabilization of the norms
-	int K = 2;
+	int K = 3;
 	bool gnonstop;
 
 	vector<bool> nonstop(K);
@@ -442,38 +442,43 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 			if (gnonstop == 0) {
 
 
-				//cout << "**** WARNING in size reduction, non decrease of the norms, kappa = " << kappa  << endl;
+				cout << "**** WARNING in size reduction, non decrease of the norms, kappa = " << kappa  << endl;
 
-				// FP_NR<FT> one;
-				// one = 1.0;
+				FP_NR<FT> one;
+				one = 1.0;
 
-				// FP_NR<FT> theta, eps;
-				// //theta = 0.0000001;
-				// //theta.mul(theta,R.get(kappa,kappa));
-				// // Jeu 12 mai 2016 12:55:13 CEST - R.get(kappa,kappa) may not be relevant (no hoseholder_v)
-				// theta.sqrt(normB2[kappa]);
-				// eps = 0.00000000001; // To tune for theta depending on the precision
-				// theta.mul(theta, eps);
+				FP_NR<FT> theta, eps;
+				//theta = 0.0000001;
+				//theta.mul(theta,R.get(kappa,kappa));
+				// Jeu 12 mai 2016 12:55:13 CEST - R.get(kappa,kappa) may not be relevant (no hoseholder_v)
+				theta.sqrt(normB2[kappa]);
+				eps = 0.00000000001; // To tune for theta depending on the precision
+				theta.mul(theta, eps);
 
 
-				// FP_NR<FT> mu, mu_test;
+				FP_NR<FT> mu, mu_test;
 
-				// for (i = 0; i < kappa; i++) {
+				for (i = kappa-1; i < kappa; i++) {
 
-				// 	mu.div(R.get(i, kappa), R.get(i, i));
-				// 	mu.abs(mu);
+					mu.div(R.get(i, kappa), R.get(i, i));
+					mu.abs(mu);
 
-				// 	mu_test.div(theta, R.get(i, i));
-				// 	mu_test.abs(mu_test); // Jeu 12 mai 2016 12:55:13 CEST
-				// 	mu_test.add(mu_test, one);
+					mu_test.div(theta, R.get(i, i));
+					mu_test.abs(mu_test); // Jeu 12 mai 2016 12:55:13 CEST
+					mu_test.add(mu_test, one);
 
-				// 	if (mu.cmp(mu_test) == 1) {
+					if (mu.cmp(mu_test) == 1) {
 
-				// 		cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, i = " << i << " ,kappa = " << kappa  << endl;
-				// 		return -1;
-				// 	}
+						cout << " **** #tests = " << nblov << " **** Anomaly in size reduction, i = " << i << " ,kappa = " << kappa  << endl;
 
-				// }
+						//DBG
+						cout << R(i, i) << endl;
+						cout << R(i, kappa) << endl;
+
+						return -1;
+					}
+
+				}
 
 				somedone = 0;  // Here, should be size reduced, hence ok for continuing
 
@@ -484,7 +489,7 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 
 		}
 
-		else
+		else 
 			nonstop[K - 1] = 0;
 
 
@@ -565,6 +570,7 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysen_update( vector<FP_NR<FT> >& vectx, i
 						R.submulcol(kappa, i, xf, restdim);
 
 						B.addmulcol_si(kappa, i, -lx, nmax);
+
 						if (transf)
 							U.addmulcol_si(kappa, i, -lx, min(d, nmax));
 
@@ -589,6 +595,7 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysen_update( vector<FP_NR<FT> >& vectx, i
 					R.submulcol(kappa, i, xf, restdim);
 
 					B.addmulcol_si_2exp(kappa, i, -lx, expo, nmax);
+
 					if (transf)
 						U.addmulcol_si_2exp(kappa, i, -lx, expo, min(d, nmax));
 
@@ -2265,7 +2272,7 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::shiftRT(long lsigma) {
 // Matrix interface () deprecated, will note work with -exp
 //
 
-template<class ZT, class FT, class MatrixZT, class MatrixFT> inline void Lattice<ZT, FT, MatrixZT, MatrixFT>::isreduced(double deltain) {
+template<class ZT, class FT, class MatrixZT, class MatrixFT> inline int Lattice<ZT, FT, MatrixZT, MatrixFT>::isreduced(double deltain) {
 
 	cout << endl << "Testing reduction" << endl;
 
@@ -2397,9 +2404,16 @@ template<class ZT, class FT, class MatrixZT, class MatrixFT> inline void Lattice
 
 	hlll(deltain);
 
-	if (nblov == ((unsigned int) d - 1)) cout << "Seems to be reduced (up to size-reduction)" << endl << endl;
+	int status = 0;
+
+	if (nblov == ((unsigned int) d - 1))
+		cout << "Seems to be reduced (up to size-reduction)" << endl << endl;
+
 
 	if (nblov != ((unsigned int) d - 1)) {
+
+		status = -1;
+
 		cout << endl;
 		cout << "!! Does not seem to be reduced" << endl;
 		cout << "     #non-trivial swaps is " << nblov - d + 1 << " > " << 0 << endl << endl;
@@ -2492,6 +2506,8 @@ template<class ZT, class FT, class MatrixZT, class MatrixFT> inline void Lattice
 	} // Was not reduced
 
 	setprec(oldprec);
+
+	return status;
 }
 
 
