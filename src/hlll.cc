@@ -316,7 +316,7 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 	vector<bool> bounded(kappa);
 
 	// To test the second convergence phase: stabilization of the norms
-	int K = 3;
+	int K = 2;
 	bool gnonstop;
 
 	vector<bool> nonstop(K);
@@ -475,7 +475,7 @@ Lattice<ZT, FT, MatrixZT, MatrixFT>::seysenreduce(int kappa) {
 						cout << R(i, i) << endl;
 						cout << R(i, kappa) << endl;
 
-						return -1;
+						//return -1;
 					}
 
 				}

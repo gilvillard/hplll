@@ -59,7 +59,7 @@ void go(int n, int K, double alpha) {
 
 		Lattice < integer, double, matrix<Z_NR<integer> >, matrix<FP_NR<double> > >  B(Along, NO_TRANSFORM, SEYSEN_REDUCTION);
 
-		verboseDepth = 1;
+		verboseDepth = 0;
 
 		time.clear();
 		time.start();
@@ -138,34 +138,24 @@ void go(int n, int K, double alpha) {
 
 int main(int argc, char *argv[]) {
 
-	int n = 420;
+	int n; // Initial value
 
-	double delta = 0.99;
+	// for (int i = 0; i < 1; i++ ) {
 
-	
-	typedef __int128_t integer;
-	//typedef long integer;
+	// 	n = 20 + i * 40;
 
-	ZZ_mat<mpz_t> A;
-	A.resize(n, n);
+	// 	go(n, 20, 1.1);
 
-	cin >> A;
+	// }
 
+	n = 420;
+	go(n, 60, 1.1);
 
-	ZZ_mat<integer> Along;
+	n = 460;
+	go(n, 10, 1.1);
 
-	matrix_cast(Along, A);
-
-
-	Lattice < integer, double, matrix<Z_NR<integer> >, matrix<FP_NR<double> > >  B(Along, NO_TRANSFORM, SEYSEN_REDUCTION);
-
-	verboseDepth = 1;
-
-	B.hlll(delta);
-
-	matrix_cast(A, B.getbase());
-
-
+	n = 540;
+	go(n, 10, 1.1);
 
 }
 
