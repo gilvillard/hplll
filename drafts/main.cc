@@ -139,22 +139,14 @@ int main(int argc, char *argv[]) {
 
 	int n; // Initial value
 
-	// for (int i = 0; i < 1; i++ ) {
+	for (int i = 0; i < 1; i++ ) {
 
-	// 	n = 20 + i * 40;
+		n = 20 + i * 40;
 
-	// 	go(n, 20, 1.1);
+		go(n, 10, 1.1);
 
-	// }
+	}
 
-	n = 420;
-	go(n, 60, 1.1);
-
-	n = 460;
-	go(n, 10, 1.1);
-
-	n = 540;
-	go(n, 10, 1.1);
 
 }
 
