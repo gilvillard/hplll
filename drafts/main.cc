@@ -78,8 +78,7 @@ void go(int n, int K, double alpha) {
 
 		hplll::ratio<mpz_t>(A, t, u, v, w);
 
-		//if ((k == 0) || (k == K - 1))
-		{
+		if ((k == 0) || (k == K - 1)) {
 
 
 			Lattice<mpz_t, mpfr_t, matrix<Z_NR<mpz_t> >, matrix<FP_NR<mpfr_t> > > T(A);
